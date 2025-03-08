@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manavargal School Management System</title>
+  <link rel="stylesheet" href="{% static 'users/signup.css' %}?v=3">
+  <style>
+    body {
+      background: url("{% static 'users/images/bg_image.png' %}?v=3") no-repeat center center fixed;
+      background-size: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="logo-container">
+      <img src="{% static 'users/images/verrgroup.png' %}" alt="VERR GROUP" class="logo">
+    </div>
+
+    <div class="header-text">
+      <h2>தகவல் உங்கள் கையில்</h2>
+      <h3>Information at Ease</h3>
+    </div>
+
+    <div class="form-container">
+      <h1>WELCOME TO</h1>
+      <h1 class="school-name">MANAVARGAL</h1>
+      <h1 class="system-name">SCHOOL MANAGEMENT SYSTEM</h1>
+
+      <div class="tabs">
+        <div class="tab active" id="signup-tab">SIGN UP</div>
+      </div>
+
+      <!-- Signup Form -->
+      <form class="signup-form" method="POST" action="{% url 'signup' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label for="username">Username*</label>
+          <input type="text" id="username" name="username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email*</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password*</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password">Confirm Password*</label>
+          <input type="password" id="confirm_password" name="confirm_password" required>
+        </div>
+
+        <button type="submit" class="signup-btn">Sign Up</button>
+      </form>
+
+      <p class="login-link">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+  </div>
+
+</body>
+</html>

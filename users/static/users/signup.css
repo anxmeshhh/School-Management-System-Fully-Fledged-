@@ -1,0 +1,261 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 128, 64, 0.7) 0%, rgba(0, 212, 255, 0.7) 100%);
+  z-index: -1;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 140vh;
+  position: relative;
+}
+
+.logo-container {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  background-color: white;
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  width: 100%;  /* Makes the image take full width */
+  height: 100%; /* Makes the image take full height */
+  object-fit: cover; /* Ensures the image fills the container without distortion */
+  border-radius: 50%; /* Ensures the image itself is also circular */
+}
+
+
+.header-text {
+  text-align: center;
+  color: white;
+  padding: 20px 0;
+  margin-top: 20px;
+}
+
+.header-text h2 {
+  font-size: 28px;
+  margin-bottom: 5px;
+  color: #000000;
+}
+
+.header-text h3 {
+  font-size: 24px;
+  font-weight: normal;
+  color: #e9e75e;
+}
+
+.form-container {
+  background-color: white;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 30px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.form-container h1 {
+  color: #008040;
+  margin: 0;
+  font-size: 18px;
+}
+
+.school-name {
+  font-size: 28px !important;
+  color: #008040;
+  font-weight: bold;
+  margin: 5px 0 !important;
+}
+
+.system-name {
+  font-size: 20px !important;
+  margin-bottom: 25px !important;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #666;
+  position: relative;
+}
+
+.tab.active {
+  color: #008040;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #008040;
+}
+
+.signup-form {
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #008040;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.signup-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #008040;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.signup-btn:hover {
+  background-color: #006633;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.divider span {
+  padding: 0 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.google-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: white;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.google-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.google-btn img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.login-link {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.login-link a {
+  color: #008040;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .logo-container {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .logo {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .header-text h2 {
+    font-size: 22px;
+  }
+  
+  .header-text h3 {
+    font-size: 18px;
+  }
+  
+  .form-container {
+    width: 95%;
+    padding: 20px;
+  }
+}

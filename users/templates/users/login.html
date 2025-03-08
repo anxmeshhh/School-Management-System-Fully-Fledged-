@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School - Login</title>
+    <link rel="stylesheet" href="{% static 'users/login.css' %}?v=2">
+    <style>
+        body {
+            background: url("{% static 'users/images/bg_image.png' %}?v=3") no-repeat center center fixed;
+            background-size: cover;
+        }
+        .success-message {
+            color: green;
+            text-align: center;
+            font-size: 18px;
+            display: none;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            font-size: 18px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="{% static 'users/images/verrgroup.png' %}" alt="VERR GROUP">
+    </div>
+    <div class="logo-text">
+        <p class="tamil-text">தகவல் உங்கள் கையில்</p>
+        <p class="english-text">Information at Ease</p>
+    </div>
+    
+    <div class="container">
+        <div class="login-box">
+            <h2>
+                <span class="welcome-text">WELCOME TO</span><br>
+                <span class="school-name">MANAVARGAL</span><br>
+                <span class="new">SCHOOL MANAGEMENT SYSTEM</span><br>
+            </h2>
+
+            <p class="success-message" id="successMessage">✅ Login Successful! Redirecting...</p>
+            <p class="error-message" id="errorMessage">❌ Invalid credentials! Try again.</p>
+            
+            <form id="loginForm" method="POST" data-url="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="input-group hover-box">
+                    <input type="text" id="username" name="username" required>
+                    <label for="username">Username*</label>
+                </div>
+                
+                <div class="input-group hover-box">
+                    <input type="password" id="password" name="password" required>
+                    <label for="password">Password*</label>
+                    <span class="password-toggle" onclick="togglePassword()">👁️</span>
+                </div>
+                
+                <button type="submit" class="btn login-btn">Login</button>
+            </form>
+
+            <a href="{% url 'signup' %}" class="btn signup-btn">New User Signup</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent page reload
+    
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+    
+            // Encode form data properly
+            const formData = new URLSearchParams();
+            formData.append("username", username);
+            formData.append("password", password);
+    
+            const response = await fetch(this.dataset.url, {  // Use data-url attribute for URL
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken
+                },
+                body: formData
+            });
+    
+            const result = await response.text();
+    
+            if (result.trim() === "Success") {
+                document.getElementById("successMessage").style.display = "block";
+                document.getElementById("errorMessage").style.display = "none";
+                setTimeout(() => {
+                    window.location.href = "/profile/";  // ✅ Redirect to profile page after success
+                }, 2000);
+            } else {
+                document.getElementById("errorMessage").style.display = "block";
+                document.getElementById("successMessage").style.display = "none";
+            }
+        });
+    
+        function togglePassword() {
+            const passwordField = document.getElementById("password");
+            passwordField.type = passwordField.type === "password" ? "text" : "password";
+        }
+    </script>
+    
+</body>
+</html>

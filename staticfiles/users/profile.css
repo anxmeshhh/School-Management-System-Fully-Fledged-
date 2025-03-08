@@ -1,0 +1,474 @@
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+  --primary-color: #1e3a8a;
+  --secondary-color: #3b82f6;
+  --accent-color: #60a5fa;
+  --light-color: #f3f4f6;
+  --dark-color: #1f2937;
+  --success-color: #10b981;
+  --danger-color: #ef4444;
+  --border-color: #e5e7eb;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --transition-speed: 0.3s;
+}
+
+body {
+  background-color: #f5f5f5;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Form Container */
+.form-container {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Progress Steps */
+.progress-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 40px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  opacity: 0.7;
+}
+
+.step.active {
+  opacity: 1;
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #666;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  margin-right: 10px;
+  transition: all var(--transition-speed) ease;
+}
+
+.step.active .step-number {
+  background-color: var(--primary-color);
+  color: white;
+  transform: scale(1.1);
+}
+
+.step-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  transition: all var(--transition-speed) ease;
+}
+
+.step.active .step-text {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Form Pages */
+.form-pages {
+  position: relative;
+}
+
+.page {
+  display: none;
+  padding: 30px;
+  transition: all 0.3s ease;
+}
+
+.page.active {
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Page Header */
+.page-header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 15px 20px;
+  margin: -30px -30px 30px -30px;
+  border-radius: 0;
+}
+
+.page-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.page-header h2 i {
+  margin-right: 10px;
+}
+
+/* Form Layout */
+.form-layout {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 30px;
+}
+
+/* Photo Section */
+.photo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+}
+
+.photo-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all var(--transition-speed) ease;
+  width: 100%;
+}
+
+.photo-btn:hover {
+  background-color: #152b67;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.photo-placeholder {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--primary-color);
+  transition: all var(--transition-speed) ease;
+}
+
+.photo-placeholder:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.photo-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-btn {
+  background-color: var(--success-color);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all var(--transition-speed) ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-btn:hover {
+  background-color: #0d9668;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Fields */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wide-fields {
+  grid-column: 1 / 3;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.address-group {
+  flex: 2;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+.required {
+  color: var(--danger-color);
+}
+
+input, select, textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 14px;
+  transition: all var(--transition-speed) ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+textarea {
+  resize: none;
+  height: 100px;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: '▼';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  pointer-events: none;
+  font-size: 12px;
+}
+
+select {
+  appearance: none;
+  width: 100%;
+  background-color: white;
+  cursor: pointer;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: var(--primary-color);
+  color: white;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 10px;
+  border-radius: 0 5px 5px 0;
+}
+
+.sidebar-text {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* Class Details and Medical Info */
+.class-details, .generic-details, .medical-info {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color);
+  grid-column: 3;
+  grid-row: 1;
+  width: 300px;
+}
+
+.class-details h3, .generic-details h3, .medical-info h3 {
+  color: var(--primary-color);
+  font-size: 18px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary-color);
+  text-align: center;
+}
+
+/* Form Navigation */
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.nav-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all var(--transition-speed) ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background-color: #152b67;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.submit-btn {
+  background-color: var(--success-color);
+}
+
+.submit-btn:hover {
+  background-color: #0d9668;
+}
+
+/* Animations and Effects */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+input:focus, select:focus, textarea:focus {
+  animation: pulse 1s infinite;
+}
+
+.photo-btn:active, .upload-btn:active, .nav-btn:active {
+  transform: scale(0.95);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .form-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    writing-mode: horizontal-tb;
+    transform: none;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  
+  .class-details, .generic-details, .medical-info {
+    grid-column: 1;
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .photo-section {
+    order: -1;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .progress-container {
+    padding: 15px;
+  }
+  
+  .step-text {
+    display: none;
+  }
+  
+  .page {
+    padding: 20px 15px;
+  }
+  
+  .page-header {
+    margin: -20px -15px 20px -15px;
+  }
+}
+
+/* Hover Effects */
+.form-group:hover label {
+  color: var(--primary-color);
+  transform: translateY(-2px);
+  transition: all var(--transition-speed) ease;
+}
+
+.step:hover .step-number:not(.active .step-number) {
+  background-color: #d0d0d0;
+  transform: scale(1.05);
+}
+
+.step:hover .step-text:not(.active .step-text) {
+  color: #444;
+}
+
+/* Additional Animations */
+@keyframes slideInRight {
+  from { transform: translateX(50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.next-btn:hover i {
+  animation: slideInRight 0.5s ease infinite alternate;
+}
+
+.prev-btn:hover i {
+  animation: slideInLeft 0.5s ease infinite alternate;
+}
