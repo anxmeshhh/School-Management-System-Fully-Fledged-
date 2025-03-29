@@ -9,13 +9,17 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 
 # Database connection
+import mysql.connector
+
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost", 
-        user="root", 
-        password="theanimesh2005",
-        database="school_db"
+        host="maglev.proxy.rlwy.net",  # Updated host from the Railway MySQL URL
+        user="root",                   # User remains the same
+        password="zzVviKdnUWiEapMQONEIAVBqisYPccvq",  # Updated password from the URL
+        database="railway",            # Updated database name from the Railway MySQL URL
+        port=26027                     # Updated port from the Railway URL
     )
+
 
 def signup_view(request):
     if request.method == "POST":
