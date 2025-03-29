@@ -67,14 +67,21 @@ def login_view(request):
 
         if user:
             request.session["user_id"] = user[0]  # Store user ID in session
-            return HttpResponse("Success")  # 
+            return HttpResponse("Success")  
+        
+            
 
         return HttpResponse("Invalid credentials!")  
 
     return render(request, "users/login.html")
 
-from django.shortcuts import render, redirect
-from django.db import connection, transaction
+
+def dashboard_view(request):
+    return render(request, "users/dashboard.html")
+
+
+
+
 from django.shortcuts import render, redirect
 from django.db import connection, transaction
 
@@ -291,3 +298,10 @@ def profile_view(request):
 
 
     return render(request, "users/profile.html", {"student_data": student_data})
+
+def attendence_view(request):
+    return render(request, "users/attendance.html")
+
+
+
+
