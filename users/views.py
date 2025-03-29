@@ -11,7 +11,7 @@ from django.contrib import messages
 # Database connection
 import pymysql
 def get_db_connection():
-    return mysql.connector.connect(
+    return pymysql.connect(
         host="maglev.proxy.rlwy.net",  # Updated host from the Railway MySQL URL
         user="root",                   # User remains the same
         password="zzVviKdnUWiEapMQONEIAVBqisYPccvq",  # Updated password from the URL
@@ -47,7 +47,7 @@ def signup_view(request):
             messages.success(request, "Account created successfully! Please log in.")
             return redirect("login")
 
-        except mysql.connector.Error as e:
+        except pymysql.MySQLError as e:
             messages.error(request, f"Database error: {e}")
             return render(request, "users/index.html")
 
