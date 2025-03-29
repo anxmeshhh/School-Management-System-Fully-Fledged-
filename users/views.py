@@ -4,13 +4,12 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 
 
-import mysql.connector
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
 # Database connection
-import mysql.connector
-
+import pymysql
 def get_db_connection():
     return mysql.connector.connect(
         host="maglev.proxy.rlwy.net",  # Updated host from the Railway MySQL URL
