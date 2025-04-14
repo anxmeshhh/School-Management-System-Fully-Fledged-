@@ -12,8 +12,6 @@ from django.contrib import messages
 import pymysql
 
 
-import pymysql
-
 def get_db_connection():
     return pymysql.connect(
         host="yamabiko.proxy.rlwy.net",  # Host
