@@ -42,8 +42,14 @@
                 <span class="new">SCHOOL MANAGEMENT SYSTEM</span><br>
             </h2>
 
-            <p class="success-message" id="successMessage">✅ Login Successful! Redirecting...</p>
-            <p class="error-message" id="errorMessage">❌ Invalid credentials! Try again.</p>
+            <!-- 🔔 Notification Messages -->
+            <div id="successMessage" class="notification-box success" style="display: none;">
+                ✅ Login Successful! Redirecting...
+            </div>
+            <div id="errorMessage" class="notification-box error" style="display: none;">
+                ❌ Invalid credentials! Try again.
+            </div>
+
             
             <form id="loginForm" method="POST" data-url="{% url 'login' %}">
                 {% csrf_token %}

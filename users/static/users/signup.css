@@ -237,25 +237,28 @@ body::before {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .logo-container {
-    width: 80px;
-    height: 80px;
+    width: 22vw;
+    height: 22vw;
+    max-width: 80px;
+    max-height: 80px;
   }
-  
+
   .logo {
-    width: 50px;
-    height: 50px;
+    width: 65%;
+    height: auto;
   }
-  
+
   .header-text h2 {
-    font-size: 22px;
+    font-size: 5.5vw; /* approx 22px on 400px screen */
   }
-  
+
   .header-text h3 {
-    font-size: 18px;
+    font-size: 4.5vw; /* approx 18px on 400px screen */
   }
-  
+
   .form-container {
-    width: 95%;
-    padding: 20px;
+    width: 90%;
+    padding: 5vw;
+    box-sizing: border-box;
   }
 }

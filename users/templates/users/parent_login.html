@@ -1,0 +1,57 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Login - School Management System</title>
+    <link rel="stylesheet" href="{% static 'users/parent_login.css' %}?v=5">
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(-45deg, rgba(238, 119, 82, 0.7), rgba(231, 60, 126, 0.7), rgba(35, 166, 213, 0.7), rgba(35, 213, 171, 0.7)),
+            url("{% static 'users/images/bg_image.png' %}?v=3") no-repeat center center;
+        }
+      </style>
+<body>
+<div class="logo-container">
+    <img src="{% static 'users/images/verrgroup.png' %}" alt="School Logo" class="logo">
+</div>
+
+<div class="page-header">
+    <h2>தகவல் உங்கள் கையில்</h2>
+    <h3>Information at Ease</h3>
+</div>
+
+<div class="container">
+    <div class="login-container">
+        <h1 class="login-title">WELCOME TO<br>MANAVARGAL SCHOOL<br>MANAGEMENT SYSTEM</h1>
+        <div class="parent-login">Login</div>
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Student Admission/Roll Number" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Registered Mobile Number" required>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <div class="qr-section">
+            <p style="margin-top: 18px">Quick Login with QR Code</p>
+            <div class="qr-scan-container">
+                <button type="button" class="scan-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 7V3H7V5H5V7H3ZM17 3H21V7H19V5H17V3ZM3 21V17H5V19H7V21H3ZM17 19V21H21V17H19V19H17ZM8 8H16V16H8V8ZM10 10V14H14V10H10Z" fill="white"/>
+                    </svg>
+                    Scan QR Code
+                </button>
+                <div class="qr-instructions">
+                    <p style="margin-top: 10px">Point your camera at your school-provided QR code</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

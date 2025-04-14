@@ -1,0 +1,312 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: url("{% static 'images/bg_image.png' %}?v=3") no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    filter: brightness(1.2); /* Increase brightness */
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2); /* Light overlay */
+    z-index: 1;
+}
+
+.logo {
+    position: fixed;
+    top: 20px;
+    left: 30px;
+    z-index: 2;
+    background: none; /* Removes background */
+    padding: 0; /* Removes extra padding */
+}
+.logo-text {
+    text-align: center;
+    margin-top: 10px; /* Adjust spacing */
+}
+
+.tamil-text {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-size: 30px;
+    font-weight: bold;
+    color: #000000;
+}
+
+.english-text {
+    font-family: 'Raleway', sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    color: #e9e75e;
+}
+
+.logo img {
+    width: auto;
+    height: 60px; /* Adjust height for balance */
+    display: block;
+    filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.2)); /* Soft shadow for smooth blending */
+}
+
+
+.logo img {
+    width: 170px;  /* Adjust the size as needed */
+    height: 170px;
+    border-radius: 70%;  /* Makes it circular */
+    object-fit: cover;  /* Ensures the image fits well */
+    display: block;
+    border: 3px solid white;  /* Optional: adds a border around the logo */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: soft shadow for depth */
+}
+
+.welcome-text {
+    
+     font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.school-name {
+    font-family: 'Raleway', sans-serif;
+    font-size: 27px;
+    font-weight: bold;
+}
+.new {
+    font-family: 'Anton', sans-serif;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 100vh;
+    z-index: 2;
+    padding-right: 10%;
+}
+
+.login-box {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    border-top: 4px solid #006B3E;
+    margin-left: auto;
+}
+
+h2 {
+    color: #006B3E;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.5em;
+    line-height: 1.4;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 30px;
+    padding: 10px;
+    border: 2px solid #ddd; /* Added border */
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+}
+
+.input-group label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #666;
+    transition: 0.3s;
+    pointer-events: none;
+}
+
+.input-group input:focus ~ label,
+.input-group input:valid ~ label {
+    top: -10px;
+    font-size: 12px;
+    color: #006B3E;
+}
+
+.hover-box:hover {
+    transform: scale(1.05); /* Slight hovering effect */
+    box-shadow: 0 4px 10px rgba(0, 107, 62, 0.2);
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0;
+    top: 10px;
+    cursor: pointer;
+    color: #006B3E;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.login-btn {
+    background: linear-gradient(45deg, #006B3E, #008B4F);
+    color: white;
+}
+
+.login-btn:hover {
+    background: linear-gradient(45deg, #008B4F, #006B3E);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 107, 62, 0.2);
+}
+
+.signup-btn {
+    background: white;
+    color: #006B3E;
+    border: 2px solid #006B3E;
+}
+
+.signup-btn:hover {
+    background: #f0f8f4;
+    transform: translateY(-2px);
+}
+
+.gmail-btn {
+    background: white;
+    color: #DB4437;
+    border: 2px solid #DB4437;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.gmail-btn:hover {
+    background: #fff1f0;
+    transform: translateY(-2px);
+}
+
+.gmail-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+.support-box {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 2;
+}
+
+.support-btn {
+    background: rgba(255, 255, 255, 0.95);
+    color: #006B3E;
+    padding: 10px 25px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 500;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid #006B3E;
+}
+
+.support-btn:hover {
+    background: #006B3E;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 107, 62, 0.2);
+}
+
+@media (max-width: 768px) {
+    .container {
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .login-box {
+        margin: 0;
+    }
+
+    .logo {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 10px;
+    }
+
+    .logo img {
+        width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-box {
+        padding: 20px;
+    }
+    
+    .logo {
+        padding: 8px;
+    }
+    
+    .logo img {
+        width: 120px;
+    }
+    
+    h2 {
+        font-size: 1.3em;
+    }
+}

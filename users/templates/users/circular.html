@@ -1,0 +1,66 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Circulars</title>
+    <link rel="stylesheet" href="{% static 'users/circular.css' %}?v=4">
+</head>
+<body>
+<div class="container">
+    <h1>Circular</h1>
+
+    <div class="filter-section">
+        <select class="class-filter" id="class-selector">
+            <option value="all">All Classes</option>
+            <option value="1">Class 1</option>
+            <option value="2">Class 2</option>
+            <option value="3">Class 3</option>
+            <option value="4">Class 4</option>
+            <option value="5">Class 5</option>
+        </select>
+        <label for="class-selector" class="btn submit-btn">Submit</label>
+    </div>
+
+    <div class="circulars-container">
+        <div class="circular-section">
+            <h2>School Circular</h2>
+            <div class="action-buttons">
+                <label for="school-post" class="btn">Post
+                    <input type="file" id="school-post" accept="image/*,.pdf" class="file-input" onchange="this.parentElement.parentElement.nextElementSibling.querySelector('img').src = window.URL.createObjectURL(this.files[0])">
+                </label>
+                <label for="school-view" class="btn">View
+                    <input type="checkbox" id="school-view" class="view-toggle">
+                </label>
+                <label for="school-delete" class="btn">Delete
+                    <input type="checkbox" id="school-delete" class="delete-toggle">
+                </label>
+            </div>
+            <div class="circular-content">
+                <img class="preview-image" src="" alt="Preview will appear here">
+            </div>
+        </div>
+
+        <div class="circular-section" data-class="1">
+            <h2>Class Circular</h2>
+            <div class="action-buttons">
+                <label for="class-post" class="btn">Post
+                    <input type="file" id="class-post" accept="image/*,.pdf" class="file-input" onchange="this.parentElement.parentElement.nextElementSibling.querySelector('img').src = window.URL.createObjectURL(this.files[0])">
+                </label>
+                <label for="class-view" class="btn">View
+                    <input type="checkbox" id="class-view" class="view-toggle">
+                </label>
+                <label for="class-delete" class="btn">Delete
+                    <input type="checkbox" id="class-delete" class="delete-toggle">
+                </label>
+            </div>
+            <div class="circular-content">
+                <img class="preview-image" src="" alt="Preview will appear here">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

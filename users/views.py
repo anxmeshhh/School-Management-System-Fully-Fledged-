@@ -305,6 +305,11 @@ def profile_view(request):
 def attendence_view(request):
     return render(request, "users/attendance.html")
 
-
+def circular_view(request):
+    return render(request, "users/circular.html")
+def parent_signup(request):
+    return render(request, "users/parent_signup.html")
+def parent_login(request):
+    return render(request, "users/parent_login.html")
 
 

@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,183 +7,336 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System</title>
     <link rel="stylesheet" href="{% static 'users/dashboard.css' %}?v=3">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <div class="sidebar">
-            <div class="logo">
-                <span class="menu-icon">☰</span>
-                <h2>Dashboard</h2>
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo-section">
+                <div class="brand-container">
+                    <div class="logo" id="logo">
+                        <img src="{% static 'users/images/verrgroup.png' %}" alt="Brand Logo" class="logo-img">
+                        <span class="logo-text">MS</span>
+                    </div>
+                    <div class="brand-text">
+                        <h1 class="brand-name">MANAVARGAL</h1>
+                        <p class="brand-subtitle">SCHOOL MANAGEMENT SYSTEM</p>
+                    </div>
+                </div>
+                <p class="dashboard-text">Dashboard</p>
+                <button class="menu-toggle" id="menuToggle">☰</button>
             </div>
-            <nav>
-                <a href="{% url 'profile' %}" class="nav-item master-data">
-                    <span class="icon">📊</span>
-                    <span>Master Data</span>
-                </a>
-                <a href="{% url 'attendance' %}" class="nav-item attendance">
-                    <span class="icon">📅</span>
-                    <span>Attendance & Leave</span>
-                </a>
-                <a href="https://student-career-predictor-using-g-production.up.railway.app/" class="nav-item circulars">
-                    <span class="icon">📢</span>
-                    <span>Circulars</span>
-                </a>
-                <a href="https://student-career-predictor-using-g-production.up.railway.app/" class="nav-item study">
-                    <span class="icon">📚</span>
-                    <span>Study Materials</span>
-                </a>
-                <a href="#" class="nav-item activities">
-                    <span class="icon">🎯</span>
-                    <span>Activities & Events</span>
-                </a>
-                <a href="#" class="nav-item progress">
-                    <span class="icon">📈</span>
-                    <span>Progress Card</span>
-                </a>
-                <a href="#" class="nav-item fees">
-                    <span class="icon">💰</span>
-                    <span>Fees Collection</span>
-                </a>
-                <a href="#" class="nav-item teacher">
-                    <span class="icon">👨‍🏫</span>
-                    <span>Teacher Management</span>
-                </a>
-                <a href="#" class="nav-item hr">
-                    <span class="icon">👥</span>
-                    <span>HR Module</span>
-                </a>
-            </nav>
+            
+            <div class="nav-wrapper">
+                <nav class="nav-menu">
+                    <a href="{% url 'profile' %}" class="nav-item">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Master Data</span>
+                    </a>
+                    <a href="{% url 'attendance' %}" class="nav-item">
+                        <span class="nav-icon">📅</span>
+                        <span class="nav-text">Attendance & Leave</span>
+                    </a>
+                    <a href="{% url 'circular' %}" class="nav-item">
+                        <span class="nav-icon">📢</span>
+                        <span class="nav-text">Circulars</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">📚</span>
+                        <span class="nav-text">Study Materials</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">🎯</span>
+                        <span class="nav-text">Activities & Events</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-text">Progress Card</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">💰</span>
+                        <span class="nav-text">Fees Collection</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">👨‍🏫</span>
+                        <span class="nav-text">Teacher Management</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">👥</span>
+                        <span class="nav-text">HR Module</span>
+                    </a>
+                </nav>
+            </div>
         </div>
-        <main class="main-content">
-            <span class="menu-icon">☰</span>
-            <header>
-                <h1>Manavargal School Management System</h1>
-            </header>
-            <div class="welcome-section">
-                <h2>Welcome to Dashboard</h2>
-                <p id="quote" class="quote"></p>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="animated-background"></div>
+            <div class="top-bar">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+                <div class="system-info">
+                    School Management System v1.0
+                </div>
+                <div class="user-section">
+                    <div class="notification-icon">🔔</div>
+                    <div class="user-info">
+                        <div class="welcome-text">Welcome</div>
+                        <button class="user-button">
+                            <span class="user-avatar">👤</span>
+                            <span class="username">John Doe</span>
+                        </button>
+                    </div>
+                </div>
             </div>
-        </main>
+
+            <div class="content">
+                <h1>Manavargal School Management System</h1>
+                <div class="welcome-card">
+                    <h2>Welcome to Dashboard</h2>
+                    <p id="quote" class="quote"></p>
+                </div>
+            </div>
+        </div>
     </div>
-    <script >
-        document.addEventListener('DOMContentLoaded', () => {
-            // Toggle sidebar
-            const menuIcon = document.querySelector('.menu-icon');
-            const sidebar = document.querySelector('.sidebar');
-            
-            menuIcon.addEventListener('click', () => {
-                sidebar.classList.toggle('collapsed');
-                menuIcon.style.transform = sidebar.classList.contains('collapsed') 
-                    ? 'rotate(180deg)' 
-                    : 'rotate(0deg)';
-            });
-        
-            // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', (e) => {
-                const isMobile = window.innerWidth <= 768;
-                const isClickOutsideSidebar = !sidebar.contains(e.target) && !menuIcon.contains(e.target);
-                
-                if (isMobile && isClickOutsideSidebar && !sidebar.classList.contains('collapsed')) {
-                    sidebar.classList.add('collapsed');
-                    menuIcon.style.transform = 'rotate(180deg)';
-                }
-            });
-        
-            // Enhanced hover effects for nav items
-            const navItems = document.querySelectorAll('.nav-item');
-            
-            navItems.forEach(item => {
-                item.addEventListener('mouseenter', (e) => {
-                    const icon = e.currentTarget.querySelector('.icon');
-                    icon.style.transform = 'scale(1.2) rotate(360deg)';
-                    
-                    // Add ripple effect
-                    const ripple = document.createElement('div');
-                    ripple.className = 'ripple';
-                    ripple.style.position = 'absolute';
-                    ripple.style.width = '20px';
-                    ripple.style.height = '20px';
-                    ripple.style.background = 'currentColor';
-                    ripple.style.opacity = '0.2';
-                    ripple.style.borderRadius = '50%';
-                    ripple.style.transform = 'scale(0)';
-                    ripple.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-                    
-                    e.currentTarget.appendChild(ripple);
-                    
-                    // Trigger ripple animation
-                    requestAnimationFrame(() => {
-                        ripple.style.transform = 'scale(8)';
-                        ripple.style.opacity = '0';
-                        
-                        // Clean up
-                        setTimeout(() => {
-                            ripple.remove();
-                        }, 600);
-                    });
-                });
-        
-                item.addEventListener('mouseleave', (e) => {
-                    const icon = e.currentTarget.querySelector('.icon');
-                    icon.style.transform = 'scale(1) rotate(0)';
-                });
-        
-                // Add click animation
-                item.addEventListener('click', (e) => {
-                    const icon = e.currentTarget.querySelector('.icon');
-                    icon.style.transform = 'scale(0.9)';
-                    setTimeout(() => {
-                        icon.style.transform = 'scale(1)';
-                    }, 150);
-                });
-            });
-        
-            // Rotating quotes system
-            const quotes = [
-                "Education is the passport to the future, for tomorrow belongs to those who prepare for it today.",
-                "The beautiful thing about learning is that no one can take it away from you.",
-                "Education is not preparation for life; education is life itself.",
-                "Knowledge is power. Information is liberating. Education is the premise of progress.",
-                "The roots of education are bitter, but the fruit is sweet.",
-                "Education is the most powerful weapon which you can use to change the world.",
-                "Learning is not attained by chance, it must be sought for with ardor and diligence.",
-                "The more that you read, the more things you will know. The more that you learn, the more places you'll go.",
-                "Education is not the filling of a pail, but the lighting of a fire.",
-                "Live as if you were to die tomorrow. Learn as if you were to live forever."
-            ];
-        
-            function getRandomQuote() {
-                return quotes[Math.floor(Math.random() * quotes.length)];
-            }
-        
-            // Set initial quote
-            const quoteElement = document.getElementById('quote');
-            quoteElement.textContent = getRandomQuote();
-            quoteElement.style.opacity = '4';
-        
-            // Add parallax effect to welcome section
-            const welcomeSection = document.querySelector('.welcome-section');
-            document.addEventListener('mousemove', (e) => {
-                if (window.innerWidth > 768) {  // Only apply parallax on desktop
-                    const x = e.clientX / window.innerWidth;
-                    const y = e.clientY / window.innerHeight;
-                    
-                    welcomeSection.style.transform = `
-                        perspective(1000px)
-                        rotateX(${y * 2 - 1}deg)
-                        rotateY(${x * 2 - 1}deg)
-                        translateY(-5px)
-                    `;
-                }
-            });
-        
-            // Reset welcome section transform on mobile
-            window.addEventListener('resize', () => {
-                if (window.innerWidth <= 768) {
-                    welcomeSection.style.transform = 'none';
-                }
-            });
-        });
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+    // Elements
+    const sidebar = document.getElementById("sidebar")
+    const menuToggle = document.getElementById("menuToggle")
+    const mobileMenuToggle = document.getElementById("mobileMenuToggle")
+    const quoteElement = document.getElementById("quote")
+    const logo = document.getElementById("logo")
+    const mainContent = document.querySelector(".main-content")
+  
+    // Check if desktop or mobile
+    const checkViewport = () => {
+      return window.innerWidth <= 768
+    }
+  
+    // Toggle menu functions
+    function toggleMenu() {
+      sidebar.classList.toggle("active")
+    }
+  
+    // Only show menu toggle on mobile by default
+    function updateMenuVisibility() {
+      if (checkViewport()) {
+        menuToggle.style.display = "block"
+      } else {
+        menuToggle.style.display = sidebar.classList.contains("active") ? "block" : "none"
+      }
+    }
+  
+    // Initialize menu visibility
+    updateMenuVisibility()
+  
+    // Event listeners
+    menuToggle.addEventListener("click", () => {
+      toggleMenu()
+      updateMenuVisibility()
+    })
+  
+    mobileMenuToggle.addEventListener("click", toggleMenu)
+  
+    // Update on resize
+    window.addEventListener("resize", updateMenuVisibility)
+  
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener("click", (e) => {
+      const isMobile = checkViewport()
+      const isClickOutsideSidebar =
+        !sidebar.contains(e.target) && !menuToggle.contains(e.target) && !mobileMenuToggle.contains(e.target)
+  
+      if (isClickOutsideSidebar && sidebar.classList.contains("active")) {
+        sidebar.classList.remove("active")
+        if (!isMobile) {
+          menuToggle.style.display = "none"
+        }
+      }
+    })
+  
+    // Logo animation
+    function animateLogo() {
+      logo.classList.add("pulse")
+      setTimeout(() => {
+        logo.classList.remove("pulse")
+      }, 2000)
+    }
+  
+    // Animate logo on hover and periodically
+    logo.addEventListener("mouseenter", animateLogo)
+    setInterval(animateLogo, 5000)
+  
+    // Dynamic background effect
+    function createBubble() {
+      const animatedBg = document.querySelector(".animated-background")
+      const bubble = document.createElement("div")
+  
+      bubble.className = "bubble"
+  
+      const size = Math.random() * 60 + 20
+      const left = Math.random() * 100
+      const duration = Math.random() * 20 + 10
+  
+      bubble.style.width = `${size}px`
+      bubble.style.height = `${size}px`
+      bubble.style.left = `${left}%`
+      bubble.style.animationDuration = `${duration}s`
+  
+      animatedBg.appendChild(bubble)
+  
+      setTimeout(() => {
+        bubble.remove()
+      }, duration * 1000)
+    }
+  
+    // Create bubbles periodically
+    setInterval(createBubble, 1000)
+  
+    // Add parallax effect to main content
+    mainContent.addEventListener("mousemove", (e) => {
+      const moveX = (e.clientX - window.innerWidth / 2) * 0.01
+      const moveY = (e.clientY - window.innerHeight / 2) * 0.01
+  
+      document.querySelector(".animated-background").style.transform = `translate(${moveX}px, ${moveY}px)`
+    })
+  
+    // Quotes system
+    const quotes = [
+      "Education is the passport to the future, for tomorrow belongs to those who prepare for it today.",
+      "The beautiful thing about learning is that no one can take it away from you.",
+      "Education is not preparation for life; education is life itself.",
+      "Knowledge is power. Information is liberating. Education is the premise of progress.",
+      "Live as if you were to die tomorrow. Learn as if you were to live forever.",
+    ]
+  
+    function showRandomQuote() {
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)]
+      quoteElement.textContent = randomQuote
+      quoteElement.classList.add("visible")
+    }
+  
+    // Show initial quote with delay
+    setTimeout(showRandomQuote, 500)
+  
+    // Change quote every 10 seconds
+    setInterval(() => {
+      quoteElement.classList.remove("visible")
+      setTimeout(() => {
+        showRandomQuote()
+      }, 500)
+    }, 10000)
+  
+    // Enhanced hover effects for nav items
+    const navItems = document.querySelectorAll(".nav-item")
+    navItems.forEach((item) => {
+      item.addEventListener("mouseenter", () => {
+        const icon = item.querySelector(".nav-icon")
+        icon.style.transform = "scale(1.2) rotate(360deg)"
+        icon.style.transition = "transform 0.5s ease"
+      })
+  
+      item.addEventListener("mouseleave", () => {
+        const icon = item.querySelector(".nav-icon")
+        icon.style.transform = "none"
+      })
+  
+      // Add click effect
+      item.addEventListener("click", () => {
+        const icon = item.querySelector(".nav-icon")
+        icon.style.transform = "scale(0.9)"
+        setTimeout(() => {
+          icon.style.transform = "none"
+        }, 150)
+      })
+    })
+  
+    // Add hover effects to all interactive elements
+    const interactiveElements = document.querySelectorAll(
+      "button, .brand-name, .brand-subtitle, .dashboard-text, .system-info, .welcome-text",
+    )
+  
+    interactiveElements.forEach((element) => {
+      element.addEventListener("mouseenter", () => {
+        element.style.transition = "all 0.3s ease"
+        element.style.transform = "scale(1.05)"
+      })
+  
+      element.addEventListener("mouseleave", () => {
+        element.style.transform = ""
+      })
+    })
+  
+    // Add ripple effect to buttons
+    const buttons = document.querySelectorAll("button")
+  
+    buttons.forEach((button) => {
+      button.addEventListener("click", function (e) {
+        const x = e.clientX - e.target.getBoundingClientRect().left
+        const y = e.clientY - e.target.getBoundingClientRect().top
+  
+        const ripple = document.createElement("span")
+        ripple.className = "ripple"
+        ripple.style.left = `${x}px`
+        ripple.style.top = `${y}px`
+  
+        this.appendChild(ripple)
+  
+        setTimeout(() => {
+          ripple.remove()
+        }, 600)
+      })
+    })
+  })
+  
+  // Add CSS for bubbles and ripple effect
+  document.addEventListener("DOMContentLoaded", () => {
+    const style = document.createElement("style")
+    style.textContent = `
+          .bubble {
+              position: absolute;
+              bottom: -100px;
+              border-radius: 50%;
+              background: rgba(255, 255, 255, 0.1);
+              animation: rise linear forwards;
+              pointer-events: none;
+          }
+          
+          @keyframes rise {
+              0% {
+                  transform: translateY(0) scale(1);
+                  opacity: 0;
+              }
+              50% {
+                  opacity: 0.5;
+              }
+              100% {
+                  transform: translateY(-100vh) scale(1.5);
+                  opacity: 0;
+              }
+          }
+          
+          .ripple {
+              position: absolute;
+              border-radius: 50%;
+              background: rgba(255, 255, 255, 0.4);
+              transform: scale(0);
+              animation: ripple 0.6s linear;
+              pointer-events: none;
+          }
+          
+          @keyframes ripple {
+              to {
+                  transform: scale(4);
+                  opacity: 0;
+              }
+          }
+      `
+    document.head.appendChild(style)
+  })
+  
+  
     </script>
 </body>
 </html>

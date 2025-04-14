@@ -270,43 +270,84 @@ h2 {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 107, 62, 0.2);
 }
+/* Top-right Notification Box Styles */
+.notification-box {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0.95;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.notification-box.success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 5px solid #28a745;
+}
+
+.notification-box.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 5px solid #dc3545;
+}
 
 @media (max-width: 768px) {
     .container {
-        justify-content: center;
-        padding: 20px;
+      justify-content: center;
+      padding: 5vw;
     }
-    
+  
     .login-box {
-        margin: 0;
+      margin: 0;
+      width: 90%;
+      max-width: 400px;
+      padding: 5vw;
     }
-
+  
     .logo {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        padding: 10px;
+      position: absolute;
+      top: 4vw;
+      left: 4vw;
+      padding: 2.5vw;
     }
-
+  
     .logo img {
-        width: 150px;
+      width: 35vw;
+      max-width: 150px;
+      height: auto;
     }
-}
-
-@media (max-width: 480px) {
-    .login-box {
-        padding: 20px;
-    }
-    
-    .logo {
-        padding: 8px;
-    }
-    
-    .logo img {
-        width: 120px;
-    }
-    
+  
     h2 {
-        font-size: 1.3em;
+      font-size: 5vw;
     }
-}
+  }
+  
+  @media (max-width: 480px) {
+    .login-box {
+      width: 95%;
+      padding: 5vw;
+    }
+  
+    .logo {
+      padding: 2vw;
+      top: 3vw;
+      left: 3vw;
+    }
+  
+    .logo img {
+      width: 30vw;
+      max-width: 120px;
+    }
+  
+    h2 {
+      font-size: 5vw;
+    }
+  }
+  

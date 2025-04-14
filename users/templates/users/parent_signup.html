@@ -1,0 +1,65 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal - School Management System</title>
+    <link rel="stylesheet" href="{% static 'users/parent_signup.css' %}?v=6">
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(-45deg, rgba(238, 119, 82, 0.7), rgba(231, 60, 126, 0.7), rgba(35, 166, 213, 0.7), rgba(35, 213, 171, 0.7)),
+                    url("{% static 'users/images/bg_image.png' %}?v=3") no-repeat center center/cover;
+            animation: gradient 15s ease infinite;
+        }
+      </style>
+</head>
+<body>
+
+<img src="{% static 'users/images/verrgroup.png' %}" alt="School Logo" class="logo">
+
+<div class="page-header">
+    <h2>தகவல் உங்கள் கையில்</h2>
+    <h3>Information at Ease</h3>
+</div>
+
+<!-- Wider form container -->
+<div class="form-container">
+    <div class="welcome-text">
+        <h2>WELCOME TO</h2>
+        <h3>MANAVARGAL</h3>
+        <h4>SCHOOL MANAGEMENT SYSTEM</h4>
+    </div>
+
+    <div class="form-header">
+        <h5>SIGN UP</h5>
+    </div>
+
+    <form id="signup-form">
+        <div class="form-group">
+            <label for="username">Student's Admission Number*</label>
+            <input type="text" id="username" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email*</label>
+            <input type="email" id="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password*</label>
+            <input type="password" id="password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm-password">Confirm Password*</label>
+            <input type="password" id="confirm-password" required>
+        </div>
+
+        <button type="submit" class="signup-btn">Sign Up</button>
+    </form>
+</div>
+</body>
+</html>
