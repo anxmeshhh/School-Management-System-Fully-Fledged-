@@ -30,7 +30,12 @@ SECRET_KEY = 'django-insecure-n!jr1+fe5q-hf^*a*qxk!#y4v$8go@gtkp-uin5t_#vq$d@qbb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.railway.app', 'school-management-system-fully-f-production.up.railway.app']
+ALLOWED_HOSTS = [
+    '127.0.0.1', 
+    'localhost', 
+    '.railway.app', 
+    'manavargalsms.up.railway.app',  # Add this line to include the new domain
+]
 
 
 
@@ -146,4 +151,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # This is needed for collec
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-CSRF_TRUSTED_ORIGINS = ['https://school-management-system-fully-f-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://manavargalsms.up.railway.app']
