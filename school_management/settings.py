@@ -84,13 +84,14 @@ WSGI_APPLICATION = 'school_management.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'school_db',  # This is typically set to 'railway' for Railway-hosted MySQL databases
+        'NAME': 'railway',
         'USER': 'root',
-        'PASSWORD': 'theanimesh2005',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'PASSWORD': 'AaLqLCgRttNkiQlWmsVdhBFvaHvYpNHW',
+        'HOST': 'yamabiko.proxy.rlwy.net',
+        'PORT': '13364',
     }
 }
+
 
 
 

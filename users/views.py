@@ -10,14 +10,17 @@ from django.contrib import messages
 
 # Database connection
 import pymysql
+
+
 def get_db_connection():
     return pymysql.connect(
-        host="maglev.proxy.rlwy.net",  # Updated host from the Railway MySQL URL
-        user="root",                   # User remains the same
-        password="zzVviKdnUWiEapMQONEIAVBqisYPccvq",  # Updated password from the URL
-        database="railway",            # Updated database name from the Railway MySQL URL
-        port=26027                     # Updated port from the Railway URL
+        host="maglev.proxy.rlwy.net",
+        user="root",
+        password="zzVviKdnUWiEapMQONEIAVBqisYPccvq",
+        database="railway",
+        port=26027
     )
+
 
 
 def signup_view(request):
