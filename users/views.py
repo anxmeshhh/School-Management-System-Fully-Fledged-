@@ -12,14 +12,17 @@ from django.contrib import messages
 import pymysql
 
 
+import pymysql
+
 def get_db_connection():
     return pymysql.connect(
-        host="maglev.proxy.rlwy.net",
-        user="root",
-        password="zzVviKdnUWiEapMQONEIAVBqisYPccvq",
-        database="railway",
-        port=26027
+        host="yamabiko.proxy.rlwy.net",  # Host
+        user="root",  # Username
+        password="AaLqLCgRttNkiQlWmsVdhBFvaHvYpNHW",  # Password
+        database="railway",  # Database name
+        port=13364  # Port
     )
+
 
 
 
