@@ -34,8 +34,10 @@ ALLOWED_HOSTS = [
     '127.0.0.1', 
     'localhost', 
     '.railway.app', 
-    'manavargalsms.up.railway.app',  # Add this line to include the new domain
+    'manavargalsms.up.railway.app',  # If you're still using this
+    'www.manavargalsms.com',  # Add this line to allow www.manavargalsms.com
 ]
+
 
 
 
@@ -151,4 +153,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # This is needed for collec
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-CSRF_TRUSTED_ORIGINS = ['https://manavargalsms.up.railway.app']
+CSRF_TRUSTED_ORIGINS = [
+    'https://manavargalsms.up.railway.app',
+    'https://www.manavargalsms.com',  # Add this line
+]
+
