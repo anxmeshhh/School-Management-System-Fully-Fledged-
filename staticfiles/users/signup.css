@@ -6,16 +6,15 @@
 }
 
 body {
-  
   background-position: center;
   background-repeat: no-repeat;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
   position: relative;
+  overflow-x: hidden;
 }
 
 body::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -28,18 +27,19 @@ body::before {
 .container {
   display: flex;
   flex-direction: column;
-  height: 140vh;
+  min-height: 100vh;
   position: relative;
+  padding: 20px;
 }
 
 .logo-container {
   position: absolute;
-  top: 30px;
-  left: 30px;
+  top: 20px;
+  left: 20px;
   background-color: white;
   border-radius: 50%;
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -47,12 +47,11 @@ body::before {
 }
 
 .logo {
-  width: 100%;  /* Makes the image take full width */
-  height: 100%; /* Makes the image take full height */
-  object-fit: cover; /* Ensures the image fills the container without distortion */
-  border-radius: 50%; /* Ensures the image itself is also circular */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
-
 
 .header-text {
   text-align: center;
@@ -107,6 +106,7 @@ body::before {
   justify-content: center;
   margin-bottom: 20px;
   border-bottom: 1px solid #eee;
+  flex-wrap: wrap;
 }
 
 .tab {
@@ -122,7 +122,7 @@ body::before {
 }
 
 .tab.active::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -1px;
   left: 0;
@@ -149,7 +149,7 @@ body::before {
 
 .form-group input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 16px;
@@ -157,7 +157,7 @@ body::before {
 
 .signup-btn {
   width: 100%;
-  padding: 12px;
+  padding: 15px;
   background-color: #008040;
   color: white;
   border: none;
@@ -181,7 +181,7 @@ body::before {
 
 .divider::before,
 .divider::after {
-  content: '';
+  content: "";
   flex: 1;
   border-bottom: 1px solid #ddd;
 }
@@ -194,7 +194,7 @@ body::before {
 
 .google-btn {
   width: 100%;
-  padding: 12px;
+  padding: 15px;
   background-color: white;
   color: #666;
   border: 1px solid #ddd;
@@ -235,30 +235,129 @@ body::before {
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .logo-container {
-    width: 22vw;
-    height: 22vw;
-    max-width: 80px;
-    max-height: 80px;
-  }
-
-  .logo {
-    width: 65%;
-    height: auto;
-  }
-
-  .header-text h2 {
-    font-size: 5.5vw; /* approx 22px on 400px screen */
-  }
-
-  .header-text h3 {
-    font-size: 4.5vw; /* approx 18px on 400px screen */
+    width: 100px;
+    height: 100px;
+    top: 15px;
+    left: 15px;
   }
 
   .form-container {
-    width: 90%;
-    padding: 5vw;
-    box-sizing: border-box;
+    padding: 25px;
+  }
+
+  .school-name {
+    font-size: 24px !important;
+  }
+
+  .system-name {
+    font-size: 18px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .logo-container {
+    width: 80px;
+    height: 80px;
+    top: 10px;
+    left: 10px;
+  }
+
+  .header-text {
+    margin-top: 70px;
+  }
+
+  .header-text h2 {
+    font-size: 24px;
+  }
+
+  .header-text h3 {
+    font-size: 20px;
+  }
+
+  .form-container {
+    width: 95%;
+    padding: 20px;
+    margin: 15px auto;
+  }
+
+  .tab {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-container {
+    width: 60px;
+    height: 60px;
+    top: 10px;
+    left: 10px;
+  }
+
+  .header-text {
+    margin-top: 60px;
+  }
+
+  .header-text h2 {
+    font-size: 20px;
+  }
+
+  .header-text h3 {
+    font-size: 16px;
+  }
+
+  .form-container {
+    padding: 15px;
+  }
+
+  .school-name {
+    font-size: 20px !important;
+  }
+
+  .system-name {
+    font-size: 16px !important;
+    margin-bottom: 15px !important;
+  }
+
+  .tabs {
+    margin-bottom: 15px;
+  }
+
+  .tab {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .form-group input,
+  .signup-btn,
+  .google-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .divider span {
+    font-size: 12px;
+  }
+
+  .login-link {
+    font-size: 13px;
+  }
+}
+
+/* Fix for iOS Safari 100vh issue */
+@supports (-webkit-touch-callout: none) {
+  body,
+  .container {
+    min-height: -webkit-fill-available;
   }
 }

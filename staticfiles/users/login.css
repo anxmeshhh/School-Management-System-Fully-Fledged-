@@ -2,10 +2,10 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
-}
-
-body {
+    font-family: "Arial", sans-serif;
+  }
+  
+  body {
     min-height: 100vh;
     background: url("{% static 'images/bg_image.png' %}?v=3") no-repeat center center fixed;
     background-size: cover;
@@ -13,10 +13,10 @@ body {
     flex-direction: column;
     position: relative;
     filter: brightness(1.2); /* Increase brightness */
-}
-
-body::before {
-    content: '';
+  }
+  
+  body::before {
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -24,148 +24,143 @@ body::before {
     bottom: 0;
     background: rgba(255, 255, 255, 0.2); /* Light overlay */
     z-index: 1;
-}
-
-.logo {
+  }
+  
+  .logo {
     position: fixed;
     top: 20px;
     left: 30px;
     z-index: 2;
     background: none; /* Removes background */
     padding: 0; /* Removes extra padding */
-}
-.logo-text {
+  }
+  
+  .logo-text {
     text-align: center;
     margin-top: 10px; /* Adjust spacing */
-}
-
-.tamil-text {
-    font-family: 'Noto Sans Tamil', sans-serif;
+  }
+  
+  .tamil-text {
+    font-family: "Noto Sans Tamil", sans-serif;
     font-size: 30px;
     font-weight: bold;
     color: #000000;
-}
-
-.english-text {
-    font-family: 'Raleway', sans-serif;
+  }
+  
+  .english-text {
+    font-family: "Raleway", sans-serif;
     font-size: 30px;
     font-weight: 600;
     color: #e9e75e;
-}
-
-.logo img {
-    width: auto;
-    height: 60px; /* Adjust height for balance */
-    display: block;
-    filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.2)); /* Soft shadow for smooth blending */
-}
-
-
-.logo img {
-    width: 170px;  /* Adjust the size as needed */
+  }
+  
+  .logo img {
+    width: 170px;
     height: 170px;
-    border-radius: 70%;  /* Makes it circular */
-    object-fit: cover;  /* Ensures the image fits well */
+    border-radius: 50%;
+    object-fit: cover;
     display: block;
-    border: 3px solid white;  /* Optional: adds a border around the logo */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: soft shadow for depth */
-}
-
-.welcome-text {
-    
-     font-family: 'Anton', sans-serif;
+    border: 3px solid white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .welcome-text {
+    font-family: "Anton", sans-serif;
     font-size: 18px;
     font-weight: bold;
-}
-
-.school-name {
-    font-family: 'Raleway', sans-serif;
+  }
+  
+  .school-name {
+    font-family: "Raleway", sans-serif;
     font-size: 27px;
     font-weight: bold;
-}
-.new {
-    font-family: 'Anton', sans-serif;
+  }
+  
+  .new {
+    font-family: "Anton", sans-serif;
     font-size: 26px;
     font-weight: bold;
-}
-
-.container {
+  }
+  
+  .container {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     min-height: 100vh;
     z-index: 2;
     padding-right: 10%;
-}
-
-.login-box {
+    padding-left: 10%;
+  }
+  
+  .login-box {
     background: rgba(255, 255, 255, 0.95);
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     width: 100%;
     max-width: 400px;
-    border-top: 4px solid #006B3E;
+    border-top: 4px solid #006b3e;
     margin-left: auto;
-}
-
-h2 {
-    color: #006B3E;
+  }
+  
+  h2 {
+    color: #006b3e;
     text-align: center;
     margin-bottom: 30px;
     font-size: 1.5em;
     line-height: 1.4;
-}
-
-.input-group {
+  }
+  
+  .input-group {
     position: relative;
     margin-bottom: 30px;
     padding: 10px;
-    border: 2px solid #ddd; /* Added border */
+    border: 2px solid #ddd;
     border-radius: 5px;
     transition: all 0.3s ease;
     background: rgba(255, 255, 255, 0.8);
-}
-
-.input-group input {
+  }
+  
+  .input-group input {
     width: 100%;
     padding: 10px;
     border: none;
     outline: none;
     font-size: 16px;
     background: transparent;
-}
-
-.input-group label {
+  }
+  
+  .input-group label {
     position: absolute;
     top: 10px;
     left: 10px;
     color: #666;
     transition: 0.3s;
     pointer-events: none;
-}
-
-.input-group input:focus ~ label,
-.input-group input:valid ~ label {
+  }
+  
+  .input-group input:focus ~ label,
+  .input-group input:valid ~ label {
     top: -10px;
     font-size: 12px;
-    color: #006B3E;
-}
-
-.hover-box:hover {
-    transform: scale(1.05); /* Slight hovering effect */
+    color: #006b3e;
+  }
+  
+  .hover-box:hover {
+    transform: scale(1.05);
     box-shadow: 0 4px 10px rgba(0, 107, 62, 0.2);
-}
-
-.password-toggle {
+  }
+  
+  .password-toggle {
     position: absolute;
-    right: 0;
-    top: 10px;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     cursor: pointer;
-    color: #006B3E;
-}
-
-.btn {
+    color: #006b3e;
+  }
+  
+  .btn {
     width: 100%;
     padding: 12px;
     border: none;
@@ -177,101 +172,102 @@ h2 {
     text-decoration: none;
     display: block;
     margin-bottom: 15px;
-}
-
-.login-btn {
-    background: linear-gradient(45deg, #006B3E, #008B4F);
+  }
+  
+  .login-btn {
+    background: linear-gradient(45deg, #006b3e, #008b4f);
     color: white;
-}
-
-.login-btn:hover {
-    background: linear-gradient(45deg, #008B4F, #006B3E);
+  }
+  
+  .login-btn:hover {
+    background: linear-gradient(45deg, #008b4f, #006b3e);
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 107, 62, 0.2);
-}
-
-.signup-btn {
+  }
+  
+  .signup-btn {
     background: white;
-    color: #006B3E;
-    border: 2px solid #006B3E;
-}
-
-.signup-btn:hover {
+    color: #006b3e;
+    border: 2px solid #006b3e;
+  }
+  
+  .signup-btn:hover {
     background: #f0f8f4;
     transform: translateY(-2px);
-}
-
-.gmail-btn {
+  }
+  
+  .gmail-btn {
     background: white;
-    color: #DB4437;
-    border: 2px solid #DB4437;
+    color: #db4437;
+    border: 2px solid #db4437;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-}
-
-.gmail-btn:hover {
+  }
+  
+  .gmail-btn:hover {
     background: #fff1f0;
     transform: translateY(-2px);
-}
-
-.gmail-btn img {
+  }
+  
+  .gmail-btn img {
     width: 20px;
     height: 20px;
-}
-
-.divider {
+  }
+  
+  .divider {
     text-align: center;
     margin: 20px 0;
     position: relative;
-}
-
-.divider::before,
-.divider::after {
-    content: '';
+  }
+  
+  .divider::before,
+  .divider::after {
+    content: "";
     position: absolute;
     top: 50%;
     width: 45%;
     height: 1px;
     background-color: #ddd;
-}
-
-.divider::before {
+  }
+  
+  .divider::before {
     left: 0;
-}
-
-.divider::after {
+  }
+  
+  .divider::after {
     right: 0;
-}
-
-.support-box {
+  }
+  
+  .support-box {
     position: fixed;
     bottom: 20px;
     left: 20px;
     z-index: 2;
-}
-
-.support-btn {
+  }
+  
+  .support-btn {
     background: rgba(255, 255, 255, 0.95);
-    color: #006B3E;
+    color: #006b3e;
     padding: 10px 25px;
     border-radius: 20px;
     text-decoration: none;
     font-weight: 500;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    border: 2px solid #006B3E;
-}
-
-.support-btn:hover {
-    background: #006B3E;
+    border: 2px solid #006b3e;
+  }
+  
+  .support-btn:hover {
+    background: #006b3e;
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 107, 62, 0.2);
-}
-/* Top-right Notification Box Styles */
-.notification-box {
+  }
+  
+  /* Top-right Notification Box Styles */
+  .notification-box {
     position: fixed;
     top: 20px;
     right: 20px;
@@ -284,70 +280,228 @@ h2 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     opacity: 0.95;
     transition: opacity 0.3s ease-in-out;
-}
-
-.notification-box.success {
+  }
+  
+  .notification-box.success {
     background-color: #d4edda;
     color: #155724;
     border-left: 5px solid #28a745;
-}
-
-.notification-box.error {
+  }
+  
+  .notification-box.error {
     background-color: #f8d7da;
     color: #721c24;
     border-left: 5px solid #dc3545;
-}
-
-@media (max-width: 768px) {
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 1200px) {
+    .container {
+      padding-right: 5%;
+      padding-left: 5%;
+    }
+  
+    .logo img {
+      width: 150px;
+      height: 150px;
+    }
+  
+    .tamil-text,
+    .english-text {
+      font-size: 26px;
+    }
+  }
+  
+  @media (max-width: 992px) {
     .container {
       justify-content: center;
-      padding: 5vw;
     }
   
     .login-box {
-      margin: 0;
-      width: 90%;
-      max-width: 400px;
-      padding: 5vw;
+      margin: 120px auto 40px;
     }
   
     .logo {
       position: absolute;
-      top: 4vw;
-      left: 4vw;
-      padding: 2.5vw;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
     }
   
     .logo img {
-      width: 35vw;
-      max-width: 150px;
-      height: auto;
+      width: 120px;
+      height: 120px;
     }
   
-    h2 {
-      font-size: 5vw;
+    .tamil-text,
+    .english-text {
+      font-size: 22px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      padding: 20px;
+    }
+  
+    .login-box {
+      padding: 30px;
+      margin-top: 100px;
+    }
+  
+    .logo img {
+      width: 100px;
+      height: 100px;
+    }
+  
+    .tamil-text,
+    .english-text {
+      font-size: 20px;
+    }
+  
+    .school-name {
+      font-size: 24px;
+    }
+  
+    .new {
+      font-size: 22px;
+    }
+  
+    .btn {
+      padding: 14px; /* Larger touch target */
+    }
+  
+    .support-box {
+      bottom: 15px;
+      left: 15px;
+    }
+  
+    .support-btn {
+      padding: 8px 20px;
+      font-size: 14px;
+    }
+  
+    .notification-box {
+      top: 15px;
+      right: 15px;
+      padding: 12px 15px;
+      font-size: 14px;
     }
   }
   
   @media (max-width: 480px) {
-    .login-box {
-      width: 95%;
-      padding: 5vw;
+    .container {
+      padding: 15px;
     }
   
-    .logo {
-      padding: 2vw;
-      top: 3vw;
-      left: 3vw;
+    .login-box {
+      padding: 20px;
+      margin-top: 90px;
     }
   
     .logo img {
-      width: 30vw;
-      max-width: 120px;
+      width: 80px;
+      height: 80px;
+      border-width: 2px;
+    }
+  
+    .tamil-text,
+    .english-text {
+      font-size: 18px;
     }
   
     h2 {
-      font-size: 5vw;
+      font-size: 1.3em;
+      margin-bottom: 20px;
+    }
+  
+    .input-group {
+      padding: 8px;
+      margin-bottom: 20px;
+    }
+  
+    .input-group input {
+      padding: 8px;
+      font-size: 15px;
+    }
+  
+    .input-group label {
+      font-size: 14px;
+    }
+  
+    .input-group input:focus ~ label,
+    .input-group input:valid ~ label {
+      font-size: 11px;
+    }
+  
+    .btn {
+      padding: 12px;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+  
+    .divider {
+      margin: 15px 0;
+    }
+  
+    .support-btn {
+      padding: 6px 15px;
+      font-size: 13px;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    .logo img {
+      width: 70px;
+      height: 70px;
+    }
+  
+    .tamil-text,
+    .english-text {
+      font-size: 16px;
+    }
+  
+    .login-box {
+      padding: 15px;
+    }
+  
+    h2 {
+      font-size: 1.2em;
+    }
+  
+    .btn {
+      padding: 10px;
+      font-size: 14px;
+    }
+  }
+  
+  /* Fix for iOS Safari 100vh issue */
+  @supports (-webkit-touch-callout: none) {
+    body,
+    .container {
+      min-height: -webkit-fill-available;
+    }
+  }
+  
+  /* Improve touch targets for mobile */
+  @media (hover: none) and (pointer: coarse) {
+    .btn,
+    .input-group,
+    .support-btn {
+      cursor: default; /* Remove cursor pointer on touch devices */
+    }
+  
+    .input-group input {
+      font-size: 16px; /* Prevent zoom on input focus in iOS */
+    }
+  
+    /* Prevent hover effects on touch devices */
+    .hover-box:hover {
+      transform: none;
+    }
+  
+    .btn:active {
+      transform: translateY(-2px);
     }
   }
   
