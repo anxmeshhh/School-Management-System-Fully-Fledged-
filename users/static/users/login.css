@@ -7,8 +7,6 @@
   
   body {
     min-height: 100vh;
-    background: url("{% static 'images/bg_image.png' %}?v=3") no-repeat center center fixed;
-    background-size: cover;
     display: flex;
     flex-direction: column;
     position: relative;
