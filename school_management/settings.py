@@ -31,11 +31,8 @@ SECRET_KEY = 'django-insecure-n!jr1+fe5q-hf^*a*qxk!#y4v$8go@gtkp-uin5t_#vq$d@qbb
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '127.0.0.1', 
     'localhost', 
-    '.railway.app', 
     'manavargalsms.up.railway.app',
-    'manavargalsms.com',  # If you're still using this
     'www.manavargalsms.com',  # Add this line to allow www.manavargalsms.com
 ]
 
@@ -157,6 +154,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CSRF_TRUSTED_ORIGINS = [
     'https://manavargalsms.up.railway.app',
     'https://www.manavargalsms.com',  # Add this line
-    'https://manavargalsms.com/',  # Add this line
+
 ]
 
