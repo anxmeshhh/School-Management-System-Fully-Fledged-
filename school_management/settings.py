@@ -157,6 +157,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CSRF_TRUSTED_ORIGINS = [
     'https://manavargalsms.up.railway.app',
     'https://www.manavargalsms.com',  # Add this line
-    'https://manavargalsms.com',  # Add this line
+    'https://manavargalsms.com/',  # Add this line
 ]
 
