@@ -33,6 +33,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+
     'manavargalsms.up.railway.app',
     'www.manavargalsms.com',  # Add this line to allow www.manavargalsms.com
 ]
