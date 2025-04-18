@@ -316,4 +316,14 @@ def parent_signup(request):
 def parent_login(request):
     return render(request, "users/parent_login.html")
 
+def homework_view(request):
+    return render(request, "users/homework.html")
 
+def teacher_view(request):
+    return render(request, "users/teacher.html")
+
+def fees(request):
+    return render(request, "users/fees.html")
+
+def mark_view(request):
+    return render(request, "users/mark.html")

@@ -1,0 +1,543 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Mark Entry & Digital Progress Card</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- jsPDF CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* Custom styles for enhanced UI */
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .hidden {
+      display: none;
+    }
+    .alert {
+      transition: opacity 0.5s ease-in-out;
+    }
+    .subject-row {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .subject-row:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .nav-button {
+      transition: all 0.3s ease;
+      transform: perspective(1px) translateZ(0);
+    }
+    .nav-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      background-color: #2563eb !important;
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    .modal {
+      animation: slideIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+      .subject-row {
+        flex-direction: column;
+      }
+      .subject-row > div {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- Navigation Bar -->
+  <nav class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-10">
+    <div class="container mx-auto flex justify-between items-center flex-wrap">
+      <h1 class="text-2xl font-bold sm:text-3xl">Exam Mark Entry System</h1>
+      <div class="flex gap-2 sm:gap-4 items-center mt-2 sm:mt-0">
+        <div class="flex items-center">
+          <select id="userRole" class="border p-2 rounded focus:ring-2 focus:ring-blue-500 text-black">
+            <option value="">Select Role</option>
+            <option value="classTeacher">Class Teacher</option>
+            <option value="subjectTeacher">Subject Teacher</option>
+          </select>
+        </div>
+        <button id="showMarkEntry" class="nav-button bg-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600">Mark Entry</button>
+        <button id="showProgressCard" class="nav-button bg-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600">Progress Card</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container mx-auto p-4 sm:p-6">
+    <!-- Mark Entry Tab -->
+    <div id="markEntrySection" class="hidden bg-white p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6 fade-in">
+      <h2 class="text-lg sm:text-xl font-semibold mb-4">Mark Entry</h2>
+      <div id="alert" class="hidden p-4 mb-4 rounded"></div>
+      <div class="grid gap-4">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium">Student Name</label>
+            <input id="studentName" type="text" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter student name" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Roll Number</label>
+            <input id="rollNumber" type="text" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter roll number" required>
+          </div>
+        </div>
+        <div id="subjectSelection">
+          <!-- Dynamically populated based on role -->
+        </div>
+        <div id="marksInput" class="space-y-4">
+          <!-- Dynamically populated based on role -->
+        </div>
+        <div>
+          <button id="addSubject" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all">Add Subject</button>
+        </div>
+        <div class="flex gap-4">
+          <button id="saveMarks" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all">Save Marks</button>
+          <button id="clearForm" class="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition-all">Clear Form</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Card Tab -->
+    <div id="progressCardSection" class="hidden bg-white p-4 sm:p-6 rounded-lg shadow-md fade-in">
+      <h2 class="text-lg sm:text-xl font-semibold mb-4">Digital Progress Card</h2>
+      <div class="mb-4">
+        <label class="block text-sm font-medium">Select Student</label>
+        <select id="studentSelect" class="border p-2 rounded w-full max-w-xs focus:ring-2 focus:ring-blue-500">
+          <option value="">Select Student</option>
+        </select>
+      </div>
+      <div id="progressCard" class="hidden p-4 border rounded">
+        <h3 id="studentNameCard" class="text-lg font-semibold"></h3>
+        <p id="rollNumberCard" class="text-sm text-gray-600"></p>
+        <table class="w-full mt-4 border-collapse">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border p-2 text-left">Subject</th>
+              <th class="border p-2 text-left">Marks</th>
+              <th class="border p-2 text-left">Max Marks</th>
+            </tr>
+          </thead>
+          <tbody id="marksTable"></tbody>
+        </table>
+        <p id="totalMarks" class="mt-4"></p>
+        <p id="percentage"></p>
+        <p id="status" class="font-semibold"></p>
+        <button id="downloadPDF" class="mt-4 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all">Download Progress Card</button>
+      </div>
+    </div>
+
+    <!-- Add Subject Modal -->
+    <div id="addSubjectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full modal">
+        <h3 class="text-lg font-semibold mb-4">Add New Subject</h3>
+        <div class="mb-4">
+          <label class="block text-sm font-medium">Subject Name</label>
+          <input id="newSubjectName" type="text" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter subject name" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium">Maximum Marks</label>
+          <input id="newMaxMarks" type="number" min="1" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter max marks" required>
+        </div>
+        <div class="flex gap-4">
+          <button id="submitSubject" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all">Add Subject</button>
+          <button id="cancelSubject" class="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition-all">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+  <script>
+    // In-memory storage for student marks and subjects
+    let students = [];
+    let subjects = ['Math', 'Science', 'English', 'History', 'Geography'];
+    let maxMarks = { 'Math': 100, 'Science': 100, 'English': 100, 'History': 100, 'Geography': 100 };
+
+    // DOM Elements
+    const userRole = document.getElementById('userRole');
+    const markEntrySection = document.getElementById('markEntrySection');
+    const progressCardSection = document.getElementById('progressCardSection');
+    const studentNameInput = document.getElementById('studentName');
+    const rollNumberInput = document.getElementById('rollNumber');
+    const subjectSelection = document.getElementById('subjectSelection');
+    const marksInput = document.getElementById('marksInput');
+    const addSubjectBtn = document.getElementById('addSubject');
+    const saveMarksBtn = document.getElementById('saveMarks');
+    const clearFormBtn = document.getElementById('clearForm');
+    const studentSelect = document.getElementById('studentSelect');
+    const progressCard = document.getElementById('progressCard');
+    const studentNameCard = document.getElementById('studentNameCard');
+    const rollNumberCard = document.getElementById('rollNumberCard');
+    const marksTable = document.getElementById('marksTable');
+    const totalMarks = document.getElementById('totalMarks');
+    const percentage = document.getElementById('percentage');
+    const status = document.getElementById('status');
+    const downloadPDFBtn = document.getElementById('downloadPDF');
+    const alertBox = document.getElementById('alert');
+    const showMarkEntry = document.getElementById('showMarkEntry');
+    const showProgressCard = document.getElementById('showProgressCard');
+    const addSubjectModal = document.getElementById('addSubjectModal');
+    const newSubjectName = document.getElementById('newSubjectName');
+    const newMaxMarks = document.getElementById('newMaxMarks');
+    const submitSubject = document.getElementById('submitSubject');
+    const cancelSubject = document.getElementById('cancelSubject');
+
+    // Show alert message
+    function showAlert(message, type = 'success') {
+      alertBox.classList.remove('hidden', 'bg-green-100', 'bg-red-100');
+      alertBox.classList.add(type === 'success' ? 'bg-green-100' : 'bg-red-100');
+      alertBox.textContent = message;
+      setTimeout(() => {
+        alertBox.classList.add('hidden');
+      }, 3000);
+    }
+
+    // Update form based on role
+    userRole.addEventListener('change', () => {
+      const role = userRole.value;
+      if (role) {
+        markEntrySection.classList.remove('hidden');
+        progressCardSection.classList.add('hidden');
+        renderMarkEntryForm(role);
+      } else {
+        markEntrySection.classList.add('hidden');
+      }
+    });
+
+    // Render mark entry form based on role
+    function renderMarkEntryForm(role) {
+      subjectSelection.innerHTML = '';
+      marksInput.innerHTML = '';
+
+      if (role === 'subjectTeacher') {
+        subjectSelection.innerHTML = `
+          <div>
+            <label class="block text-sm font-medium">Subject</label>
+            <select id="subject" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" required>
+              <option value="">Select Subject</option>
+              ${subjects.map(sub => `<option value="${sub}">${sub}</option>`).join('')}
+            </select>
+          </div>
+        `;
+        marksInput.innerHTML = `
+          <div class="subject-row flex flex-col sm:flex-row gap-4">
+            <div class="flex-1">
+              <label class="block text-sm font-medium">Marks</label>
+              <input id="marks" type="number" min="0" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter marks" required>
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium">Max Marks</label>
+              <input id="maxMarks" type="number" min="1" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter max marks" value="${maxMarks[document.getElementById('subject')?.value] || 100}" required>
+            </div>
+          </div>
+        `;
+        document.getElementById('subject').addEventListener('change', () => {
+          const subject = document.getElementById('subject').value;
+          document.getElementById('maxMarks').value = maxMarks[subject] || 100;
+        });
+      } else {
+        subjects.forEach(sub => {
+          marksInput.innerHTML += `
+            <div class="subject-row flex flex-col sm:flex-row gap-4">
+              <div class="flex-1">
+                <label class="block text-sm font-medium">${sub} Marks</label>
+                <input id="${sub}-marks" type="number" min="0" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter ${sub} marks" required>
+              </div>
+              <div class="flex-1">
+                <label class="block text-sm font-medium">${sub} Max Marks</label>
+                <input id="${sub}-maxMarks" type="number" min="1" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter max marks" value="${maxMarks[sub]}" required>
+              </div>
+            </div>
+          `;
+        });
+      }
+    }
+
+    // Add new subject modal
+    addSubjectBtn.addEventListener('click', () => {
+      addSubjectModal.classList.remove('hidden');
+      newSubjectName.value = '';
+      newMaxMarks.value = '';
+    });
+
+    cancelSubject.addEventListener('click', () => {
+      addSubjectModal.classList.add('hidden');
+    });
+
+    submitSubject.addEventListener('click', () => {
+      const subjectName = newSubjectName.value.trim();
+      const maxMark = parseInt(newMaxMarks.value);
+      if (subjectName && !subjects.includes(subjectName)) {
+        if (isNaN(maxMark) || maxMark < 1) {
+          showAlert('Please enter a valid maximum mark', 'error');
+          return;
+        }
+        subjects.push(subjectName);
+        maxMarks[subjectName] = maxMark;
+        showAlert(`Subject ${subjectName} added with max marks ${maxMark}`);
+        renderMarkEntryForm(userRole.value);
+        addSubjectModal.classList.add('hidden');
+      } else {
+        showAlert('Please enter a valid, unique subject name', 'error');
+      }
+    });
+
+    // Save marks
+    saveMarksBtn.addEventListener('click', () => {
+      const role = userRole.value;
+      const name = studentNameInput.value.trim();
+      const rollNumber = rollNumberInput.value.trim();
+
+      if (!name || !rollNumber) {
+        showAlert('Please enter student name and roll number', 'error');
+        return;
+      }
+
+      if (role === 'subjectTeacher') {
+        const subject = document.getElementById('subject').value;
+        const marks = parseInt(document.getElementById('marks').value);
+        const maxMark = parseInt(document.getElementById('maxMarks').value);
+
+        if (!subject || isNaN(marks) || marks < 0 || isNaN(maxMark) || maxMark < 1 || marks > maxMark) {
+          showAlert('Please select a subject and enter valid marks (0 to max marks) and max marks', 'error');
+          return;
+        }
+
+        let student = students.find(s => s.name === name && s.rollNumber === rollNumber);
+        if (!student) {
+          student = { name, rollNumber, marks: {}, maxMarks: {} };
+          students.push(student);
+        }
+        student.marks[subject] = marks;
+        student.maxMarks[subject] = maxMark;
+        maxMarks[subject] = maxMark;
+      } else {
+        const marks = {};
+        const studentMaxMarks = {};
+        let valid = true;
+        subjects.forEach(sub => {
+          const mark = parseInt(document.getElementById(`${sub}-marks`).value);
+          const maxMark = parseInt(document.getElementById(`${sub}-maxMarks`).value);
+          if (isNaN(mark) || mark < 0 || isNaN(maxMark) || maxMark < 1 || mark > maxMark) {
+            valid = false;
+          } else {
+            marks[sub] = mark;
+            studentMaxMarks[sub] = maxMark;
+            maxMarks[sub] = maxMark;
+          }
+        });
+
+        if (!valid) {
+          showAlert('Please enter valid marks (0 to max marks) and max marks for all subjects', 'error');
+          return;
+        }
+
+        let student = students.find(s => s.name === name && s.rollNumber === rollNumber);
+        if (!student) {
+          student = { name, rollNumber, marks: {}, maxMarks: {} };
+          students.push(student);
+        }
+        student.marks = { ...student.marks, ...marks };
+        student.maxMarks = { ...student.maxMarks, ...studentMaxMarks };
+      }
+
+      showAlert('Marks saved successfully');
+      updateStudentSelect();
+      clearForm();
+    });
+
+    // Clear form
+    clearFormBtn.addEventListener('click', clearForm);
+    function clearForm() {
+      studentNameInput.value = '';
+      rollNumberInput.value = '';
+      if (userRole.value === 'subjectTeacher') {
+        document.getElementById('subject').value = '';
+        document.getElementById('marks').value = '';
+        document.getElementById('maxMarks').value = '';
+      } else {
+        subjects.forEach(sub => {
+          document.getElementById(`${sub}-marks`).value = '';
+          document.getElementById(`${sub}-maxMarks`).value = maxMarks[sub];
+        });
+      }
+    }
+
+    // Update student select dropdown
+    function updateStudentSelect() {
+      studentSelect.innerHTML = '<option value="">Select Student</option>';
+      students.forEach(student => {
+        studentSelect.innerHTML += `<option value="${student.name}|${student.rollNumber}">${student.name} (Roll: ${student.rollNumber})</option>`;
+      });
+    }
+
+    // Show progress card
+    studentSelect.addEventListener('change', () => {
+      const value = studentSelect.value;
+      if (value) {
+        const [name, rollNumber] = value.split('|');
+        const student = students.find(s => s.name === name && s.rollNumber === rollNumber);
+        if (student) {
+          progressCard.classList.remove('hidden');
+          studentNameCard.textContent = student.name;
+          rollNumberCard.textContent = `Roll Number: ${student.rollNumber}`;
+          marksTable.innerHTML = '';
+          let total = 0;
+          let totalMax = 0;
+          let count = 0;
+          let passed = true;
+
+          subjects.forEach(sub => {
+            const mark = student.marks[sub] || 0;
+            const maxMark = student.maxMarks[sub] || maxMarks[sub] || 100;
+            if (student.marks[sub]) {
+              total += mark;
+              totalMax += maxMark;
+              count++;
+              if (mark < 0.33 * maxMark) passed = false;
+            }
+            marksTable.innerHTML += `
+              <tr>
+                <td class="border p-2">${sub}</td>
+                <td class="border p-2">${mark}</td>
+                <td class="border p-2">${maxMark}</td>
+              </tr>
+            `;
+          });
+
+          totalMarks.textContent = `Total Marks: ${total}/${totalMax}`;
+          const percent = totalMax > 0 ? (total / totalMax * 100).toFixed(2) : 0;
+          percentage.textContent = `Percentage: ${percent}%`;
+          status.textContent = `Status: ${passed && count === subjects.length ? 'Pass' : 'Fail'}`;
+        }
+      } else {
+        progressCard.classList.add('hidden');
+      }
+    });
+
+    // Download progress card as PDF
+    downloadPDFBtn.addEventListener('click', () => {
+      const value = studentSelect.value;
+      if (value) {
+        const [name, rollNumber] = value.split('|');
+        const student = students.find(s => s.name === name && s.rollNumber === rollNumber);
+        if (student) {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+
+          // Colors based on the provided image
+          const headerColor = '#1e3a8a'; // Blue header
+          const tableHeaderColor = '#10b981'; // Green table header
+          const rowColor1 = '#ffffff'; // White row
+          const rowColor2 = '#e5e7eb'; // Light gray row
+          const summaryColor = '#f59e0b'; // Orange summary
+          const borderColor = '#1e3a8a'; // Blue border
+
+          // Header
+          doc.setFillColor(headerColor);
+          doc.rect(10, 10, 190, 20, 'F');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(16);
+          doc.setTextColor('#ffffff');
+          doc.text('Progress Card', 20, 20);
+
+          // Academic Year
+          doc.setFontSize(10);
+          doc.text('Exam Mark Entry System', 150, 15);
+          doc.text('Academic Year: 2024-2025', 150, 20);
+
+          // Student Details
+          doc.setTextColor('#000000');
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'normal');
+          doc.text(`Student Name: ${student.name}`, 20, 40);
+          doc.text(`Roll Number: ${student.rollNumber}`, 20, 50);
+          doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 60);
+
+          // Table Header
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'bold');
+          let y = 70;
+          doc.setFillColor(tableHeaderColor);
+          doc.rect(20, y, 170, 8, 'F');
+          doc.setTextColor('#ffffff');
+          doc.text('Subject', 22, y + 6);
+          doc.text('Marks', 100, y + 6);
+          doc.text('Max Marks', 140, y + 6);
+          y += 8;
+          doc.setDrawColor(borderColor);
+          doc.setLineWidth(0.2);
+          doc.line(20, y, 190, y);
+
+          // Table Data
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor('#000000');
+          let total = 0;
+          let totalMax = 0;
+          let count = 0;
+          let passed = true;
+
+          subjects.forEach((sub, index) => {
+            const mark = student.marks[sub] || 0;
+            const maxMark = student.maxMarks[sub] || maxMarks[sub] || 100;
+            if (student.marks[sub]) {
+              total += mark;
+              totalMax += maxMark;
+              count++;
+              if (mark < 0.33 * maxMark) passed = false;
+            }
+            y += 8;
+            doc.setFillColor(index % 2 === 0 ? rowColor1 : rowColor2);
+            doc.rect(20, y, 170, 8, 'F');
+            doc.text(sub, 22, y + 6);
+            doc.text(mark.toString(), 100, y + 6);
+            doc.text(maxMark.toString(), 140, y + 6);
+            doc.line(20, y + 8, 190, y + 8);
+          });
+
+          // Summary Section
+          y += 10;
+          doc.setFillColor(summaryColor);
+          doc.rect(20, y, 170, 20, 'F');
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor('#ffffff');
+          doc.text(`Total Marks: ${total}/${totalMax}`, 22, y + 8);
+          const percent = totalMax > 0 ? (total / totalMax * 100).toFixed(2) : 0;
+          doc.text(`Percentage: ${percent}%`, 100, y + 8);
+          doc.text(`Status: ${passed && count === subjects.length ? 'Pass' : 'Fail'}`, 22, y + 16);
+          doc.text(passed && count === subjects.length ? 'Congratulations!' : 'Needs Improvement', 100, y + 16);
+
+          // Download PDF
+          doc.save(`${student.name}_ProgressCard.pdf`);
+        }
+      }
+    });
+
+    // Navigation
+    showMarkEntry.addEventListener('click', () => {
+      markEntrySection.classList.remove('hidden');
+      progressCardSection.classList.add('hidden');
+    });
+
+    showProgressCard.addEventListener('click', () => {
+      markEntrySection.classList.add('hidden');
+      progressCardSection.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
