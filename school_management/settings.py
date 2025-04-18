@@ -157,8 +157,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CSRF_TRUSTED_ORIGINS = [
-    'https://manavargalsms.up.railway.app',
-    'https://www.manavargalsms.com',  # Add this line
-
+    'https://manavargalsms.up.railway.app',  # Railway app URL
+    'https://www.manavargalsms.com',         # Your domain with www
+    'https://manavargalsms.com',             # Your domain without www
 ]
+
 
