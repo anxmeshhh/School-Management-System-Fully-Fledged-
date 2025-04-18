@@ -31,7 +31,8 @@ SECRET_KEY = 'django-insecure-n!jr1+fe5q-hf^*a*qxk!#y4v$8go@gtkp-uin5t_#vq$d@qbb
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'localhost', 
+    'localhost',
+    '127.0.0.1',
     'manavargalsms.up.railway.app',
     'www.manavargalsms.com',  # Add this line to allow www.manavargalsms.com
 ]
