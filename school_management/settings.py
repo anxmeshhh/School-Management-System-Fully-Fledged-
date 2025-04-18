@@ -39,10 +39,15 @@ ALLOWED_HOSTS = [
     'www.manavargalsms.com',  # Add this line to allow www.manavargalsms.com
 ]
 
-def get_host(request):
-    if not request.get_host().startswith('www.'):
-        return redirect('http://www.' + request.get_host(), permanent=True)
+class WwwRedirectMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
 
+    def __call__(self, request):
+        if not request.get_host().startswith('www.'):
+            return redirect('https://www.' + request.get_host(), permanent=True)
+        response = self.get_response(request)
+        return response
 
 # Application definition
 
@@ -59,6 +64,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this line
+    'users.middleware.WwwRedirectMiddleware'
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
