@@ -34,14 +34,20 @@
   --radius-full: 50%;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
 body {
   min-height: 100vh;
-  background: url("{% static 'images/bg_image.png' %}?v=3") no-repeat center center fixed;
-  background-size: cover;
   display: flex;
   flex-direction: column;
   position: relative;
   filter: brightness(1.2);
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  touch-action: pan-y; /* Improve touch scrolling */
 }
 
 body::before {
@@ -63,15 +69,16 @@ body::before {
   z-index: 2;
   background: none;
   padding: 0;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .logo img {
-  width: clamp(80px, 15vw, 170px);
-  height: clamp(80px, 15vw, 170px);
+  width: clamp(70px, 12vw, 120px); /* Reduced size for better mobile fit */
+  height: clamp(70px, 12vw, 120px);
   border-radius: 50%;
   object-fit: cover;
-  display: block;
   border: 3px solid white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -83,33 +90,33 @@ body::before {
 
 .tamil-text {
   font-family: "Noto Sans Tamil", sans-serif;
-  font-size: clamp(18px, 4vw, 30px);
+  font-size: clamp(16px, 3.5vw, 24px);
   font-weight: bold;
   color: #000000;
 }
 
 .english-text {
   font-family: "Raleway", sans-serif;
-  font-size: clamp(18px, 4vw, 30px);
+  font-size: clamp(16px, 3.5vw, 24px);
   font-weight: 600;
   color: #e9e75e;
 }
 
 .welcome-text {
   font-family: "Anton", sans-serif;
-  font-size: clamp(14px, 3vw, 18px);
+  font-size: clamp(12px, 2.5vw, 16px);
   font-weight: bold;
 }
 
 .school-name {
   font-family: "Raleway", sans-serif;
-  font-size: clamp(18px, 4vw, 27px);
+  font-size: clamp(16px, 3.5vw, 22px);
   font-weight: bold;
 }
 
 .new {
   font-family: "Anton", sans-serif;
-  font-size: clamp(18px, 4vw, 26px);
+  font-size: clamp(16px, 3.5vw, 22px);
   font-weight: bold;
 }
 
@@ -122,8 +129,8 @@ body::before {
   z-index: 2;
   padding: clamp(10px, 5vw, 40px);
   width: 100%;
-  /* Add left padding to avoid overlap with logo */
-  padding-left: max(clamp(10px, 5vw, 40px), 200px);
+  padding-left: max(clamp(10px, 5vw, 40px), 150px); /* Adjusted for logo */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 /* Login Box Styles */
@@ -362,7 +369,7 @@ h2 {
 @media (max-width: 992px) {
   .container {
     padding: 5vw;
-    padding-left: max(5vw, 180px);
+    padding-left: max(5vw, 140px); /* Adjusted for smaller logo */
   }
 
   .login-box {
@@ -372,26 +379,27 @@ h2 {
 
 @media (max-width: 768px) {
   .logo {
-    position: absolute;
-    top: 15px;
-    left: 15px;
+    position: fixed; /* Ensure logo stays at top-left */
+    top: 10px;
+    left: 10px;
     transform: none;
   }
 
   .container {
     padding: 20px;
-    padding-top: 130px; /* Space for logo */
-    padding-bottom: 70px; /* Space for support button */
-    padding-left: 20px; /* Reset left padding */
+    padding-top: 120px; /* Adjusted for logo */
+    padding-bottom: 80px; /* Space for support button */
+    padding-left: 20px;
     min-height: 100vh;
     height: auto;
     justify-content: center;
+    overflow-y: auto; /* Ensure scrollability */
   }
 
   .support-box {
     width: 100%;
     left: 0;
-    bottom: 15px;
+    bottom: 10px;
     display: flex;
     justify-content: center;
   }
@@ -404,7 +412,7 @@ h2 {
 @media (max-width: 480px) {
   .container {
     padding: 15px;
-    padding-top: 110px;
+    padding-top: 100px; /* Adjusted for smaller logo */
     padding-bottom: 60px;
   }
 
@@ -422,20 +430,20 @@ h2 {
   }
 
   .logo img {
-    width: 70px;
-    height: 70px;
+    width: 60px; /* Smaller logo for very small screens */
+    height: 60px;
   }
 
   .tamil-text,
   .english-text {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
 
 /* For very small screens */
 @media (max-width: 320px) {
   .container {
-    padding-top: 100px;
+    padding-top: 90px;
   }
 
   .login-box {
@@ -466,15 +474,21 @@ h2 {
     padding: 8px;
     margin-bottom: 8px;
   }
+
+  .logo img {
+    width: 50px;
+    height: 50px;
+  }
 }
 
 /* For landscape orientation on mobile */
 @media (max-height: 500px) and (orientation: landscape) {
   .container {
     padding: 15px;
-    padding-left: 100px; /* Space for logo */
+    padding-left: 80px; /* Adjusted for logo */
     min-height: auto;
     height: auto;
+    overflow-y: auto;
   }
 
   .logo {
@@ -485,8 +499,8 @@ h2 {
   }
 
   .logo img {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
   }
 
   .logo-text {
@@ -541,6 +555,10 @@ h2 {
   * {
     transition: none !important;
     animation: none !important;
+  }
+
+  html {
+    scroll-behavior: auto; /* Disable smooth scrolling for accessibility */
   }
 }
 
