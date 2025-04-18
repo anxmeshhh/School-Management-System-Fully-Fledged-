@@ -35,10 +35,13 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 
     'manavargalsms.up.railway.app',
+    'manavargalsms.com',
     'www.manavargalsms.com',  # Add this line to allow www.manavargalsms.com
 ]
 
-
+def get_host(request):
+    if not request.get_host().startswith('www.'):
+        return redirect('http://www.' + request.get_host(), permanent=True)
 
 
 # Application definition
