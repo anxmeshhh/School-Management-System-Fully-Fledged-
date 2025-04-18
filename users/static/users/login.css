@@ -66,11 +66,13 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: max(80px, min(15vw, 170px));
 }
 
 .logo-text {
   text-align: center;
   margin-top: max(5px, min(2vw, 10px));
+  width: 100%;
 }
 
 .tamil-text {
@@ -95,6 +97,7 @@ body::before {
   display: block;
   border: 3px solid var(--white);
   box-shadow: var(--shadow-md);
+  margin: 0 auto;
 }
 
 .welcome-text {
@@ -383,6 +386,7 @@ h2 {
     top: 15px;
     left: 50%;
     transform: translateX(-50%);
+    width: auto;
   }
 
   .support-box {
@@ -467,32 +471,27 @@ h2 {
 
 /* For landscape orientation on mobile */
 @media (max-height: 500px) and (orientation: landscape) {
-  .container {
-    padding: 15px;
-    min-height: auto;
-    height: auto;
-  }
-
   .logo {
     position: relative;
     top: auto;
     left: auto;
     transform: none;
     margin: 10px auto 20px;
-    text-align: center;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    width: auto;
   }
 
   .logo img {
     width: 50px;
     height: 50px;
+    margin: 0 auto;
   }
 
   .logo-text {
-    margin-top: 0;
+    margin-top: 5px;
+    width: 100%;
   }
 
   .login-box {
