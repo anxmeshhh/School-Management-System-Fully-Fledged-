@@ -55,66 +55,61 @@ body::before {
   z-index: 1;
 }
 
-/* Logo Styles */
+/* Logo Styles - Positioned at top left */
 .logo {
   position: fixed;
-  top: max(10px, min(3vw, 20px));
-  left: max(15px, min(3vw, 30px));
+  top: 10px;
+  left: 15px;
   z-index: 2;
   background: none;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: max(80px, min(15vw, 170px));
+  display: block;
+}
+
+.logo img {
+  width: clamp(80px, 15vw, 170px);
+  height: clamp(80px, 15vw, 170px);
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  border: 3px solid white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .logo-text {
   text-align: center;
-  margin-top: max(5px, min(2vw, 10px));
-  width: 100%;
+  margin-top: 5px;
 }
 
 .tamil-text {
   font-family: "Noto Sans Tamil", sans-serif;
-  font-size: max(18px, min(4vw, 30px));
+  font-size: clamp(18px, 4vw, 30px);
   font-weight: bold;
   color: #000000;
 }
 
 .english-text {
   font-family: "Raleway", sans-serif;
-  font-size: max(18px, min(4vw, 30px));
+  font-size: clamp(18px, 4vw, 30px);
   font-weight: 600;
   color: #e9e75e;
 }
 
-.logo img {
-  width: max(80px, min(15vw, 170px));
-  height: max(80px, min(15vw, 170px));
-  border-radius: var(--radius-full);
-  object-fit: cover;
-  display: block;
-  border: 3px solid var(--white);
-  box-shadow: var(--shadow-md);
-  margin: 0 auto;
-}
-
 .welcome-text {
   font-family: "Anton", sans-serif;
-  font-size: max(14px, min(3vw, 18px));
+  font-size: clamp(14px, 3vw, 18px);
   font-weight: bold;
 }
 
 .school-name {
   font-family: "Raleway", sans-serif;
-  font-size: max(18px, min(4vw, 27px));
+  font-size: clamp(18px, 4vw, 27px);
   font-weight: bold;
 }
 
 .new {
   font-family: "Anton", sans-serif;
-  font-size: max(18px, min(4vw, 26px));
+  font-size: clamp(18px, 4vw, 26px);
   font-weight: bold;
 }
 
@@ -125,14 +120,16 @@ body::before {
   align-items: center;
   min-height: 100vh;
   z-index: 2;
-  padding: max(10px, min(5vw, 40px));
+  padding: clamp(10px, 5vw, 40px);
   width: 100%;
+  /* Add left padding to avoid overlap with logo */
+  padding-left: max(clamp(10px, 5vw, 40px), 200px);
 }
 
 /* Login Box Styles */
 .login-box {
   background: var(--light-bg);
-  padding: max(20px, min(5vw, 40px));
+  padding: clamp(20px, 5vw, 40px);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   width: 100%;
@@ -144,16 +141,16 @@ body::before {
 h2 {
   color: var(--primary-color);
   text-align: center;
-  margin-bottom: max(15px, min(4vw, 30px));
-  font-size: max(1.2em, min(4vw, 1.5em));
+  margin-bottom: clamp(15px, 4vw, 30px);
+  font-size: clamp(1.2em, 4vw, 1.5em);
   line-height: 1.4;
 }
 
 /* Form Styles */
 .input-group {
   position: relative;
-  margin-bottom: max(20px, min(4vw, 30px));
-  padding: max(8px, min(2vw, 10px));
+  margin-bottom: clamp(20px, 4vw, 30px);
+  padding: clamp(8px, 2vw, 10px);
   border: 2px solid var(--border-color);
   border-radius: var(--radius-sm);
   transition: all 0.3s ease;
@@ -162,27 +159,27 @@ h2 {
 
 .input-group input {
   width: 100%;
-  padding: max(8px, min(2vw, 10px));
+  padding: clamp(8px, 2vw, 10px);
   border: none;
   outline: none;
-  font-size: max(14px, min(3vw, 16px));
+  font-size: clamp(14px, 3vw, 16px);
   background: transparent;
 }
 
 .input-group label {
   position: absolute;
-  top: max(8px, min(2vw, 10px));
-  left: max(8px, min(2vw, 10px));
+  top: clamp(8px, 2vw, 10px);
+  left: clamp(8px, 2vw, 10px);
   color: var(--text-color);
   transition: 0.3s;
   pointer-events: none;
-  font-size: max(14px, min(3vw, 16px));
+  font-size: clamp(14px, 3vw, 16px);
 }
 
 .input-group input:focus ~ label,
 .input-group input:valid ~ label {
   top: -10px;
-  font-size: max(10px, min(2vw, 12px));
+  font-size: clamp(10px, 2vw, 12px);
   color: var(--primary-color);
   background: var(--white);
   padding: 0 5px;
@@ -195,27 +192,27 @@ h2 {
 
 .password-toggle {
   position: absolute;
-  right: max(8px, min(2vw, 10px));
+  right: clamp(8px, 2vw, 10px);
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
   color: var(--primary-color);
-  font-size: max(14px, min(3vw, 16px));
+  font-size: clamp(14px, 3vw, 16px);
 }
 
 /* Button Styles */
 .btn {
   width: 100%;
-  padding: max(10px, min(2.5vw, 12px));
+  padding: clamp(10px, 2.5vw, 12px);
   border: none;
   border-radius: var(--radius-lg);
   cursor: pointer;
-  font-size: max(14px, min(3vw, 16px));
+  font-size: clamp(14px, 3vw, 16px);
   transition: 0.3s;
   text-align: center;
   text-decoration: none;
   display: block;
-  margin-bottom: max(10px, min(3vw, 15px));
+  margin-bottom: clamp(10px, 3vw, 15px);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -250,7 +247,7 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: max(5px, min(2vw, 10px));
+  gap: clamp(5px, 2vw, 10px);
 }
 
 .gmail-btn:hover,
@@ -260,14 +257,14 @@ h2 {
 }
 
 .gmail-btn img {
-  width: max(16px, min(3vw, 20px));
-  height: max(16px, min(3vw, 20px));
+  width: clamp(16px, 3vw, 20px);
+  height: clamp(16px, 3vw, 20px);
 }
 
 /* Divider Styles */
 .divider {
   text-align: center;
-  margin: max(15px, min(4vw, 20px)) 0;
+  margin: clamp(15px, 4vw, 20px) 0;
   position: relative;
 }
 
@@ -292,22 +289,22 @@ h2 {
 /* Support Box Styles */
 .support-box {
   position: fixed;
-  bottom: max(10px, min(3vw, 20px));
-  left: max(10px, min(3vw, 20px));
+  bottom: clamp(10px, 3vw, 20px);
+  left: clamp(10px, 3vw, 20px);
   z-index: 2;
 }
 
 .support-btn {
   background: var(--light-bg);
   color: var(--primary-color);
-  padding: max(8px, min(2vw, 10px)) max(15px, min(4vw, 25px));
+  padding: clamp(8px, 2vw, 10px) clamp(15px, 4vw, 25px);
   border-radius: var(--radius-lg);
   text-decoration: none;
   font-weight: 500;
   box-shadow: var(--shadow-sm);
   transition: all 0.3s ease;
   border: 2px solid var(--primary-color);
-  font-size: max(12px, min(3vw, 14px));
+  font-size: clamp(12px, 3vw, 14px);
   white-space: nowrap;
   display: inline-block;
 }
@@ -323,12 +320,12 @@ h2 {
 /* Notification Styles */
 .notification-box {
   position: fixed;
-  top: max(10px, min(3vw, 20px));
-  right: max(10px, min(3vw, 20px));
+  top: clamp(10px, 3vw, 20px);
+  right: clamp(10px, 3vw, 20px);
   z-index: 1000;
-  padding: max(10px, min(3vw, 15px)) max(15px, min(3vw, 20px));
+  padding: clamp(10px, 3vw, 15px) clamp(15px, 3vw, 20px);
   border-radius: var(--radius-md);
-  font-size: max(14px, min(3vw, 16px));
+  font-size: clamp(14px, 3vw, 16px);
   font-family: Arial, sans-serif;
   font-weight: 600;
   box-shadow: var(--shadow-md);
@@ -365,6 +362,7 @@ h2 {
 @media (max-width: 992px) {
   .container {
     padding: 5vw;
+    padding-left: max(5vw, 180px);
   }
 
   .login-box {
@@ -373,20 +371,21 @@ h2 {
 }
 
 @media (max-width: 768px) {
+  .logo {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    transform: none;
+  }
+
   .container {
     padding: 20px;
     padding-top: 130px; /* Space for logo */
     padding-bottom: 70px; /* Space for support button */
+    padding-left: 20px; /* Reset left padding */
     min-height: 100vh;
     height: auto;
-  }
-
-  .logo {
-    position: absolute;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: auto;
+    justify-content: center;
   }
 
   .support-box {
@@ -471,27 +470,27 @@ h2 {
 
 /* For landscape orientation on mobile */
 @media (max-height: 500px) and (orientation: landscape) {
+  .container {
+    padding: 15px;
+    padding-left: 100px; /* Space for logo */
+    min-height: auto;
+    height: auto;
+  }
+
   .logo {
-    position: relative;
-    top: auto;
-    left: auto;
+    position: fixed;
+    top: 10px;
+    left: 10px;
     transform: none;
-    margin: 10px auto 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: auto;
   }
 
   .logo img {
-    width: 50px;
-    height: 50px;
-    margin: 0 auto;
+    width: 60px;
+    height: 60px;
   }
 
   .logo-text {
     margin-top: 5px;
-    width: 100%;
   }
 
   .login-box {
