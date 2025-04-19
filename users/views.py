@@ -56,7 +56,7 @@ def signup_view(request):
     return render(request, "users/index.html")
 
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import connection
 
@@ -67,22 +67,33 @@ def login_view(request):
 
         # Check user credentials in MySQL
         with connection.cursor() as cursor:
-            cursor.execute("SELECT id FROM users WHERE username = %s AND password = %s", (username, password))
+            cursor.execute("SELECT id, username FROM users WHERE username = %s AND password = %s", (username, password))
             user = cursor.fetchone()
 
         if user:
             request.session["user_id"] = user[0]  # Store user ID in session
-            return HttpResponse("Success")  
-        
+            request.session["username"] = user[1]  # Store username in session
             
+            # Send success message with the username
+            return HttpResponse("Success") 
 
+        # If credentials are invalid, send error message
         return HttpResponse("Invalid credentials!")  
 
     return render(request, "users/login.html")
 
 
+ 
+
+from django.shortcuts import render
+
 def dashboard_view(request):
-    return render(request, "users/dashboard.html")
+    # Get the username from the session
+    username = request.session.get("username", "Guest")  # Default to "Guest" if not logged in
+
+    # Pass the username to the template
+    return render(request, "users/dashboard.html", {"username": username})
+
 
 
 
