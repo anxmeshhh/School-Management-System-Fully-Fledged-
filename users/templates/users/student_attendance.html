@@ -1,0 +1,428 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Student Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f7fafc 30%, #d4f4e2 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%2322c55e" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
+            font-family: 'Poppins', sans-serif;
+            animation: backgroundFade 10s ease-in-out infinite alternate;
+        }
+        @keyframes backgroundFade {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        .main-content {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(90deg, #15803d, #22c55e);
+            color: #ffffff;
+            padding: 2rem;
+            border-radius: 16px 16px 0 0;
+            text-align: center;
+            position: relative;
+            border-bottom: 4px solid #a3e635;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"%3E%3Cpath d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113.64,28.06,1200,56.86V0Z" fill="%23ffffff"/%3E%3C/svg%3E');
+            background-size: cover;
+        }
+        .logo-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .logo-img {
+            height: 6cm;
+            width: 6cm;
+            object-fit: contain;
+            border-radius: 50%;
+            border: 4px solid #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+        .logo-img:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
+        .button {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 48px;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+        .button:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+        .icon {
+            margin-right: 0.75rem;
+        }
+        .status-present { color: #15803d; font-weight: 600; }
+        .status-absent { color: #b91c1c; font-weight: 600; }
+        .status-leave { color: #ca8a04; font-weight: 600; }
+        .attendance-table {
+            max-height: 450px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 2px solid #22c55e;
+            background-color: #f0fdf4;
+            display: block;
+        }
+        table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            table-layout: fixed;
+        }
+        th, td {
+            border: 1px solid #22c55e;
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        th {
+            background-color: #d4f4e2;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 700;
+            color: #15803d;
+        }
+        td {
+            color: #1f2937;
+            transition: background-color 0.2s ease;
+        }
+        .highlight {
+            background-color: #e6f3ec;
+        }
+        .form-container {
+            background-color: #f7fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid #22c55e;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .welcome-section {
+            background-color: #e6f3ec;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid #22c55e;
+            text-align: center;
+            animation: fadeIn 1s ease-in;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .quick-link-card {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #22c55e;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .quick-link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .leave-request-button {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: #22c55e;
+            color: #ffffff;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            min-height: 48px;
+            min-width: 48px;
+        }
+        .leave-request-button:hover {
+            background-color: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        /* Tablet Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .main-content {
+                padding: 1.5rem;
+            }
+            .header {
+                padding: 1.5rem;
+            }
+            .header h1 {
+                font-size: 1.75rem;
+                line-height: 2rem;
+            }
+            .logo-img {
+                height: 5cm;
+                width: 5cm;
+            }
+            .form-container {
+                padding: 1.5rem;
+            }
+            .quick-links {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+            .welcome-section {
+                padding: 1.5rem;
+            }
+            .button {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.95rem;
+            }
+            .leave-request-button {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.9rem;
+            }
+        }
+        /* Mobile Responsiveness */
+        @media (max-width: 640px) {
+            .container {
+                padding: 0.5rem;
+            }
+            .main-content {
+                padding: 1rem;
+                border-radius: 8px;
+            }
+            .header {
+                padding: 1rem;
+                border-radius: 8px 8px 0 0;
+            }
+            .header h1 {
+                font-size: 1.25rem;
+                line-height: 1.5rem;
+            }
+            .logo-img {
+                height: 4cm;
+                width: 4cm;
+            }
+            .form-container {
+                padding: 1rem;
+            }
+            table {
+                font-size: 0.75rem;
+            }
+            th, td {
+                padding: 0.5rem;
+                white-space: nowrap;
+            }
+            .attendance-table {
+                max-height: 350px;
+            }
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+            .welcome-section {
+                padding: 1rem;
+            }
+            .button {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+                min-height: 44px;
+            }
+            .form-container form .flex {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-container form .flex > div, .form-container form .flex > button {
+                width: 100%;
+            }
+            .leave-request-button {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="header">
+                <div class="logo-button">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+                    <span class="text-2xl font-bold">Manavargal School</span>
+                </div>
+                <h1 class="text-3xl font-bold">Student Portal</h1>
+                <a href="{% url 'student_portal' %}" class="button bg-green-500 text-white px-5 py-3 rounded-lg hover:bg-green-600 mt-3 inline-block">
+                    <i class="fas fa-arrow-left icon"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <div class="welcome-section">
+                <h2 class="text-xl font-bold text-green-800">
+                    <i class="fas fa-user-graduate icon"></i> Welcome, Student!
+                </h2>
+                <p class="text-gray-600 text-base">Access your attendance, grades, and more to stay updated with your academic journey.</p>
+            </div>
+
+            <div class="quick-links">
+                <div class="quick-link-card">
+                    <a href="" class="button block text-green-800 hover:text-green-600">
+                        <i class="fas fa-book-open icon"></i> View Grades
+                    </a>
+                </div>
+                <div class="quick-link-card">
+                    <a href="" class="button block text-green-800 hover:text-green-600">
+                        <i class="fas fa-calendar-alt icon"></i> Check Timetable
+                    </a>
+                </div>
+                <div class="quick-link-card">
+                    <a href="" class="button block text-green-800 hover:text-green-600">
+                        <i class="fas fa-headset icon"></i> Contact Support
+                    </a>
+                </div>
+            </div>
+
+            {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                        <div class="p-3 mb-3 text-white rounded-lg flex items-center {% if message.tags == 'error' %}bg-red-500{% else %}bg-green-600{% endif %} shadow-md">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="form-container">
+                <form id="dateSelectForm" action="{% url 'student_portal' %}" method="get" class="mb-6">
+                    <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
+                        <div class="flex-1">
+                            <label for="date" class="block text-base font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-calendar icon"></i> Select Date
+                            </label>
+                            <input type="date" name="date" id="date" value="{{ selected_date }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-green-500 focus:border-green-500 min-h-[44px]">
+                        </div>
+                        <button type="submit" class="button bg-green-500 text-white px-5 py-3 rounded-lg hover:bg-green-600 flex items-center justify-center">
+                            <i class="fas fa-search icon"></i> View Attendance
+                        </button>
+                    </div>
+                </form>
+
+                <h2 class="text-xl font-bold mb-4 text-green-800">
+                    <i class="fas fa-calendar-check icon"></i> Your Attendance History
+                </h2>
+                {% if attendance_records %}
+                    <div class="attendance-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%;">Date</th>
+                                    <th style="width: 25%;">Admission Number</th>
+                                    <th style="width: 20%;">Class</th>
+                                    <th style="width: 20%;">Section</th>
+                                    <th style="width: 15%;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in attendance_records %}
+                                    <tr class="{% cycle 'bg-white' 'highlight' %}">
+                                        <td>{{ record.date }}</td>
+                                        <td>{{ record.admission_number }}</td>
+                                        <td>{{ record.class }}</td>
+                                        <td>{{ record.section|default:"N/A" }}</td>
+                                        <td class="status-{{ record.status }}">{{ record.status|capfirst }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-base text-gray-600">No attendance records found for the selected date.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'student_leave' %}" class="leave-request-button">
+        <i class="fas fa-envelope icon"></i> Request Leave
+    </a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('table');
+            if (table) {
+                table.addEventListener('mouseover', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        e.target.parentNode.style.backgroundColor = '#d4f4e2';
+                    }
+                });
+                table.addEventListener('mouseout', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        const row = e.target.parentNode;
+                        const rows = Array.from(table.querySelectorAll('tbody tr'));
+                        const index = rows.indexOf(row);
+                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#e6f3ec';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

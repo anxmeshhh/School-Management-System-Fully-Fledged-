@@ -1,0 +1,685 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #4A90E2, #003087);
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 300px;
+            height: 100vh;
+            background-color: #FFFFFF;
+            color: #333;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 20;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 2rem 2rem;
+            background-color: #F3F4F6;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1E3A8A;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 96px;
+            background-color: #E5E7EB;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-container:hover img {
+            transform: scale(1.1);
+        }
+
+        .sidebar-header:hover {
+            background-color: #E5E7EB;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-size: 1.125rem;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: #E5E7EB;
+            transform: scale(1.02);
+        }
+
+        .sidebar-nav a img {
+            width: 30px;
+            height: 30px;
+            margin-right: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav a:hover img {
+            transform: rotate(10deg);
+        }
+
+        .sidebar-nav a .emoji {
+            margin-left: 0.75rem;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav a:hover .emoji {
+            transform: scale(1.2) rotate(15deg);
+        }
+
+        .sidebar-nav a .emoji:active {
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: 320px;
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            position: relative;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-text {
+            color: #FFFFFF;
+            font-size: 1.125rem;
+        }
+
+        .username-box {
+            background-color: #FFFFFF;
+            color: #333;
+            padding: 0.25rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .notification-panel {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #FFFFFF;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .notification-panel.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .notification-panel h3 {
+            color: #333;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-panel ul {
+            list-style: none;
+            color: #4B5563;
+            font-size: 0.875rem;
+        }
+
+        .notification-panel li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .notification-panel li:last-child {
+            border-bottom: none;
+        }
+
+        .bell-button,
+        .profile-button {
+            color: #FFFFFF;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Title Section */
+        .title {
+            color: #FFFFFF;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Card Container (for both quotes and master data) */
+        .card-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            transition: transform 0.6s ease, box-shadow 0.6s ease;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background-color: #f0f7ff;
+        }
+
+        .card-container h2 {
+            color: #333;
+            font-size: 1.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .quote {
+            color: #333;
+            font-style: italic;
+            border-left: 4px solid #1E3A8A;
+            padding-left: 1.5rem;
+            font-size: 1.125rem;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        /* Cards Section (Master Data) */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.6s ease, box-shadow 0.6s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background-color: #f0f7ff;
+        }
+
+        .card img {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 1rem;
+            transition: transform 0.6s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.2);
+        }
+
+        .card span {
+            color: #333;
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .pulse {
+            animation: pulse 4s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Content Sections */
+        .welcome-section {
+            display: block;
+        }
+
+        .master-data-section {
+            display: none;
+        }
+
+        .master-data-section.active {
+            display: block;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 250px;
+            }
+
+            .main-content {
+                margin-left: 270px;
+            }
+
+            .logo-container {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 220px;
+                padding: 1rem;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .card-container h2 {
+                font-size: 1.5rem;
+            }
+
+            .quote {
+                font-size: 1rem;
+            }
+
+            .header-text {
+                font-size: 1rem;
+            }
+
+            .card span {
+                font-size: 1rem;
+            }
+
+            .logo-container {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                box-shadow: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .card img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .notification-panel {
+                width: 100%;
+                right: 0;
+            }
+
+            .card-container {
+                max-width: 100%;
+            }
+
+            .logo-container {
+                width: 60px;
+                height: 47px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header" id="homeLink">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
+                </div>
+                Manavargal SMS
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" id="masterDataLink">
+                    <img src="https://img.icons8.com/fluency/24/home.png" alt="Home Icon">
+                    Master Data
+                </a>
+                <a href="{% url 'admin_accept_portal' %}">
+                    <img src="https://img.icons8.com/color/24/000000/calendar--v1.png" alt="Add Batch Icon">
+                    Attendance and Leave
+                </a>
+                <a href="{% url 'admin_attendance_portal' %}">
+                    <img src="https://img.icons8.com/color/48/todo-list.png" alt="Add Batch Icon">
+                    Attendance Updation
+                </a>
+                <a href="{% url 'admin_circular_upload' %}">
+                    <img src="https://img.icons8.com/color/24/000000/classroom.png" alt="Add Class Icon">
+                    Circulars
+                </a>
+                <a href="{% url 'admin_study_materials_upload' %}">
+                    <img src="https://img.icons8.com/color/24/000000/graduation-cap.png" alt="Student Info Icon">
+                    Student Materials
+                </a>
+                <a href="{% url 'admin_homework_panel' %}">
+                    <img src="https://img.icons8.com/color/24/000000/homework.png" alt="Homework Icon">
+                    Homework
+                </a>
+
+                <a href="#">
+                    <img src="https://img.icons8.com/color/24/000000/add-user-male.png" alt="Add New Student Icon">
+                    Activities and New Events
+                </a>
+                <a href="{% url 'mark_entry' %}">
+                    <img src="https://img.icons8.com/color/24/000000/user-group-man-woman.png" alt="Manage Users Icon">
+                    Progress Card
+                </a>
+                <a href="#">
+                    <img src="https://img.icons8.com/color/24/000000/edit--v1.png" alt="Edit History Icon">
+                    Fees Collection
+                </a>
+                <a href="{% url 'manage_teachers' %}">
+                    <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="Parent Edit Icon">
+                    Teacher Management
+                </a>
+                <a href="#">
+                    <img src="https://img.icons8.com/color/24/000000/checked-checkbox.png" alt="Attendance Report Icon">
+                    HR Module
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header Section -->
+            <header class="header">
+                <div class="header-left">
+                    <span class="header-text">School Management System v1.0</span>
+                </div>
+                <div class="header-right">
+                    <button class="bell-button" id="notificationBell">🔔</button>
+                    <div id="notificationPanel" class="notification-panel">
+                        <h3>Notifications</h3>
+                        <ul>
+                            <li>New leave request from John Doe - 01:41 AM, May 21, 2025</li>
+                            <li>Circular uploaded: School Event - 10:00 PM, May 20, 2025</li>
+                            <li>Homework submission deadline approaching - 8:00 PM, May 20, 2025</li>
+                            <li>Bulk ID cards generated successfully - 3:00 PM, May 20, 2025</li>
+                        </ul>
+                    </div>
+                    <div class="header-right">
+                        <span class="header-text">Welcome</span>
+                        <span class="username-box">{{ admin_name }}</span>
+                        <button class="profile-button">👤</button>
+                    </div>
+
+                </div>
+            </header>
+
+            <!-- Title Section -->
+            <h1 class="title">Manavargal School Management System</h1>
+
+            <!-- Content Section -->
+            <div id="contentSection">
+                <!-- Welcome Section (Default Landing Page) -->
+                <div class="welcome-section" id="welcomeSection">
+                    <div class="card-container">
+                        <h2>Welcome to ADMIN DASHBOARD</h2>
+                        <p id="quote" class="quote"></p>
+                    </div>
+                </div>
+
+                <!-- Master Data Section (Hidden by Default) -->
+                <div class="master-data-section" id="masterDataSection">
+                    <div class="card-container">
+                        <h2>Master Data</h2>
+                        <div class="cards-grid">
+
+                            <a href="{% url 'view_edit_class' %}" style="text-decoration: none; color: inherit;">
+                                <div class="card">
+                                    <img src="https://img.icons8.com/color/70/000000/classroom.png" alt="Add Class">
+                                    <span>Add Class</span>
+                                </div>
+                            </a>
+                            <a href="{% url 'student_info' %}" style="text-decoration: none; color: inherit;">
+                                <div class="card">
+                                    <img src="https://img.icons8.com/color/70/000000/graduation-cap.png" alt="Student Info">
+                                    <span>Student Info</span>
+                                </div>
+                            </a>
+                            <a href="{% url 'add_student' %}" style="text-decoration: none; color: inherit;">
+                                <div class="card">
+                                    <img src="https://img.icons8.com/color/70/000000/add-user-male.png" alt="Add New Student">
+                                    <span>Add New Student</span>
+                                </div>
+                            </a>
+                            <a href="{% url 'manage_users' %}" style="text-decoration: none; color: inherit;">
+                                <div class="card">
+                                    <img src="https://img.icons8.com/color/70/000000/user-group-man-woman.png" alt="Manage Users">
+                                    <span>Manage Users</span>
+                                </div>
+                            </a>
+
+                            <div class="card">
+                                <img src="https://img.icons8.com/color/70/000000/edit--v1.png" alt="Edit History">
+                                <span>Edit History</span>
+                            </div>
+                            <div class="card">
+                                <img src="https://img.icons8.com/color/70/000000/family--v1.png" alt="Parent Edit">
+                                <span>Parent Edit</span>
+                            </div>
+                            <a href="{% url 'bulk_id_card' %}" style="text-decoration: none; color: inherit;">
+                                <div class="card cursor-pointer transition hover:shadow-lg">
+                                    <img src="https://img.icons8.com/color/70/000000/id-verified.png" alt="Bulk ID Card Generation">
+                                    <span>Bulk ID Card Generation</span>
+                                </div>
+                            </a>
+                            <a href="{% url 'bulk_upload' %}" style="text-decoration: none; color: inherit;">
+                                <div class="card cursor-pointer transition hover:shadow-lg">
+                                    <img src="https://img.icons8.com/color/70/000000/upload.png" alt="Bulk Upload Icon">
+                                    <span>Bulk Student Upload</span>
+                                </div>
+                            </a>
+
+    
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quote Rotation
+        const quotes = [
+            "Education is the most powerful weapon which you can use to change the world. – Nelson Mandela",
+            "The roots of education are bitter, but the fruit is sweet. – Aristotle",
+            "An investment in knowledge pays the best interest. – Benjamin Franklin",
+            "Education is not preparation for life; education is life itself. – John Dewey",
+            "The beautiful thing about learning is that no one can take it away from you. – B.B. King"
+        ];
+
+        let currentQuoteIndex = 0;
+        const quoteElement = document.getElementById('quote');
+
+        function updateQuote() {
+            quoteElement.textContent = quotes[currentQuoteIndex];
+            currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+        }
+
+        updateQuote();
+        setInterval(updateQuote, 120000);
+
+        // Pulse Animation for Cards
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card, .card-container');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('pulse');
+                }, index * 300);
+            });
+        });
+
+        // Notification Toggle
+        const bell = document.getElementById('notificationBell');
+        const panel = document.getElementById('notificationPanel');
+
+        bell.addEventListener('click', () => {
+            panel.classList.toggle('active');
+        });
+
+        // Close notification panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!bell.contains(e.target) && !panel.contains(e.target)) {
+                panel.classList.remove('active');
+            }
+        });
+
+        // Navigation Toggle
+        const masterDataLink = document.getElementById('masterDataLink');
+        const homeLink = document.getElementById('homeLink');
+        const welcomeSection = document.getElementById('welcomeSection');
+        const masterDataSection = document.getElementById('masterDataSection');
+
+        masterDataLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            welcomeSection.style.display = 'none';
+            masterDataSection.classList.add('active');
+        });
+
+        homeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            welcomeSection.style.display = 'block';
+            masterDataSection.classList.remove('active');
+        });
+    </script>
+</body>
+</html>

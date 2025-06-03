@@ -1,0 +1,412 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Circular Upload</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e6f0fa 0%, #d6e4ff 50%, #e6f0fa 100%);
+            background-size: 200%;
+            animation: gradient 20s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 1.5rem;
+            z-index: 10;
+        }
+
+        .logo {
+            height: 50px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 5rem auto 0;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 38px;
+            font-weight: 700;
+            color: #3b82f6;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.08);
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .header p {
+            font-size: 20px;
+            font-weight: 400;
+            color: #1e3a8a;
+            letter-spacing: 1px;
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .back-btn {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #6b7280, #9ca3af);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(90deg, #4b5563, #6b7280);
+            transform: translateY(-2px);
+        }
+
+        .upload-form {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(14px);
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, rgba(59, 130, 246, 0.5), rgba(255, 255, 255, 0.3)) 1;
+            padding: 45px;
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(30, 58, 138, 0.15);
+            margin-bottom: 60px;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        .upload-form:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .upload-form h2 {
+            color: #3b82f6;
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .upload-form label {
+            display: block;
+            color: #3b82f6;
+            font-size: 18px;
+            font-weight: 400;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .upload-form input[type="text"],
+        .upload-form input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #d6e4ff, #e6f0fa) border-box;
+            font-size: 16px;
+            transition: border 0.3s ease, background 0.3s ease;
+        }
+
+        .upload-form input[type="text"]:focus,
+        .upload-form input[type="file"]:focus {
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #3b82f6, #2563eb) border-box;
+            outline: none;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .upload-form button {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: white;
+            padding: 15px 50px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: background 0.4s ease, transform 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .upload-form button:hover {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            transform: scale(1.03);
+        }
+
+        .alert-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .alert-message .success {
+            background-color: #dcfce7;
+            color: #166534;
+            border-left: 4px solid #16a34a;
+        }
+
+        .alert-message .error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #dc2626;
+        }
+
+        .circulars-list h2 {
+            color: #3b82f6;
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .circulars-list .circular {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(14px);
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, rgba(59, 130, 246, 0.5), rgba(255, 255, 255, 0.3)) 1;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 25px rgba(30, 58, 138, 0.1);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        .circulars-list .circular:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .circular h3 {
+            color: #3b82f6;
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .circular small {
+            color: #666;
+            font-size: 15px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .circular img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 20px;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .circular img:hover {
+            transform: scale(1.03);
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                margin-top: 4rem;
+            }
+
+            .header h1 {
+                font-size: 30px;
+                letter-spacing: 1px;
+            }
+
+            .header p {
+                font-size: 18px;
+            }
+
+            .upload-form {
+                padding: 30px;
+            }
+
+            .upload-form h2,
+            .circulars-list h2 {
+                font-size: 28px;
+            }
+
+            .upload-form label {
+                font-size: 16px;
+            }
+
+            .upload-form input[type="text"],
+            .upload-form input[type="file"] {
+                font-size: 14px;
+                padding: 12px;
+            }
+
+            .upload-form button {
+                font-size: 16px;
+                padding: 12px 40px;
+                width: 100%;
+            }
+
+            .circular h3 {
+                font-size: 24px;
+            }
+
+            .circular small {
+                font-size: 13px;
+            }
+
+            .logo {
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 26px;
+                letter-spacing: 1px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .upload-form h2,
+            .circulars-list h2 {
+                font-size: 24px;
+            }
+
+            .upload-form label {
+                font-size: 14px;
+            }
+
+            .upload-form button {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .circular h3 {
+                font-size: 22px;
+            }
+
+            .logo {
+                height: 35px;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'admin_page' %}">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MSMS Logo" class="logo">
+        </a>
+    </header>
+
+
+    <div class="container">
+        <div class="header">
+            <h1>Upload Circulars</h1>
+            <p>Share important updates with the school community</p>
+            <div class="header-buttons">
+                <a href="{% url 'admin_page' %}" class="back-btn">Back to Dashboard</a>
+            </div>
+        </div>
+
+        <div class="upload-form">
+            <h2>Upload New Circular</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="title">Title:</label>
+                <input type="text" name="title" required>
+
+                <label for="image">Image:</label>
+                <input type="file" name="image" accept="image/*" required>
+
+                <button type="submit">Upload</button>
+            </form>
+
+            {% if messages %}
+                <div class="alert-message">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="circulars-list">
+            <h2>Uploaded Circulars</h2>
+            {% for circular in circulars %}
+                <div class="circular">
+                    <h3>{{ circular.title }}</h3>
+                    <small>Uploaded on: {{ circular.date }}</small>
+                    <img src="{{ circular.image_url }}" alt="{{ circular.title }}">
+                </div>
+            {% empty %}
+                <p>No circulars uploaded yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

@@ -91,11 +91,11 @@ WSGI_APPLICATION = 'school_management.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'railway',
+        'NAME': 'school_db',
         'USER': 'root',
-        'PASSWORD': 'AaLqLCgRttNkiQlWmsVdhBFvaHvYpNHW',
-        'HOST': 'yamabiko.proxy.rlwy.net',
-        'PORT': '13364',
+        'PASSWORD': 'theanimesh2005',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 

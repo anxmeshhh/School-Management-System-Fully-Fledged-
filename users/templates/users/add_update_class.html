@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #22d3ee, #3b82f6);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
+            z-index: -1;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(30, 58, 138, 0.15);
+            width: 100%;
+            max-width: 500px;
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #bfdbfe;
+        }
+        .header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #1e3a8a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .logo-container:hover {
+            animation: logoPulse 0.6s ease-in-out;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        label {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        input[type="text"] {
+            padding: 12px;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            font-size: 0.95em;
+            background-color: #f8fbff;
+            color: #1e3a8a;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            animation: lift 0.3s forwards;
+        }
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        .save-btn {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: white;
+        }
+        .save-btn:hover {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            animation: pulse 0.5s infinite;
+        }
+        .cancel-btn {
+            background-color: #e5e7eb;
+            color: #1e3a8a;
+        }
+        .cancel-btn:hover {
+            background-color: #d1d5db;
+            animation: pulse 0.5s infinite;
+        }
+        .back-btn {
+            background: linear-gradient(90deg, #6b7280, #9ca3af);
+            color: white;
+        }
+        .back-btn:hover {
+            background: linear-gradient(90deg, #4b5563, #6b7280);
+            animation: pulse 0.5s infinite;
+        }
+        .message {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+            color: #1e3a8a;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes lift {
+            0% { transform: translateY(0); box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+            100% { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(59, 130, 246, 0.7); }
+        }
+        @keyframes logoPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+            .container {
+                padding: 16px;
+            }
+            .header h2 {
+                font-size: 1.5em;
+            }
+            .logo-container {
+                width: 48px;
+                height: 48px;
+            }
+            input[type="text"], button {
+                font-size: 0.9em;
+                padding: 10px;
+            }
+            .back-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .logo-container {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h2><i class="fas fa-chalkboard text-blue-600"></i> {{ title }}</h2>
+            <a href="{% url 'admin_page' %}" class="logo-container">
+                <img src="https://via.placeholder.com/60?text=Logo" alt="School Logo">
+            </a>
+        </div>
+
+        <!-- Back Buttons -->
+        <div class="back-buttons" style="display: flex; gap: 16px; margin-bottom: 24px;">
+            <button class="back-btn" onclick="window.location.href='{% url 'view_edit_class' %}'">
+                <i class="fas fa-arrow-left"></i> Back to Classes
+            </button>
+            <button class="back-btn" onclick="window.location.href='{% url 'admin_page' %}'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div style="margin-bottom: 24px;">
+            {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {% if message.tags == 'success' %}
+                    <i class="fas fa-check-circle text-green-600"></i>
+                {% elif message.tags == 'error' %}
+                    <i class="fas fa-exclamation-circle text-red-600"></i>
+                {% endif %}
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Form -->
+        <form method="POST">
+            {% csrf_token %}
+            <div style="margin-bottom: 16px;">
+                <label for="class_name">
+                    <i class="fas fa-chalkboard-teacher text-blue-600"></i> Class Name
+                </label>
+                <input type="text" name="class_name" id="class_name" value="{{ class_name|default_if_none:'' }}"
+                       placeholder="Enter class name (e.g., 2-A)" required>
+            </div>
+            <div style="display: flex; gap: 16px;">
+                <button type="submit" class="save-btn"><i class="fas fa-save"></i> Save</button>
+                <button type="button" class="cancel-btn" onclick="window.location.href='{% url 'view_edit_class' %}'">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

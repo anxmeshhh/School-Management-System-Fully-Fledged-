@@ -1,0 +1,544 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Manage Teachers</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 100%),
+                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
+            background-size: 200%, 20px 20px;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background: url('https://via.placeholder.com/60?text=Logo') no-repeat center;
+            background-size: cover;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-header {
+            position: absolute;
+            top: 20px;
+            text-align: center;
+            color: #2563eb;
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            padding: 0.5rem 1rem;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #1d4ed8;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            width: 100%;
+            max-width: 1200px;
+            margin: 120px auto 20px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            color: #2563eb;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .messages p {
+            text-align: center;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #dc2626;
+            background: rgba(255, 75, 75, 0.1);
+            padding: 0.6rem;
+            border-radius: 6px;
+        }
+
+        .add-teacher-form {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #dbeafe;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2563eb;
+            font-size: 0.9rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #93c5fd, #2563eb) border-box;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .form-group select {
+            appearance: none;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="#2563eb"/></svg>') no-repeat right 0.75rem center;
+        }
+
+        .add-teacher-form button {
+            width: 100%;
+            padding: 0.8rem;
+            background: #2563eb;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .add-teacher-form button:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .add-teacher-form button:active {
+            transform: translateY(0);
+        }
+
+        .teacher-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .teacher-card {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .teacher-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .teacher-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 0.5rem;
+            object-fit: cover;
+        }
+
+        .teacher-card h3 {
+            color: #2563eb;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .teacher-card p {
+            color: #374151;
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .teacher-card .actions {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .teacher-card .actions a, .teacher-card .actions button {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .teacher-card .actions .edit-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+        }
+
+        .teacher-card .actions .edit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .teacher-card .actions .delete-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+        }
+
+        .teacher-card .actions .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .modal-content h3 {
+            color: #2563eb;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .modal-content .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #2563eb;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-header {
+                font-size: 1.6rem;
+            }
+
+            .teacher-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-header {
+                font-size: 1.4rem;
+                padding: 0 10px;
+            }
+
+            .logo {
+                width: 50px;
+                height: 50px;
+                top: 15px;
+                left: 15px;
+            }
+
+            .back-button {
+                top: 70px;
+                font-size: 0.8rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+                margin-top: 100px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .teacher-card img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .teacher-card h3 {
+                font-size: 0.9rem;
+            }
+
+            .teacher-card p {
+                font-size: 0.7rem;
+            }
+
+            .teacher-card .actions a, .teacher-card .actions button {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.7rem;
+            }
+        }
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
+    </div>
+    <div class="welcome-header">Welcome to Manavargal School System, Admin</div>
+    <a href="{% url 'admin_page' %}" class="back-button">Back to Admin Page</a>
+    <div class="container">
+        <h2>Manage Teachers</h2>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- Add Teacher Form -->
+        <div class="add-teacher-form">
+            <h3>Add New Teacher</h3>
+            <form method="POST" action="{% url 'add_teacher' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="text" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="class_teacher_of">Class Teacher Of (Optional)</label>
+                    <select id="class_teacher_of" name="class_teacher_of">
+                        <option value="">Not Assigned</option>
+                        <option value="Class 1-A">Class 1-A</option>
+                        <option value="Class 1-B">Class 1-B</option>
+                        <option value="Class 1-C">Class 1-C</option>
+                        <option value="Class 2-A">Class 2-A</option>
+                        <option value="Class 2-B">Class 2-B</option>
+                        <option value="Class 2-C">Class 2-C</option>
+                        <option value="Class 3-A">Class 3-A</option>
+                        <option value="Class 3-B">Class 3-B</option>
+                        <option value="Class 3-C">Class 3-C</option>
+                        <option value="Class 4-A">Class 4-A</option>
+                        <option value="Class 4-B">Class 4-B</option>
+                        <option value="Class 4-C">Class 4-C</option>
+                        <option value="Class 5-A">Class 5-A</option>
+                        <option value="Class 5-B">Class 5-B</option>
+                        <option value="Class 5-C">Class 5-C</option>
+                        <option value="Class 6-A">Class 6-A</option>
+                        <option value="Class 6-B">Class 6-B</option>
+                        <option value="Class 6-C">Class 6-C</option>
+                        <option value="Class 7-A">Class 7-A</option>
+                        <option value="Class 7-B">Class 7-B</option>
+                        <option value="Class 7-C">Class 7-C</option>
+                        <option value="Class 8-A">Class 8-A</option>
+                        <option value="Class 8-B">Class 8-B</option>
+                        <option value="Class 8-C">Class 8-C</option>
+                        <option value="Class 9-A">Class 9-A</option>
+                        <option value="Class 9-B">Class 9-B</option>
+                        <option value="Class 9-C">Class 9-C</option>
+                        <option value="Class 10-A">Class 10-A</option>
+                        <option value="Class 10-B">Class 10-B</option>
+                        <option value="Class 10-C">Class 10-C</option>
+                        <option value="Class 11-A">Class 11-A</option>
+                        <option value="Class 11-B">Class 11-B</option>
+                        <option value="Class 11-C">Class 11-C</option>
+                        <option value="Class 12-A">Class 12-A</option>
+                        <option value="Class 12-B">Class 12-B</option>
+                        <option value="Class 12-C">Class 12-C</option>
+                    </select>
+                </div>
+                <button type="submit">Add Teacher</button>
+            </form>
+        </div>
+        <!-- Teacher Grid -->
+        <div class="teacher-grid">
+            {% for teacher in teachers %}
+                <div class="teacher-card">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="{{ teacher.name }}">
+                    <h3>{{ teacher.name }}</h3>
+                    <p>{{ teacher.email }}</p>
+                    <p>Subject: {{ teacher.subject }}</p>
+                    <p>Class Teacher: {{ teacher.class_teacher_of|default:"Not Assigned" }}</p>
+                    <p>Password: {{ teacher.password }}</p>
+                    <div class="actions">
+                        <button class="edit-btn" onclick="openEditModal('{{ teacher.id }}', '{{ teacher.name|escapejs }}', '{{ teacher.email|escapejs }}', '{{ teacher.subject|escapejs }}', '{{ teacher.class_teacher_of|default:''|escapejs }}', '{{ teacher.password|escapejs }}')">Edit</button>
+                        <a href="{% url 'delete_teacher' teacher.id %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete {{ teacher.name|escapejs }}?')">Delete</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="text-align: center; color: #374151;">No teachers found.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Edit Teacher Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">×</span>
+            <h3>Edit Teacher</h3>
+            <form method="POST" action="{% url 'update_teacher' %}">
+                {% csrf_token %}
+                <input type="hidden" id="edit_teacher_id" name="teacher_id">
+                <div class="form-group">
+                    <label for="edit_name">Full Name</label>
+                    <input type="text" id="edit_name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit_email">Email</label>
+                    <input type="email" id="edit_email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit_subject">Subject</label>
+                    <input type="text" id="edit_subject" name="subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit_class_teacher_of">Class Teacher Of (Optional)</label>
+                    <select id="edit_class_teacher_of" name="class_teacher_of">
+                        <option value="">Not Assigned</option>
+                        <option value="Class 1-A">Class 1-A</option>
+                        <option value="Class 1-B">Class 1-B</option>
+                        <option value="Class 1-C">Class 1-C</option>
+                        <option value="Class 2-A">Class 2-A</option>
+                        <option value="Class 2-B">Class 2-B</option>
+                        <option value="Class 2-C">Class 2-C</option>
+                        <option value="Class 3-A">Class 3-A</option>
+                        <option value="Class 3-B">Class 3-B</option>
+                        <option value="Class 3-C">Class 3-C</option>
+                        <option value="Class 4-A">Class 4-A</option>
+                        <option value="Class 4-B">Class 4-B</option>
+                        <option value="Class 4-C">Class 4-C</option>
+                        <option value="Class 5-A">Class 5-A</option>
+                        <option value="Class 5-B">Class 5-B</option>
+                        <option value="Class 5-C">Class 5-C</option>
+                        <option value="Class 6-A">Class 6-A</option>
+                        <option value="Class 6-B">Class 6-B</option>
+                        <option value="Class 6-C">Class 6-C</option>
+                        <option value="Class 7-A">Class 7-A</option>
+                        <option value="Class 7-B">Class 7-B</option>
+                        <option value="Class 7-C">Class 7-C</option>
+                        <option value="Class 8-A">Class 8-A</option>
+                        <option value="Class 8-B">Class 8-B</option>
+                        <option value="Class 8-C">Class 8-C</option>
+                        <option value="Class 9-A">Class 9-A</option>
+                        <option value="Class 9-B">Class 9-B</option>
+                        <option value="Class 9-C">Class 9-C</option>
+                        <option value="Class 10-A">Class 10-A</option>
+                        <option value="Class 10-B">Class 10-B</option>
+                        <option value="Class 10-C">Class 10-C</option>
+                        <option value="Class 11-A">Class 11-A</option>
+                        <option value="Class 11-B">Class 11-B</option>
+                        <option value="Class 11-C">Class 11-C</option>
+                        <option value="Class 12-A">Class 12-A</option>
+                        <option value="Class 12-B">Class 12-B</option>
+                        <option value="Class 12-C">Class 12-C</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit_password">Password</label>
+                    <input type="text" id="edit_password" name="password" required>
+                </div>
+                <button type="submit">Update Teacher</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(id, name, email, subject, class_teacher_of, password) {
+            document.getElementById('edit_teacher_id').value = id;
+            document.getElementById('edit_name').value = name;
+            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_subject').value = subject;
+            document.getElementById('edit_class_teacher_of').value = class_teacher_of === 'Not Assigned' || class_teacher_of === '' || class_teacher_of === null ? '' : class_teacher_of;
+            document.getElementById('edit_password').value = password;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeEditModal();
+            }
+        }
+    </script>
+</body>
+</html>

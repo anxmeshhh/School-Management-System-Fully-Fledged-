@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Admin Attendance Portal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background: linear-gradient(to bottom, #e0f2fe, #bfdbfe);
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #1e40af;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background-color 0.2s ease;
+        }
+        .sidebar a:hover {
+            background-color: #3b82f6;
+        }
+        .logo-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .logo-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        .main-content {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(to right, #1e40af, #3b82f6);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: white;
+            background-color: #2563eb;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .button:hover {
+            background-color: #1e40af;
+            transform: scale(1.05);
+        }
+        .form-container {
+            background-color: #f8fafd;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #bfdbfe;
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            flex: 1;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+        .form-group select, .form-group input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-group select:focus, .form-group input[type="date"]:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+        .no-sections {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 8px;
+            display: none;
+        }
+        .message {
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .message.error { background-color: #dc2626; }
+        .message.warning { background-color: #eab308; }
+        .message.success { background-color: #16a34a; }
+        .attendance-table {
+            max-height: 500px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 2px solid #bfdbfe;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #bfdbfe;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #dbeafe;
+            position: sticky;
+            top: 0;
+            color: #1e40af;
+            font-weight: bold;
+        }
+        td {
+            color: #1f2937;
+        }
+        .highlight {
+            background-color: #eff6ff;
+        }
+        .attendance-btn {
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            font-size: 14px;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+        .present { background-color: #16a34a; }
+        .absent { background-color: #dc2626; }
+        .leave { background-color: #eab308; }
+        .selected {
+            border: 2px solid #1e40af;
+            box-shadow: 0 0 5px rgba(30, 64, 175, 0.5);
+        }
+        .pdf-button {
+            display: inline-block;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo-button">
+                <a href="{% url 'admin_page' %}">
+                    <img src="https://via.placeholder.com/80" alt="Manavargal Logo" class="logo-img">
+                    <span>Manavargal School</span>
+                </a>
+            </div>
+            <a href="{% url 'admin_page' %}">Dashboard</a>
+            <a href="{% url 'admin_page' %}">Admin</a>
+            <a href="{% url 'bulk_upload' %}">Bulk Upload</a>
+            <a href="{% url 'admin_attendance_portal' %}">Admin Attendance</a>
+            <a href="{% url 'teacher_portal' %}">Teacher Attendance</a>
+            <a href="{% url 'admin_page' %}">Settings</a>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>Manavargal School Management System - Admin Attendance Records</h1>
+                <a href="{% url 'admin_page' %}" class="button">Back to Admin</a>
+            </div>
+
+            {% if messages %}
+                <div>
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="form-container">
+                <form id="classSelectForm" action="{% url 'admin_attendance_portal' %}" method="get">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="class">Select Class</label>
+                            <select name="class" id="class" onchange="updateSections()">
+                                <option value="">Select a Class</option>
+                                {% for class in classes %}
+                                    <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="section">Select Section</label>
+                            <select name="section" id="section">
+                                <option value="">Select a Section</option>
+                            </select>
+                            <div id="no-sections-message" class="no-sections">No sections available for this class.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Select Date</label>
+                            <input type="date" name="date" id="date" value="{{ selected_date }}">
+                        </div>
+                        <button type="submit" class="button">Load</button>
+                    </div>
+                </form>
+
+                {% if students %}
+                    <form id="attendanceForm" action="{% url 'admin_mark_attendance' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="class" value="{{ selected_class }}">
+                        <input type="hidden" name="section" value="{{ selected_section }}">
+                        <input type="hidden" name="date" value="{{ selected_date }}">
+                        <h2>Admin Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}</h2>
+                        <div class="attendance-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Admission Number</th>
+                                        <th>Class</th>
+                                        <th>Section</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                        <tr class="{% cycle '' 'highlight' %}">
+                                            <td>{{ student.user_id }}</td>
+                                            <td>{{ student.name }}</td>
+                                            <td>{{ student.admission_number }}</td>
+                                            <td>{{ student.class }}</td>
+                                            <td>{{ student.section|default:"N/A" }}</td>
+                                            <td>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="present" class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">
+                                                    Present
+                                                </button>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="absent" class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">
+                                                    Absent
+                                                </button>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="leave" class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">
+                                                    Leave
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                    <a href="{% url 'admin_generate_attendance_pdf' %}?class={{ selected_class|urlencode }}&section={{ selected_section|urlencode }}&date={{ selected_date|urlencode }}" class="button pdf-button">
+                        Generate PDF Report
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('table');
+            if (table) {
+                table.addEventListener('mouseover', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        e.target.parentNode.style.backgroundColor = '#dbeafe';
+                    }
+                });
+                table.addEventListener('mouseout', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        const row = e.target.parentNode;
+                        const rows = Array.from(table.querySelectorAll('tbody tr'));
+                        const index = rows.indexOf(row);
+                        row.style.backgroundColor = index % 2 === 0 ? '' : '#eff6ff';
+                    }
+                });
+            }
+
+            function updateSections() {
+                const classSelect = document.getElementById('class');
+                const sectionSelect = document.getElementById('section');
+                const noSectionsMessage = document.getElementById('no-sections-message');
+                const selectedClass = classSelect.value;
+                let classSections;
+                try {
+                    classSections = JSON.parse('{{ class_sections|escapejs }}');
+                } catch (e) {
+                    console.error('Failed to parse class_sections:', e);
+                    classSections = [];
+                }
+
+                sectionSelect.innerHTML = '<option value="">Select a Section</option>';
+                const availableSections = classSections
+                    .filter(([cls, section]) => cls === selectedClass && section && section.trim() !== '')
+                    .map(([_, section]) => section);
+                const uniqueSections = [...new Set(availableSections)].sort();
+
+                if (uniqueSections.length > 0) {
+                    uniqueSections.forEach(section => {
+                        const option = document.createElement('option');
+                        option.value = section;
+                        option.textContent = section;
+                        if (section === '{{ selected_section|escapejs }}') {
+                            option.selected = true;
+                        }
+                        sectionSelect.appendChild(option);
+                    });
+                    sectionSelect.disabled = false;
+                    noSectionsMessage.style.display = 'none';
+                } else {
+                    sectionSelect.disabled = true;
+                    noSectionsMessage.style.display = 'block';
+                }
+            }
+
+            updateSections();
+            document.getElementById('class').addEventListener('change', updateSections);
+        });
+    </script>
+</body>
+</html>

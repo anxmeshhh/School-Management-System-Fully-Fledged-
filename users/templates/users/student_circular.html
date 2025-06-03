@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Circulars</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e6e6fa 0%, #dcd6f7 50%, #e6e6fa 100%);
+            background-size: 200%;
+            animation: gradient 20s ease infinite;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            text-align: center;
+            color: #6a5acd;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        h1:hover {
+            color: #483d8b;
+        }
+
+        .circular-container {
+            max-width: 900px;
+            width: 100%;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .circular {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .circular:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(106, 90, 205, 0.2);
+        }
+
+        .circular h3 {
+            margin: 0;
+            color: #6a5acd;
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .circular h3:hover {
+            color: #483d8b;
+        }
+
+        .circular small {
+            color: #666;
+            font-size: 1rem;
+            font-weight: 300;
+            margin-top: 0.5rem;
+            display: block;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .circular small:hover {
+            color: #6a5acd;
+        }
+
+        .circular img {
+            max-width: 100%;
+            margin-top: 1rem;
+            border-radius: 10px;
+            display: block;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .circular img:hover {
+            transform: scale(1.03);
+            opacity: 0.9;
+        }
+
+        .no-circulars {
+            text-align: center;
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 2rem;
+            font-weight: 400;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .circular {
+                padding: 20px;
+            }
+
+            .circular h3 {
+                font-size: 1.5rem;
+            }
+
+            .circular small {
+                font-size: 0.9rem;
+            }
+
+            .no-circulars {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .circular {
+                padding: 15px;
+            }
+
+            .circular h3 {
+                font-size: 1.3rem;
+            }
+
+            .circular small {
+                font-size: 0.8rem;
+            }
+
+            .no-circulars {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>School Circulars</h1>
+
+    <div class="circular-container">
+        {% for circular in circulars %}
+            <div class="circular">
+                <h3>{{ circular.title }}</h3>
+                <small>Posted on: {{ circular.date }}</small>
+                <img src="{{ circular.image_url }}" alt="Circular Image">
+            </div>
+        {% empty %}
+            <p class="no-circulars">No circulars available right now. Please check back later.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

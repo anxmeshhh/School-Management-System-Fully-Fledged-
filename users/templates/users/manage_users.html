@@ -1,0 +1,541 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e6f0fa 0%, #b3d4fc 50%, #e6f0fa 100%);
+            background-size: 200%;
+            animation: gradient 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .dashboard-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #1e40af;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, rgba(179, 212, 252, 0.7), rgba(255, 255, 255, 0.4)) 1;
+            box-shadow: 0 12px 40px rgba(30, 58, 138, 0.2);
+            border-radius: 24px;
+            padding: 24px;
+            width: 90%;
+            max-width: 1200px;
+            margin-top: 80px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #1e40af, #b3d4fc);
+            color: white;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            background: #ef4444;
+            color: white;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-bar input {
+            padding: 10px;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #bfdbfe, #dbeafe) border-box;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #b3d4fc, #1e40af) border-box;
+            box-shadow: 0 0 10px rgba(179, 212, 252, 0.4);
+        }
+
+        .search-bar button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .create-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            background: #2dd4bf;
+            color: white;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-left: 15px;
+        }
+
+        .create-btn:hover {
+            background: #14b8a6;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .user-table th, .user-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .user-table th {
+            background: #f8fafc;
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        .user-table tr:hover {
+            background: #e6f0fa;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .update-btn {
+            background: #3b82f6;
+            color: white;
+            margin-right: 20px;
+        }
+
+        .update-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .popup-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: popIn 0.4s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #1e40af, #b3d4fc);
+            color: white;
+        }
+
+        .popup-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #ef4444;
+            transform: scale(1.2);
+        }
+
+        .popup-body {
+            padding: 30px; /* Increased padding for better spacing */
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Increased gap between form elements */
+        }
+
+        .popup-body label {
+            font-size: 1rem;
+            color: #1e40af;
+            font-weight: 500;
+            margin-bottom: 5px; /* Added spacing below labels */
+        }
+
+        .popup-body input, .popup-body select {
+            padding: 12px 15px; /* Added horizontal padding for better look */
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #bfdbfe, #dbeafe) border-box;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 100%; /* Ensure full width for consistency */
+        }
+
+        .popup-body input:focus, .popup-body select:focus {
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #b3d4fc, #1e40af) border-box;
+            box-shadow: 0 0 10px rgba(179, 212, 252, 0.4);
+        }
+
+        .popup-body button {
+            background: #2dd4bf;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 10px; /* Added spacing above the button */
+            width: 100%; /* Ensure button takes full width */
+        }
+
+        .popup-body button:hover {
+            background: #14b8a6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 16px;
+            }
+
+            .dashboard-title {
+                font-size: 1.5rem;
+            }
+
+            .header h2 {
+                font-size: 1.4rem;
+            }
+
+            .user-table th, .user-table td {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+
+            .action-btn {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+
+            .update-btn {
+                margin-right: 10px;
+            }
+
+            .popup-content {
+                width: 95%;
+                max-width: 400px;
+            }
+
+            .header-right {
+                gap: 15px;
+            }
+
+            .create-btn {
+                margin-left: 10px;
+            }
+
+            .popup-body {
+                padding: 20px; /* Adjusted padding for smaller screens */
+                gap: 15px; /* Adjusted gap for smaller screens */
+            }
+
+            .popup-body label {
+                margin-bottom: 3px; /* Adjusted for smaller screens */
+            }
+
+            .popup-body button {
+                margin-top: 5px; /* Adjusted for smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-title">
+        Manavargal School Management Admin Dashboard
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <button class="back-btn" onclick="window.location.href='{% url 'admin_page' %}'">Back</button>
+                <h2>View and Edit Users</h2>
+            </div>
+            <div class="header-right">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchUsers()">
+                    <button>🔍</button>
+                    <button class="create-btn" onclick="showPopup('add')">Create New User</button>
+                </div>
+                <a href="{% url 'admin_page' %}">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo" class="logo">
+                </a>
+            </div>
+        </div>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <table class="user-table" id="userTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email Id</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.password }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>
+                            <button class="action-btn update-btn" onclick="showPopup('update', '{{ user.id }}', '{{ user.name }}', '{{ user.email }}', '{{ user.username }}', '{{ user.password }}', '{{ user.role }}')">Update</button>
+                        </td>
+                        <td>
+                            <button class="action-btn delete-btn" onclick="deleteUser('{{ user.id }}')">🗑️</button>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7">No users found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="popup" id="userPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 id="popupTitle">Create New User</h3>
+                <button class="close-btn" onclick="hidePopup()">✖</button>
+            </div>
+            <div class="popup-body">
+                <form id="userForm" method="POST" action="">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" id="userId">
+                    <label for="nameInput">Name</label>
+                    <input type="text" name="name" id="nameInput" placeholder="Enter name" required>
+                    <label for="emailInput">Email ID</label>
+                    <input type="email" name="email" id="emailInput" placeholder="Enter email" required>
+                    <label for="usernameInput">Username</label>
+                    <input type="text" name="username" id="usernameInput" placeholder="Enter username" required>
+                    <label for="passwordInput">Password (leave blank to keep unchanged)</label>
+                    <input type="password" name="password" id="passwordInput" placeholder="Enter new password">
+                    <label for="roleInput">Role</label>
+                    <select name="role" id="roleInput" required>
+                        <option value="">Select Role</option>
+                        <option value="admin">Admin</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="parent">Parent</option>
+                        <option value="finance">Finance</option>
+                    </select>
+                    <button type="submit" id="submitBtn">Create New User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPopup(type, userId = '', name = '', email = '', username = '', password = '', role = '') {
+            const popup = document.getElementById('userPopup');
+            const form = document.getElementById('userForm');
+            const title = document.getElementById('popupTitle');
+            const submitBtn = document.getElementById('submitBtn');
+            const userIdInput = document.getElementById('userId');
+            const nameInput = document.getElementById('nameInput');
+            const emailInput = document.getElementById('emailInput');
+            const usernameInput = document.getElementById('usernameInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const roleInput = document.getElementById('roleInput');
+
+            if (type === 'add') {
+                title.textContent = 'Create New User';
+                form.action = "{% url 'add_user' %}";
+                submitBtn.textContent = 'Create New User';
+                userIdInput.value = '';
+                nameInput.value = '';
+                emailInput.value = '';
+                usernameInput.value = '';
+                passwordInput.value = '';
+                passwordInput.setAttribute('required', 'required');
+                roleInput.value = '';
+            } else if (type === 'update') {
+                title.textContent = 'Update User';
+                form.action = `/update_user/${userId}/`;
+                submitBtn.textContent = 'Update User';
+                userIdInput.value = userId;
+                nameInput.value = name;
+                emailInput.value = email;
+                usernameInput.value = username;
+                passwordInput.value = '';
+                passwordInput.removeAttribute('required');
+                roleInput.value = role;
+            }
+
+            popup.style.display = 'flex';
+        }
+
+        function hidePopup() {
+            document.getElementById('userPopup').style.display = 'none';
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                window.location.href = `/delete_user/${userId}/`;
+            }
+        }
+
+        function searchUsers() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#userTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

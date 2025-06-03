@@ -251,7 +251,7 @@
 
                           <div class="form-group">
                               <label for="admission-year">Admission Year</label>
-                              <input type="text" id="admission-year" name="admission_year" value="{{ student_data.22|default:'' }}">
+                              <input type="text" id="admission_year" name="admission_year" value="{{ student_data.22|default:'' }}">
                           </div>
 
                           <div class="form-group">
@@ -556,9 +556,17 @@
           </div>
         
           <div class="form-navigation">
-            <button class="nav-btn prev-btn" data-prev="3"><i class="fas fa-arrow-left"></i> Previous</button>
+            <button class="nav-btn prev-btn" data-prev="3">
+                <i class="fas fa-arrow-left"></i> Previous
+            </button>
             <button class="nav-btn submit-btn" type="submit">Submit</button>
-          </div>
+            
+            <!-- New "QR Image" button that redirects to qr.html -->
+            <a href="{% url 'qr_page' %}" class="nav-btn submit-btn">
+                QR Image
+            </a>
+
+        </div>
         </div>
         
       </form>

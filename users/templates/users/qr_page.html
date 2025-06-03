@@ -1,0 +1,94 @@
+\<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student ID Card</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .id-card-container {
+            width: 400px;
+            height: 600px;
+            background-color: #fff;
+            border: 2px solid #000;
+            border-radius: 10px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .id-card-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .student-details {
+            text-align: left;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .qr-code {
+            margin-top: 20px;
+        }
+        .qr-code img {
+            width: 150px;
+            height: 150px;
+        }
+        .id-card-footer {
+            font-size: 14px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .download-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .download-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="id-card-container">
+    <div class="id-card-header">
+        Student ID Card
+    </div>
+
+    <div class="student-details">
+        <p><strong>Name:</strong> {{ name }}</p>
+        <p><strong>Class:</strong> {{ student_class }}</p>
+        <p><strong>Address:</strong> {{ address }}</p>
+        <p><strong>Admission Number:</strong> {{ admission_number }}</p>
+    </div>
+
+    <div class="qr-code">
+        <p><strong>Scan QR Code for Verification</strong></p>
+        <img src="data:image/png;base64,{{ qr_code_image }}" alt="QR Code">
+    </div>
+
+    <div class="id-card-footer">
+        <p>Generated on: {{ date }}</p>
+        <p>School Management System</p>
+    </div>
+
+    <!-- Download Button -->
+    <form method="POST" action="{% url 'generate_id_card' %}">
+        {% csrf_token %}
+        <button class="download-btn" type="submit">Download PDF</button>
+    </form>
+
+</div>
+
+</body>
+</html>

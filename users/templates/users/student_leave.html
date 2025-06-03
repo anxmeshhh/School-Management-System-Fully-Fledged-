@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Leave Requests</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #f7fafc 30%, #d4f4e2 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%2322c55e" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
+            font-family: 'Poppins', sans-serif;
+            animation: backgroundFade 10s ease-in-out infinite alternate;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        @keyframes backgroundFade {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        #app {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #15803d;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+        h1:hover {
+            color: #22c55e;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        .section {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #22c55e;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .leave-section {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .leave-section:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        h2 {
+            color: #15803d;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+        h2:hover {
+            color: #22c55e;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            color: #15803d;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+        .form-group label:hover {
+            color: #22c55e;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.9rem;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #22c55e, #15803d) border-box;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+            min-height: 44px;
+        }
+        .form-group textarea {
+            resize: vertical;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="date"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #15803d, #22c55e) border-box;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+        }
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .date-range span {
+            color: #1f2937;
+            font-size: 1rem;
+        }
+        .leave-duration {
+            display: flex;
+            gap: 1.5rem;
+        }
+        .half-day-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1f2937;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .radio-label:hover {
+            color: #22c55e;
+        }
+        .radio-label input[type="radio"] {
+            accent-color: #22c55e;
+        }
+        .half-day-options {
+            margin-left: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .sub-option {
+            font-size: 0.9rem;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(90deg, #22c55e, #15803d);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            letter-spacing: 1px;
+            min-height: 48px;
+        }
+        .submit-btn:hover {
+            background: linear-gradient(90deg, #15803d, #22c55e);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        .attendance-table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            table-layout: fixed;
+        }
+        .attendance-table th,
+        .attendance-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #22c55e;
+        }
+        .attendance-table th {
+            background: #d4f4e2;
+            color: #15803d;
+            font-weight: 700;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .attendance-table td {
+            color: #1f2937;
+            font-size: 0.85rem;
+        }
+        .attendance-table tr {
+            transition: background 0.3s ease;
+        }
+        .attendance-table tr:hover {
+            background: #e6f3ec;
+        }
+        .download-btn {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(90deg, #22c55e, #15803d);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            min-height: 44px;
+        }
+        .download-btn:hover {
+            background: linear-gradient(90deg, #15803d, #22c55e);
+            transform: translateY(-2px);
+        }
+        .nav-to-attendance {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .nav-to-attendance-btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #22c55e, #15803d);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            min-height: 44px;
+        }
+        .nav-to-attendance-btn:hover {
+            background: linear-gradient(90deg, #15803d, #22c55e);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+        }
+        .icon {
+            margin-right: 0.5rem;
+        }
+        /* Tablet Responsiveness */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            .section {
+                padding: 1.5rem;
+            }
+            .form-group label {
+                font-size: 1rem;
+            }
+            .form-group input[type="text"],
+            .form-group input[type="date"],
+            .form-group select,
+            .form-group textarea {
+                padding: 0.8rem;
+                font-size: 0.9rem;
+                min-height: 44px;
+            }
+            .date-range {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .leave-duration {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            .half-day-options {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .radio-label {
+                font-size: 0.9rem;
+            }
+            .sub-option {
+                font-size: 0.85rem;
+            }
+            .submit-btn {
+                padding: 0.8rem;
+                font-size: 1rem;
+            }
+            .attendance-table th,
+            .attendance-table td {
+                padding: 0.6rem;
+                font-size: 0.8rem;
+            }
+            .download-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            .nav-to-attendance-btn {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+        /* Mobile Responsiveness */
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+            h1 {
+                font-size: 1.75rem;
+                margin-bottom: 1rem;
+            }
+            h2 {
+                font-size: 1.25rem;
+            }
+            .section {
+                padding: 1rem;
+            }
+            .form-group label {
+                font-size: 0.9rem;
+            }
+            .form-group input[type="text"],
+            .form-group input[type="date"],
+            .form-group select,
+            .form-group textarea {
+                padding: 0.7rem;
+                font-size: 0.85rem;
+                min-height: 44px;
+            }
+            .radio-label {
+                font-size: 0.85rem;
+            }
+            .sub-option {
+                font-size: 0.8rem;
+            }
+            .submit-btn {
+                padding: 0.7rem;
+                font-size: 0.9rem;
+            }
+            .attendance-table th,
+            .attendance-table td {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+                white-space: nowrap;
+            }
+            .download-btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.7rem;
+                min-height: 40px;
+            }
+            .nav-to-attendance-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <div class="logo-button">
+                <img src="https://via.placeholder.com/80" alt="Manavargal Logo" class="logo-img" style="height: 6cm; width: 6cm; object-fit: contain; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); transition: transform 0.3s ease;">
+                <span class="text-2xl font-bold">Manavargal School</span>
+            </div>
+            <h1>Leave Requests</h1>
+        </div>
+        
+        <!-- Messages section (Django template syntax) -->
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="p-3 mb-3 text-white rounded-lg flex items-center {% if message.tags == 'error' %}bg-red-500{% else %}bg-green-600{% endif %} shadow-md">
+                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="main-content">
+            <div class="section leave-section">
+                <h2>Submit Leave Request</h2>
+                <form method="POST" action="{% url 'student_leave' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="student_name"><i class="fas fa-user icon"></i> Student Name</label>
+                        <input type="text" id="student_name" name="student_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg_number"><i class="fas fa-id-card icon"></i> Registration Number</label>
+                        <input type="text" id="reg_number" name="reg_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="class"><i class="fas fa-school icon"></i> Select Class</label>
+                        <select id="class" name="class" required>
+                            <option value="">Select Class</option>
+                            <option value="1">Class 1</option>
+                            <option value="2">Class 2</option>
+                            <option value="3">Class 3</option>
+                            <option value="4">Class 4</option>
+                            <option value="5">Class 5</option>
+                            <option value="6">Class 6</option>
+                            <option value="7">Class 7</option>
+                            <option value="8">Class 8</option>
+                            <option value="9">Class 9</option>
+                            <option value="10">Class 10</option>
+                            <option value="11">Class 11</option>
+                            <option value="12">Class 12</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="leave_reason"><i class="fas fa-comment icon"></i> Leave Reason</label>
+                        <textarea id="leave_reason" name="leave_reason" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="leave-dates"><i class="fas fa-calendar icon"></i> Leave Dates</label>
+                        <div class="date-range">
+                            <input type="date" id="leave_start_date" name="leave_start_date" required>
+                            <span>to</span>
+                            <input type="date" id="leave_end_date" name="leave_end_date" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-clock icon"></i> Leave Duration</label>
+                        <div class="leave-duration">
+                            <label class="radio-label">
+                                <input type="radio" name="leave_duration" value="full" checked>
+                                <span>Full Day</span>
+                            </label>
+                            <div class="half-day-container">
+                                <label class="radio-label">
+                                    <input type="radio" name="leave_duration" value="half">
+                                    <span>Half Day</span>
+                                </label>
+                                <div class="half-day-options" id="half-day-options" style="display: none;">
+                                    <label class="radio-label sub-option">
+                                        <input type="radio" name="half_day_type" value="first">
+                                        <span>First Half</span>
+                                    </label>
+                                    <label class="radio-label sub-option">
+                                        <input type="radio" name="half_day_type" value="second">
+                                        <span>Second Half</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn"><i class="fas fa-paper-plane icon"></i> Submit Leave Request</button>
+                </form>
+            </div>
+
+            <div class="section">
+                <h2>Your Leave Requests</h2>
+                <div class="table-container">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Student Name</th>
+                                <th style="width: 15%;">Reg Number</th>
+                                <th style="width: 10%;">Class</th>
+                                <th style="width: 20%;">Leave Reason</th>
+                                <th style="width: 10%;">Start Date</th>
+                                <th style="width: 10%;">End Date</th>
+                                <th style="width: 10%;">Duration</th>
+                                <th style="width: 10%;">Status</th>
+                                <th style="width: 10%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in leave_requests %}
+                            <tr>
+                                <td>{{ request.1 }}</td>
+                                <td>{{ request.2 }}</td>
+                                <td>{{ request.3 }}</td>
+                                <td>{{ request.4 }}</td>
+                                <td>{{ request.5 }}</td>
+                                <td>{{ request.6 }}</td>
+                                <td>{{ request.7 }}{% if request.7 == 'half' and request.8 %} ({{ request.8 }}){% endif %}</td>
+                                <td class="status-{{ request.9|lower }}">{{ request.9|capfirst }}</td>
+                                <td>
+                                    <form method="POST" action="{% url 'download_leave_pdf' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="leave_id" value="{{ request.0 }}">
+                                        <button type="submit" class="download-btn"><i class="fas fa-download icon"></i> Download PDF</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="9">No leave requests submitted.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="nav-to-attendance">
+                <a href="{% url 'student_portal' %}" class="nav-to-attendance-btn">
+                    <i class="fas fa-arrow-left icon"></i> Go to Attendance
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('table');
+            if (table) {
+                table.addEventListener('mouseover', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        e.target.parentNode.style.backgroundColor = '#d4f4e2';
+                    }
+                });
+                table.addEventListener('mouseout', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        const row = e.target.parentNode;
+                        const rows = Array.from(table.querySelectorAll('tbody tr'));
+                        const index = rows.indexOf(row);
+                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#e6f3ec';
+                    }
+                });
+            }
+            document.querySelectorAll('input[name="leave_duration"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.getElementById('half-day-options').style.display = 
+                        this.value === 'half' ? 'block' : 'none';
+                    if (this.value === 'full') {
+                        document.querySelectorAll('input[name="half_day_type"]').forEach(
+                            input => input.checked = false
+                        );
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

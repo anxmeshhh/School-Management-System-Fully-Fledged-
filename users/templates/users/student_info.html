@@ -1,0 +1,506 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Info</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e6f0fa 0%, #d6e4ff 50%, #e6f0fa 100%);
+            background-size: 200%;
+            animation: gradient 20s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 24px;
+            position: relative;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 1.5rem;
+            z-index: 10;
+        }
+
+        .logo {
+            height: 50px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(14px);
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, rgba(59, 130, 246, 0.5), rgba(255, 255, 255, 0.3)) 1;
+            box-shadow: 0 8px 32px rgba(30, 58, 138, 0.15);
+            padding: 32px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 5rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #bfdbfe;
+            gap: 16px;
+        }
+
+        .header h1 {
+            font-size: 1.9em;
+            font-weight: 700;
+            color: #3b82f6;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .header-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 32px;
+            align-items: center;
+            justify-content: flex-start;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        select, button {
+            padding: 12px 20px;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #d6e4ff, #e6f0fa) border-box;
+            border-radius: 8px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, button:focus {
+            outline: none;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #3b82f6, #2563eb) border-box;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+        }
+
+        button {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            transform: translateY(-2px);
+        }
+
+        .add-btn, .back-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn {
+            background: linear-gradient(90deg, #10b981, #34d399);
+        }
+
+        .add-btn:hover {
+            background: linear-gradient(90deg, #059669, #10b981);
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            background: linear-gradient(90deg, #6b7280, #9ca3af);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(90deg, #4b5563, #6b7280);
+            transform: translateY(-2px);
+        }
+
+        .class-group {
+            margin-bottom: 40px;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 24px;
+            background-color: #ffffff;
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        .class-header {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .class-stats {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+            font-size: 0.9em;
+        }
+
+        .class-stats span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .class-stats .separator {
+            color: #93c5fd;
+            font-weight: 300;
+        }
+
+        .student-card {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8fbff;
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 3px 12px rgba(30, 58, 138, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .student-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(30, 58, 138, 0.15);
+        }
+
+        .student-info {
+            flex: 1 1 60%;
+            min-width: 200px;
+            padding-right: 16px;
+        }
+
+        .student-info strong {
+            font-size: 1.15em;
+            color: #1e3a8a;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .student-info div {
+            margin-bottom: 6px;
+            font-size: 0.95em;
+        }
+
+        .student-actions {
+            flex: 0 1 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .update-btn, .delete-btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .update-btn {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        }
+
+        .update-btn:hover {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+            transform: translateY(-2px);
+        }
+
+        .total-students {
+            font-size: 1.05em;
+            color: #3b82f6;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-weight: 500;
+            animation: fadeInUp 0.6s ease-out;
+            flex-wrap: wrap;
+        }
+
+        .total-students span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .total-students .separator {
+            color: #93c5fd;
+            font-weight: 300;
+        }
+
+        .class-title {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 20px;
+                margin-top: 4rem;
+            }
+
+            .header h1 {
+                font-size: 1.6em;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            select, button, .add-btn, .back-btn {
+                width: 100%;
+                padding: 10px 16px;
+                font-size: 0.9em;
+            }
+
+            .student-card {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 12px;
+            }
+
+            .student-info {
+                padding-right: 0;
+                margin-bottom: 12px;
+            }
+
+            .student-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .class-header {
+                font-size: 1.2em;
+            }
+
+            .class-group {
+                padding: 16px;
+            }
+
+            .class-stats {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .logo {
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .student-info strong {
+                font-size: 1.05em;
+            }
+
+            .student-info div {
+                font-size: 0.9em;
+            }
+
+            .update-btn, .delete-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .total-students {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .logo {
+                height: 35px;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'admin_page' %}">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MSMS Logo" class="logo">
+        </a>
+    </header>
+
+
+    <div class="container">
+        <div class="header">
+            <h1>📚 Student Information</h1>
+            <div class="header-buttons">
+                <a href="{% url 'add_student' %}" class="add-btn">Add New Student</a>
+                <a href="{% url 'admin_page' %}" class="back-btn">Back to Dashboard</a>
+            </div>
+        </div>
+
+        <div class="filters">
+            <form method="get">
+                <select name="class">
+                    <option value="All">All Classes</option>
+                    {% for class in class_options %}
+                        <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
+                    {% endfor %}
+                </select>
+                <select name="section">
+                    <option value="All">All Sections</option>
+                    {% for section in section_options %}
+                        <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section }}</option>
+                    {% endfor %}
+                </select>
+                <select name="gender">
+                    <option value="All">All Genders</option>
+                    <option value="Male" {% if selected_gender == 'Male' %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if selected_gender == 'Female' %}selected{% endif %}>Female</option>
+                </select>
+                <button type="submit">Filter</button>
+                <a href="{% url 'student_info' %}" class="add-btn">Reset Filters</a>
+            </form>
+        </div>
+
+        <div class="total-students">
+            <span>👥 Total Students: {{ total_students }}</span>
+            <span class="separator">|</span>
+            
+        </div>
+
+        {% for class_section, group in class_section_groups.items %}
+        <div class="class-group">
+            <div class="class-header">
+                <div class="class-title">
+                    <div>📋 Class {{ class_section }}</div>
+                    <div class="class-stats">
+                        <span>Total: {{ group.count }}</span>
+                        <span class="separator">|</span>
+                        <span>♂ Male: {{ group.male_count }}</span>
+                        <span class="separator">|</span>
+                        <span>♀ Female: {{ group.female_count }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            {% for student in group.students %}
+            <div class="student-card">
+                <div class="student-info">
+                    <strong>👤 {{ student.name }}</strong>
+                    <div>⚧ Gender: {{ student.gender }}</div>
+                    <div>🎫 Admission No: {{ student.admission_number }}</div>
+                    <div>🔢 Roll No: {{ student.roll_number }}</div>
+                </div>
+                <div class="student-actions">
+                    <a href="{% url 'update_student' student.admission_number %}" class="update-btn">
+                        Update
+                    </a>
+                    <a href="{% url 'delete_student' student.admission_number %}" 
+                    class="delete-btn" 
+                    onclick="return confirm('Are you sure you want to delete {{ student.name|escapejs }}?')">
+                        Delete
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% empty %}
+        <p class="total-students">😕 No students found matching your criteria.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

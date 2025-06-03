@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Attendance Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #e0f2fe, #bfdbfe);
+        }
+        .container {
+            max-width: 1400px;
+            display: flex;
+            gap: 1.5rem;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #1e40af;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            color: white;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            transition: background-color 0.2s ease;
+        }
+        .sidebar a:hover {
+            background-color: #3b82f6;
+        }
+        .main-content {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        .header {
+            background: linear-gradient(to right, #1e40af, #3b82f6);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .attendance-table {
+            max-height: 500px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 2px solid #bfdbfe;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #bfdbfe;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #dbeafe;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+            color: #1e40af;
+        }
+        td {
+            color: #1f2937;
+        }
+        .error {
+            color: red;
+        }
+        .highlight {
+            background-color: #eff6ff;
+        }
+        .logo-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        .logo-img {
+            height: 48px;
+            width: 48px;
+            object-fit: contain;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        .form-container {
+            background-color: #f8fafd;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #bfdbfe;
+        }
+        .button {
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+        }
+        .button:hover {
+            transform: scale(1.05);
+        }
+        .icon {
+            margin-right: 8px;
+        }
+        .attendance-btn {
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            margin: 0 4px;
+        }
+        .present { background-color: #16a34a; color: white; }
+        .absent { background-color: #dc2626; color: white; }
+        .leave { background-color: #eab308; color: white; }
+        .selected { border: 2px solid #1e40af; box-shadow: 0 0 5px rgba(30, 64, 175, 0.5); }
+        .no-sections {
+            color: #dc2626;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-6">
+        <div class="sidebar">
+            <div class="mb-6">
+                <a href="{% url 'admin_page' %}" class="logo-button">
+                    <img src="https://via.placeholder.com/80" alt="Manavargal Logo" class="logo-img">
+                    <span>Manavargal School</span>
+                </a>
+            </div>
+            <a href="{% url 'admin_page' %}"><i class="fas fa-tachometer-alt icon"></i> Dashboard</a>
+            <a href="{% url 'admin_page' %}"><i class="fas fa-users icon"></i> Admin</a>
+            <a href="{% url 'bulk_upload' %}"><i class="fas fa-upload icon"></i> Bulk Upload</a>
+            <a href="{% url 'teacher_portal' %}"><i class="fas fa-calendar-check icon"></i> Attendance</a>
+            <a href="{% url 'admin_page' %}"><i class="fas fa-cog icon"></i> Settings</a>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-3xl font-semibold">Manavargal School Management System - Attendance Records</h1>
+                    <a href="{% url 'teacher_dashboard' %}" class="button bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-arrow-left icon"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                        <div class="p-4 mb-2 text-white rounded-lg flex items-center {% if message.tags == 'error' %}bg-red-600{% else %}bg-green-600{% endif %}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="form-container">
+                <form id="classSelectForm" action="{% url 'teacher_portal' %}" method="get" class="mb-6">
+                    <div class="flex gap-4 items-end">
+                        <div class="flex-1">
+                            <label for="class" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-chalkboard icon"></i> Select Class
+                            </label>
+                            <select name="class" id="class" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500" onchange="updateSections()">
+                                <option value="">Select a Class</option>
+                                {% for class in classes %}
+                                    <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label for="section" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-chalkboard-teacher icon"></i> Select Section
+                            </label>
+                            <select name="section" id="section" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Select a Section</option>
+                            </select>
+                            <div id="no-sections-message" class="no-sections hidden">No sections available for this class.</div>
+                        </div>
+                        <div class="flex-1">
+                            <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-calendar icon"></i> Select Date
+                            </label>
+                            <input type="date" name="date" id="date" value="{{ selected_date }}" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <button type="submit" class="button bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-search icon"></i> Load
+                        </button>
+                    </div>
+                </form>
+
+                {% if students %}
+                    <form id="attendanceForm" action="{% url 'mark_attendance' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="class" value="{{ selected_class }}">
+                        <input type="hidden" name="section" value="{{ selected_section }}">
+                        <input type="hidden" name="date" value="{{ selected_date }}">
+                        <h2 class="text-xl font-semibold mb-4 text-blue-800">
+                            <i class="fas fa-table icon"></i> Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}
+                        </h2>
+                        <div class="attendance-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Admission Number</th>
+                                        <th>Class</th>
+                                        <th>Section</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                        <tr class="{% cycle 'bg-white' 'highlight' %}">
+                                            <td>{{ student.user_id }}</td>
+                                            <td>{{ student.name }}</td>
+                                            <td>{{ student.admission_number }}</td>
+                                            <td>{{ student.class }}</td>
+                                            <td>{{ student.section|default:"N/A" }}</td>
+                                            <td>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="present" class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">
+                                                    Present
+                                                </button>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="absent" class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">
+                                                    Absent
+                                                </button>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="leave" class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">
+                                                    Leave
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                    <div class="mt-6 flex gap-4">
+                        <a href="{% url 'generate_attendance_pdf' %}?class={{ selected_class|urlencode }}&section={{ selected_section|urlencode }}&date={{ selected_date|urlencode }}" class="button bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-file-pdf icon"></i> Generate PDF Report
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('table');
+            if (table) {
+                table.addEventListener('mouseover', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        e.target.parentNode.style.backgroundColor = '#dbeafe';
+                    }
+                });
+                table.addEventListener('mouseout', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        const row = e.target.parentNode;
+                        const rows = Array.from(table.querySelectorAll('tbody tr'));
+                        const index = rows.indexOf(row);
+                        row.style.backgroundColor = index % 2 === 0 ? 'white' : '#eff6ff';
+                    }
+                });
+            }
+
+            // JavaScript to dynamically update section dropdown based on class selection
+            function updateSections() {
+                const classSelect = document.getElementById('class');
+                const sectionSelect = document.getElementById('section');
+                const noSectionsMessage = document.getElementById('no-sections-message');
+                const selectedClass = classSelect.value;
+                let classSections;
+                try {
+                    classSections = JSON.parse('{{ class_sections|escapejs }}');
+                } catch (e) {
+                    console.error('Failed to parse class_sections:', e);
+                    classSections = [];
+                }
+
+                // Clear current options
+                sectionSelect.innerHTML = '<option value="">Select a Section</option>';
+
+                // Filter sections for the selected class
+                const availableSections = classSections
+                    .filter(([cls, section]) => cls === selectedClass && section && section.trim() !== '')
+                    .map(([_, section]) => section);
+
+                // Remove duplicates and sort
+                const uniqueSections = [...new Set(availableSections)].sort();
+
+                // Populate sections
+                if (uniqueSections.length > 0) {
+                    uniqueSections.forEach(section => {
+                        const option = document.createElement('option');
+                        option.value = section;
+                        option.textContent = section;
+                        if (section === '{{ selected_section|escapejs }}') {
+                            option.selected = true;
+                        }
+                        sectionSelect.appendChild(option);
+                    });
+                    sectionSelect.disabled = false;
+                    noSectionsMessage.classList.add('hidden');
+                } else {
+                    sectionSelect.disabled = true;
+                    noSectionsMessage.classList.remove('hidden');
+                }
+            }
+
+            // Initialize sections on page load
+            updateSections();
+
+            // Add event listener for class change
+            document.getElementById('class').addEventListener('change', updateSections);
+        });
+    </script>
+</body>
+</html>

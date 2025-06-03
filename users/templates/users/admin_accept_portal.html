@@ -1,0 +1,303 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Portal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e6f0fa 0%, #b3d4fc 50%, #e6f0fa 100%); /* Bluish White Theme */
+            background-size: 200%;
+            animation: gradient 20s ease infinite;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #app {
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, #1e40af, #b3d4fc); /* Bluish White header */
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: white; /* White for contrast on header background */
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        h1:hover {
+            color: #e6f0fa; /* Light blue hover */
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: #ef4444; /* Red for contrast */
+            color: white;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #dc2626;
+            transform: scale(1.05); /* Subtle animation */
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(179, 212, 252, 0.4); /* Bluish White border */
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(30, 58, 138, 0.15);
+        }
+
+        h2 {
+            color: #1e40af; /* Bluish tone */
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        h2:hover {
+            color: #b3d4fc; /* Lighter blue on hover */
+        }
+
+        .leave-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .leave-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e6f0fa; /* Bluish White border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .leave-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.15);
+        }
+
+        .leave-card p {
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .leave-card p strong {
+            color: #1e40af; /* Bluish tone */
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .submit-btn,
+        .remove-btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .submit-btn {
+            background: linear-gradient(90deg, #1e40af, #b3d4fc); /* Bluish White gradient */
+            color: white;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(90deg, #b3d4fc, #1e40af);
+            transform: scale(1.05); /* Subtle animation */
+            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+        }
+
+        .remove-btn {
+            background: linear-gradient(90deg, #ff4040, #d32f2f);
+            color: white;
+        }
+
+        .remove-btn:hover {
+            background: linear-gradient(90deg, #d32f2f, #ff4040);
+            transform: scale(1.05); /* Subtle animation */
+            box-shadow: 0 5px 15px rgba(255, 64, 64, 0.4);
+        }
+
+        .no-requests {
+            text-align: center;
+            font-size: 1rem;
+            color: #333;
+            padding: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .logo {
+                width: 40px;
+                height: 40px;
+            }
+
+            .leave-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .leave-card {
+                padding: 1rem;
+            }
+
+            .submit-btn,
+            .remove-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='{% url 'admin_page' %}'">Back</button>
+            <h1>Admin Portal</h1>
+            <a href="{% url 'admin_page' %}">
+                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo" class="logo">
+            </a>
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+        <div class="flash-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Leave Requests Section -->
+        <div class="main-content">
+            <div class="section">
+                <h2>Leave Requests</h2>
+                <div class="leave-cards">
+                    {% for request in leave_requests %}
+                    <div class="leave-card">
+                        <p><strong>Student Name:</strong> {{ request.1 }}</p> <!-- student_name -->
+                        <p><strong>Reg Number:</strong> {{ request.2 }}</p> <!-- reg_number -->
+                        <p><strong>Class:</strong> {{ request.3 }}</p> <!-- class_number -->
+                        <p><strong>Leave Reason:</strong> {{ request.4 }}</p> <!-- leave_reason -->
+                        <p><strong>Start Date:</strong> {{ request.5 }}</p> <!-- leave_start_date -->
+                        <p><strong>End Date:</strong> {{ request.6 }}</p> <!-- leave_end_date -->
+                        <p><strong>Duration:</strong> {{ request.7 }}</p> <!-- leave_duration -->
+                        <p><strong>Status:</strong> {{ request.8 }}</p> <!-- status -->
+                        {% if request.8 == 'Pending' %}
+                        <div class="action-buttons">
+                            <form method="POST" action="{% url 'admin_accept_portal' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="leave_id" value="{{ request.0 }}">
+                                <button type="submit" name="action" value="approve" class="submit-btn">Approve</button>
+                                <button type="submit" name="action" value="reject" class="remove-btn">Reject</button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <p class="no-requests">No leave requests found.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

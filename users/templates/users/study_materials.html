@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Study Materials</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e6e6fa 0%, #dcd6f7 50%, #e6e6fa 100%);
+            background-size: 200%;
+            animation: gradient 20s ease infinite;
+            padding: 40px 20px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            text-align: center;
+            color: #6a5acd;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        h1:hover {
+            color: #483d8b;
+        }
+
+        .material-box {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 20px;
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .material-box:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(106, 90, 205, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .material-box h3 {
+            color: #6a5acd;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .material-box h3:hover {
+            color: #483d8b;
+        }
+
+        .material-box p {
+            color: #666;
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .material-box p strong {
+            color: #6a5acd;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .material-box p strong:hover {
+            color: #483d8b;
+        }
+
+        .file-preview {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .file-preview a {
+            color: #6a5acd;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .file-preview a:hover {
+            color: #483d8b;
+            transform: translateY(-2px);
+        }
+
+        .go-to-homework {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(90deg, #6a5acd, #483d8b);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 600;
+            z-index: 1000;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .go-to-homework:hover {
+            background: linear-gradient(90deg, #483d8b, #6a5acd);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .material-box {
+                padding: 15px;
+            }
+
+            .material-box h3 {
+                font-size: 1.5rem;
+            }
+
+            .material-box p {
+                font-size: 0.9rem;
+            }
+
+            .file-preview a {
+                font-size: 0.9rem;
+            }
+
+            .go-to-homework {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .material-box {
+                padding: 12px;
+            }
+
+            .material-box h3 {
+                font-size: 1.3rem;
+            }
+
+            .material-box p {
+                font-size: 0.8rem;
+            }
+
+            .file-preview a {
+                font-size: 0.8rem;
+            }
+
+            .go-to-homework {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 Study Materials</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% for material in study_materials %}
+        <div class="material-box">
+            <h3>{{ material.title }}</h3>
+            <p><strong>Uploaded on:</strong> {{ material.upload_date }}</p>
+            <div class="file-preview">
+                <a href="{% url 'serve_pdf' material.file_path %}" target="_blank">📄 View PDF</a>
+                <a href="{% url 'serve_pdf' material.file_path %}?download=true" style="margin-left: 10px;" target="_blank">📥 Download PDF</a>
+            </div>
+        </div>
+    {% empty %}
+        <p>No study materials available.</p>
+    {% endfor %}
+
+    <a href="{% url 'homework' %}" class="go-to-homework">Go to Homework</a>
+</body>
+</html>

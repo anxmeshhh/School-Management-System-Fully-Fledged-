@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #6A1B9A, #AB47BC);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+        .animated-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .sidebar {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            z-index: 2;
+        }
+        .sidebar.active {
+            transform: translateX(0);
+        }
+        .sidebar > div:first-child {
+            margin-bottom: 20px;
+        }
+        .sidebar > div:first-child > div {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #AB47BC;
+            line-height: 1.2;
+        }
+        .sidebar > div:first-child > div > span {
+            display: block;
+            font-size: 1rem;
+            font-weight: normal;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .sidebar > h2 {
+            font-size: 1.7rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .sidebar > a.nav-item {
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+            text-decoration: none;
+            margin: 10px 0;
+            font-size: 1.2rem;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .sidebar > a.nav-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.03);
+        }
+        .sidebar > a.nav-item > span.nav-icon {
+            margin-right: 10px;
+            display: inline-block;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+            transition: margin-left 0.3s ease;
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .header > span {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        .header > h1 {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        .header > div {
+            display: flex;
+            align-items: center;
+            font-size: 1.05rem;
+            position: relative;
+        }
+        .header > div > span {
+            margin-left: 10px;
+        }
+        .bell-icon {
+            position: relative;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s ease, background 0.3s ease, color 0.3s ease;
+        }
+        .bell-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: #E1BEE7;
+            animation: ring 0.5s ease;
+        }
+        .bell-icon::after {
+            content: ""; /* Empty badge */
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #D32F2F;
+            color: white;
+            font-size: 0.7rem;
+            width: 12px; /* Smaller size for empty badge */
+            height: 12px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        @keyframes ring {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .notification-panel {
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            width: 250px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 10;
+            padding: 10px;
+        }
+        .notification-panel.active {
+            display: block;
+        }
+        .notification-panel p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 5px;
+        }
+        .notification-panel p:last-child {
+            border-bottom: none;
+        }
+        .main-content > h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .main-content > div {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: background 0.3s ease;
+        }
+        .main-content > div:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .main-content > div > p:first-child {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        .main-content > div > p#quote {
+            font-size: 1.4rem;
+            font-style: italic;
+            max-width: 600px;
+            margin: 5px auto;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .main-content > div > p#quote.visible {
+            opacity: 1;
+        }
+        .pulse {
+            animation: pulse 2s ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 220px;
+                transform: translateX(-100%);
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                z-index: 3;
+                backdrop-filter: blur(5px);
+                -webkit-backdrop-filter: blur(5px);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .main-content:has(~ .sidebar.active) {
+                margin-left: 220px;
+            }
+            .header > span#menuToggle {
+                display: block;
+            }
+            .header > span#mobileMenuToggle {
+                display: none;
+            }
+            .sidebar > div:first-child > div {
+                font-size: 1.6rem;
+            }
+            .sidebar > div:first-child > div > span {
+                font-size: 0.9rem;
+            }
+            .sidebar > h2 {
+                font-size: 1.5rem;
+            }
+            .sidebar > a.nav-item {
+                font-size: 1.1rem;
+            }
+            .header > h1 {
+                font-size: 1.1rem;
+            }
+            .main-content {
+                padding: 15px;
+            }
+            .main-content > h2 {
+                font-size: 1.6rem;
+            }
+            .main-content > div > p:first-child {
+                font-size: 1.6rem;
+            }
+            .main-content > div > p#quote {
+                font-size: 1.2rem;
+            }
+            .bubble {
+                width: 40px !important;
+                height: 40px !important;
+            }
+            .notification-panel {
+                width: 200px;
+                right: 10px;
+                top: 40px;
+            }
+        }
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content:has(~ .sidebar.active) {
+                margin-left: 200px;
+            }
+            .sidebar > div:first-child > div {
+                font-size: 1.4rem;
+            }
+            .sidebar > div:first-child > div > span {
+                font-size: 0.8rem;
+            }
+            .sidebar > h2 {
+                font-size: 1.3rem;
+            }
+            .sidebar > a.nav-item {
+                font-size: 1rem;
+            }
+            .header > span {
+                font-size: 1.1rem;
+            }
+            .header > h1 {
+                font-size: 1rem;
+            }
+            .header > div {
+                font-size: 0.95rem;
+            }
+            .main-content {
+                padding: 10px;
+            }
+            .main-content > h2 {
+                font-size: 1.4rem;
+            }
+            .main-content > div {
+                padding: 15px;
+            }
+            .main-content > div > p:first-child {
+                font-size: 1.4rem;
+            }
+            .main-content > div > p#quote {
+                font-size: 1.1rem;
+            }
+            .bubble {
+                width: 30px !important;
+                height: 30px !important;
+            }
+            .notification-panel {
+                width: 180px;
+                right: 5px;
+            }
+        }
+        @media (min-width: 769px) {
+            .header > span#menuToggle {
+                display: none;
+            }
+            .header > span#mobileMenuToggle {
+                display: block;
+            }
+            .sidebar > div:first-child > div {
+                color: #7B1FA2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-background"></div>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <div id="logo">
+                <div class="brand-name">
+                    MANAVARGAL<br>
+                    <span class="brand-subtitle">SCHOOL MANAGEMENT SYSTEM</span>
+                </div>
+            </div>
+            <h2 class="dashboard-text">Dashboard</h2>
+            <a href="{% url 'profile' %}" class="nav-item"><span class="nav-icon">📊</span> Master Data</a>
+            <a href="{% url 'student_portal' %}" class="nav-item"><span class="nav-icon">📅</span> Attendance & Leave</a>
+            <a href="{% url 'student_circular' %}" class="nav-item"><span class="nav-icon">📢</span> Circulars</a>
+            <a href="{% url 'homework' %}" class="nav-item"><span class="nav-icon">📚</span> Study Materials</a>
+            <a href="#" class="nav-item"><span class="nav-icon">🎯</span> Activities & Events</a>
+            <a href="{% url 'mark_entry' %}" class="nav-item"><span class="nav-icon">📈</span> Progress Card</a>
+            <a href="{% url 'fees' %}" class="nav-item"><span class="nav-icon">💰</span> Fees Collection</a>
+           
+            
+        </div>
+        <div class="main-content">
+            <div class="header">
+                <span id="menuToggle">☰</span>
+                <span id="mobileMenuToggle">☰</span>
+                <h1 class="system-info">School Management System v1.0</h1>
+                <div>
+                    <span class="bell-icon" id="bellIcon">🔔</span>
+                    <div class="notification-panel" id="notificationPanel">
+                        <!-- Notification content to be added dynamically -->
+                    </div>
+                    <span class="header-text">Welcome</span>
+                    <span class="username-box">{{ admin_name|default:"Guest" }}</span>
+                </div>
+            </div>
+            <h2>Manavargal School Management System</h2>
+            <div>
+                <p>Welcome to Dashboard</p>
+                <p id="quote"></p>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Note: This script uses vanilla JavaScript and does not require jQuery or the '$' symbol.
+        document.addEventListener("DOMContentLoaded", () => {
+            // Elements
+            const sidebar = document.getElementById("sidebar");
+            const menuToggle = document.getElementById("menuToggle");
+            const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+            const quoteElement = document.getElementById("quote");
+            const logo = document.getElementById("logo");
+            const mainContent = document.querySelector(".main-content");
+            const bellIcon = document.getElementById("bellIcon");
+            const notificationPanel = document.getElementById("notificationPanel");
+
+            // Check if desktop or mobile
+            const checkViewport = () => {
+                return window.innerWidth <= 768;
+            };
+
+            // Toggle menu functions
+            function toggleMenu() {
+                sidebar.classList.toggle("active");
+            }
+
+            // Only show menu toggle on mobile by default
+            function updateMenuVisibility() {
+                if (checkViewport()) {
+                    menuToggle.style.display = "block";
+                } else {
+                    menuToggle.style.display = sidebar.classList.contains("active") ? "block" : "none";
+                }
+            }
+
+            // Initialize menu visibility
+            updateMenuVisibility();
+
+            // Event listeners for sidebar
+            menuToggle.addEventListener("click", () => {
+                toggleMenu();
+                updateMenuVisibility();
+            });
+
+            mobileMenuToggle.addEventListener("click", toggleMenu);
+
+            // Update on resize
+            window.addEventListener("resize", updateMenuVisibility);
+
+            // Close sidebar and notification panel when clicking outside
+            document.addEventListener("click", (e) => {
+                const isMobile = checkViewport();
+                const isClickOutsideSidebar =
+                    !sidebar.contains(e.target) && !menuToggle.contains(e.target) && !mobileMenuToggle.contains(e.target);
+
+                if (isClickOutsideSidebar && sidebar.classList.contains("active")) {
+                    sidebar.classList.remove("active");
+                    if (!isMobile) {
+                        menuToggle.style.display = "none";
+                    }
+                }
+
+                // Close notification panel when clicking outside
+                const isClickOutsideNotification =
+                    !bellIcon.contains(e.target) && !notificationPanel.contains(e.target);
+
+                if (isClickOutsideNotification && notificationPanel.classList.contains("active")) {
+                    notificationPanel.classList.remove("active");
+                }
+            });
+
+            // Toggle notification panel on bell icon click
+            bellIcon.addEventListener("click", (e) => {
+                e.stopPropagation();
+                notificationPanel.classList.toggle("active");
+            });
+
+            // Logo animation
+            function animateLogo() {
+                logo.classList.add("pulse");
+                setTimeout(() => {
+                    logo.classList.remove("pulse");
+                }, 2000);
+            }
+
+            // Animate logo on hover and periodically
+            logo.addEventListener("mouseenter", animateLogo);
+            setInterval(animateLogo, 5000);
+
+            // Dynamic background effect
+            function createBubble() {
+                const animatedBg = document.querySelector(".animated-background");
+                const bubble = document.createElement("div");
+
+                bubble.className = "bubble";
+
+                const size = Math.random() * 60 + 20;
+                const left = Math.random() * 100;
+                const duration = Math.random() * 20 + 10;
+
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${left}%`;
+                bubble.style.animationDuration = `${duration}s`;
+
+                animatedBg.appendChild(bubble);
+
+                setTimeout(() => {
+                    bubble.remove();
+                }, duration * 1000);
+            }
+
+            // Create bubbles periodically
+            setInterval(createBubble, 1000);
+
+            // Add parallax effect to main content
+            mainContent.addEventListener("mousemove", (e) => {
+                const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+                const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+
+                document.querySelector(".animated-background").style.transform = `translate(${moveX}px, ${moveY}px)`;
+            });
+
+            // Quotes system
+            const quotes = [
+                "Education is the passport to the future, for tomorrow belongs to those who prepare for it today.",
+                "The beautiful thing about learning is that no one can take it away from you.",
+                "Education is not preparation for life; education is life itself.",
+                "Knowledge is power. Information is liberating. Education is the premise of progress.",
+                "Live as if you were to die tomorrow. Learn as if you were to live forever.",
+            ];
+
+            function showRandomQuote() {
+                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                quoteElement.textContent = randomQuote;
+                quoteElement.classList.add("visible");
+            }
+
+            // Show initial quote with delay
+            setTimeout(showRandomQuote, 500);
+
+            // Change quote every 8 seconds
+            setInterval(() => {
+                quoteElement.classList.remove("visible");
+                setTimeout(() => {
+                    showRandomQuote();
+                }, 500);
+            }, 8000);
+
+            // Enhanced hover effects for nav items
+            const navItems = document.querySelectorAll(".nav-item");
+            navItems.forEach((item) => {
+                item.addEventListener("mouseenter", () => {
+                    const icon = item.querySelector(".nav-icon");
+                    icon.style.transform = "scale(1.2) rotate(360deg)";
+                    icon.style.transition = "transform 0.5s ease";
+                });
+
+                item.addEventListener("mouseleave", () => {
+                    const icon = item.querySelector(".nav-icon");
+                    icon.style.transform = "none";
+                });
+
+                // Add click effect
+                item.addEventListener("click", () => {
+                    const icon = item.querySelector(".nav-icon");
+                    icon.style.transform = "scale(0.9)";
+                    setTimeout(() => {
+                        icon.style.transform = "none";
+                    }, 150);
+                });
+            });
+
+            // Add hover effects to all interactive elements
+            const interactiveElements = document.querySelectorAll(
+                "button, .brand-name, .brand-subtitle, .dashboard-text, .system-info, .welcome-text"
+            );
+
+            interactiveElements.forEach((element) => {
+                element.addEventListener("mouseenter", () => {
+                    element.style.transition = "all 0.3s ease";
+                    element.style.transform = "scale(1.05)";
+                });
+
+                element.addEventListener("mouseleave", () => {
+                    element.style.transform = "";
+                });
+            });
+
+            // Add ripple effect to buttons
+            const buttons = document.querySelectorAll("button");
+
+            buttons.forEach((button) => {
+                button.addEventListener("click", function (e) {
+                    const x = e.clientX - e.target.getBoundingClientRect().left;
+                    const y = e.clientY - e.target.getBoundingClientRect().top;
+
+                    const ripple = document.createElement("span");
+                    ripple.className = "ripple";
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+
+                    this.appendChild(ripple);
+
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+
+        // Add CSS for bubbles and ripple effect
+        document.addEventListener("DOMContentLoaded", () => {
+            const style = document.createElement("style");
+            style.textContent = `
+                .bubble {
+                    position: absolute;
+                    bottom: -100px;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.1);
+                    animation: rise linear forwards;
+                    pointer-events: none;
+                }
+                
+                @keyframes rise {
+                    0% {
+                        transform: translateY(0) scale(1);
+                        opacity: 0;
+                    }
+                    50% {
+                        opacity: 0.5;
+                    }
+                    100% {
+                        transform: translateY(-100vh) scale(1.5);
+                        opacity: 0;
+                    }
+                }
+                
+                .ripple {
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.4);
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                    pointer-events: none;
+                }
+                
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

@@ -1,543 +1,954 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exam Mark Entry & Digital Progress Card</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- jsPDF CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    /* Custom styles for enhanced UI */
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-    .hidden {
-      display: none;
-    }
-    .alert {
-      transition: opacity 0.5s ease-in-out;
-    }
-    .subject-row {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .subject-row:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    .nav-button {
-      transition: all 0.3s ease;
-      transform: perspective(1px) translateZ(0);
-    }
-    .nav-button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      background-color: #2563eb !important;
-    }
-    .fade-in {
-      animation: fadeIn 0.5s ease-in;
-    }
-    .modal {
-      animation: slideIn 0.3s ease-out;
-    }
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes slideIn {
-      0% { opacity: 0; transform: translateY(-20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    /* Responsive adjustments */
-    @media (max-width: 640px) {
-      .subject-row {
-        flex-direction: column;
-      }
-      .subject-row > div {
-        width: 100%;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Mark Entry & Digital Progress Card</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        nav {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nav-content h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .nav-buttons span {
+            font-size: 14px;
+        }
+        .nav-button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .nav-button:hover {
+            background-color: #2563eb;
+            transform: scale(1.05);
+        }
+        .logout-button {
+            background-color: #ef4444;
+        }
+        .logout-button:hover {
+            background-color: #dc2626;
+        }
+        .section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .alert-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+        .subject-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .subject-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .subject-row div {
+            flex: 1;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        .button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .button-primary:hover {
+            background-color: #2563eb;
+        }
+        .button-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+        .button-secondary:hover {
+            background-color: #4b5563;
+        }
+        .button-green {
+            background-color: #10b981;
+            color: white;
+        }
+        .button-green:hover {
+            background-color: #059669;
+        }
+        .button-purple {
+            background-color: #8b5cf6;
+            color: white;
+        }
+        .button-purple:hover {
+            background-color: #7c3aed;
+        }
+        .button-red {
+            background-color: #ef4444;
+            color: white;
+        }
+        .button-red:hover {
+            background-color: #dc2626;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .table th, .table td {
+            border: 1px solid #d1d5db;
+            padding: 8px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #e5e7eb;
+        }
+        .signature-pad {
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .class-section {
+            display: flex;
+            gap: 15px;
+        }
+        @media (max-width: 640px) {
+            .subject-row, .class-section {
+                flex-direction: column;
+            }
+            .nav-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-buttons {
+                margin-top: 10px;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-  <!-- Navigation Bar -->
-  <nav class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-10">
-    <div class="container mx-auto flex justify-between items-center flex-wrap">
-      <h1 class="text-2xl font-bold sm:text-3xl">Exam Mark Entry System</h1>
-      <div class="flex gap-2 sm:gap-4 items-center mt-2 sm:mt-0">
-        <div class="flex items-center">
-          <select id="userRole" class="border p-2 rounded focus:ring-2 focus:ring-blue-500 text-black">
-            <option value="">Select Role</option>
-            <option value="classTeacher">Class Teacher</option>
-            <option value="subjectTeacher">Subject Teacher</option>
-          </select>
-        </div>
-        <button id="showMarkEntry" class="nav-button bg-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600">Mark Entry</button>
-        <button id="showProgressCard" class="nav-button bg-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600">Progress Card</button>
-      </div>
-    </div>
-  </nav>
+<body>
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
-  <!-- Main Container -->
-  <div class="container mx-auto p-4 sm:p-6">
-    <!-- Mark Entry Tab -->
-    <div id="markEntrySection" class="hidden bg-white p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6 fade-in">
-      <h2 class="text-lg sm:text-xl font-semibold mb-4">Mark Entry</h2>
-      <div id="alert" class="hidden p-4 mb-4 rounded"></div>
-      <div class="grid gap-4">
-        <div class="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium">Student Name</label>
-            <input id="studentName" type="text" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter student name" required>
-          </div>
-          <div>
-            <label class="block text-sm font-medium">Roll Number</label>
-            <input id="rollNumber" type="text" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter roll number" required>
-          </div>
-        </div>
-        <div id="subjectSelection">
-          <!-- Dynamically populated based on role -->
-        </div>
-        <div id="marksInput" class="space-y-4">
-          <!-- Dynamically populated based on role -->
-        </div>
-        <div>
-          <button id="addSubject" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all">Add Subject</button>
-        </div>
-        <div class="flex gap-4">
-          <button id="saveMarks" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all">Save Marks</button>
-          <button id="clearForm" class="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition-all">Clear Form</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Progress Card Tab -->
-    <div id="progressCardSection" class="hidden bg-white p-4 sm:p-6 rounded-lg shadow-md fade-in">
-      <h2 class="text-lg sm:text-xl font-semibold mb-4">Digital Progress Card</h2>
-      <div class="mb-4">
-        <label class="block text-sm font-medium">Select Student</label>
-        <select id="studentSelect" class="border p-2 rounded w-full max-w-xs focus:ring-2 focus:ring-blue-500">
-          <option value="">Select Student</option>
-        </select>
-      </div>
-      <div id="progressCard" class="hidden p-4 border rounded">
-        <h3 id="studentNameCard" class="text-lg font-semibold"></h3>
-        <p id="rollNumberCard" class="text-sm text-gray-600"></p>
-        <table class="w-full mt-4 border-collapse">
-          <thead>
-            <tr class="bg-gray-200">
-              <th class="border p-2 text-left">Subject</th>
-              <th class="border p-2 text-left">Marks</th>
-              <th class="border p-2 text-left">Max Marks</th>
-            </tr>
-          </thead>
-          <tbody id="marksTable"></tbody>
-        </table>
-        <p id="totalMarks" class="mt-4"></p>
-        <p id="percentage"></p>
-        <p id="status" class="font-semibold"></p>
-        <button id="downloadPDF" class="mt-4 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all">Download Progress Card</button>
-      </div>
-    </div>
-
-    <!-- Add Subject Modal -->
-    <div id="addSubjectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full modal">
-        <h3 class="text-lg font-semibold mb-4">Add New Subject</h3>
-        <div class="mb-4">
-          <label class="block text-sm font-medium">Subject Name</label>
-          <input id="newSubjectName" type="text" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter subject name" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium">Maximum Marks</label>
-          <input id="newMaxMarks" type="number" min="1" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter max marks" required>
-        </div>
-        <div class="flex gap-4">
-          <button id="submitSubject" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all">Add Subject</button>
-          <button id="cancelSubject" class="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition-all">Cancel</button>
-        </div>
-      </div>
-    </div>
-
-  <script>
-    // In-memory storage for student marks and subjects
-    let students = [];
-    let subjects = ['Math', 'Science', 'English', 'History', 'Geography'];
-    let maxMarks = { 'Math': 100, 'Science': 100, 'English': 100, 'History': 100, 'Geography': 100 };
-
-    // DOM Elements
-    const userRole = document.getElementById('userRole');
-    const markEntrySection = document.getElementById('markEntrySection');
-    const progressCardSection = document.getElementById('progressCardSection');
-    const studentNameInput = document.getElementById('studentName');
-    const rollNumberInput = document.getElementById('rollNumber');
-    const subjectSelection = document.getElementById('subjectSelection');
-    const marksInput = document.getElementById('marksInput');
-    const addSubjectBtn = document.getElementById('addSubject');
-    const saveMarksBtn = document.getElementById('saveMarks');
-    const clearFormBtn = document.getElementById('clearForm');
-    const studentSelect = document.getElementById('studentSelect');
-    const progressCard = document.getElementById('progressCard');
-    const studentNameCard = document.getElementById('studentNameCard');
-    const rollNumberCard = document.getElementById('rollNumberCard');
-    const marksTable = document.getElementById('marksTable');
-    const totalMarks = document.getElementById('totalMarks');
-    const percentage = document.getElementById('percentage');
-    const status = document.getElementById('status');
-    const downloadPDFBtn = document.getElementById('downloadPDF');
-    const alertBox = document.getElementById('alert');
-    const showMarkEntry = document.getElementById('showMarkEntry');
-    const showProgressCard = document.getElementById('showProgressCard');
-    const addSubjectModal = document.getElementById('addSubjectModal');
-    const newSubjectName = document.getElementById('newSubjectName');
-    const newMaxMarks = document.getElementById('newMaxMarks');
-    const submitSubject = document.getElementById('submitSubject');
-    const cancelSubject = document.getElementById('cancelSubject');
-
-    // Show alert message
-    function showAlert(message, type = 'success') {
-      alertBox.classList.remove('hidden', 'bg-green-100', 'bg-red-100');
-      alertBox.classList.add(type === 'success' ? 'bg-green-100' : 'bg-red-100');
-      alertBox.textContent = message;
-      setTimeout(() => {
-        alertBox.classList.add('hidden');
-      }, 3000);
-    }
-
-    // Update form based on role
-    userRole.addEventListener('change', () => {
-      const role = userRole.value;
-      if (role) {
-        markEntrySection.classList.remove('hidden');
-        progressCardSection.classList.add('hidden');
-        renderMarkEntryForm(role);
-      } else {
-        markEntrySection.classList.add('hidden');
-      }
-    });
-
-    // Render mark entry form based on role
-    function renderMarkEntryForm(role) {
-      subjectSelection.innerHTML = '';
-      marksInput.innerHTML = '';
-
-      if (role === 'subjectTeacher') {
-        subjectSelection.innerHTML = `
-          <div>
-            <label class="block text-sm font-medium">Subject</label>
-            <select id="subject" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" required>
-              <option value="">Select Subject</option>
-              ${subjects.map(sub => `<option value="${sub}">${sub}</option>`).join('')}
-            </select>
-          </div>
-        `;
-        marksInput.innerHTML = `
-          <div class="subject-row flex flex-col sm:flex-row gap-4">
-            <div class="flex-1">
-              <label class="block text-sm font-medium">Marks</label>
-              <input id="marks" type="number" min="0" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter marks" required>
+    <nav>
+        <div class="container nav-content">
+            <h1>Teachers</h1>
+            <div class="nav-buttons">
+                <span>Welcome, {{ teacher_name }}</span>
+                <button id="showMarkEntry" class="nav-button">Mark Entry</button>
+                <button id="showProgressCard" class="nav-button">Progress Card</button>
+                <a href="{% url 'teacher_login' %}" class="nav-button logout-button">Logout</a>
             </div>
-            <div class="flex-1">
-              <label class="block text-sm font-medium">Max Marks</label>
-              <input id="maxMarks" type="number" min="1" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter max marks" value="${maxMarks[document.getElementById('subject')?.value] || 100}" required>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="markEntrySection" class="section">
+            <h2>Mark Entry</h2>
+            <div id="alert" class="alert"></div>
+            <div class="form-group class-section">
+                <div style="flex: 1;">
+                    <label>Class</label>
+                    <select id="classSelect" required>
+                        <option value="">Select Class</option>
+                        {% for class in classes %}
+                            <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label>Section</label>
+                    <select id="sectionSelect" required>
+                        <option value="">Select Section</option>
+                        {% for section in sections %}
+                            <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
-          </div>
-        `;
-        document.getElementById('subject').addEventListener('change', () => {
-          const subject = document.getElementById('subject').value;
-          document.getElementById('maxMarks').value = maxMarks[subject] || 100;
-        });
-      } else {
-        subjects.forEach(sub => {
-          marksInput.innerHTML += `
-            <div class="subject-row flex flex-col sm:flex-row gap-4">
-              <div class="flex-1">
-                <label class="block text-sm font-medium">${sub} Marks</label>
-                <input id="${sub}-marks" type="number" min="0" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter ${sub} marks" required>
-              </div>
-              <div class="flex-1">
-                <label class="block text-sm font-medium">${sub} Max Marks</label>
-                <input id="${sub}-maxMarks" type="number" min="1" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" placeholder="Enter max marks" value="${maxMarks[sub]}" required>
-              </div>
+            <div class="form-group">
+                <label>Select Student</label>
+                <select id="studentSelect" style="max-width: 300px;" required>
+                    <option value="">Select Student</option>
+                </select>
             </div>
-          `;
-        });
-      }
-    }
+            <div id="subjectSelection"></div>
+            <div id="marksInput"></div>
+            <div class="form-group">
+                <label>Digital Signature</label>
+                <canvas id="signaturePad" class="signature-pad" width="300" height="100"></canvas>
+                <button id="clearSignature" class="button button-secondary">Clear Signature</button>
+            </div>
+            <div class="form-group">
+                <button id="addSubject" class="button button-green">Add Subject</button>
+                <button id="deleteSubject" class="button button-red">Delete Subject</button>
+            </div>
+            <div class="button-group">
+                <button id="saveMarks" class="button button-primary">Save Marks</button>
+                <button id="clearForm" class="button button-secondary">Clear Form</button>
+            </div>
+        </div>
 
-    // Add new subject modal
-    addSubjectBtn.addEventListener('click', () => {
-      addSubjectModal.classList.remove('hidden');
-      newSubjectName.value = '';
-      newMaxMarks.value = '';
-    });
+        <div id="progressCardSection" class="section" style="display: none;">
+            <h2>Digital Progress Card</h2>
+            <div class="form-group class-section">
+                <div style="flex: 1;">
+                    <label>Class</label>
+                    <select id="progressClassSelect" required>
+                        <option value="">Select Class</option>
+                        {% for class in classes %}
+                            <option value="{{ class }}">{{ class }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label>Section</label>
+                    <select id="progressSectionSelect" required>
+                        <option value="">Select Section</option>
+                        {% for section in sections %}
+                            <option value="{{ section }}">{{ section }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Select Student</label>
+                <select id="progressStudentSelect" style="max-width: 300px;">
+                    <option value="">Select Student</option>
+                </select>
+            </div>
+            <div id="progressCard" style="display: none; border: 1px solid #d1d5db; padding: 15px; border-radius: 4px;">
+                <h3 id="studentName"></h3>
+                <p id="studentDetails" style="font-size: 14px; color: #4b5563;"></p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Marks</th>
+                            <th>Max Marks</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marksTable"></tbody>
+                </table>
+                <p id="totalMarks" style="margin-top: 15px;"></p>
+                <p id="percentage"></p>
+                <p id="grade"></p>
+                <p id="status" style="font-weight: bold;"></p>
+                <button id="downloadPDF" class="button button-purple" style="margin-top: 15px;">Download Progress Card</button>
+            </div>
+        </div>
 
-    cancelSubject.addEventListener('click', () => {
-      addSubjectModal.classList.add('hidden');
-    });
+        <div id="addSubjectModal" class="modal">
+            <div class="modal-content">
+                <h3 style="font-size: 18px; margin-bottom: 15px;">Add New Subject</h3>
+                <div class="form-group">
+                    <label>Subject Name</label>
+                    <input id="newSubjectName" type="text" placeholder="Enter subject name" required>
+                </div>
+                <div class="form-group">
+                    <label>Maximum Marks</label>
+                    <input id="newMaxMarks" type="number" min="1" placeholder="Enter max marks" required>
+                </div>
+                <div class="button-group">
+                    <button id="submitSubject" class="button button-primary">Add Subject</button>
+                    <button id="cancelSubject" class="button button-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
 
-    submitSubject.addEventListener('click', () => {
-      const subjectName = newSubjectName.value.trim();
-      const maxMark = parseInt(newMaxMarks.value);
-      if (subjectName && !subjects.includes(subjectName)) {
-        if (isNaN(maxMark) || maxMark < 1) {
-          showAlert('Please enter a valid maximum mark', 'error');
-          return;
-        }
-        subjects.push(subjectName);
-        maxMarks[subjectName] = maxMark;
-        showAlert(`Subject ${subjectName} added with max marks ${maxMark}`);
-        renderMarkEntryForm(userRole.value);
-        addSubjectModal.classList.add('hidden');
-      } else {
-        showAlert('Please enter a valid, unique subject name', 'error');
-      }
-    });
+        <div id="deleteSubjectModal" class="modal">
+            <div class="modal-content">
+                <h3 style="font-size: 18px; margin-bottom: 15px;">Delete Subject</h3>
+                <div class="form-group">
+                    <label>Select Subject to Delete</label>
+                    <select id="deleteSubjectSelect" required>
+                        <option value="">Select Subject</option>
+                    </select>
+                </div>
+                <p style="color: #991b1b; font-size: 14px;">Warning: This will delete the subject and all associated marks. This action cannot be undone.</p>
+                <div class="button-group">
+                    <button id="confirmDeleteSubject" class="button button-red">Delete Subject</button>
+                    <button id="cancelDeleteSubject" class="button button-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    // Save marks
-    saveMarksBtn.addEventListener('click', () => {
-      const role = userRole.value;
-      const name = studentNameInput.value.trim();
-      const rollNumber = rollNumberInput.value.trim();
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const markEntrySection = document.getElementById('markEntrySection');
+            const progressCardSection = document.getElementById('progressCardSection');
+            const classSelect = document.getElementById('classSelect');
+            const sectionSelect = document.getElementById('sectionSelect');
+            const studentSelect = document.getElementById('studentSelect');
+            const subjectSelection = document.getElementById('subjectSelection');
+            const marksInput = document.getElementById('marksInput');
+            const addSubjectBtn = document.getElementById('addSubject');
+            const deleteSubjectBtn = document.getElementById('deleteSubject');
+            const saveMarksBtn = document.getElementById('saveMarks');
+            const clearFormBtn = document.getElementById('clearForm');
+            const progressClassSelect = document.getElementById('progressClassSelect');
+            const progressSectionSelect = document.getElementById('progressSectionSelect');
+            const progressStudentSelect = document.getElementById('progressStudentSelect');
+            const progressCard = document.getElementById('progressCard');
+            const studentNameDisplay = document.getElementById('studentName');
+            const studentDetails = document.getElementById('studentDetails');
+            const marksTable = document.getElementById('marksTable');
+            const totalMarks = document.getElementById('totalMarks');
+            const percentage = document.getElementById('percentage');
+            const grade = document.getElementById('grade');
+            const status = document.getElementById('status');
+            const downloadPDFBtn = document.getElementById('downloadPDF');
+            const alertBox = document.getElementById('alert');
+            const showMarkEntry = document.getElementById('showMarkEntry');
+            const showProgressCard = document.getElementById('showProgressCard');
+            const addSubjectModal = document.getElementById('addSubjectModal');
+            const newSubjectName = document.getElementById('newSubjectName');
+            const newMaxMarks = document.getElementById('newMaxMarks');
+            const submitSubject = document.getElementById('submitSubject');
+            const cancelSubject = document.getElementById('cancelSubject');
+            const deleteSubjectModal = document.getElementById('deleteSubjectModal');
+            const deleteSubjectSelect = document.getElementById('deleteSubjectSelect');
+            const confirmDeleteSubject = document.getElementById('confirmDeleteSubject');
+            const cancelDeleteSubject = document.getElementById('cancelDeleteSubject');
+            const signaturePad = document.getElementById('signaturePad');
+            const clearSignatureBtn = document.getElementById('clearSignature');
 
-      if (!name || !rollNumber) {
-        showAlert('Please enter student name and roll number', 'error');
-        return;
-      }
+            const role = '{{ role }}';
+            const teacherSubject = '{{ teacher_subject }}';
+            let subjects = [];
+            let currentSignature = null;
 
-      if (role === 'subjectTeacher') {
-        const subject = document.getElementById('subject').value;
-        const marks = parseInt(document.getElementById('marks').value);
-        const maxMark = parseInt(document.getElementById('maxMarks').value);
+            // Signature Pad Setup
+            const ctx = signaturePad.getContext('2d');
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
 
-        if (!subject || isNaN(marks) || marks < 0 || isNaN(maxMark) || maxMark < 1 || marks > maxMark) {
-          showAlert('Please select a subject and enter valid marks (0 to max marks) and max marks', 'error');
-          return;
-        }
-
-        let student = students.find(s => s.name === name && s.rollNumber === rollNumber);
-        if (!student) {
-          student = { name, rollNumber, marks: {}, maxMarks: {} };
-          students.push(student);
-        }
-        student.marks[subject] = marks;
-        student.maxMarks[subject] = maxMark;
-        maxMarks[subject] = maxMark;
-      } else {
-        const marks = {};
-        const studentMaxMarks = {};
-        let valid = true;
-        subjects.forEach(sub => {
-          const mark = parseInt(document.getElementById(`${sub}-marks`).value);
-          const maxMark = parseInt(document.getElementById(`${sub}-maxMarks`).value);
-          if (isNaN(mark) || mark < 0 || isNaN(maxMark) || maxMark < 1 || mark > maxMark) {
-            valid = false;
-          } else {
-            marks[sub] = mark;
-            studentMaxMarks[sub] = maxMark;
-            maxMarks[sub] = maxMark;
-          }
-        });
-
-        if (!valid) {
-          showAlert('Please enter valid marks (0 to max marks) and max marks for all subjects', 'error');
-          return;
-        }
-
-        let student = students.find(s => s.name === name && s.rollNumber === rollNumber);
-        if (!student) {
-          student = { name, rollNumber, marks: {}, maxMarks: {} };
-          students.push(student);
-        }
-        student.marks = { ...student.marks, ...marks };
-        student.maxMarks = { ...student.maxMarks, ...studentMaxMarks };
-      }
-
-      showAlert('Marks saved successfully');
-      updateStudentSelect();
-      clearForm();
-    });
-
-    // Clear form
-    clearFormBtn.addEventListener('click', clearForm);
-    function clearForm() {
-      studentNameInput.value = '';
-      rollNumberInput.value = '';
-      if (userRole.value === 'subjectTeacher') {
-        document.getElementById('subject').value = '';
-        document.getElementById('marks').value = '';
-        document.getElementById('maxMarks').value = '';
-      } else {
-        subjects.forEach(sub => {
-          document.getElementById(`${sub}-marks`).value = '';
-          document.getElementById(`${sub}-maxMarks`).value = maxMarks[sub];
-        });
-      }
-    }
-
-    // Update student select dropdown
-    function updateStudentSelect() {
-      studentSelect.innerHTML = '<option value="">Select Student</option>';
-      students.forEach(student => {
-        studentSelect.innerHTML += `<option value="${student.name}|${student.rollNumber}">${student.name} (Roll: ${student.rollNumber})</option>`;
-      });
-    }
-
-    // Show progress card
-    studentSelect.addEventListener('change', () => {
-      const value = studentSelect.value;
-      if (value) {
-        const [name, rollNumber] = value.split('|');
-        const student = students.find(s => s.name === name && s.rollNumber === rollNumber);
-        if (student) {
-          progressCard.classList.remove('hidden');
-          studentNameCard.textContent = student.name;
-          rollNumberCard.textContent = `Roll Number: ${student.rollNumber}`;
-          marksTable.innerHTML = '';
-          let total = 0;
-          let totalMax = 0;
-          let count = 0;
-          let passed = true;
-
-          subjects.forEach(sub => {
-            const mark = student.marks[sub] || 0;
-            const maxMark = student.maxMarks[sub] || maxMarks[sub] || 100;
-            if (student.marks[sub]) {
-              total += mark;
-              totalMax += maxMark;
-              count++;
-              if (mark < 0.33 * maxMark) passed = false;
+            function startDrawing(e) {
+                isDrawing = true;
+                const rect = signaturePad.getBoundingClientRect();
+                [lastX, lastY] = [e.clientX - rect.left, e.clientY - rect.top];
             }
-            marksTable.innerHTML += `
-              <tr>
-                <td class="border p-2">${sub}</td>
-                <td class="border p-2">${mark}</td>
-                <td class="border p-2">${maxMark}</td>
-              </tr>
-            `;
-          });
 
-          totalMarks.textContent = `Total Marks: ${total}/${totalMax}`;
-          const percent = totalMax > 0 ? (total / totalMax * 100).toFixed(2) : 0;
-          percentage.textContent = `Percentage: ${percent}%`;
-          status.textContent = `Status: ${passed && count === subjects.length ? 'Pass' : 'Fail'}`;
-        }
-      } else {
-        progressCard.classList.add('hidden');
-      }
-    });
-
-    // Download progress card as PDF
-    downloadPDFBtn.addEventListener('click', () => {
-      const value = studentSelect.value;
-      if (value) {
-        const [name, rollNumber] = value.split('|');
-        const student = students.find(s => s.name === name && s.rollNumber === rollNumber);
-        if (student) {
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF();
-
-          // Colors based on the provided image
-          const headerColor = '#1e3a8a'; // Blue header
-          const tableHeaderColor = '#10b981'; // Green table header
-          const rowColor1 = '#ffffff'; // White row
-          const rowColor2 = '#e5e7eb'; // Light gray row
-          const summaryColor = '#f59e0b'; // Orange summary
-          const borderColor = '#1e3a8a'; // Blue border
-
-          // Header
-          doc.setFillColor(headerColor);
-          doc.rect(10, 10, 190, 20, 'F');
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(16);
-          doc.setTextColor('#ffffff');
-          doc.text('Progress Card', 20, 20);
-
-          // Academic Year
-          doc.setFontSize(10);
-          doc.text('Exam Mark Entry System', 150, 15);
-          doc.text('Academic Year: 2024-2025', 150, 20);
-
-          // Student Details
-          doc.setTextColor('#000000');
-          doc.setFontSize(12);
-          doc.setFont('helvetica', 'normal');
-          doc.text(`Student Name: ${student.name}`, 20, 40);
-          doc.text(`Roll Number: ${student.rollNumber}`, 20, 50);
-          doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 60);
-
-          // Table Header
-          doc.setFontSize(10);
-          doc.setFont('helvetica', 'bold');
-          let y = 70;
-          doc.setFillColor(tableHeaderColor);
-          doc.rect(20, y, 170, 8, 'F');
-          doc.setTextColor('#ffffff');
-          doc.text('Subject', 22, y + 6);
-          doc.text('Marks', 100, y + 6);
-          doc.text('Max Marks', 140, y + 6);
-          y += 8;
-          doc.setDrawColor(borderColor);
-          doc.setLineWidth(0.2);
-          doc.line(20, y, 190, y);
-
-          // Table Data
-          doc.setFont('helvetica', 'normal');
-          doc.setTextColor('#000000');
-          let total = 0;
-          let totalMax = 0;
-          let count = 0;
-          let passed = true;
-
-          subjects.forEach((sub, index) => {
-            const mark = student.marks[sub] || 0;
-            const maxMark = student.maxMarks[sub] || maxMarks[sub] || 100;
-            if (student.marks[sub]) {
-              total += mark;
-              totalMax += maxMark;
-              count++;
-              if (mark < 0.33 * maxMark) passed = false;
+            function draw(e) {
+                if (!isDrawing) return;
+                const rect = signaturePad.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(x, y);
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                [lastX, lastY] = [x, y];
             }
-            y += 8;
-            doc.setFillColor(index % 2 === 0 ? rowColor1 : rowColor2);
-            doc.rect(20, y, 170, 8, 'F');
-            doc.text(sub, 22, y + 6);
-            doc.text(mark.toString(), 100, y + 6);
-            doc.text(maxMark.toString(), 140, y + 6);
-            doc.line(20, y + 8, 190, y + 8);
-          });
 
-          // Summary Section
-          y += 10;
-          doc.setFillColor(summaryColor);
-          doc.rect(20, y, 170, 20, 'F');
-          doc.setFont('helvetica', 'bold');
-          doc.setTextColor('#ffffff');
-          doc.text(`Total Marks: ${total}/${totalMax}`, 22, y + 8);
-          const percent = totalMax > 0 ? (total / totalMax * 100).toFixed(2) : 0;
-          doc.text(`Percentage: ${percent}%`, 100, y + 8);
-          doc.text(`Status: ${passed && count === subjects.length ? 'Pass' : 'Fail'}`, 22, y + 16);
-          doc.text(passed && count === subjects.length ? 'Congratulations!' : 'Needs Improvement', 100, y + 16);
+            function stopDrawing() {
+                isDrawing = false;
+                currentSignature = signaturePad.toDataURL();
+            }
 
-          // Download PDF
-          doc.save(`${student.name}_ProgressCard.pdf`);
-        }
-      }
-    });
+            signaturePad.addEventListener('mousedown', startDrawing);
+            signaturePad.addEventListener('mousemove', draw);
+            signaturePad.addEventListener('mouseup', stopDrawing);
+            signaturePad.addEventListener('mouseleave', stopDrawing);
+            signaturePad.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                startDrawing(touch);
+            });
+            signaturePad.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                draw(touch);
+            });
+            signaturePad.addEventListener('touchend', stopDrawing);
 
-    // Navigation
-    showMarkEntry.addEventListener('click', () => {
-      markEntrySection.classList.remove('hidden');
-      progressCardSection.classList.add('hidden');
-    });
+            clearSignatureBtn.addEventListener('click', () => {
+                ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
+                currentSignature = null;
+            });
 
-    showProgressCard.addEventListener('click', () => {
-      markEntrySection.classList.add('hidden');
-      progressCardSection.classList.remove('hidden');
-    });
-  </script>
+            function showAlert(message, type = 'success') {
+                alertBox.style.display = 'block';
+                alertBox.className = 'alert alert-' + type;
+                alertBox.textContent = message;
+                setTimeout(() => alertBox.style.display = 'none', 3000);
+            }
+
+            async function updateMarkEntryForm() {
+                const classValue = classSelect.value;
+                const sectionValue = sectionSelect.value;
+                studentSelect.innerHTML = '<option value="">Select Student</option>';
+                subjectSelection.innerHTML = '';
+                marksInput.innerHTML = '';
+
+                if (!classValue || !sectionValue) {
+                    return;
+                }
+
+                try {
+                    // Fetch students
+                    const studentResponse = await fetch(`/get_students/?class=${encodeURIComponent(classValue)}&section=${encodeURIComponent(sectionValue)}`, {
+                        headers: { 'X-CSRFToken': getCsrfToken() }
+                    });
+                    const studentData = await studentResponse.json();
+                    if (studentData.success) {
+                        studentData.students.forEach(student => {
+                            studentSelect.innerHTML += `<option value="${student.id}">${student.name} (Roll: ${student.roll_number})</option>`;
+                        });
+                    } else {
+                        showAlert(studentData.message, 'error');
+                    }
+
+                    // Fetch subjects
+                    const subjectResponse = await fetch(`/get_subjects/?class=${encodeURIComponent(classValue)}`, {
+                        headers: { 'X-CSRFToken': getCsrfToken() }
+                    });
+                    const subjectData = await subjectResponse.json();
+                    if (subjectData.success) {
+                        subjects = subjectData.subjects;
+                        renderMarkEntryForm();
+                    } else {
+                        showAlert(subjectData.message, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error updating form.', 'error');
+                }
+            }
+
+            function renderMarkEntryForm() {
+                subjectSelection.innerHTML = '';
+                marksInput.innerHTML = '';
+
+                if (role === 'subjectTeacher') {
+                    const subject = subjects.find(sub => sub.name === teacherSubject);
+                    if (subject) {
+                        subjectSelection.innerHTML = `
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <select id="subject" required>
+                                    <option value="${subject.id}">${subject.name}</option>
+                                </select>
+                            </div>
+                        `;
+                        marksInput.innerHTML = `
+                            <div class="subject-row">
+                                <div>
+                                    <label>Marks</label>
+                                    <input id="marks" type="number" min="0" placeholder="Enter marks" required>
+                                </div>
+                                <div>
+                                    <label>Max Marks</label>
+                                    <input id="maxMarks" type="number" min="1" value="${subject.max_marks}" readonly>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        marksInput.innerHTML = '<p>No subjects assigned.</p>';
+                    }
+                } else {
+                    if (subjects.length === 0) {
+                        marksInput.innerHTML = '<p>No subjects available for this class.</p>';
+                    } else {
+                        subjects.forEach(sub => {
+                            marksInput.innerHTML += `
+                                <div class="subject-row">
+                                    <div>
+                                        <label>${sub.name} Marks</label>
+                                        <input id="${sub.id}-marks" type="number" min="0" placeholder="Enter ${sub.name} marks" required>
+                                    </div>
+                                    <div>
+                                        <label>${sub.name} Max Marks</label>
+                                        <input id="${sub.id}-maxMarks" type="number" min="1" value="${sub.max_marks}" readonly>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                }
+            }
+
+            function populateDeleteSubjectSelect() {
+                deleteSubjectSelect.innerHTML = '<option value="">Select Subject</option>';
+                subjects.forEach(subject => {
+                    deleteSubjectSelect.innerHTML += `<option value="${subject.id}">${subject.name}</option>`;
+                });
+            }
+
+            showMarkEntry.addEventListener('click', () => {
+                markEntrySection.style.display = 'block';
+                progressCardSection.style.display = 'none';
+                updateMarkEntryForm();
+            });
+
+            showProgressCard.addEventListener('click', () => {
+                markEntrySection.style.display = 'none';
+                progressCardSection.style.display = 'block';
+                progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
+                progressCard.style.display = 'none';
+            });
+
+            classSelect.addEventListener('change', updateMarkEntryForm);
+            sectionSelect.addEventListener('change', updateMarkEntryForm);
+
+            addSubjectBtn.addEventListener('click', () => {
+                if (!classSelect.value) {
+                    showAlert('Please select a class first.', 'error');
+                    return;
+                }
+                addSubjectModal.style.display = 'flex';
+                newSubjectName.value = '';
+                newMaxMarks.value = '';
+            });
+
+            deleteSubjectBtn.addEventListener('click', () => {
+                if (!classSelect.value) {
+                    showAlert('Please select a class first.', 'error');
+                    return;
+                }
+                populateDeleteSubjectSelect();
+                deleteSubjectModal.style.display = 'flex';
+            });
+
+            cancelSubject.addEventListener('click', () => {
+                addSubjectModal.style.display = 'none';
+            });
+
+            cancelDeleteSubject.addEventListener('click', () => {
+                deleteSubjectModal.style.display = 'none';
+            });
+
+            submitSubject.addEventListener('click', async () => {
+                const subjectName = newSubjectName.value.trim();
+                const maxMarks = parseInt(newMaxMarks.value);
+                const classValue = classSelect.value;
+
+                if (!subjectName || isNaN(maxMarks) || maxMarks < 1) {
+                    showAlert('Please enter a valid subject name and max marks.', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/add_subject/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                        body: JSON.stringify({ subjectName, maxMarks, class: classValue })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        subjects = data.subjects;
+                        showAlert(data.message);
+                        renderMarkEntryForm();
+                        addSubjectModal.style.display = 'none';
+                    } else {
+                        showAlert(data.message, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error adding subject.', 'error');
+                }
+            });
+
+            confirmDeleteSubject.addEventListener('click', async () => {
+                const subjectId = deleteSubjectSelect.value;
+                const classValue = classSelect.value;
+                if (!subjectId) {
+                    showAlert('Please select a subject to delete.', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/delete_subject/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                        body: JSON.stringify({ subjectId, class: classValue })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        subjects = data.subjects;
+                        showAlert(data.message);
+                        renderMarkEntryForm();
+                        deleteSubjectModal.style.display = 'none';
+                    } else {
+                        showAlert(data.message, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error deleting subject.', 'error');
+                }
+            });
+
+            saveMarksBtn.addEventListener('click', async () => {
+                const classValue = classSelect.value;
+                const sectionValue = sectionSelect.value;
+                const studentId = studentSelect.value;
+                const signatureData = currentSignature;
+
+                if (!classValue || !sectionValue || !studentId) {
+                    showAlert('Please select class, section, and student.', 'error');
+                    return;
+                }
+
+                if (!signatureData) {
+                    showAlert('Please provide a digital signature.', 'error');
+                    return;
+                }
+
+                let marksData;
+                if (role === 'subjectTeacher') {
+                    const subjectId = document.getElementById('subject').value;
+                    const marks = parseInt(document.getElementById('marks').value);
+                    const maxMarks = parseInt(document.getElementById('maxMarks').value);
+
+                    if (!subjectId || isNaN(marks) || isNaN(maxMarks) || marks < 0 || maxMarks < 1 || marks > maxMarks) {
+                        showAlert('Please enter valid marks and max marks.', 'error');
+                        return;
+                    }
+
+                    marksData = { subjectId, marks, maxMarks, signature: signatureData };
+                } else {
+                    marksData = [];
+                    for (const sub of subjects) {
+                        const marks = parseInt(document.getElementById(`${sub.id}-marks`).value);
+                        const maxMarks = parseInt(document.getElementById(`${sub.id}-maxMarks`).value);
+                        if (isNaN(marks) || isNaN(maxMarks) || marks < 0 || maxMarks < 1 || marks > maxMarks) {
+                            showAlert(`Please enter valid marks and max marks for ${sub.name}.`, 'error');
+                            return;
+                        }
+                        marksData.push({ subjectId: sub.id, marks, maxMarks, signature: signatureData });
+                    }
+                }
+
+                try {
+                    const response = await fetch('/save_marks/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                        body: JSON.stringify({ role, studentId, class: classValue, section: sectionValue, marks: marksData })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        showAlert(data.message);
+                        clearForm();
+                        updateMarkEntryForm();
+                    } else {
+                        showAlert(data.message, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error saving marks.', 'error');
+                }
+            });
+
+            clearFormBtn.addEventListener('click', clearForm);
+            function clearForm() {
+                studentSelect.value = '';
+                ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
+                currentSignature = null;
+                if (role === 'subjectTeacher') {
+                    const marksInput = document.getElementById('marks');
+                    if (marksInput) marksInput.value = '';
+                } else {
+                    subjects.forEach(sub => {
+                        const marksInput = document.getElementById(`${sub.id}-marks`);
+                        if (marksInput) marksInput.value = '';
+                    });
+                }
+            }
+
+            async function fetchStudents(classValue, sectionValue) {
+                try {
+                    const response = await fetch(`/get_students/?class=${encodeURIComponent(classValue)}&section=${encodeURIComponent(sectionValue)}`, {
+                        headers: { 'X-CSRFToken': getCsrfToken() }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
+                        data.students.forEach(student => {
+                            progressStudentSelect.innerHTML += `<option value="${student.id}">${student.name} (Roll: ${student.roll_number})</option>`;
+                        });
+                    } else {
+                        showAlert(data.message, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error fetching students.', 'error');
+                }
+            }
+
+            progressClassSelect.addEventListener('change', () => {
+                if (progressClassSelect.value && progressSectionSelect.value) {
+                    fetchStudents(progressClassSelect.value, progressSectionSelect.value);
+                } else {
+                    progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
+                    progressCard.style.display = 'none';
+                }
+            });
+
+            progressSectionSelect.addEventListener('change', () => {
+                if (progressClassSelect.value && progressSectionSelect.value) {
+                    fetchStudents(progressClassSelect.value, progressSectionSelect.value);
+                } else {
+                    progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
+                    progressCard.style.display = 'none';
+                }
+            });
+
+            progressStudentSelect.addEventListener('change', async () => {
+                const studentId = progressStudentSelect.value;
+                progressCard.style.display = 'none';
+                if (studentId) {
+                    try {
+                        const response = await fetch('/progress_card/', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                            body: JSON.stringify({ studentId })
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            progressCard.style.display = 'block';
+                            studentNameDisplay.textContent = data.student.name;
+                            studentDetails.textContent = `Roll Number: ${data.student.roll_number}, Class: ${data.student.class}, Section: ${data.student.section}`;
+                            marksTable.innerHTML = '';
+                            data.marks.forEach(mark => {
+                                marksTable.innerHTML += `
+                                    <tr>
+                                        <td>${mark.subject}</td>
+                                        <td>${mark.marks}</td>
+                                        <td>${mark.max_marks}</td>
+                                        <td>${mark.grade}</td>
+                                    </tr>
+                                `;
+                            });
+                            totalMarks.textContent = `Total Marks: ${data.total_marks}/${data.total_max_marks}`;
+                            percentage.textContent = `Percentage: ${data.percentage}%`;
+                            grade.textContent = `Overall Grade: ${data.grade}`;
+                            status.textContent = `Status: ${data.status}`;
+                        } else {
+                            showAlert(data.message, 'error');
+                        }
+                    } catch (error) {
+                        showAlert('Error fetching progress card.', 'error');
+                    }
+                }
+            });
+
+            downloadPDFBtn.addEventListener('click', async () => {
+                const studentId = progressStudentSelect.value;
+                if (!studentId) {
+                    showAlert('Please select a student.', 'error');
+                    return;
+                }
+                try {
+                    const response = await fetch('/progress_card/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                        body: JSON.stringify({ studentId })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        const { jsPDF } = window.jspdf;
+                        const doc = new jsPDF();
+
+                        const headerColor = '#1e3a8a';
+                        const tableHeaderColor = '#10b981';
+                        const rowColor1 = '#ffffff';
+                        const rowColor2 = '#e5e7eb';
+                        const summaryColor = '#f59e0b';
+                        const borderColor = '#1e3a8a';
+
+                        doc.setFillColor(headerColor);
+                        doc.rect(10, 10, 190, 20, 'F');
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(16);
+                        doc.setTextColor('#ffffff');
+                        doc.text('Progress Card', 20, 20);
+
+                        doc.setFontSize(10);
+                        doc.text('Exam Mark Entry System', 150, 15);
+                        doc.text('Academic Year: 2024-2025', 150, 20);
+
+                        doc.setTextColor('#000000');
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(`Student Name: ${data.student.name}`, 20, 40);
+                        doc.text(`Roll Number: ${data.student.roll_number}`, 20, 50);
+                        doc.text(`Class: ${data.student.class} ${data.student.section}`, 20, 60);
+                        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 70);
+
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'bold');
+                        let y = 80;
+                        doc.setFillColor(tableHeaderColor);
+                        doc.rect(20, y, 170, 8, 'F');
+                        doc.setTextColor('#ffffff');
+                        doc.text('Subject', 22, y + 6);
+                        doc.text('Marks', 80, y + 6);
+                        doc.text('Max Marks', 110, y + 6);
+                        doc.text('Grade', 140, y + 6);
+                        y += 8;
+                        doc.setDrawColor(borderColor);
+                        doc.setLineWidth(0.2);
+                        doc.line(20, y, 190, y);
+
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor('#000000');
+                        data.marks.forEach((mark, index) => {
+                            y += 8;
+                            doc.setFillColor(index % 2 === 0 ? rowColor1 : rowColor2);
+                            doc.rect(20, y, 170, 8, 'F');
+                            doc.text(mark.subject, 22, y + 6);
+                            doc.text(mark.marks.toString(), 80, y + 6);
+                            doc.text(mark.max_marks.toString(), 110, y + 6);
+                            doc.text(mark.grade, 140, y + 6);
+                            doc.line(20, y + 8, 190, y + 8);
+                        });
+
+                        y += 10;
+                        doc.setFillColor(summaryColor);
+                        doc.rect(20, y, 170, 20, 'F');
+                        doc.setFont('helvetica', 'bold');
+                        doc.setTextColor('#ffffff');
+                        doc.text(`Total Marks: ${data.total_marks}/${data.total_max_marks}`, 22, y + 8);
+                        doc.text(`Percentage: ${data.percentage}%`, 100, y + 8);
+                        doc.text(`Overall Grade: ${data.grade}`, 22, y + 16);
+                        doc.text(`Status: ${data.status}`, 100, y + 16);
+
+                        y += 30;
+                        doc.setFont('helvetica', 'italic');
+                        doc.setFontSize(12);
+                        doc.setTextColor('#000000');
+                        doc.text(`Digitally Signed by: ${data.teacher_name}`, 20, y);
+                        if (data.signature) {
+                            try {
+                                doc.addImage(data.signature, 'PNG', 80, y - 10, 60, 20);
+                                y += 25;
+                            } catch (e) {
+                                console.error('Error adding signature to PDF:', e);
+                            }
+                        }
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(10);
+                        doc.text('Authorized Teacher', 20, y);
+
+                        doc.save(`${data.student.name}_ProgressCard.pdf`);
+                    } else {
+                        showAlert(data.message, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error generating PDF.', 'error');
+                }
+            });
+
+            function getCsrfToken() {
+                const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+                return tokenElement ? tokenElement.value : '';
+            }
+
+            updateMarkEntryForm();
+        });
+    </script>
 </body>
 </html>
