@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e6f0fa 0%, #b3d4fc 50%, #e6f0fa 100%); /* Bluish White Theme */
+            background: linear-gradient(135deg, #bae6fd 0%, #60a5fa 50%, #bae6fd 100%);
             background-size: 200%;
             animation: gradient 20s ease infinite;
             min-height: 100vh;
@@ -47,13 +47,13 @@
             align-items: center;
             margin-bottom: 2rem;
             padding: 1rem 2rem;
-            background: linear-gradient(90deg, #1e40af, #b3d4fc); /* Bluish White header */
+            background: linear-gradient(90deg, #1e40af, #60a5fa);
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
-            color: white; /* White for contrast on header background */
+            color: white;
             font-size: 2.5rem;
             font-weight: 700;
             text-align: center;
@@ -63,7 +63,7 @@
         }
 
         h1:hover {
-            color: #e6f0fa; /* Light blue hover */
+            color: #e6f0fa;
         }
 
         .back-btn {
@@ -73,15 +73,15 @@
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            background: #ef4444; /* Red for contrast */
+            background: linear-gradient(90deg, #6b7280, #9ca3af);
             color: white;
             transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
         }
 
         .back-btn:hover {
-            background: #dc2626;
-            transform: scale(1.05); /* Subtle animation */
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+            background: linear-gradient(90deg, #4b5563, #6b7280);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
         }
 
         .logo {
@@ -98,22 +98,22 @@
         }
 
         .section {
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(179, 212, 252, 0.4); /* Bluish White border */
+            border: 1px solid rgba(96, 165, 250, 0.4);
             transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
 
         .section:hover {
             transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(30, 58, 138, 0.15);
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
         }
 
         h2 {
-            color: #1e40af; /* Bluish tone */
+            color: #1e40af;
             font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
@@ -122,7 +122,7 @@
         }
 
         h2:hover {
-            color: #b3d4fc; /* Lighter blue on hover */
+            color: #60a5fa;
         }
 
         .leave-cards {
@@ -136,13 +136,13 @@
             border-radius: 10px;
             padding: 1.5rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e6f0fa; /* Bluish White border */
+            border: 1px solid #e6f0fa;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .leave-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.15);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15);
         }
 
         .leave-card p {
@@ -152,7 +152,7 @@
         }
 
         .leave-card p strong {
-            color: #1e40af; /* Bluish tone */
+            color: #1e40af;
             font-weight: 600;
         }
 
@@ -174,25 +174,25 @@
         }
 
         .submit-btn {
-            background: linear-gradient(90deg, #1e40af, #b3d4fc); /* Bluish White gradient */
+            background: linear-gradient(90deg, #1e40af, #60a5fa);
             color: white;
         }
 
         .submit-btn:hover {
-            background: linear-gradient(90deg, #b3d4fc, #1e40af);
-            transform: scale(1.05); /* Subtle animation */
-            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
         }
 
         .remove-btn {
-            background: linear-gradient(90deg, #ff4040, #d32f2f);
+            background: linear-gradient(90deg, #dc2626, #ef4444);
             color: white;
         }
 
         .remove-btn:hover {
-            background: linear-gradient(90deg, #d32f2f, #ff4040);
-            transform: scale(1.05); /* Subtle animation */
-            box-shadow: 0 5px 15px rgba(255, 64, 64, 0.4);
+            background: linear-gradient(90deg, #b91c1c, #dc2626);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
         }
 
         .no-requests {
@@ -200,6 +200,16 @@
             font-size: 1rem;
             color: #333;
             padding: 1rem;
+        }
+
+        .flash-success {
+            background-color: #e0f2fe;
+            color: #1e40af;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #60a5fa;
+            text-align: center;
         }
 
         @media (max-width: 768px) {

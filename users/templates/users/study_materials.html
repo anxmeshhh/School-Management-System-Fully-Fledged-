@@ -1,7 +1,9 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Materials</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
@@ -14,10 +16,10 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e6e6fa 0%, #dcd6f7 50%, #e6e6fa 100%);
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #e8f5e9 100%);
             background-size: 200%;
             animation: gradient 20s ease infinite;
-            padding: 40px 20px;
+            padding: 80px 20px 40px 20px;
             min-height: 100vh;
             position: relative;
         }
@@ -28,19 +30,65 @@
             100% { background-position: 0% 50%; }
         }
 
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, #2e7d32, #4caf50);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+            flex-wrap: wrap;
+        }
+
         h1 {
-            text-align: center;
-            color: #6a5acd;
+            color: white;
             font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 2.5rem;
+            text-align: center;
             letter-spacing: 1px;
             text-transform: uppercase;
-            transition: color 0.3s ease;
+            transition: color 0.3s ease, transform 0.3s ease;
+            flex-grow: 1;
         }
 
         h1:hover {
-            color: #483d8b;
+            color: #e8f5e9;
+            transform: scale(1.02);
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #388e3c, #4caf50);
+            color: white;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(90deg, #2e7d32, #388e3c);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4);
+        }
+
+        .logo-container {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .material-box {
@@ -57,7 +105,7 @@
 
         .material-box:hover {
             transform: translateY(-8px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(106, 90, 205, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(46, 125, 50, 0.2);
         }
 
         @keyframes fadeIn {
@@ -65,8 +113,13 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .material-box h3 {
-            color: #6a5acd;
+            color: #2e7d32;
             font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
@@ -75,43 +128,48 @@
         }
 
         .material-box h3:hover {
-            color: #483d8b;
+            color: #4caf50;
         }
 
         .material-box p {
             color: #666;
             font-size: 1rem;
             font-weight: 400;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             letter-spacing: 0.5px;
         }
 
         .material-box p strong {
-            color: #6a5acd;
+            color: #2e7d32;
             font-weight: 600;
             transition: color 0.3s ease;
         }
 
         .material-box p strong:hover {
-            color: #483d8b;
+            color: #4caf50;
         }
 
         .file-preview {
             margin-top: 1rem;
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .file-preview a {
-            color: #6a5acd;
+            color: #2e7d32;
             font-size: 1rem;
             font-weight: 600;
             text-decoration: none;
-            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 5px;
+            background: #e8f5e9;
+            transition: color 0.3s ease, transform 0.3s ease, background 0.3s ease;
         }
 
         .file-preview a:hover {
-            color: #483d8b;
+            color: white;
+            background: #4caf50;
             transform: translateY(-2px);
         }
 
@@ -119,7 +177,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(90deg, #6a5acd, #483d8b);
+            background: linear-gradient(90deg, #2e7d32, #4caf50);
             color: white;
             padding: 0.8rem 1.5rem;
             border-radius: 8px;
@@ -131,15 +189,36 @@
         }
 
         .go-to-homework:hover {
-            background: linear-gradient(90deg, #483d8b, #6a5acd);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+            background: linear-gradient(90deg, #4caf50, #2e7d32);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4);
+        }
+
+        p {
+            color: #666;
+            text-align: center;
+            font-size: 1rem;
+            animation: fadeIn 0.5s ease-out;
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
+
+            .header {
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+                align-items: center;
+                justify-content: space-between;
+            }
+
             h1 {
-                font-size: 2rem;
-                margin-bottom: 2rem;
+                font-size: 1.8rem;
+                margin: 0;
+                flex-grow: 1;
+                text-align: center;
             }
 
             .material-box {
@@ -156,18 +235,51 @@
 
             .file-preview a {
                 font-size: 0.9rem;
+                padding: 6px 12px;
             }
 
             .go-to-homework {
                 padding: 0.7rem 1.2rem;
                 font-size: 0.9rem;
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .back-btn {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .logo {
+                width: 40px;
+                height: 40px;
+            }
+
+            .logo-container {
+                top: 10px;
+                right: 10px;
+            }
+
+            p {
+                font-size: 0.9rem;
             }
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px;
+            }
+
+            .header {
+                padding: 0.6rem 0.8rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
+            }
+
             h1 {
-                font-size: 1.6rem;
-                margin-bottom: 1.5rem;
+                font-size: 1.4rem;
             }
 
             .material-box {
@@ -182,31 +294,72 @@
                 font-size: 0.8rem;
             }
 
+            .file-preview {
+                flex-direction: column;
+                gap: 0.3rem;
+                align-items: center;
+            }
+
             .file-preview a {
                 font-size: 0.8rem;
+                padding: 5px 10px;
             }
 
             .go-to-homework {
                 padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .logo {
+                width: 35px;
+                height: 35px;
+            }
+
+            .logo-container {
+                top: 8px;
+                right: 8px;
+            }
+
+            p {
                 font-size: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
-    <h1>📚 Study Materials</h1>
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='{% url 'dashboard' %}'">Back</button>
+        <h1>📚 Study Materials</h1>
+        <a href="{% url 'dashboard' %}">
+            <img src="{% static 'users/images/studentlogo.jpg' %}" alt="School Logo" class="logo">
+        </a>
+    </div>
 
     {% if messages %}
         {% for message in messages %}
-            <div style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
+            <div style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %}; text-align: center; margin-bottom: 1rem;">
                 {{ message }}
             </div>
         {% endfor %}
     {% endif %}
 
+    <div style="text-align: center; margin-bottom: 1rem;">
+        <p><strong>Class:</strong> {{ student_class|capfirst }}</p>
+        <p><strong>Section:</strong> {{ student_section|capfirst }}</p>
+    </div>
+
     {% for material in study_materials %}
         <div class="material-box">
             <h3>{{ material.title }}</h3>
+            <p><strong>Class:</strong> {{ material.class|capfirst }}</p>
+            <p><strong>Section:</strong> {{ material.section|capfirst }}</p>
             <p><strong>Uploaded on:</strong> {{ material.upload_date }}</p>
             <div class="file-preview">
                 <a href="{% url 'serve_pdf' material.file_path %}" target="_blank">📄 View PDF</a>
@@ -214,7 +367,9 @@
             </div>
         </div>
     {% empty %}
-        <p>No study materials available.</p>
+        <p style="text-align: center; color: #666;">
+            No study materials available for Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}.
+        </p>
     {% endfor %}
 
     <a href="{% url 'homework' %}" class="go-to-homework">Go to Homework</a>

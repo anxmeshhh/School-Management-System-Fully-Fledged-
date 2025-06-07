@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e6e6fa 0%, #dcd6f7 50%, #e6e6fa 100%);
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c2 50%, #e8f5e9 100%);
             background-size: 200%;
             animation: gradient 20s ease infinite;
             padding: 40px 20px;
@@ -29,7 +29,7 @@
         }
 
         h1 {
-            color: #6a5acd;
+            color: #4caf50;
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 2rem;
@@ -39,11 +39,11 @@
         }
 
         h1:hover {
-            color: #483d8b;
+            color: #388e3c;
         }
 
         h2 {
-            color: #6a5acd;
+            color: #4caf50;
             font-size: 2rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
@@ -52,7 +52,14 @@
         }
 
         h2:hover {
-            color: #483d8b;
+            color: #388e3c;
+        }
+
+        .student-info {
+            text-align: center;
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
         }
 
         .upload-box, .homework-box {
@@ -69,7 +76,7 @@
 
         .upload-box:hover, .homework-box:hover {
             transform: translateY(-8px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(106, 90, 205, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(76, 175, 80, 0.2);
         }
 
         @keyframes fadeIn {
@@ -79,7 +86,7 @@
 
         .upload-box label {
             display: block;
-            color: #6a5acd;
+            color: #4caf50;
             font-size: 1.1rem;
             font-weight: 400;
             margin-bottom: 0.5rem;
@@ -88,7 +95,7 @@
         }
 
         .upload-box label:hover {
-            color: #483d8b;
+            color: #388e3c;
         }
 
         input[type="text"], input[type="date"], input[type="file"] {
@@ -97,7 +104,7 @@
             width: 100%;
             padding: 0.8rem;
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #dcd6f7, #e6e6fa) border-box;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #e8f5e9, #c8e6c2) border-box;
             border-radius: 8px;
             font-size: 1rem;
             font-family: 'Poppins', sans-serif;
@@ -107,13 +114,13 @@
         input[type="text"]:focus, input[type="date"]:focus, input[type="file"]:focus {
             outline: none;
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #6a5acd, #483d8b) border-box;
-            box-shadow: 0 0 8px rgba(106, 90, 205, 0.3);
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #4caf50, #388e3c) border-box;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
         }
 
         button {
             padding: 0.8rem 1.5rem;
-            background: linear-gradient(90deg, #6a5acd, #483d8b);
+            background: linear-gradient(90deg, #4caf50, #388e3c);
             color: white;
             border: none;
             border-radius: 8px;
@@ -124,13 +131,13 @@
         }
 
         button:hover {
-            background: linear-gradient(90deg, #483d8b, #6a5acd);
+            background: linear-gradient(90deg, #388e3c, #4caf50);
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
         }
 
         .homework-box h3 {
-            color: #6a5acd;
+            color: #4caf50;
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
@@ -138,7 +145,7 @@
         }
 
         .homework-box h3:hover {
-            color: #483d8b;
+            color: #388e3c;
         }
 
         .homework-box p {
@@ -155,7 +162,7 @@
         }
 
         .file-preview a {
-            color: #6a5acd;
+            color: #4caf50;
             text-decoration: none;
             font-size: 1rem;
             font-weight: 500;
@@ -163,7 +170,7 @@
         }
 
         .file-preview a:hover {
-            color: #483d8b;
+            color: #388e3c;
             text-decoration: underline;
         }
 
@@ -171,7 +178,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(90deg, #6a5acd, #483d8b);
+            background: linear-gradient(90deg, #4caf50, #388e3c);
             color: white;
             padding: 0.8rem 1.5rem;
             border-radius: 8px;
@@ -183,9 +190,9 @@
         }
 
         .go-to-study-materials:hover {
-            background: linear-gradient(90deg, #483d8b, #6a5acd);
+            background: linear-gradient(90deg, #388e3c, #4caf50);
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
         }
 
         @media (max-width: 768px) {
@@ -195,6 +202,10 @@
 
             h2 {
                 font-size: 1.6rem;
+            }
+
+            .student-info {
+                font-size: 1.1rem;
             }
 
             .upload-box, .homework-box {
@@ -220,6 +231,10 @@
                 font-size: 1.3rem;
             }
 
+            .student-info {
+                font-size: 1rem;
+            }
+
             .upload-box, .homework-box {
                 padding: 15px;
             }
@@ -242,6 +257,12 @@
 </head>
 <body>
     <h1>📚 Submit Homework</h1>
+
+    {% if student_class and student_section %}
+        <div class="student-info">
+            Your Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}
+        </div>
+    {% endif %}
 
     <div class="upload-box">
         <form method="POST" enctype="multipart/form-data">

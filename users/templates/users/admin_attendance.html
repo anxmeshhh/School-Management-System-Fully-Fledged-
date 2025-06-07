@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,42 +13,92 @@
             font-family: Arial, sans-serif;
         }
         body {
-            background: linear-gradient(to bottom, #e0f2fe, #bfdbfe);
-            padding: 20px;
+            background: linear-gradient(to bottom, #e3f2fd, #bbdefb);
+            padding: 30px;
+            overflow-x: hidden;
         }
         .container {
             max-width: 1400px;
             margin: 0 auto;
             display: flex;
-            gap: 20px;
+            gap: 30px;
+            animation: fadeIn 1s ease-in-out;
+            position: relative;
+        }
+        .hamburger {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            transition: transform 0.3s ease;
+        }
+        .hamburger:hover {
+            transform: scale(1.1);
+        }
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #1565c0;
+            margin: 5px 0;
+            transition: background-color 0.3s ease;
         }
         .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
             width: 250px;
-            background-color: #1e40af;
+            background-color: #1565c0;
             color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .close-btn:hover {
+            transform: rotate(90deg);
         }
         .sidebar a {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px;
+            gap: 10px;
+            padding: 12px;
             color: white;
             text-decoration: none;
             border-radius: 6px;
-            margin-bottom: 8px;
-            transition: background-color 0.2s ease;
+            margin-bottom: 12px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
         .sidebar a:hover {
-            background-color: #3b82f6;
+            background-color: #42a5f5;
+            transform: translateX(5px);
         }
         .logo-button {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 30px;
             font-weight: bold;
         }
         .logo-img {
@@ -55,51 +106,63 @@
             height: 48px;
             border-radius: 50%;
             border: 2px solid white;
+            transition: transform 0.3s ease;
+        }
+        .logo-img:hover {
+            transform: rotate(360deg);
         }
         .main-content {
             flex: 1;
             background-color: white;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            margin-left: 0;
+            transition: margin-left 0.3s ease-in-out;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .main-content.shifted {
+            margin-left: 250px;
         }
         .header {
-            background: linear-gradient(to right, #1e40af, #3b82f6);
+            background: linear-gradient(to right, #1565c0, #42a5f5);
             color: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            animation: fadeInDown 0.8s ease-out;
         }
         .header h1 {
             font-size: 24px;
             font-weight: bold;
         }
         .button {
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 6px;
             text-decoration: none;
             color: white;
-            background-color: #2563eb;
-            transition: background-color 0.2s ease, transform 0.1s ease;
+            background-color: #1976d2;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
         .button:hover {
-            background-color: #1e40af;
+            background-color: #1565c0;
             transform: scale(1.05);
         }
         .form-container {
-            background-color: #f8fafd;
-            padding: 20px;
+            background-color: #f9fafb;
+            padding: 25px;
             border-radius: 8px;
-            border: 2px solid #bfdbfe;
+            border: 2px solid #bbdefb;
+            animation: fadeInUp 0.8s ease-out;
         }
         .form-row {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             align-items: flex-end;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         .form-group {
             flex: 1;
@@ -107,45 +170,47 @@
         .form-group label {
             display: block;
             font-size: 14px;
-            color: #4b5563;
-            margin-bottom: 8px;
+            color: #374151;
+            margin-bottom: 10px;
         }
         .form-group select, .form-group input[type="date"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
             font-size: 14px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .form-group select:focus, .form-group input[type="date"]:focus {
             outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
         }
         .no-sections {
-            color: #dc2626;
+            color: #d32f2f;
             font-size: 12px;
-            margin-top: 8px;
+            margin-top: 10px;
             display: none;
         }
         .message {
-            padding: 12px;
-            margin-bottom: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
             border-radius: 6px;
             color: white;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            animation: fadeIn 0.5s ease-in;
         }
-        .message.error { background-color: #dc2626; }
-        .message.warning { background-color: #eab308; }
-        .message.success { background-color: #16a34a; }
+        .message.error { background-color: #d32f2f; }
+        .message.warning { background-color: #f57c00; }
+        .message.success { background-color: #2e7d32; }
         .attendance-table {
             max-height: 500px;
             overflow-y: auto;
             border-radius: 8px;
-            border: 2px solid #bfdbfe;
-            margin-bottom: 20px;
+            border: 2px solid #bbdefb;
+            margin-bottom: 30px;
         }
         table {
             width: 100%;
@@ -153,42 +218,218 @@
             background-color: white;
         }
         th, td {
-            border: 1px solid #bfdbfe;
-            padding: 12px;
+            border: 1px solid #bbdefb;
+            padding: 15px;
             text-align: left;
         }
         th {
-            background-color: #dbeafe;
+            background-color: #e3f2fd;
             position: sticky;
             top: 0;
-            color: #1e40af;
+            color: #1565c0;
             font-weight: bold;
         }
         td {
             color: #1f2937;
         }
         .highlight {
-            background-color: #eff6ff;
+            background-color: #f5faff;
         }
         .attendance-btn {
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 5px;
             border: none;
             color: white;
             font-size: 14px;
-            margin: 0 4px;
+            margin: 0 6px;
             cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.3s ease;
         }
-        .present { background-color: #16a34a; }
-        .absent { background-color: #dc2626; }
-        .leave { background-color: #eab308; }
+        .attendance-btn:hover {
+            transform: scale(1.05);
+        }
+        .present { background-color: #2e7d32; }
+        .absent { background-color: #d32f2f; }
+        .leave { background-color: #f57c00; }
         .selected {
-            border: 2px solid #1e40af;
-            box-shadow: 0 0 5px rgba(30, 64, 175, 0.5);
+            border: 2px solid #1565c0;
+            box-shadow: 0 0 5px rgba(21, 101, 192, 0.5);
         }
         .pdf-button {
             display: inline-block;
-            margin-top: 20px;
+            margin-top: 30px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            .main-content {
+                width: 100%;
+                max-width: 700px;
+                margin-top: 60px;
+                margin-left: 0;
+            }
+            .main-content.shifted {
+                margin-left: 0;
+            }
+            .form-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            .attendance-table {
+                max-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            .container {
+                padding: 0;
+            }
+            .sidebar {
+                padding: 15px;
+                padding-top: 70px;
+                width: 200px;
+            }
+            .sidebar a {
+                padding: 10px;
+                margin-bottom: 10px;
+                font-size: 14px;
+            }
+            .logo-button {
+                margin-bottom: 20px;
+            }
+            .logo-img {
+                width: 40px;
+                height: 40px;
+            }
+            .main-content {
+                padding: 15px;
+                margin-top: 60px;
+            }
+            .header {
+                padding: 15px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .form-container {
+                padding: 15px;
+            }
+            .form-group label {
+                margin-bottom: 8px;
+            }
+            .form-group select, .form-group input[type="date"] {
+                padding: 10px;
+                font-size: 13px;
+            }
+            .attendance-btn {
+                padding: 8px 16px;
+                font-size: 12px;
+                margin: 0 4px;
+            }
+            th, td {
+                padding: 10px;
+                font-size: 13px;
+            }
+            .pdf-button {
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            .hamburger {
+                top: 15px;
+                left: 15px;
+            }
+            .sidebar {
+                width: 200px;
+                padding: 10px;
+                padding-top: 60px;
+            }
+            .sidebar a {
+                font-size: 12px;
+                padding: 8px;
+                margin-bottom: 8px;
+            }
+            .logo-img {
+                width: 36px;
+                height: 36px;
+            }
+            .logo-button {
+                margin-bottom: 15px;
+            }
+            .close-btn {
+                top: 15px;
+                right: 15px;
+            }
+            .header {
+                padding: 12px;
+            }
+            .header h1 {
+                font-size: 18px;
+            }
+            .main-content {
+                padding: 12px;
+                margin-top: 50px;
+            }
+            .form-container {
+                padding: 12px;
+            }
+            .form-row {
+                gap: 10px;
+            }
+            .form-group label {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+            .form-group select, .form-group input[type="date"] {
+                padding: 8px;
+                font-size: 12px;
+            }
+            .attendance-table {
+                max-height: 300px;
+            }
+            th, td {
+                padding: 8px;
+                font-size: 12px;
+            }
+            .attendance-btn {
+                padding: 6px 12px;
+                font-size: 11px;
+                margin: 2px;
+            }
+            .button {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+            .pdf-button {
+                margin-top: 15px;
+            }
         }
     </style>
 </head>
@@ -197,7 +438,7 @@
         <div class="sidebar">
             <div class="logo-button">
                 <a href="{% url 'admin_page' %}">
-                    <img src="https://via.placeholder.com/80" alt="Manavargal Logo" class="logo-img">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
                     <span>Manavargal School</span>
                 </a>
             </div>

@@ -7,169 +7,279 @@
     <title>Exam Mark Entry & Digital Progress Card</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+        * {
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e6edff 0%, #b3c8ff 50%, #e6edff 100%);
+            background-size: 200%;
+            animation: gradient 15s ease infinite;
+            min-height: 100vh;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .container {
             width: 90%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 1.5rem;
         }
+
         nav {
-            background-color: #1e3a8a;
+            background: linear-gradient(to right, #1e40af, #3b82f6);
             color: white;
-            padding: 15px;
-            position: sticky;
+            padding: 1rem;
+            position: fixed;
             top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
+
         .nav-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
         }
+
         .nav-content h1 {
-            font-size: 24px;
+            font-size: 1.75rem;
+            font-weight: 600;
             margin: 0;
         }
+
         .nav-buttons {
             display: flex;
-            gap: 10px;
+            gap: 0.75rem;
             align-items: center;
-            margin-top: 10px;
+            margin-top: 0.5rem;
         }
+
         .nav-buttons span {
-            font-size: 14px;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
+
         .nav-button {
-            background-color: #3b82f6;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
             color: white;
-            padding: 8px 16px;
+            padding: 0.6rem 1.2rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
         }
+
         .nav-button:hover {
-            background-color: #2563eb;
-            transform: scale(1.05);
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
+
+        .nav-button:active {
+            transform: scale(0.98);
+        }
+
         .logout-button {
-            background-color: #ef4444;
+            background: linear-gradient(90deg, #ef4444, #f87171);
         }
+
         .logout-button:hover {
-            background-color: #dc2626;
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
+
         .section {
             background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            margin: 4.5rem auto 1.5rem;
+            animation: slideIn 0.6s ease-out;
         }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .section h2 {
-            font-size: 20px;
-            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 1rem;
         }
+
         .alert {
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 4px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
             display: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease-in-out;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .alert-success {
             background-color: #d1fae5;
             color: #065f46;
         }
+
         .alert-error {
             background-color: #fee2e2;
             color: #991b1b;
         }
+
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 1rem;
         }
+
         .form-group label {
             display: block;
-            font-size: 14px;
-            margin-bottom: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
         }
-        .form-group input, .form-group select {
+
+        .form-group label:hover {
+            color: #2563eb;
+        }
+
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            box-sizing: border-box;
+            padding: 0.75rem;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #d6e4ff, #e6f0fa) border-box;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border 0.3s ease, box-shadow 0.3s ease;
         }
-        .form-group input:focus, .form-group select:focus {
-            border-color: #3b82f6;
+
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #3b82f6, #2563eb) border-box;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
         }
+
         .subject-row {
             display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            transition: transform 0.3s, box-shadow 0.3s;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            background-color: #f8fafc;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
         .subject-row:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+
         .subject-row div {
             flex: 1;
         }
+
         .button-group {
             display: flex;
-            gap: 10px;
+            gap: 0.75rem;
+            flex-wrap: wrap;
         }
+
         .button {
-            padding: 8px 16px;
+            padding: 0.75rem 1.2rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
         }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .button:active {
+            transform: scale(0.98);
+        }
+
         .button-primary {
-            background-color: #3b82f6;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
             color: white;
         }
+
         .button-primary:hover {
-            background-color: #2563eb;
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
         }
+
         .button-secondary {
-            background-color: #6b7280;
+            background: linear-gradient(90deg, #6b7280, #9ca3af);
             color: white;
         }
+
         .button-secondary:hover {
-            background-color: #4b5563;
+            background: linear-gradient(90deg, #4b5563, #6b7280);
         }
+
         .button-green {
-            background-color: #10b981;
+            background: linear-gradient(90deg, #10b981, #34d399);
             color: white;
         }
+
         .button-green:hover {
-            background-color: #059669;
+            background: linear-gradient(90deg, #059669, #10b981);
         }
+
         .button-purple {
-            background-color: #8b5cf6;
+            background: linear-gradient(90deg, #8b5cf6, #a78bfa);
             color: white;
         }
+
         .button-purple:hover {
-            background-color: #7c3aed;
+            background: linear-gradient(90deg, #7c3aed, #8b5cf6);
         }
+
         .button-red {
-            background-color: #ef4444;
+            background: linear-gradient(90deg, #ef4444, #f87171);
             color: white;
         }
+
         .button-red:hover {
-            background-color: #dc2626;
+            background: linear-gradient(90deg, #dc2626, #ef4444);
         }
+
         .modal {
             display: none;
             position: fixed;
@@ -177,55 +287,312 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.6);
             z-index: 200;
             justify-content: center;
             align-items: center;
         }
+
         .modal-content {
             background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 400px;
+            padding: 1.5rem;
+            border-radius: 12px;
+            max-width: 450px;
             width: 90%;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
             animation: slideIn 0.3s ease-out;
         }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+
         .table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 1rem;
+            background-color: white;
+            border-radius: 6px;
+            overflow: hidden;
         }
-        .table th, .table td {
-            border: 1px solid #d1d5db;
-            padding: 8px;
+
+        .table th,
+        .table td {
+            border: 1px solid #bfdbfe;
+            padding: 0.75rem;
             text-align: left;
+            font-size: 0.9rem;
         }
+
         .table th {
-            background-color: #e5e7eb;
+            background-color: #dbeafe;
+            color: #1e40af;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
+
+        .table td {
+            color: #1f2937;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .table tr:hover {
+            background-color: #eff6ff;
+        }
+
         .signature-pad {
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            margin-bottom: 15px;
+            border: 2px solid #bfdbfe;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            background-color: #f8fafc;
+            transition: border-color 0.3s ease;
         }
+
+        .signature-pad:hover {
+            border-color: #3b82f6;
+        }
+
         .class-section {
             display: flex;
-            gap: 15px;
+            gap: 1rem;
         }
-        @media (max-width: 640px) {
-            .subject-row, .class-section {
-                flex-direction: column;
-            }
+
+        .progress-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .student-profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            border: 2px solid #bfdbfe;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+        }
+
+        .student-info-header {
+            flex: 1;
+        }
+
+        .student-info-header h3 {
+            margin: 0 0 0.5rem 0;
+            color: #1e40af;
+            font-size: 1.25rem;
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .hamburger:hover {
+            transform: rotate(90deg);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-menu.active {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            color: #6b7280;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 1024px) {
             .nav-content {
+                flex-wrap: nowrap;
+            }
+
+            .nav-buttons {
+                margin-top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                margin-top: 4rem;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .nav-menu {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                gap: 0.5rem;
+                margin-top: 1rem;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                width: 100%;
+                margin-top: 0;
+            }
+
+            .nav-button {
+                width: 100%;
+                text-align: center;
+            }
+
+            .section {
+                padding: 1rem;
+                margin-top: 4rem;
+            }
+
+            .section h2 {
+                font-size: 1.25rem;
+            }
+
+            .form-group label {
+                font-size: 0.85rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 0.6rem;
+                font-size: 0.85rem;
+            }
+
+            .subject-row,
+            .class-section {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .button {
+                padding: 0.6rem 0.75rem;
+                font-size: 0.85rem;
+            }
+
+            .table {
+                font-size: 0.85rem;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.6rem;
+            }
+
+            .modal-content {
+                padding: 1rem;
+                max-width: 95%;
+            }
+
+            .student-profile-pic {
+                width: 60px;
+                height: 60px;
+            }
+
+            .progress-card-header {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 0.75rem;
             }
-            .nav-buttons {
-                margin-top: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.75rem;
+                margin-top: 3.5rem;
+            }
+
+            .nav-content h1 {
+                font-size: 1.25rem;
+            }
+
+            .nav-buttons span {
+                font-size: 0.8rem;
+            }
+
+            .nav-button {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .section {
+                padding: 0.75rem;
+                margin-top: 3.5rem;
+            }
+
+            .section h2 {
+                font-size: 1.1rem;
+            }
+
+            .form-group label {
+                font-size: 0.8rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .subject-row,
+            .class-section {
+                gap: 0.5rem;
+            }
+
+            .button {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .table {
+                font-size: 0.8rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.5rem;
+            }
+
+            .modal-content {
+                padding: 0.75rem;
+            }
+
+            .signature-pad {
+                margin-bottom: 0.75rem;
+            }
+
+            .hamburger {
+                font-size: 1.3rem;
+                padding: 0.4rem;
+            }
+
+            .student-profile-pic {
+                width: 50px;
+                height: 50px;
             }
         }
     </style>
@@ -235,7 +602,7 @@
 
     <nav>
         <div class="container nav-content">
-            <h1>Teachers</h1>
+            <h1>Teachers Portal</h1>
             <div class="nav-buttons">
                 <span>Welcome, {{ teacher_name }}</span>
                 <button id="showMarkEntry" class="nav-button">Mark Entry</button>
@@ -320,9 +687,15 @@
                     <option value="">Select Student</option>
                 </select>
             </div>
-            <div id="progressCard" style="display: none; border: 1px solid #d1d5db; padding: 15px; border-radius: 4px;">
-                <h3 id="studentName"></h3>
-                <p id="studentDetails" style="font-size: 14px; color: #4b5563;"></p>
+            <div class="loading" id="loadingProgress">Loading progress card...</div>
+            <div id="progressCard" style="display: none; border: 1px solid #d1d5db; padding: 15px; border-radius: 8px;">
+                <div class="progress-card-header">
+                    <img id="studentProfilePic" class="student-profile-pic" alt="Student Profile Picture" style="display: none;">
+                    <div class="student-info-header">
+                        <h3 id="studentName"></h3>
+                        <p id="studentDetails" style="font-size: 14px; color: #4b5563; margin: 0;"></p>
+                    </div>
+                </div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -334,10 +707,12 @@
                     </thead>
                     <tbody id="marksTable"></tbody>
                 </table>
-                <p id="totalMarks" style="margin-top: 15px;"></p>
-                <p id="percentage"></p>
-                <p id="grade"></p>
-                <p id="status" style="font-weight: bold;"></p>
+                <div style="margin-top: 15px; padding: 10px; background-color: #f8fafc; border-radius: 6px;">
+                    <p id="totalMarks" style="margin: 0 0 5px 0; font-weight: 600;"></p>
+                    <p id="percentage" style="margin: 0 0 5px 0; font-weight: 600;"></p>
+                    <p id="grade" style="margin: 0 0 5px 0; font-weight: 600;"></p>
+                    <p id="status" style="margin: 0; font-weight: bold; font-size: 1.1rem;"></p>
+                </div>
                 <button id="downloadPDF" class="button button-purple" style="margin-top: 15px;">Download Progress Card</button>
             </div>
         </div>
@@ -369,7 +744,7 @@
                         <option value="">Select Subject</option>
                     </select>
                 </div>
-                <p style="color: #991b1b; font-size: 14px;">Warning: This will delete the subject and all associated marks. This action cannot be undone.</p>
+                <p style="color: #991b1b; font-size: 14px; margin: 10px 0;">Warning: This will delete the subject and all associated marks. This action cannot be undone.</p>
                 <div class="button-group">
                     <button id="confirmDeleteSubject" class="button button-red">Delete Subject</button>
                     <button id="cancelDeleteSubject" class="button button-secondary">Cancel</button>
@@ -380,6 +755,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
             const markEntrySection = document.getElementById('markEntrySection');
             const progressCardSection = document.getElementById('progressCardSection');
             const classSelect = document.getElementById('classSelect');
@@ -397,6 +773,7 @@
             const progressCard = document.getElementById('progressCard');
             const studentNameDisplay = document.getElementById('studentName');
             const studentDetails = document.getElementById('studentDetails');
+            const studentProfilePic = document.getElementById('studentProfilePic');
             const marksTable = document.getElementById('marksTable');
             const totalMarks = document.getElementById('totalMarks');
             const percentage = document.getElementById('percentage');
@@ -406,6 +783,9 @@
             const alertBox = document.getElementById('alert');
             const showMarkEntry = document.getElementById('showMarkEntry');
             const showProgressCard = document.getElementById('showProgressCard');
+            const loadingProgress = document.getElementById('loadingProgress');
+            
+            // Modal elements
             const addSubjectModal = document.getElementById('addSubjectModal');
             const newSubjectName = document.getElementById('newSubjectName');
             const newMaxMarks = document.getElementById('newMaxMarks');
@@ -415,13 +795,34 @@
             const deleteSubjectSelect = document.getElementById('deleteSubjectSelect');
             const confirmDeleteSubject = document.getElementById('confirmDeleteSubject');
             const cancelDeleteSubject = document.getElementById('cancelDeleteSubject');
+            
+            // Signature pad elements
             const signaturePad = document.getElementById('signaturePad');
             const clearSignatureBtn = document.getElementById('clearSignature');
 
+            // Variables
             const role = '{{ role }}';
             const teacherSubject = '{{ teacher_subject }}';
             let subjects = [];
             let currentSignature = null;
+            let currentProgressData = null;
+
+            // Utility Functions
+            function getCsrfToken() {
+                const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+                return tokenElement ? tokenElement.value : '';
+            }
+
+            function showAlert(message, type = 'success') {
+                alertBox.style.display = 'block';
+                alertBox.className = 'alert alert-' + type;
+                alertBox.textContent = message;
+                setTimeout(() => alertBox.style.display = 'none', 5000);
+            }
+
+            function showLoading(show = true) {
+                loadingProgress.classList.toggle('show', show);
+            }
 
             // Signature Pad Setup
             const ctx = signaturePad.getContext('2d');
@@ -429,45 +830,56 @@
             let lastX = 0;
             let lastY = 0;
 
-            function startDrawing(e) {
-                isDrawing = true;
+            function getEventPos(e) {
                 const rect = signaturePad.getBoundingClientRect();
-                [lastX, lastY] = [e.clientX - rect.left, e.clientY - rect.top];
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+
+            function startDrawing(e) {
+                e.preventDefault();
+                isDrawing = true;
+                const pos = getEventPos(e);
+                lastX = pos.x;
+                lastY = pos.y;
             }
 
             function draw(e) {
+                e.preventDefault();
                 if (!isDrawing) return;
-                const rect = signaturePad.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+                const pos = getEventPos(e);
                 ctx.beginPath();
                 ctx.moveTo(lastX, lastY);
-                ctx.lineTo(x, y);
+                ctx.lineTo(pos.x, pos.y);
                 ctx.strokeStyle = '#000000';
                 ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
                 ctx.stroke();
-                [lastX, lastY] = [x, y];
+                lastX = pos.x;
+                lastY = pos.y;
             }
 
-            function stopDrawing() {
-                isDrawing = false;
-                currentSignature = signaturePad.toDataURL();
+            function stopDrawing(e) {
+                e.preventDefault();
+                if (isDrawing) {
+                    isDrawing = false;
+                    currentSignature = signaturePad.toDataURL();
+                }
             }
 
+            // Mouse events
             signaturePad.addEventListener('mousedown', startDrawing);
             signaturePad.addEventListener('mousemove', draw);
             signaturePad.addEventListener('mouseup', stopDrawing);
             signaturePad.addEventListener('mouseleave', stopDrawing);
-            signaturePad.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                startDrawing(touch);
-            });
-            signaturePad.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                draw(touch);
-            });
+
+            // Touch events
+            signaturePad.addEventListener('touchstart', startDrawing);
+            signaturePad.addEventListener('touchmove', draw);
             signaturePad.addEventListener('touchend', stopDrawing);
 
             clearSignatureBtn.addEventListener('click', () => {
@@ -475,13 +887,38 @@
                 currentSignature = null;
             });
 
-            function showAlert(message, type = 'success') {
-                alertBox.style.display = 'block';
-                alertBox.className = 'alert alert-' + type;
-                alertBox.textContent = message;
-                setTimeout(() => alertBox.style.display = 'none', 3000);
+            // Image loading utility with CORS handling
+            function loadImageAsBase64(src) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    
+                    img.onload = function() {
+                        try {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            ctx.drawImage(img, 0, 0);
+                            const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+                            resolve(dataURL);
+                        } catch (error) {
+                            console.error('Error converting image to base64:', error);
+                            reject(error);
+                        }
+                    };
+                    
+                    img.onerror = function() {
+                        console.error('Error loading image:', src);
+                        reject(new Error('Failed to load image'));
+                    };
+                    
+                    // Try to load the image with cache busting
+                    img.src = src + (src.includes('?') ? '&' : '?') + 't=' + Date.now();
+                });
             }
 
+            // Mark Entry Functions
             async function updateMarkEntryForm() {
                 const classValue = classSelect.value;
                 const sectionValue = sectionSelect.value;
@@ -498,28 +935,39 @@
                     const studentResponse = await fetch(`/get_students/?class=${encodeURIComponent(classValue)}&section=${encodeURIComponent(sectionValue)}`, {
                         headers: { 'X-CSRFToken': getCsrfToken() }
                     });
+                    
+                    if (!studentResponse.ok) {
+                        throw new Error(`HTTP error! status: ${studentResponse.status}`);
+                    }
+                    
                     const studentData = await studentResponse.json();
                     if (studentData.success) {
                         studentData.students.forEach(student => {
                             studentSelect.innerHTML += `<option value="${student.id}">${student.name} (Roll: ${student.roll_number})</option>`;
                         });
                     } else {
-                        showAlert(studentData.message, 'error');
+                        showAlert(studentData.message || 'Error fetching students', 'error');
                     }
 
                     // Fetch subjects
                     const subjectResponse = await fetch(`/get_subjects/?class=${encodeURIComponent(classValue)}`, {
                         headers: { 'X-CSRFToken': getCsrfToken() }
                     });
+                    
+                    if (!subjectResponse.ok) {
+                        throw new Error(`HTTP error! status: ${subjectResponse.status}`);
+                    }
+                    
                     const subjectData = await subjectResponse.json();
                     if (subjectData.success) {
                         subjects = subjectData.subjects;
                         renderMarkEntryForm();
                     } else {
-                        showAlert(subjectData.message, 'error');
+                        showAlert(subjectData.message || 'Error fetching subjects', 'error');
                     }
                 } catch (error) {
-                    showAlert('Error updating form.', 'error');
+                    console.error('Error updating form:', error);
+                    showAlert('Error updating form. Please try again.', 'error');
                 }
             }
 
@@ -542,7 +990,7 @@
                             <div class="subject-row">
                                 <div>
                                     <label>Marks</label>
-                                    <input id="marks" type="number" min="0" placeholder="Enter marks" required>
+                                    <input id="marks" type="number" min="0" max="${subject.max_marks}" placeholder="Enter marks" required>
                                 </div>
                                 <div>
                                     <label>Max Marks</label>
@@ -551,7 +999,7 @@
                             </div>
                         `;
                     } else {
-                        marksInput.innerHTML = '<p>No subjects assigned.</p>';
+                        marksInput.innerHTML = '<p>No subjects assigned to you.</p>';
                     }
                 } else {
                     if (subjects.length === 0) {
@@ -562,7 +1010,7 @@
                                 <div class="subject-row">
                                     <div>
                                         <label>${sub.name} Marks</label>
-                                        <input id="${sub.id}-marks" type="number" min="0" placeholder="Enter ${sub.name} marks" required>
+                                        <input id="${sub.id}-marks" type="number" min="0" max="${sub.max_marks}" placeholder="Enter ${sub.name} marks" required>
                                     </div>
                                     <div>
                                         <label>${sub.name} Max Marks</label>
@@ -582,6 +1030,267 @@
                 });
             }
 
+            function clearForm() {
+                studentSelect.value = '';
+                ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
+                currentSignature = null;
+                if (role === 'subjectTeacher') {
+                    const marksInput = document.getElementById('marks');
+                    if (marksInput) marksInput.value = '';
+                } else {
+                    subjects.forEach(sub => {
+                        const marksInput = document.getElementById(`${sub.id}-marks`);
+                        if (marksInput) marksInput.value = '';
+                    });
+                }
+            }
+
+            // Progress Card Functions
+            async function fetchStudents(classValue, sectionValue) {
+                try {
+                    const response = await fetch(`/get_students/?class=${encodeURIComponent(classValue)}&section=${encodeURIComponent(sectionValue)}`, {
+                        headers: { 'X-CSRFToken': getCsrfToken() }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
+                        data.students.forEach(student => {
+                            progressStudentSelect.innerHTML += `<option value="${student.id}">${student.name} (Roll: ${student.roll_number})</option>`;
+                        });
+                    } else {
+                        showAlert(data.message || 'Error fetching students', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error fetching students:', error);
+                    showAlert('Error fetching students. Please try again.', 'error');
+                }
+            }
+
+            async function fetchProgressCard(studentId) {
+                showLoading(true);
+                progressCard.style.display = 'none';
+                
+                try {
+                    const response = await fetch('/progress_card/', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'X-CSRFToken': getCsrfToken() 
+                        },
+                        body: JSON.stringify({ studentId })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        currentProgressData = data;
+                        displayProgressCard(data);
+                    } else {
+                        showAlert(data.message || 'Error fetching progress card', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error fetching progress card:', error);
+                    showAlert('Error fetching progress card. Please try again.', 'error');
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            function displayProgressCard(data) {
+                progressCard.style.display = 'block';
+                studentNameDisplay.textContent = data.student.name;
+                studentDetails.textContent = `Roll Number: ${data.student.roll_number}, Class: ${data.student.class}, Section: ${data.student.section}`;
+                
+                // Handle profile picture
+                if (data.student.image_path) {
+                    studentProfilePic.src = `/media/${data.student.image_path}`;
+                    studentProfilePic.style.display = 'block';
+                    studentProfilePic.onerror = function() {
+                        this.src = "{% static 'users/images/default_profile.jpg' %}";
+                    };
+                } else {
+                    studentProfilePic.src = "{% static 'users/images/default_profile.jpg' %}";
+                    studentProfilePic.style.display = 'block';
+                }
+                
+                // Populate marks table
+                marksTable.innerHTML = '';
+                data.marks.forEach(mark => {
+                    marksTable.innerHTML += `
+                        <tr>
+                            <td>${mark.subject}</td>
+                            <td>${mark.marks}</td>
+                            <td>${mark.max_marks}</td>
+                            <td>${mark.grade}</td>
+                        </tr>
+                    `;
+                });
+                
+                // Display summary
+                totalMarks.textContent = `Total Marks: ${data.total_marks}/${data.total_max_marks}`;
+                percentage.textContent = `Percentage: ${data.percentage}%`;
+                grade.textContent = `Overall Grade: ${data.grade}`;
+                status.textContent = `Status: ${data.status}`;
+                status.style.color = data.status === 'Pass' ? '#059669' : '#dc2626';
+            }
+
+            // PDF Generation
+            async function generatePDF() {
+                if (!currentProgressData) {
+                    showAlert('No progress card data available', 'error');
+                    return;
+                }
+
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    const data = currentProgressData;
+
+                    // Colors
+                    const headerColor = '#1e3a8a';
+                    const tableHeaderColor = '#10b981';
+                    const summaryColor = '#f59e0b';
+
+                    // Header
+                    doc.setFillColor(headerColor);
+                    doc.rect(10, 10, 190, 25, 'F');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(18);
+                    doc.setTextColor('#ffffff');
+                    doc.text('PROGRESS CARD', 105, 20, { align: 'center' });
+                    doc.setFontSize(10);
+                    doc.text('Academic Year: 2024-2025', 105, 28, { align: 'center' });
+
+                    // Add Profile Picture on the left side
+                    let profileImageBase64 = null;
+                    try {
+                        let imageSrc;
+                        if (data.student.image_path) {
+                            imageSrc = `/media/${data.student.image_path}`;
+                        } else {
+                            imageSrc = "{% static 'users/images/default_profile.jpg' %}";
+                        }
+                        
+                        profileImageBase64 = await loadImageAsBase64(imageSrc);
+                        doc.addImage(profileImageBase64, 'JPEG', 15, 40, 25, 25); // Left side positioning
+                    } catch (error) {
+                        console.warn('Could not add profile picture to PDF:', error);
+                        // Add a placeholder rectangle
+                        doc.setFillColor('#e5e7eb');
+                        doc.rect(15, 40, 25, 25, 'F');
+                        doc.setTextColor('#6b7280');
+                        doc.setFontSize(8);
+                        doc.text('No Photo', 27.5, 52.5, { align: 'center' });
+                    }
+
+                    // Student Details (to the right of the photo)
+                    doc.setTextColor('#000000');
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(`Name: ${data.student.name}`, 45, 45);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Roll Number: ${data.student.roll_number}`, 45, 52);
+                    doc.text(`Class: ${data.student.class} - ${data.student.section}`, 45, 59);
+                    doc.text(`Date: ${new Date().toLocaleDateString()}`, 45, 66);
+
+                    // Marks Table
+                    let y = 75;
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'bold');
+                    
+                    // Table header
+                    doc.setFillColor(tableHeaderColor);
+                    doc.rect(15, y, 170, 8, 'F');
+                    doc.setTextColor('#ffffff');
+                    doc.text('Subject', 20, y + 5);
+                    doc.text('Marks Obtained', 70, y + 5);
+                    doc.text('Maximum Marks', 110, y + 5);
+                    doc.text('Grade', 155, y + 5);
+                    
+                    y += 8;
+                    doc.setDrawColor('#1e3a8a');
+                    doc.setLineWidth(0.5);
+                    doc.line(15, y, 185, y);
+
+                    // Table rows
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor('#000000');
+                    data.marks.forEach((mark, index) => {
+                        y += 8;
+                        // Alternate row colors
+                        if (index % 2 === 0) {
+                            doc.setFillColor('#f8fafc');
+                            doc.rect(15, y - 6, 170, 8, 'F');
+                        }
+                        
+                        doc.text(mark.subject, 20, y);
+                        doc.text(mark.marks.toString(), 80, y, { align: 'center' });
+                        doc.text(mark.max_marks.toString(), 120, y, { align: 'center' });
+                        doc.text(mark.grade, 160, y, { align: 'center' });
+                        
+                        // Row border
+                        doc.setDrawColor('#d1d5db');
+                        doc.setLineWidth(0.2);
+                        doc.line(15, y + 2, 185, y + 2);
+                    });
+
+                    // Summary Section
+                    y += 15;
+                    doc.setFillColor(summaryColor);
+                    doc.rect(15, y, 170, 25, 'F');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(11);
+                    doc.setTextColor('#ffffff');
+                    
+                    doc.text(`Total Marks: ${data.total_marks}/${data.total_max_marks}`, 20, y + 8);
+                    doc.text(`Percentage: ${data.percentage}%`, 20, y + 16);
+                    doc.text(`Overall Grade: ${data.grade}`, 110, y + 8);
+                    doc.text(`Result: ${data.status}`, 110, y + 16);
+
+                    // Teacher Signature Section
+                    y += 35;
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(10);
+                    doc.setTextColor('#000000');
+                    doc.text('Class Teacher:', 20, y);
+                    doc.text(data.teacher_name, 50, y);
+                    
+                    // Add signature if available
+                    if (data.signature) {
+                        try {
+                            doc.addImage(data.signature, 'PNG', 20, y + 5, 50, 15);
+                        } catch (error) {
+                            console.warn('Could not add signature to PDF:', error);
+                        }
+                    }
+                    
+                    doc.text('Signature', 20, y + 25);
+                    doc.line(20, y + 22, 70, y + 22); // Signature line
+
+                    // Footer
+                    doc.setFontSize(8);
+                    doc.setTextColor('#6b7280');
+                    doc.text('This is a computer-generated document.', 105, 280, { align: 'center' });
+
+                    // Save the PDF
+                    doc.save(`${data.student.name}_ProgressCard_${new Date().toISOString().split('T')[0]}.pdf`);
+                    showAlert('PDF downloaded successfully!', 'success');
+                    
+                } catch (error) {
+                    console.error('Error generating PDF:', error);
+                    showAlert('Error generating PDF. Please try again.', 'error');
+                }
+            }
+
+            // Event Listeners
             showMarkEntry.addEventListener('click', () => {
                 markEntrySection.style.display = 'block';
                 progressCardSection.style.display = 'none';
@@ -593,11 +1302,45 @@
                 progressCardSection.style.display = 'block';
                 progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
                 progressCard.style.display = 'none';
+                currentProgressData = null;
             });
 
             classSelect.addEventListener('change', updateMarkEntryForm);
             sectionSelect.addEventListener('change', updateMarkEntryForm);
 
+            progressClassSelect.addEventListener('change', () => {
+                if (progressClassSelect.value && progressSectionSelect.value) {
+                    fetchStudents(progressClassSelect.value, progressSectionSelect.value);
+                } else {
+                    progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
+                    progressCard.style.display = 'none';
+                    currentProgressData = null;
+                }
+            });
+
+            progressSectionSelect.addEventListener('change', () => {
+                if (progressClassSelect.value && progressSectionSelect.value) {
+                    fetchStudents(progressClassSelect.value, progressSectionSelect.value);
+                } else {
+                    progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
+                    progressCard.style.display = 'none';
+                    currentProgressData = null;
+                }
+            });
+
+            progressStudentSelect.addEventListener('change', () => {
+                const studentId = progressStudentSelect.value;
+                if (studentId) {
+                    fetchProgressCard(studentId);
+                } else {
+                    progressCard.style.display = 'none';
+                    currentProgressData = null;
+                }
+            });
+
+            downloadPDFBtn.addEventListener('click', generatePDF);
+
+            // Subject Management
             addSubjectBtn.addEventListener('click', () => {
                 if (!classSelect.value) {
                     showAlert('Please select a class first.', 'error');
@@ -641,6 +1384,11 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
                         body: JSON.stringify({ subjectName, maxMarks, class: classValue })
                     });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
                     const data = await response.json();
                     if (data.success) {
                         subjects = data.subjects;
@@ -648,10 +1396,11 @@
                         renderMarkEntryForm();
                         addSubjectModal.style.display = 'none';
                     } else {
-                        showAlert(data.message, 'error');
+                        showAlert(data.message || 'Error adding subject', 'error');
                     }
                 } catch (error) {
-                    showAlert('Error adding subject.', 'error');
+                    console.error('Error adding subject:', error);
+                    showAlert('Error adding subject. Please try again.', 'error');
                 }
             });
 
@@ -669,6 +1418,11 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
                         body: JSON.stringify({ subjectId, class: classValue })
                     });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
                     const data = await response.json();
                     if (data.success) {
                         subjects = data.subjects;
@@ -676,13 +1430,15 @@
                         renderMarkEntryForm();
                         deleteSubjectModal.style.display = 'none';
                     } else {
-                        showAlert(data.message, 'error');
+                        showAlert(data.message || 'Error deleting subject', 'error');
                     }
                 } catch (error) {
-                    showAlert('Error deleting subject.', 'error');
+                    console.error('Error deleting subject:', error);
+                    showAlert('Error deleting subject. Please try again.', 'error');
                 }
             });
 
+            // Save Marks
             saveMarksBtn.addEventListener('click', async () => {
                 const classValue = classSelect.value;
                 const sectionValue = sectionSelect.value;
@@ -701,12 +1457,21 @@
 
                 let marksData;
                 if (role === 'subjectTeacher') {
-                    const subjectId = document.getElementById('subject').value;
-                    const marks = parseInt(document.getElementById('marks').value);
-                    const maxMarks = parseInt(document.getElementById('maxMarks').value);
+                    const subjectElement = document.getElementById('subject');
+                    const marksElement = document.getElementById('marks');
+                    const maxMarksElement = document.getElementById('maxMarks');
+                    
+                    if (!subjectElement || !marksElement || !maxMarksElement) {
+                        showAlert('Form elements not found. Please refresh the page.', 'error');
+                        return;
+                    }
+                    
+                    const subjectId = subjectElement.value;
+                    const marks = parseInt(marksElement.value);
+                    const maxMarks = parseInt(maxMarksElement.value);
 
                     if (!subjectId || isNaN(marks) || isNaN(maxMarks) || marks < 0 || maxMarks < 1 || marks > maxMarks) {
-                        showAlert('Please enter valid marks and max marks.', 'error');
+                        showAlert('Please enter valid marks. Marks cannot exceed maximum marks.', 'error');
                         return;
                     }
 
@@ -714,10 +1479,19 @@
                 } else {
                     marksData = [];
                     for (const sub of subjects) {
-                        const marks = parseInt(document.getElementById(`${sub.id}-marks`).value);
-                        const maxMarks = parseInt(document.getElementById(`${sub.id}-maxMarks`).value);
+                        const marksElement = document.getElementById(`${sub.id}-marks`);
+                        const maxMarksElement = document.getElementById(`${sub.id}-maxMarks`);
+                        
+                        if (!marksElement || !maxMarksElement) {
+                            showAlert(`Form elements for ${sub.name} not found.`, 'error');
+                            return;
+                        }
+                        
+                        const marks = parseInt(marksElement.value);
+                        const maxMarks = parseInt(maxMarksElement.value);
+                        
                         if (isNaN(marks) || isNaN(maxMarks) || marks < 0 || maxMarks < 1 || marks > maxMarks) {
-                            showAlert(`Please enter valid marks and max marks for ${sub.name}.`, 'error');
+                            showAlert(`Please enter valid marks for ${sub.name}. Marks cannot exceed maximum marks.`, 'error');
                             return;
                         }
                         marksData.push({ subjectId: sub.id, marks, maxMarks, signature: signatureData });
@@ -730,223 +1504,37 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
                         body: JSON.stringify({ role, studentId, class: classValue, section: sectionValue, marks: marksData })
                     });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
                     const data = await response.json();
                     if (data.success) {
                         showAlert(data.message);
                         clearForm();
-                        updateMarkEntryForm();
                     } else {
-                        showAlert(data.message, 'error');
+                        showAlert(data.message || 'Error saving marks', 'error');
                     }
                 } catch (error) {
-                    showAlert('Error saving marks.', 'error');
+                    console.error('Error saving marks:', error);
+                    showAlert('Error saving marks. Please try again.', 'error');
                 }
             });
 
             clearFormBtn.addEventListener('click', clearForm);
-            function clearForm() {
-                studentSelect.value = '';
-                ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
-                currentSignature = null;
-                if (role === 'subjectTeacher') {
-                    const marksInput = document.getElementById('marks');
-                    if (marksInput) marksInput.value = '';
-                } else {
-                    subjects.forEach(sub => {
-                        const marksInput = document.getElementById(`${sub.id}-marks`);
-                        if (marksInput) marksInput.value = '';
-                    });
-                }
-            }
 
-            async function fetchStudents(classValue, sectionValue) {
-                try {
-                    const response = await fetch(`/get_students/?class=${encodeURIComponent(classValue)}&section=${encodeURIComponent(sectionValue)}`, {
-                        headers: { 'X-CSRFToken': getCsrfToken() }
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
-                        data.students.forEach(student => {
-                            progressStudentSelect.innerHTML += `<option value="${student.id}">${student.name} (Roll: ${student.roll_number})</option>`;
-                        });
-                    } else {
-                        showAlert(data.message, 'error');
-                    }
-                } catch (error) {
-                    showAlert('Error fetching students.', 'error');
+            // Modal click outside to close
+            window.addEventListener('click', (e) => {
+                if (e.target === addSubjectModal) {
+                    addSubjectModal.style.display = 'none';
                 }
-            }
-
-            progressClassSelect.addEventListener('change', () => {
-                if (progressClassSelect.value && progressSectionSelect.value) {
-                    fetchStudents(progressClassSelect.value, progressSectionSelect.value);
-                } else {
-                    progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
-                    progressCard.style.display = 'none';
+                if (e.target === deleteSubjectModal) {
+                    deleteSubjectModal.style.display = 'none';
                 }
             });
 
-            progressSectionSelect.addEventListener('change', () => {
-                if (progressClassSelect.value && progressSectionSelect.value) {
-                    fetchStudents(progressClassSelect.value, progressSectionSelect.value);
-                } else {
-                    progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
-                    progressCard.style.display = 'none';
-                }
-            });
-
-            progressStudentSelect.addEventListener('change', async () => {
-                const studentId = progressStudentSelect.value;
-                progressCard.style.display = 'none';
-                if (studentId) {
-                    try {
-                        const response = await fetch('/progress_card/', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
-                            body: JSON.stringify({ studentId })
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            progressCard.style.display = 'block';
-                            studentNameDisplay.textContent = data.student.name;
-                            studentDetails.textContent = `Roll Number: ${data.student.roll_number}, Class: ${data.student.class}, Section: ${data.student.section}`;
-                            marksTable.innerHTML = '';
-                            data.marks.forEach(mark => {
-                                marksTable.innerHTML += `
-                                    <tr>
-                                        <td>${mark.subject}</td>
-                                        <td>${mark.marks}</td>
-                                        <td>${mark.max_marks}</td>
-                                        <td>${mark.grade}</td>
-                                    </tr>
-                                `;
-                            });
-                            totalMarks.textContent = `Total Marks: ${data.total_marks}/${data.total_max_marks}`;
-                            percentage.textContent = `Percentage: ${data.percentage}%`;
-                            grade.textContent = `Overall Grade: ${data.grade}`;
-                            status.textContent = `Status: ${data.status}`;
-                        } else {
-                            showAlert(data.message, 'error');
-                        }
-                    } catch (error) {
-                        showAlert('Error fetching progress card.', 'error');
-                    }
-                }
-            });
-
-            downloadPDFBtn.addEventListener('click', async () => {
-                const studentId = progressStudentSelect.value;
-                if (!studentId) {
-                    showAlert('Please select a student.', 'error');
-                    return;
-                }
-                try {
-                    const response = await fetch('/progress_card/', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
-                        body: JSON.stringify({ studentId })
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        const { jsPDF } = window.jspdf;
-                        const doc = new jsPDF();
-
-                        const headerColor = '#1e3a8a';
-                        const tableHeaderColor = '#10b981';
-                        const rowColor1 = '#ffffff';
-                        const rowColor2 = '#e5e7eb';
-                        const summaryColor = '#f59e0b';
-                        const borderColor = '#1e3a8a';
-
-                        doc.setFillColor(headerColor);
-                        doc.rect(10, 10, 190, 20, 'F');
-                        doc.setFont('helvetica', 'bold');
-                        doc.setFontSize(16);
-                        doc.setTextColor('#ffffff');
-                        doc.text('Progress Card', 20, 20);
-
-                        doc.setFontSize(10);
-                        doc.text('Exam Mark Entry System', 150, 15);
-                        doc.text('Academic Year: 2024-2025', 150, 20);
-
-                        doc.setTextColor('#000000');
-                        doc.setFontSize(12);
-                        doc.setFont('helvetica', 'normal');
-                        doc.text(`Student Name: ${data.student.name}`, 20, 40);
-                        doc.text(`Roll Number: ${data.student.roll_number}`, 20, 50);
-                        doc.text(`Class: ${data.student.class} ${data.student.section}`, 20, 60);
-                        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 70);
-
-                        doc.setFontSize(10);
-                        doc.setFont('helvetica', 'bold');
-                        let y = 80;
-                        doc.setFillColor(tableHeaderColor);
-                        doc.rect(20, y, 170, 8, 'F');
-                        doc.setTextColor('#ffffff');
-                        doc.text('Subject', 22, y + 6);
-                        doc.text('Marks', 80, y + 6);
-                        doc.text('Max Marks', 110, y + 6);
-                        doc.text('Grade', 140, y + 6);
-                        y += 8;
-                        doc.setDrawColor(borderColor);
-                        doc.setLineWidth(0.2);
-                        doc.line(20, y, 190, y);
-
-                        doc.setFont('helvetica', 'normal');
-                        doc.setTextColor('#000000');
-                        data.marks.forEach((mark, index) => {
-                            y += 8;
-                            doc.setFillColor(index % 2 === 0 ? rowColor1 : rowColor2);
-                            doc.rect(20, y, 170, 8, 'F');
-                            doc.text(mark.subject, 22, y + 6);
-                            doc.text(mark.marks.toString(), 80, y + 6);
-                            doc.text(mark.max_marks.toString(), 110, y + 6);
-                            doc.text(mark.grade, 140, y + 6);
-                            doc.line(20, y + 8, 190, y + 8);
-                        });
-
-                        y += 10;
-                        doc.setFillColor(summaryColor);
-                        doc.rect(20, y, 170, 20, 'F');
-                        doc.setFont('helvetica', 'bold');
-                        doc.setTextColor('#ffffff');
-                        doc.text(`Total Marks: ${data.total_marks}/${data.total_max_marks}`, 22, y + 8);
-                        doc.text(`Percentage: ${data.percentage}%`, 100, y + 8);
-                        doc.text(`Overall Grade: ${data.grade}`, 22, y + 16);
-                        doc.text(`Status: ${data.status}`, 100, y + 16);
-
-                        y += 30;
-                        doc.setFont('helvetica', 'italic');
-                        doc.setFontSize(12);
-                        doc.setTextColor('#000000');
-                        doc.text(`Digitally Signed by: ${data.teacher_name}`, 20, y);
-                        if (data.signature) {
-                            try {
-                                doc.addImage(data.signature, 'PNG', 80, y - 10, 60, 20);
-                                y += 25;
-                            } catch (e) {
-                                console.error('Error adding signature to PDF:', e);
-                            }
-                        }
-                        doc.setFont('helvetica', 'normal');
-                        doc.setFontSize(10);
-                        doc.text('Authorized Teacher', 20, y);
-
-                        doc.save(`${data.student.name}_ProgressCard.pdf`);
-                    } else {
-                        showAlert(data.message, 'error');
-                    }
-                } catch (error) {
-                    showAlert('Error generating PDF.', 'error');
-                }
-            });
-
-            function getCsrfToken() {
-                const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
-                return tokenElement ? tokenElement.value : '';
-            }
-
+            // Initialize
             updateMarkEntryForm();
         });
     </script>

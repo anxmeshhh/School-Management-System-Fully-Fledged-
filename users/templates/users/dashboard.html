@@ -30,7 +30,7 @@
             
             <div class="nav-wrapper">
                 <nav class="nav-menu">
-                    <a href="{% url 'profile' %}" class="nav-item">
+                    <a href="{% url 'profile_view' %}" class="nav-item">
                         <span class="nav-icon">📊</span>
                         <span class="nav-text">Master Data</span>
                     </a>
@@ -42,13 +42,17 @@
                         <span class="nav-icon">📢</span>
                         <span class="nav-text">Circulars</span>
                     </a>
-                    <a href="{% url 'homework' %}" class="nav-item">
+                    <a href="{% url 'study_materials' %}" class="nav-item">
                         <span class="nav-icon">📚</span>
                         <span class="nav-text">Study Materials</span>
                     </a>
-                    <a href="#" class="nav-item">
+                    <a href="{% url 'homework' %}" class="nav-item">
+                        <span class="nav-icon">✒</span>
+                        <span class="nav-text">Homework</span>
+                    </a>
+                    <a href="{% url 'student_timetable' %}" class="nav-item">
                         <span class="nav-icon">🎯</span>
-                        <span class="nav-text">Activities & Events</span>
+                        <span class="nav-text">Timetable</span>
                     </a>
                     <a href="{% url 'mark_entry' %}" class="nav-item">
                         <span class="nav-icon">📈</span>

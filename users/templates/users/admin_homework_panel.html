@@ -16,10 +16,10 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e6f0fa 0%, #b3d4fc 50%, #e6f0fa 100%); /* Bluish White Theme */
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #e3f2fd 100%);
             background-size: 200%;
             animation: gradient 20s ease infinite;
-            padding: 40px 20px;
+            padding: 80px 20px 40px 20px;
             min-height: 100vh;
             position: relative;
         }
@@ -30,47 +30,11 @@
             100% { background-position: 0% 50%; }
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding: 1rem 2rem;
-            background: linear-gradient(90deg, #1e40af, #b3d4fc); /* Bluish White header */
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: white; /* White for contrast on header background */
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-align: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-        }
-
-        h1:hover {
-            color: #e6f0fa; /* Light blue hover */
-        }
-
-        .back-btn {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            background: #ef4444; /* Red for contrast */
-            color: white;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        }
-
-        .back-btn:hover {
-            background: #dc2626;
-            transform: scale(1.05); /* Subtle animation */
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        .logo-container {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
         }
 
         .logo {
@@ -80,44 +44,164 @@
             object-fit: cover;
         }
 
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease, transform 0.3s ease;
+            flex-grow: 1;
+        }
+
+        h1:hover {
+            color: #e3f2fd;
+            transform: scale(1.02);
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
+            color: white;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            order: -1;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(90deg, #1565c0, #1976d2);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+
         h2 {
-            color: #1e40af; /* Bluish tone */
+            color: #1565c0;
             font-size: 2rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
             letter-spacing: 0.5px;
             transition: color 0.3s ease;
             text-align: center;
+            animation: slideInLeft 0.6s ease-out;
         }
 
         h2:hover {
-            color: #b3d4fc; /* Lighter blue on hover */
+            color: #42a5f5;
+        }
+
+        .filter-form {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(187, 222, 251, 0.4);
+            max-width: 500px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .filter-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 400;
+        }
+
+        .filter-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid #42a5f5;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        .filter-form select:focus {
+            border-color: #1565c0;
+            outline: none;
+        }
+
+        .filter-form button {
+            background: #1565c0;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        .filter-form button:hover {
+            background: #1976d2;
+            transform: translateY(-2px);
         }
 
         .homework-box {
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(179, 212, 252, 0.4); /* Bluish White border */
+            border: 1px solid rgba(187, 222, 251, 0.4);
             padding: 20px;
             margin-bottom: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             transition: transform 0.4s ease, box-shadow 0.4s ease;
-            animation: fadeIn 0.8s ease-in-out;
+            animation: fadeInUp 0.8s ease-in-out;
         }
 
         .homework-box:hover {
             transform: translateY(-8px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(30, 64, 175, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(21, 101, 192, 0.2);
         }
 
         @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
         .homework-box h3 {
-            color: #1e40af; /* Bluish tone */
+            color: #1565c0;
             font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
@@ -126,11 +210,11 @@
         }
 
         .homework-box h3:hover {
-            color: #b3d4fc; /* Lighter blue on hover */
+            color: #42a5f5;
         }
 
         .homework-box p {
-            color: #666;
+            color: #1e3a8a;
             font-size: 1rem;
             font-weight: 400;
             margin-bottom: 0.5rem;
@@ -138,32 +222,36 @@
         }
 
         .homework-box p strong {
-            color: #1e40af; /* Bluish tone */
+            color: #1565c0;
             font-weight: 600;
             transition: color 0.3s ease;
         }
 
         .homework-box p strong:hover {
-            color: #b3d4fc; /* Lighter blue on hover */
+            color: #42a5f5;
         }
 
         .file-preview {
             margin-top: 1rem;
             display: flex;
             gap: 1rem;
-            flex-wrap: wrap; /* Ensure links wrap on smaller screens */
+            flex-wrap: wrap;
         }
 
         .file-preview a {
-            color: #1e40af; /* Bluish tone */
+            color: #1565c0;
             font-size: 1rem;
             font-weight: 600;
             text-decoration: none;
-            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 5px;
+            background: #e3f2fd;
+            transition: color 0.3s ease, transform 0.3s ease, background 0.3s ease;
         }
 
         .file-preview a:hover {
-            color: #b3d4fc; /* Lighter blue on hover */
+            color: white;
+            background: #1976d2;
             transform: translateY(-2px);
         }
 
@@ -171,7 +259,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(90deg, #1e40af, #b3d4fc); /* Bluish White gradient */
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
             color: white;
             padding: 0.8rem 1.5rem;
             border-radius: 8px;
@@ -180,32 +268,48 @@
             font-weight: 600;
             z-index: 1000;
             transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .go-to-study-materials:hover {
-            background: linear-gradient(90deg, #b3d4fc, #1e40af);
-            transform: scale(1.05); /* Subtle animation */
-            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+            background: linear-gradient(90deg, #42a5f5, #1565c0);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+
+        p {
+            color: #1e3a8a;
+            text-align: center;
+            font-size: 1rem;
+            animation: fadeIn 0.5s ease-out;
         }
 
         @media (max-width: 768px) {
             body {
-                padding: 20px 10px; /* Reduced padding for smaller screens */
+                padding: 70px 10px 20px 10px;
             }
 
             .header {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 0.8rem 1.5rem;
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+                align-items: center;
+                justify-content: space-between;
             }
 
             h1 {
-                font-size: 2rem;
-                margin-bottom: 0;
+                font-size: 1.8rem;
+                margin: 0;
+                flex-grow: 1;
+                text-align: center;
             }
 
             h2 {
                 font-size: 1.6rem;
+            }
+
+            .filter-form {
+                padding: 15px;
             }
 
             .homework-box {
@@ -222,10 +326,12 @@
 
             .file-preview {
                 gap: 0.5rem;
+                justify-content: center;
             }
 
             .file-preview a {
                 font-size: 0.9rem;
+                padding: 6px 12px;
             }
 
             .go-to-study-materials {
@@ -244,23 +350,40 @@
                 width: 40px;
                 height: 40px;
             }
+
+            .logo-container {
+                top: 10px;
+                right: 10px;
+            }
+
+            p {
+                font-size: 0.9rem;
+            }
         }
 
         @media (max-width: 480px) {
             body {
-                padding: 15px 5px; /* Further reduced padding */
+                padding: 60px 5px 15px 5px;
             }
 
             .header {
-                padding: 0.6rem 1rem;
+                padding: 0.6rem 0.8rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
             }
 
             h1 {
-                font-size: 1.6rem;
+                font-size: 1.4rem;
             }
 
             h2 {
                 font-size: 1.4rem;
+            }
+
+            .filter-form {
+                padding: 10px;
             }
 
             .homework-box {
@@ -276,12 +399,14 @@
             }
 
             .file-preview {
-                flex-direction: column; /* Stack links vertically on very small screens */
+                flex-direction: column;
                 gap: 0.3rem;
+                align-items: center;
             }
 
             .file-preview a {
                 font-size: 0.8rem;
+                padding: 5px 10px;
             }
 
             .go-to-study-materials {
@@ -295,6 +420,20 @@
                 padding: 0.6rem 1rem;
                 font-size: 0.8rem;
             }
+
+            .logo {
+                width: 35px;
+                height: 35px;
+            }
+
+            .logo-container {
+                top: 8px;
+                right: 8px;
+            }
+
+            p {
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
@@ -305,7 +444,6 @@
         <a href="{% url 'admin_page' %}">
             <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo" class="logo">
         </a>
-
     </div>
 
     {% if messages %}
@@ -318,10 +456,34 @@
 
     <h2>📂 All Homework Submissions</h2>
 
+    <form class="filter-form" method="post">
+        {% csrf_token %}
+        <label for="class">Select Class:</label>
+        <select id="class" name="class">
+            <option value="">All Classes</option>
+            {% for class in classes %}
+                <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="section">Select Section:</label>
+        <select id="section" name="section">
+            <option value="">All Sections</option>
+            {% for section in sections %}
+                <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section|capfirst }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Filter</button>
+    </form>
+
     {% for hw in homework_list %}
         <div class="homework-box">
             <h3>{{ hw.title }}</h3>
+            <p><strong>Student Name:</strong> {{ hw.student_name }}</p>
             <p><strong>User ID:</strong> {{ hw.user_id }}</p>
+            <p><strong>Class:</strong> {{ hw.class|capfirst }}</p>
+            <p><strong>Section:</strong> {{ hw.section|capfirst }}</p>
             <p><strong>Submitted on:</strong> {{ hw.submission_date }}</p>
             <div class="file-preview">
                 <a href="{% url 'serve_pdf' hw.file_path %}" target="_blank">📄 View PDF</a>
@@ -329,7 +491,13 @@
             </div>
         </div>
     {% empty %}
-        <p style="text-align: center; color: #666;">No homework submissions available.</p>
+        <p style="text-align: center; color: #666;">
+            {% if selected_class and selected_section %}
+                No homework submissions available for Class: {{ selected_class|capfirst }}, Section: {{ selected_section|capfirst }}.
+            {% else %}
+                No homework submissions available.
+            {% endif %}
+        </p>
     {% endfor %}
 
     <a href="{% url 'admin_study_materials_upload' %}" class="go-to-study-materials">Go to Study Materials</a>

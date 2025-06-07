@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -430,7 +431,7 @@
 <body>
     <header>
         <a href="{% url 'admin_page' %}">
-            <img src="https://via.placeholder.com/150x50/1e40af/ffffff?text=MSMS" alt="MSMS Logo" class="logo">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MSMS Logo" class="logo">
         </a>
     </header>
 

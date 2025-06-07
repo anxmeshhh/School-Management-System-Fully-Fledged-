@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,14 +14,13 @@
             box-sizing: border-box;
         }
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #22d3ee, #3b82f6);
-            margin: 0;
-            padding: 16px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #bae6fd, #60a5fa);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding: 16px;
             position: relative;
         }
         body::before {
@@ -30,43 +30,42 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.2)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
             z-index: -1;
         }
         .container {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(14px);
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, rgba(96, 165, 250, 0.5), rgba(255, 255, 255, 0.4)) 1;
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
             padding: 24px;
             border-radius: 12px;
-            box-shadow: 0 6px 24px rgba(30, 58, 138, 0.15);
             width: 100%;
-            max-width: 500px;
-            animation: fadeInScale 0.5s ease-out forwards;
+            max-width: 1280px;
+            animation: fadeInScaleBounce 1.2s ease-out forwards;
         }
         .header {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #bfdbfe;
+            gap: 16px;
         }
         .header h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.8em;
+            font-size: 1.875em;
             font-weight: 700;
-            color: #1e3a8a;
+            color: #1e40af;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         .logo-container {
-            width: 60px;
-            height: 60px;
+            width: 56px;
+            height: 56px;
             border-radius: 8px;
             overflow: hidden;
-            transition: transform 0.3s ease;
         }
         .logo-container img {
             width: 100%;
@@ -76,108 +75,172 @@
         .logo-container:hover {
             animation: logoPulse 0.6s ease-in-out;
         }
+        .back-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+            animation: slideInRotate 0.8s ease-out forwards;
+        }
+        .message {
+            padding: 14px;
+            margin-bottom: 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95em;
+            animation: slideInRotate 0.6s ease-out;
+        }
+        .message.success {
+            background-color: #e0f2fe;
+            color: #1e40af;
+            border-left: 4px solid #60a5fa;
+        }
+        .message.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #dc2626;
+        }
         form {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 32px;
+        }
+        .section {
+            animation: slideInRotate 0.8s ease-out forwards;
+        }
+        .subheading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .subheading h3 {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: #1e40af;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .required label:after {
+            content: " *";
+            color: #dc2626;
         }
         label {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1em;
-            font-weight: 600;
-            color: #1e3a8a;
-            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.875em;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 8px;
         }
-        input[type="text"] {
+        label:hover {
+            transform: translateY(-2px);
+            transition: transform 0.4s ease;
+        }
+        input, select, textarea {
+            width: 100%;
             padding: 12px;
-            border: 1px solid #bfdbfe;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
-            font-size: 0.95em;
             background-color: #f8fbff;
-            color: #1e3a8a;
-            transition: all 0.3s ease;
+            color: #1e40af;
+            font-size: 0.95em;
         }
-        input[type="text"]:focus {
+        input:hover, select:hover, textarea:hover,
+        input:focus, select:focus, textarea:focus {
+            animation: liftGlow 0.5s forwards;
+            border-color: #60a5fa;
             outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-            animation: lift 0.3s forwards;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+        textarea {
+            resize: vertical;
         }
         button {
-            padding: 12px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
+            border-radius: 9999px;
             font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-            transition: all 0.3s ease;
         }
         .save-btn {
-            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            background: linear-gradient(90deg, #1e40af, #60a5fa);
             color: white;
         }
-        .save-btn:hover {
-            background: linear-gradient(90deg, #2563eb, #3b82f6);
-            animation: pulse 0.5s infinite;
-        }
         .cancel-btn {
-            background-color: #e5e7eb;
-            color: #1e3a8a;
-        }
-        .cancel-btn:hover {
-            background-color: #d1d5db;
-            animation: pulse 0.5s infinite;
-        }
-        .back-btn {
             background: linear-gradient(90deg, #6b7280, #9ca3af);
             color: white;
         }
-        .back-btn:hover {
+        button:hover {
+            animation: pulseGradient 0.8s infinite;
+        }
+        .save-btn:hover {
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+        }
+        .cancel-btn:hover {
             background: linear-gradient(90deg, #4b5563, #6b7280);
-            animation: pulse 0.5s infinite;
         }
-        .message {
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 6px;
+        .form-actions {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95em;
-            color: #1e3a8a;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 16px;
         }
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
+        @keyframes fadeInScaleBounce {
+            0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+            70% { opacity: 1; transform: scale(1.02) translateY(-5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
+        @keyframes slideInRotate {
+            from { opacity: 0; transform: translateX(-20px) rotate(-2deg); }
+            to { opacity: 1; transform: translateX(0) rotate(0deg); }
         }
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes pulse {
+        @keyframes pulseGradient {
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
-        @keyframes lift {
-            0% { transform: translateY(0); box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
-            100% { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(59, 130, 246, 0.7); }
+        @keyframes liftGlow {
+            0% { transform: translateY(0); box-shadow: 0 0 5px rgba(96, 165, 250, 0.5); }
+            100% { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(96, 165, 250, 0.7); }
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0); }
         }
         @keyframes logoPulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
+        }
+        @media (min-width: 640px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .container {
+                padding: 32px;
+            }
+            .header h2 {
+                font-size: 2.25em;
+            }
+            .logo-container {
+                width: 64px;
+                height: 64px;
+            }
+            .subheading h3 {
+                font-size: 1.5em;
+            }
         }
         @media (max-width: 640px) {
             body {
@@ -186,6 +249,16 @@
             .container {
                 padding: 16px;
             }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .logo-container {
+                align-self: flex-end;
+            }
+            .back-buttons {
+                flex-direction: column;
+            }
             .header h2 {
                 font-size: 1.5em;
             }
@@ -193,23 +266,9 @@
                 width: 48px;
                 height: 48px;
             }
-            input[type="text"], button {
-                font-size: 0.9em;
-                padding: 10px;
-            }
-            .back-buttons {
-                flex-direction: column;
-                gap: 12px;
-            }
-        }
-        @media (max-width: 480px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-            .logo-container {
-                align-self: flex-end;
+            button {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -220,7 +279,7 @@
         <div class="header">
             <h2><i class="fas fa-chalkboard text-blue-600"></i> {{ title }}</h2>
             <a href="{% url 'admin_page' %}" class="logo-container">
-                <img src="https://via.placeholder.com/60?text=Logo" alt="School Logo">
+                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
             </a>
         </div>
 

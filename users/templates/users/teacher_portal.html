@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,125 +9,318 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(to bottom, #e0f2fe, #bfdbfe);
-        }
-        .container {
-            max-width: 1400px;
-            display: flex;
-            gap: 1.5rem;
-        }
-        .sidebar {
-            width: 250px;
-            background-color: #1e40af;
-            color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            height: fit-content;
-        }
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem;
-            color: white;
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
-            transition: background-color 0.2s ease;
-        }
-        .sidebar a:hover {
-            background-color: #3b82f6;
-        }
-        .main-content {
-            flex: 1;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-        }
-        .header {
-            background: linear-gradient(to right, #1e40af, #3b82f6);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-        .attendance-table {
-            max-height: 500px;
-            overflow-y: auto;
-            border-radius: 8px;
-            border: 2px solid #bfdbfe;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-        }
-        th, td {
-            border: 1px solid #bfdbfe;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #dbeafe;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            font-weight: 600;
-            color: #1e40af;
-        }
-        td {
-            color: #1f2937;
-        }
-        .error {
-            color: red;
-        }
-        .highlight {
-            background-color: #eff6ff;
-        }
-        .logo-button {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-        .logo-img {
-            height: 48px;
-            width: 48px;
-            object-fit: contain;
-            border-radius: 50%;
-            border: 2px solid white;
-        }
-        .form-container {
-            background-color: #f8fafd;
-            padding: 20px;
-            border-radius: 8px;
-            border: 2px solid #bfdbfe;
-        }
-        .button {
-            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
-        }
-        .button:hover {
-            transform: scale(1.05);
-        }
-        .icon {
-            margin-right: 8px;
-        }
-        .attendance-btn {
-            padding: 8px 16px;
-            border-radius: 5px;
-            font-size: 0.95rem;
-            margin: 0 4px;
-        }
-        .present { background-color: #16a34a; color: white; }
-        .absent { background-color: #dc2626; color: white; }
-        .leave { background-color: #eab308; color: white; }
-        .selected { border: 2px solid #1e40af; box-shadow: 0 0 5px rgba(30, 64, 175, 0.5); }
-        .no-sections {
-            color: #dc2626;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
+    background: linear-gradient(to bottom, #FF6B6B, #FF9A9E, #FFD1DC);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1400px;
+    display: flex;
+    gap: 1.5rem;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.sidebar {
+    width: 250px;
+    background: linear-gradient(180deg, rgba(255, 245, 245, 0.98) 0%, rgba(255, 230, 230, 0.95) 100%);
+    color: #333;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    height: fit-content;
+    border: 1px solid rgba(214, 51, 60, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    color: #333;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.2s ease;
+    font-size: 1rem;
+}
+
+.sidebar a:hover {
+    background: linear-gradient(90deg, rgba(255, 245, 245, 0.8) 0%, rgba(255, 230, 230, 0.6) 100%);
+}
+
+.main-content {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 240, 0.9) 100%);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    padding: 2rem;
+}
+
+.header {
+    background: linear-gradient(to right, #D6333C, #FF9A9E);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.attendance-table {
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 8px;
+    border: 2px solid #FFD1DC;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+th, td {
+    border: 1px solid #FFD1DC;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #FFF1F2;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    font-weight: 600;
+    color: #D6333C;
+}
+
+td {
+    color: #1f2937;
+}
+
+.error {
+    color: #D6333C;
+}
+
+.highlight {
+    background-color: #FFF1F2;
+}
+
+.logo-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #D6333C;
+}
+
+.logo-img {
+    height: 48px;
+    width: 48px;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 2px solid #FFD1DC;
+}
+
+.form-container {
+    background-color: #FFF1F2;
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px solid #FFD1DC;
+}
+
+.button {
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+}
+
+.button:hover {
+    transform: scale(1.05);
+}
+
+.icon {
+    margin-right: 8px;
+}
+
+.attendance-btn {
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    margin: 0 4px;
+    touch-action: manipulation;
+}
+
+.present { background-color: #16a34a; color: white; }
+.absent { background-color: #D6333C; color: white; }
+.leave { background-color: #eab308; color: white; }
+.selected { border: 2px solid #D6333C; box-shadow: 0 0 5px rgba(214, 51, 60, 0.5); }
+
+.no-sections {
+    color: #D6333C;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 1024px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .sidebar {
+        width: 200px;
+    }
+
+    .main-content {
+        padding: 1.5rem;
+    }
+
+    .header h1 {
+        font-size: 1.75rem;
+    }
+
+    .attendance-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        padding: 0.75rem;
+    }
+
+    .sidebar {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        transform: translateX(-100%);
+        z-index: 20;
+        height: auto;
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-top: 0;
+        padding: 1rem;
+    }
+
+    .header {
+        padding: 1rem;
+    }
+
+    .header h1 {
+        font-size: 1.5rem;
+    }
+
+    .form-container {
+        padding: 1rem;
+    }
+
+    .flex.items-end {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .flex-1 {
+        width: 100%;
+    }
+
+    .attendance-table {
+        max-height: 400px;
+    }
+
+    th, td {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .attendance-btn {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        margin: 2px;
+    }
+}
+
+@media (max-width: 640px) {
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .header h1 {
+        font-size: 1.25rem;
+    }
+
+    .form-container select,
+    .form-container input {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    th, td {
+        padding: 6px;
+        font-size: 0.8rem;
+    }
+
+    .attendance-btn {
+        padding: 5px 8px;
+        font-size: 0.8rem;
+    }
+
+    .attendance-table {
+        max-height: 350px;
+    }
+
+    .logo-img {
+        height: 40px;
+        width: 40px;
+    }
+
+    .logo-button {
+        font-size: 0.9rem;
+    }
+
+    .sidebar a {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+}
+
+/* Menu Toggle for Mobile */
+.menu-toggle {
+    display: none;
+    font-size: 1.5rem;
+    color: white;
+    background: rgba(214, 51, 60, 0.8);
+    border: none;
+    cursor: pointer;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 30;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+}
     </style>
 </head>
 <body>
@@ -134,7 +328,7 @@
         <div class="sidebar">
             <div class="mb-6">
                 <a href="{% url 'admin_page' %}" class="logo-button">
-                    <img src="https://via.placeholder.com/80" alt="Manavargal Logo" class="logo-img">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
                     <span>Manavargal School</span>
                 </a>
             </div>

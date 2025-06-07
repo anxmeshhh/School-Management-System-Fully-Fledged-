@@ -1,0 +1,183 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Timetable Entry - Manavargal SMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        body {
+            background-color: #f4f7fa;
+            color: #333;
+        }
+        .header {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header img {
+            max-width: 50px;
+            margin-right: 15px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        label {
+            width: 120px;
+            font-weight: 500;
+            color: #333;
+        }
+        input, select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 20px;
+            }
+            .header img {
+                max-width: 40px;
+            }
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            input, select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal SMS Logo">
+        <h1>MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
+    </header>
+    <div class="container">
+        <h2>Edit Timetable Entry</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="class">Class:</label>
+                <select id="class" name="class" required>
+                    {% for cls in classes %}
+                    <option value="{{ cls }}" {% if cls == timetable.class %}selected{% endif %}>{{ cls }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="section">Section:</label>
+                <select id="section" name="section">
+                    <option value="">None</option>
+                    {% for sec in sections %}
+                    <option value="{{ sec }}" {% if sec == timetable.section %}selected{% endif %}>{{ sec }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="subject">Subject:</label>
+                <input type="text" id="subject" name="subject" value="{{ timetable.subject }}" required>
+            </div>
+            <div class="form-group">
+                <label for="teacher_id">Teacher:</label>
+                <select id="teacher_id" name="teacher_id" required>
+                    {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}" {% if teacher.id == timetable.teacher_id %}selected{% endif %}>
+                        {{ teacher.name }} ({{ teacher.subject }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="day_of_week">Day:</label>
+                <select id="day_of_week" name="day_of_week" required>
+                    <option value="Monday" {% if timetable.day_of_week == 'Monday' %}selected{% endif %}>Monday</option>
+                    <option value="Tuesday" {% if timetable.day_of_week == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                    <option value="Wednesday" {% if timetable.day_of_week == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                    <option value="Thursday" {% if timetable.day_of_week == 'Thursday' %}selected{% endif %}>Thursday</option>
+                    <option value="Friday" {% if timetable.day_of_week == 'Friday' %}selected{% endif %}>Friday</option>
+                    <option value="Saturday" {% if timetable.day_of_week == 'Saturday' %}selected{% endif %}>Saturday</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="start_time">Start Time:</label>
+                <input type="time" id="start_time" name="start_time" value="{{ timetable.start_time|time:'H:i' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="end_time">End Time:</label>
+                <input type="time" id="end_time" name="end_time" value="{{ timetable.end_time|time:'H:i' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="room">Room:</label>
+                <input type="text" id="room" name="room" value="{{ timetable.room|default:'' }}">
+            </div>
+            <button type="submit" class="btn">Update Entry</button>
+        </form>
+    </div>
+</body>
+</html>

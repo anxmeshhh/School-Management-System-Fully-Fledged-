@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -369,7 +370,7 @@
     <div id="app">
         <div class="header">
             <div class="logo-button">
-                <img src="https://via.placeholder.com/80" alt="Manavargal Logo" class="logo-img" style="height: 6cm; width: 6cm; object-fit: contain; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); transition: transform 0.3s ease;">
+                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img" style="height: 6cm; width: 6cm; object-fit: contain; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); transition: transform 0.3s ease;">
                 <span class="text-2xl font-bold">Manavargal School</span>
             </div>
             <h1>Leave Requests</h1>

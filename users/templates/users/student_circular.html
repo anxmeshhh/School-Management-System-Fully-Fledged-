@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e6e6fa 0%, #dcd6f7 50%, #e6e6fa 100%);
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c2 50%, #e8f5e9 100%);
             background-size: 200%;
             animation: gradient 20s ease infinite;
             padding: 40px 20px;
@@ -33,17 +33,89 @@
 
         h1 {
             text-align: center;
-            color: #6a5acd;
+            color: #4caf50;
             font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 2.5rem;
+            margin-bottom: 1rem;
             letter-spacing: 1px;
             text-transform: uppercase;
             transition: color 0.3s ease;
         }
 
         h1:hover {
-            color: #483d8b;
+            color: #388e3c;
+        }
+
+        .student-info {
+            text-align: center;
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-form {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn;
+        }
+
+        .filter-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 400;
+        }
+
+        .filter-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid #81c784;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        .filter-form select:focus {
+            border-color: #4caf50;
+            outline: none;
+        }
+
+        .filter-form button {
+            background: #4caf50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        .filter-form button:hover {
+            background: #388e3c;
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            background: #ffcdd2;
+            color: #d32f2f;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
         }
 
         .circular-container {
@@ -54,36 +126,36 @@
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            to { opacity: 1; transform: none; }
         }
 
         .circular {
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(12px);
             padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
 
         .circular:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(106, 90, 205, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15), 0 0 10px rgba(76, 175, 80, 0.2);
         }
 
         .circular h3 {
             margin: 0;
-            color: #6a5acd;
+            color: #4caf50;
             font-size: 1.8rem;
             font-weight: 600;
             letter-spacing: 0.5px;
-            transition: color 0.3s ease;
+            transition: color 0.3s ease-in-out;
         }
 
         .circular h3:hover {
-            color: #483d8b;
+            color: #388e3c;
         }
 
         .circular small {
@@ -93,42 +165,47 @@
             margin-top: 0.5rem;
             display: block;
             letter-spacing: 0.5px;
-            transition: color 0.3s ease;
+            transition: color 0.3s ease-in-out;
         }
 
         .circular small:hover {
-            color: #6a5acd;
+            color: #4caf50;
         }
 
         .circular img {
             max-width: 100%;
-            margin-top: 1rem;
-            border-radius: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
             display: block;
-            transition: transform 0.4s ease, opacity 0.4s ease;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
         }
 
         .circular img:hover {
-            transform: scale(1.03);
-            opacity: 0.9;
+            transform: scale(1.02);
+            opacity: 0.95;
         }
 
         .no-circulars {
-            text-align: center;
-            color: #666;
             font-size: 1.2rem;
-            margin-top: 2rem;
+            color: #666;
+            text-align: center;
+            margin-top: 20px;
             font-weight: 400;
         }
 
         @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
-                margin-bottom: 2rem;
+                margin-bottom: 0.5rem;
             }
 
+            .student-info {
+                font-size: 1.1rem;
+            }
+
+            .filter-form,
             .circular {
-                padding: 20px;
+                padding: 15px;
             }
 
             .circular h3 {
@@ -147,11 +224,16 @@
         @media (max-width: 480px) {
             h1 {
                 font-size: 1.6rem;
-                margin-bottom: 1.5rem;
+                margin-bottom: 0.25rem;
             }
 
+            .student-info {
+                font-size: 1rem;
+            }
+
+            .filter-form,
             .circular {
-                padding: 15px;
+                padding: 10px;
             }
 
             .circular h3 {
@@ -171,15 +253,41 @@
 <body>
     <h1>School Circulars</h1>
 
+    {% if error_message %}
+        <div class="error-message">{{ error_message }}</div>
+    {% endif %}
+
+    {% if student_class and student_section %}
+        <div class="student-info">
+            Your Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}
+        </div>
+    {% endif %}
+
+    <form class="filter-form" method="post">
+        {% csrf_token %}
+        <label for="filter_type">Filter Circulars</label>
+        <select id="filter_type" name="filter_type" required>
+            <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Circulars</option>
+            <option value="specific" {% if filter_type == 'specific' %}selected{% endif %}>Class/Section Only</option>
+        </select>
+        <button type="submit">Apply Filter</button>
+    </form>
+
     <div class="circular-container">
         {% for circular in circulars %}
             <div class="circular">
                 <h3>{{ circular.title }}</h3>
                 <small>Posted on: {{ circular.date }}</small>
+                <small>Target: {{ circular.target }}</small>
                 <img src="{{ circular.image_url }}" alt="Circular Image">
             </div>
         {% empty %}
-            <p class="no-circulars">No circulars available right now. Please check back later.</p>
+            <p class="no-circulars">
+                No circulars available for {% if filter_type == 'specific' %}your class and section{% else %}the selected filter{% endif %}.
+                {% if student_class and student_section %}
+                    (Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }})
+                {% endif %}
+            </p>
         {% endfor %}
     </div>
 </body>

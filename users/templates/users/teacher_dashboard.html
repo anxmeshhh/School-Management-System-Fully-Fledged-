@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #B85450, #D4625E, #A04A46);
+            background: linear-gradient(135deg, #FF6B6B, #FF9A9E, #FFD1DC);
             min-height: 100vh;
             display: flex;
             position: relative;
@@ -30,7 +30,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.2)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
             pointer-events: none;
             z-index: 0;
         }
@@ -42,9 +42,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 20% 80%, rgba(184, 84, 80, 0.2) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(212, 98, 94, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 40%, rgba(160, 74, 70, 0.1) 0%, transparent 50%);
+            background: radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 154, 158, 0.25) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(255, 209, 220, 0.2) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
         }
@@ -61,48 +61,48 @@
         .sidebar {
             width: 300px;
             height: 100vh;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 240, 240, 0.95) 100%);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 245, 245, 0.95) 100%);
             backdrop-filter: blur(10px);
             color: #333;
             overflow-y: auto;
             scroll-behavior: smooth;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
             position: fixed;
             top: 0;
             left: 0;
             z-index: 20;
             transition: transform 0.3s ease;
-            border-right: 1px solid rgba(184, 84, 80, 0.3);
+            border-right: 1px solid rgba(255, 107, 107, 0.3);
         }
 
         .sidebar-header {
             padding: 1.5rem 2rem 2rem;
-            background: linear-gradient(135deg, rgba(255, 240, 240, 0.95) 0%, rgba(255, 230, 230, 0.9) 100%);
+            background: linear-gradient(135deg, rgba(255, 245, 245, 0.95) 0%, rgba(255, 230, 230, 0.9) 100%);
             text-align: center;
             font-size: 1.5rem;
             font-weight: 600;
-            color: #8B3A36;
+            color: #D6333C;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 1rem;
-            border-bottom: 2px solid rgba(139, 58, 54, 0.2);
+            border-bottom: 2px solid rgba(214, 51, 60, 0.2);
         }
 
         .logo-container {
             width: 120px;
             height: 96px;
-            background: linear-gradient(135deg, rgba(255, 230, 230, 0.9) 0%, rgba(255, 240, 240, 0.8) 100%);
+            background: linear-gradient(135deg, rgba(255, 230, 230, 0.9) 0%, rgba(255, 245, 245, 0.8) 100%);
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(139, 58, 54, 0.25);
-            border: 2px solid rgba(139, 58, 54, 0.2);
+            box-shadow: 0 4px 15px rgba(214, 51, 60, 0.25);
+            border: 2px solid rgba(214, 51, 60, 0.2);
         }
 
         .logo-container img {
@@ -114,7 +114,7 @@
 
         .logo-container:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(139, 58, 54, 0.35);
+            box-shadow: 0 6px 20px rgba(214, 51, 60, 0.35);
         }
 
         .logo-container:hover img {
@@ -122,7 +122,7 @@
         }
 
         .sidebar-header:hover {
-            background: linear-gradient(135deg, rgba(255, 230, 230, 1) 0%, rgba(255, 240, 240, 1) 100%);
+            background: linear-gradient(135deg, rgba(255, 230, 230, 1) 0%, rgba(255, 245, 245, 1) 100%);
         }
 
         .sidebar-nav {
@@ -141,9 +141,9 @@
         }
 
         .sidebar-nav a:hover {
-            background: linear-gradient(90deg, rgba(255, 240, 240, 0.8) 0%, rgba(255, 230, 230, 0.6) 100%);
+            background: linear-gradient(90deg, rgba(255, 245, 245, 0.8) 0%, rgba(255, 230, 230, 0.6) 100%);
             transform: translateX(5px);
-            border-left: 4px solid #8B3A36;
+            border-left: 4px solid #D6333C;
         }
 
         .sidebar-nav a img {
@@ -191,11 +191,11 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.15) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 245, 245, 0.2) 100%);
             backdrop-filter: blur(15px);
             border-radius: 12px;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
         }
 
@@ -214,27 +214,23 @@
         .header-text {
             color: #FFFFFF;
             font-size: 1.125rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             font-weight: 500;
         }
 
         .username-box {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(245, 245, 245, 1) 100%);
-            color: #333333; /* Dark text for contrast */
+            background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 240, 240, 1) 100%);
+            color: #333;
             padding: 0.5rem 1.2rem;
             border-radius: 20px;
             font-size: 0.9rem;
             font-weight: 600;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(139, 58, 54, 0.5);
-            opacity: 1;
-            visibility: visible;
-            display: inline-block;
-            text-align: center;
+            border: 1px solid rgba(214, 51, 60, 0.5);
             min-width: 100px;
+            text-align: center;
             line-height: 1.5;
         }
-
 
         .notification-panel {
             position: absolute;
@@ -253,7 +249,7 @@
             transition: all 0.3s ease;
             pointer-events: none;
             z-index: 10;
-            border: 1px solid rgba(139, 58, 54, 0.25);
+            border: 1px solid rgba(214, 51, 60, 0.25);
         }
 
         .notification-panel.active {
@@ -263,7 +259,7 @@
         }
 
         .notification-panel h3 {
-            color: #8B3A36;
+            color: #D6333C;
             font-size: 1.125rem;
             font-weight: 600;
             margin-bottom: 1rem;
@@ -299,7 +295,7 @@
             border: none;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             padding: 0.5rem;
             border-radius: 50%;
         }
@@ -307,7 +303,7 @@
         .bell-button:hover,
         .profile-button:hover {
             transform: scale(1.2);
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
         }
 
         .title {
@@ -315,7 +311,7 @@
             font-size: 2.5rem;
             font-weight: 600;
             text-align: center;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             margin-bottom: 1rem;
         }
 
@@ -339,7 +335,7 @@
         }
 
         .card-container h2 {
-            color: #8B3A36;
+            color: #D6333C;
             font-size: 1.875rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
@@ -348,59 +344,13 @@
         .quote {
             color: #333;
             font-style: italic;
-            border-left: 4px solid #8B3A36;
+            border-left: 4px solid #D6333C;
             padding-left: 1.5rem;
             font-size: 1.125rem;
             padding-top: 1rem;
             padding-bottom: 1rem;
-            background: rgba(139, 58, 54, 0.1);
+            background: rgba(214, 51, 60, 0.1);
             border-radius: 0 8px 8px 0;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 240, 0.9) 100%);
-            backdrop-filter: blur(10px);
-            padding: 2rem 1.5rem;
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-            background: linear-gradient(135deg, rgba(255, 240, 240, 0.98) 0%, rgba(255, 230, 230, 0.95) 100%);
-        }
-
-        .card img {
-            width: 70px;
-            height: 70px;
-            margin-bottom: 1rem;
-            transition: all 0.3s ease;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
-        }
-
-        .card:hover img {
-            transform: scale(1.3) rotate(5deg);
-        }
-
-        .card span {
-            color: #333;
-            font-size: 1.125rem;
-            font-weight: 500;
         }
 
         .pulse {
@@ -413,23 +363,11 @@
             100% { transform: scale(1); }
         }
 
-        .welcome-section {
-            display: block;
-        }
-
-        .master-data-section {
-            display: none;
-        }
-
-        .master-data-section.active {
-            display: block;
-        }
-
         .menu-toggle {
             display: none;
             font-size: 1.5rem;
             color: #FFFFFF;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
             border: none;
             cursor: pointer;
             position: absolute;
@@ -453,6 +391,14 @@
             .logo-container {
                 width: 100px;
                 height: 80px;
+            }
+
+            .title {
+                font-size: 2.2rem;
+            }
+
+            .card-container h2 {
+                font-size: 1.75rem;
             }
         }
 
@@ -491,13 +437,14 @@
                 font-size: 1rem;
             }
 
-            .card span {
-                font-size: 1rem;
-            }
-
             .logo-container {
                 width: 80px;
                 height: 64px;
+            }
+
+            .notification-panel {
+                width: 100%;
+                right: 0;
             }
         }
 
@@ -524,22 +471,39 @@
                 padding: 1rem;
             }
 
-            .cards-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
-
-            .card img {
-                width: 50px;
-                height: 50px;
-            }
-
-            .notification-panel {
-                width: 100%;
-                right: 0;
-            }
-
             .card-container {
                 max-width: 100%;
+                padding: 1.5rem;
+            }
+
+            .title {
+                font-size: 1.75rem;
+            }
+
+            .card-container h2 {
+                font-size: 1.25rem;
+            }
+
+            .quote {
+                font-size: 0.9rem;
+                padding-left: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .header-right {
+                justify-content: center;
+                gap: 1rem;
+            }
+
+            .username-box {
+                font-size: 0.85rem;
+                padding: 0.4rem 1rem;
+                min-width: 80px;
             }
 
             .logo-container {
@@ -547,23 +511,15 @@
                 height: 48px;
             }
 
-            .header {
-                flex-direction: column;
-                gap: 1rem;
+            .sidebar-nav a {
+                font-size: 1rem;
+                padding: 0.8rem 1.5rem;
             }
 
-            .header-right {
-                justify-content: center;
+            .sidebar-nav a img {
+                width: 24px;
+                height: 24px;
             }
-        }
-
-        /* Debug Section */
-        .debug {
-            background: white;
-            padding: 10px;
-            margin-bottom: 10px;
-            color: #333;
-            font-size: 1rem;
         }
     </style>
 </head>
@@ -574,34 +530,34 @@
 
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-header" id="homeLink">
+            <div class="sidebar-header">
                 <div class="logo-container">
                     <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
                 </div>
                 Manavargal SMS
             </div>
             <nav class="sidebar-nav">
-                <a href="#" id="masterDataLink">
-                    <img src="https://img.icons8.com/fluency/24/home.png" alt="Home Icon">
-                    Master Data
+                <a href="{% url 'teacher_profile' %}">
+                    <img src="https://img.icons8.com/fluency/24/home.png" alt="Profile Icon">
+                    Profile
                 </a>
                 <a href="{% url 'mark_entry' %}">
-                    <img src="https://img.icons8.com/color/24/000000/checked-checkbox.png" alt="Attendance Icon">
+                    <img src="https://img.icons8.com/color/24/000000/checked-checkbox.png" alt="Mark Entry Icon">
                     Mark Entry
                 </a>
                 <a href="{% url 'teacher_portal' %}">
                     <img src="https://img.icons8.com/color/48/checked--v1.png" alt="Attendance Icon">
                     Mark Attendance
                 </a>
-                <a href="{% url 'admin_homework_panel' %}">
+                <a href="{% url 'teacher_homework_panel' %}">
                     <img src="https://img.icons8.com/color/24/000000/homework.png" alt="Homework Icon">
                     Assign Homework
                 </a>
-                <a href="{% url 'admin_study_materials_upload' %}">
+                <a href="{% url 'teacher_study_materials_upload' %}">
                     <img src="https://img.icons8.com/color/24/000000/graduation-cap.png" alt="Study Materials Icon">
                     Upload Study Materials
                 </a>
-                <a href="{% url 'admin_circular_upload' %}">
+                <a href="{% url 'teacher_circular_upload' %}">
                     <img src="https://img.icons8.com/color/24/000000/classroom.png" alt="Circulars Icon">
                     Upload Circulars
                 </a>
@@ -609,13 +565,15 @@
                     <img src="https://img.icons8.com/color/24/000000/calendar--v1.png" alt="Leave Requests Icon">
                     Approve Student Leave Requests
                 </a>
+                <a href="{% url 'teacher_timetable' %}">
+                    <img src="https://img.icons8.com/color/24/000000/add-user-male.png" alt="Timetable Icon">
+                    Timetable
+                </a>
             </nav>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            
-
             <!-- Header Section -->
             <header class="header">
                 <div class="header-left">
@@ -650,39 +608,6 @@
                         <p id="quote" class="quote"></p>
                     </div>
                 </div>
-
-                <!-- Master Data Section -->
-                <div class="master-data-section" id="masterDataSection">
-                    <div class="card-container">
-                        <h2>Master Data</h2>
-                        <div class="cards-grid">
-                            <a href="#" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <img src="https://img.icons8.com/color/70/000000/graduation-cap.png" alt="Student Info">
-                                    <span>Student Info</span>
-                                </div>
-                            </a>
-                            <a href="#" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <img src="https://img.icons8.com/color/70/000000/checked-checkbox.png" alt="Attendance">
-                                    <span>Mark Entry</span>
-                                </div>
-                            </a>
-                            <a href="#" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <img src="https://img.icons8.com/color/70/000000/homework.png" alt="Homework">
-                                    <span>Assign Homework</span>
-                                </div>
-                            </a>
-                            <a href="#" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <img src="https://img.icons8.com/color/70/000000/graduation-cap.png" alt="Study Materials">
-                                    <span>Study Materials</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -708,7 +633,7 @@
         setInterval(updateQuote, 120000);
 
         document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.card, .card-container');
+            const cards = document.querySelectorAll('.card-container');
             cards.forEach((card, index) => {
                 setTimeout(() => {
                     card.classList.add('pulse');
@@ -727,23 +652,6 @@
             if (!bell.contains(e.target) && !panel.contains(e.target)) {
                 panel.classList.remove('active');
             }
-        });
-
-        const masterDataLink = document.getElementById('masterDataLink');
-        const homeLink = document.getElementById('homeLink');
-        const welcomeSection = document.getElementById('welcomeSection');
-        const masterDataSection = document.getElementById('masterDataSection');
-
-        masterDataLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            welcomeSection.style.display = 'none';
-            masterDataSection.classList.add('active');
-        });
-
-        homeLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            welcomeSection.style.display = 'block';
-            masterDataSection.classList.remove('active');
         });
 
         const menuToggle = document.getElementById('menuToggle');

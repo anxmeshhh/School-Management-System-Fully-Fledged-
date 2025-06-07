@@ -6,350 +6,350 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Admin Login</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
 
-        body {
-            background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 100%),
-                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
-            background-size: 200%, 20px 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
+    body {
+      background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 100%),
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
+      background-size: 200%, 20px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(30, 144, 255, 0.3), rgba(173, 216, 230, 0.3));
-            opacity: 0.5;
-            z-index: 1;
-            animation: subtlePulse 10s ease-in-out infinite;
-        }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(30, 144, 255, 0.3), rgba(173, 216, 230, 0.3));
+      opacity: 0.5;
+      z-index: 1;
+      animation: subtlePulse 10s ease-in-out infinite;
+    }
 
-        .logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            overflow: hidden;
-            z-index: 3;
-            transition: transform 0.6s ease-in-out;
-        }
+    .logo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      z-index: 3;
+      transition: transform 0.6s ease-in-out;
+    }
 
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            animation: bounceIn 1.2s ease-out;
-        }
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      animation: bounceIn 1.2s ease-out;
+    }
 
-        .logo:hover {
-            transform: scale(1.15) rotate(5deg);
-        }
+    .logo:hover {
+      transform: scale(1.15) rotate(5deg);
+    }
 
-        .welcome-header {
-            position: absolute;
-            top: 20px;
-            text-align: center;
-            color: #2563eb;
-            font-size: 1.8rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            width: 100%;
-            z-index: 3;
-            animation: slideInDown 1.2s ease-in-out;
-        }
+    .welcome-header {
+      position: absolute;
+      top: 20px;
+      text-align: center;
+      color: #2563eb;
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      width: 100%;
+      z-index: 3;
+      animation: slideInDown 1.2s ease-in-out;
+    }
 
-        .welcome-header span {
-            display: block;
-            font-size: 1.2rem;
-            font-weight: normal;
-            color: #170d0d;
-        }
+    .welcome-header span {
+      display: block;
+      font-size: 1.2rem;
+      font-weight: normal;
+      color: #170d0d;
+    }
 
-        .container {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(8px);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            width: 100%;
-            max-width: 400px;
-            margin-top: 120px;
-            z-index: 3;
-            animation: slideInRight 1.2s ease-in-out;
-            transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-        }
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      width: 100%;
+      max-width: 400px;
+      margin-top: 120px;
+      z-index: 3;
+      animation: slideInRight 1.2s ease-in-out;
+      transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+    }
 
-        .container:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-        }
+    .container:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
 
-        h2 {
-            color: #2563eb;
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 1.8rem;
-            font-weight: 600;
-            animation: fadeIn 1.5s ease-in-out;
-        }
+    h2 {
+      color: #2563eb;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 1.8rem;
+      font-weight: 600;
+      animation: fadeIn 1.5s ease-in-out;
+    }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-            animation: fadeInUp 1s ease-in-out;
-        }
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+      animation: fadeInUp 1s ease-in-out;
+    }
 
-        .form-group label {
-            display: block;
-            color: #2563eb;
-            font-size: 1rem;
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-        }
+    .form-group label {
+      display: block;
+      color: #2563eb;
+      font-size: 1rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+    }
 
-        .form-group input {
-            width: 100%;
-            padding: 0.8rem 40px 0.8rem 0.8rem;
-            border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #93c5fd, #2563eb) border-box;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
-        }
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem 40px 0.8rem 0.8rem;
+      border: 2px solid transparent;
+      background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #93c5fd, #2563eb) border-box;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
+    }
 
-        .form-group input:focus {
-            outline: none;
-            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
-            transform: scale(1.02);
-        }
+    .form-group input:focus {
+      outline: none;
+      box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
+      transform: scale(1.02);
+    }
 
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 60%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            width: 24px;
-            height: 24px;
-            fill: #2563eb;
-            transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
-        }
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 60%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      fill: #2563eb;
+      transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
+    }
 
-        .toggle-password:hover {
-            fill: #1d4ed8;
-            transform: translateY(-50%) scale(1.1);
-        }
+    .toggle-password:hover {
+      fill: #1d4ed8;
+      transform: translateY(-50%) scale(1.1);
+    }
 
-        button {
-            width: 100%;
-            padding: 1rem;
-            background: #2563eb;
-            border: none;
-            border-radius: 25px;
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 10px;
-            transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-        }
+    button {
+      width: 100%;
+      padding: 1rem;
+      background: #2563eb;
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+    }
 
-        button:hover {
-            background: #1d4ed8;
-            transform: scale(1.08);
-            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
-        }
+    button:hover {
+      background: #1d4ed8;
+      transform: scale(1.08);
+      box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
+    }
 
-        .signup-btn {
-            background: #fff;
-            border: 1px solid #2563eb;
-            color: #2563eb;
-        }
+    .signup-btn {
+      background: #fff;
+      border: 1px solid #2563eb;
+      color: #2563eb;
+    }
 
-        .signup-btn:hover {
-            background: #2563eb;
-            color: #fff;
-            transform: scale(1.08);
-            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
-        }
+    .signup-btn:hover {
+      background: #2563eb;
+      color: #fff;
+      transform: scale(1.08);
+      box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
+    }
 
-        .messages p {
-            text-align: center;
-            margin: 1rem 0;
-            font-size: 0.9rem;
-            color: #dc2626;
-            background: rgba(255, 75, 75, 0.1);
-            padding: 0.6rem;
-            border-radius: 6px;
-        }
+    .messages p {
+      text-align: center;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      color: #dc2626;
+      background: rgba(255, 75, 75, 0.1);
+      padding: 0.6rem;
+      border-radius: 6px;
+    }
 
-        p {
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.9rem;
-            color: #374151;
-        }
+    p {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: #374151;
+    }
 
-        p a {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
+    p a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
 
-        p a:hover {
-            color: #1d4ed8;
-            text-decoration: underline;
-        }
+    p a:hover {
+      color: #1d4ed8;
+      text-decoration: underline;
+    }
 
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
 
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
 
-        @keyframes slideInDown {
-            0% { transform: translateY(-50px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
+    @keyframes slideInDown {
+      0% { transform: translateY(-50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
 
-        @keyframes slideInRight {
-            0% { transform: translateX(50px); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
+    @keyframes slideInRight {
+      0% { transform: translateX(50px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
 
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.2); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
 
-        @keyframes subtlePulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 0.7; }
-            100% { opacity: 0.5; }
-        }
+    @keyframes subtlePulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 0.7; }
+      100% { opacity: 0.5; }
+    }
 
-        @media (max-width: 768px) {
-            .welcome-header {
-                font-size: 1.4rem;
-                padding: 0 10px;
-            }
+    @media (max-width: 768px) {
+      .welcome-header {
+        font-size: 1.4rem;
+        padding: 0 10px;
+      }
 
-            .welcome-header span {
-                font-size: 1rem;
-            }
+      .welcome-header span {
+        font-size: 1rem;
+      }
 
-            .logo {
-                width: 60px;
-                height: 60px;
-                top: 15px;
-                left: 15px;
-            }
+      .logo {
+        width: 60px;
+        height: 60px;
+        top: 15px;
+        left: 15px;
+      }
 
-            .container {
-                padding: 1.5rem;
-                max-width: 90%;
-                margin-top: 100px;
-            }
+      .container {
+        padding: 1.5rem;
+        max-width: 90%;
+        margin-top: 100px;
+      }
 
-            h2 {
-                font-size: 1.5rem;
-            }
+      h2 {
+        font-size: 1.5rem;
+      }
 
-            .form-group label {
-                font-size: 0.9rem;
-            }
+      .form-group label {
+        font-size: 0.9rem;
+      }
 
-            .form-group input {
-                padding: 0.7rem 40px 0.7rem 0.7rem;
-                font-size: 0.9rem;
-            }
+      .form-group input {
+        padding: 0.7rem 40px 0.7rem 0.7rem;
+        font-size: 0.9rem;
+      }
 
-            button {
-                padding: 0.8rem;
-                font-size: 0.9rem;
-            }
+      button {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+      }
 
-            p {
-                font-size: 0.8rem;
-            }
+      p {
+        font-size: 0.8rem;
+      }
 
-            .toggle-password {
-                width: 22px;
-                height: 22px;
-            }
-        }
+      .toggle-password {
+        width: 22px;
+        height: 22px;
+      }
+    }
 
-        @media (max-width: 480px) {
-            .logo {
-                width: 50px;
-                height: 50px;
-                top: 10px;
-                left: 10px;
-            }
+    @media (max-width: 480px) {
+      .logo {
+        width: 50px;
+        height: 50px;
+        top: 10px;
+        left: 10px;
+      }
 
-            .welcome-header {
-                top: 70px;
-                font-size: 1.2rem;
-            }
+      .welcome-header {
+        top: 70px;
+        font-size: 1.2rem;
+      }
 
-            .welcome-header span {
-                font-size: 0.9rem;
-            }
+      .welcome-header span {
+        font-size: 0.9rem;
+      }
 
-            .container {
-                max-width: 300px;
-                padding: 1.2rem;
-                margin-top: 90px;
-            }
+      .container {
+        max-width: 300px;
+        padding: 1.2rem;
+        margin-top: 90px;
+      }
 
-            h2 {
-                font-size: 1.3rem;
-            }
+      h2 {
+        font-size: 1.3rem;
+      }
 
-            .form-group input {
-                font-size: 0.85rem;
-                padding: 0.6rem 40px 0.6rem 0.6rem;
-            }
+      .form-group input {
+        font-size: 0.85rem;
+        padding: 0.6rem 40px 0.6rem 0.6rem;
+      }
 
-            button {
-                font-size: 0.85rem;
-                padding: 0.7rem;
-            }
+      button {
+        font-size: 0.85rem;
+        padding: 0.7rem;
+      }
 
-            .toggle-password {
-                width: 20px;
-                height: 20px;
-                right: 8px;
-            }
-        }
-    </style>
+      .toggle-password {
+        width: 20px;
+        height: 20px;
+        right: 8px;
+      }
+    }
+  </style>
 </head>
 <body>
     <div class="logo">

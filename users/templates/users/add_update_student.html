@@ -7,20 +7,21 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #00c4cc, #007bff);
+            background: linear-gradient(to right, #bae6fd, #60a5fa);
             margin: 0;
             padding: 20px;
         }
         .container {
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(14px);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
             max-width: 1000px;
             margin: 0 auto;
         }
         .header {
-            background-color: #003087;
+            background-color: #1e40af;
             color: white;
             padding: 10px;
             border-radius: 5px 5px 0 0;
@@ -33,7 +34,7 @@
             padding-bottom: 20px;
         }
         .form-section h3 {
-            color: #003087;
+            color: #1e40af;
             margin-bottom: 15px;
         }
         .form-grid {
@@ -48,6 +49,7 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: #4b5563;
         }
         input[type="text"],
         input[type="email"],
@@ -57,15 +59,24 @@
         textarea {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #d1d5db;
             border-radius: 5px;
             box-sizing: border-box;
+            background-color: #f8fbff;
+            color: #1e40af;
+            font-size: 0.95em;
+        }
+        input:hover, select:hover, textarea:hover,
+        input:focus, select:focus, textarea:focus {
+            border-color: #60a5fa;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
         }
         .button-group {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             margin-top: 20px;
-            justify-content: flex-end;
+            justify-content: center;
         }
         button {
             padding: 10px 20px;
@@ -73,23 +84,27 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .save-btn {
-            background-color: #00c4cc;
+            background: linear-gradient(90deg, #1e40af, #60a5fa);
             color: white;
         }
         .save-btn:hover {
-            background-color: #00a3a8;
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
         }
         .cancel-btn {
-            background-color: #ddd;
-            color: black;
+            background: linear-gradient(90deg, #6b7280, #9ca3af);
+            color: white;
         }
         .cancel-btn:hover {
-            background-color: #ccc;
+            background: linear-gradient(90deg, #4b5563, #6b7280);
         }
         .error-message {
-            color: red;
+            color: #dc2626;
             margin-top: 5px;
             font-size: 0.9em;
         }
@@ -99,12 +114,13 @@
             border-radius: 5px;
         }
         .messages .error {
-            background-color: #ffebee;
-            color: #c62828;
+            background-color: #fee2e2;
+            color: #991b1b;
         }
         .messages .success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
+            background-color: #e0f2fe;
+            color: #1e40af;
+            border-left: 4px solid #60a5fa;
         }
     </style>
 </head>

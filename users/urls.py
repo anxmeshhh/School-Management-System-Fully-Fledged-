@@ -3,11 +3,14 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
+from users.views import profile_view, login_view  # Import views directly
 urlpatterns = [
     path('', views.signup_view, name='signup'),  
     path('login/', views.login_view, name='login'),  
     path('dashboard/', views.dashboard_view, name='dashboard'),
-    path('profile/', views.profile_view, name='profile'), 
+    path('profile/', views.profile_view, name='profile_view'), 
+    
+    
     
     
     path('parent_login/', views.parent_login, name='parent_login'),
@@ -25,6 +28,7 @@ urlpatterns = [
     path('study_materials/', views.study_materials, name='study_materials'),
     
     path('teacher/', views.teacher_view, name='teacher'),
+    path('teacher_profile/', views.teacher_profile, name='teacher_profile'),
     path('fees/', views.fees, name='fees'),
     
     path('generate-id-card/', views.generate_id_card, name='generate_id_card'),
@@ -37,11 +41,14 @@ urlpatterns = [
     path('admin_page/', views.admin_page, name='admin_page'),
     path('admin_portal/', views.admin_accept_portal, name='admin_accept_portal'),
     path('admin_study_materials_upload/', views.admin_study_materials_upload, name='admin_study_materials_upload'),  # Updated path
+    path('teacher_study_materials_upload/', views.teacher_study_materials_upload, name='teacher_study_materials_upload'),  # Updated path
     path('media/<path:file_path>', views.serve_pdf, name='serve_pdf'),
     path('admin_homework_panel/', views.admin_homework_panel, name='admin_homework_panel'),
+    path('teacher_homework_panel/', views.teacher_homework_panel, name='teacher_homework_panel'),
 
     path('admin_circular_upload/', views.admin_circular_upload, name='admin_circular_upload'),
     path('student_circular/', views.student_circular, name='student_circular'),
+    path('teacher_circular_upload/', views.teacher_circular_upload, name='teacher_circular_upload'),
     
     path('student-portal/leave/', views.student_leave, name='student_leave'),
     path('download-leave-pdf/', views.download_leave_pdf, name='download_leave_pdf'),
@@ -98,6 +105,20 @@ urlpatterns = [
     path('admin_attendance/', views.admin_attendance_portal, name='admin_attendance_portal'),
     path('admin_mark_attendance/', views.admin_mark_attendance, name='admin_mark_attendance'),
     path('admin_generate_attendance_pdf/', views.admin_generate_attendance_pdf, name='admin_generate_attendance_pdf'),
+
+
+   path('admin_timetable/', views.admin_timetable_view, name='admin_timetable'),
+    path('admin_timetable/add/', views.admin_timetable_add, name='admin_timetable_add'),
+    path('admin_timetable/edit/<int:id>/', views.admin_timetable_edit, name='admin_timetable_edit'),
+    path('admin_timetable/delete/<int:id>/', views.admin_timetable_delete, name='admin_timetable_delete'),
+    path('admin_timetable/weekly/', views.admin_timetable_weekly, name='admin_timetable_weekly'),
+    path('admin_timetable/filter/', views.admin_timetable_filter, name='admin_timetable_filter'),
+    
+    # Teacher route
+    path('teacher_timetable/', views.teacher_timetable_view, name='teacher_timetable'),
+    
+    # Student route
+    path('student_timetable/', views.student_timetable_view, name='student_timetable'),
 ]
 
 if settings.DEBUG:

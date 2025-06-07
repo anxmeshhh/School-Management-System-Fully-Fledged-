@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Study Materials</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
@@ -15,10 +16,10 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e6f0fa 0%, #b3d4fc 50%, #e6f0fa 100%); /* Bluish White Theme */
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #e3f2fd 100%);
             background-size: 200%;
             animation: gradient 20s ease infinite;
-            padding: 40px 20px;
+            padding: 80px 20px 40px 20px;
             min-height: 100vh;
             position: relative;
         }
@@ -29,47 +30,11 @@
             100% { background-position: 0% 50%; }
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding: 1rem 2rem;
-            background: linear-gradient(90deg, #1e40af, #b3d4fc); /* Bluish White header */
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: white; /* White for contrast on header background */
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-align: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-        }
-
-        h1:hover {
-            color: #e6f0fa; /* Light blue hover */
-        }
-
-        .back-btn {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            background: #ef4444; /* Red for contrast */
-            color: white;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        }
-
-        .back-btn:hover {
-            background: #dc2626;
-            transform: scale(1.05); /* Subtle animation */
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        .logo-container {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
         }
 
         .logo {
@@ -79,44 +44,104 @@
             object-fit: cover;
         }
 
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease, transform 0.3s ease;
+            flex-grow: 1;
+        }
+
+        h1:hover {
+            color: #e3f2fd;
+            transform: scale(1.02);
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
+            color: white;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(90deg, #1565c0, #1976d2);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+
         h2 {
-            color: #1e40af; /* Bluish tone */
+            color: #1565c0;
             font-size: 2rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
             letter-spacing: 0.5px;
             transition: color 0.3s ease;
+            text-align: center;
+            animation: slideInLeft 0.6s ease-out;
         }
 
         h2:hover {
-            color: #b3d4fc; /* Lighter blue on hover */
+            color: #42a5f5;
         }
 
         .upload-box {
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(179, 212, 252, 0.4); /* Bluish White border */
+            border: 1px solid rgba(187, 222, 251, 0.4);
             padding: 25px;
             margin-bottom: 2rem;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             transition: transform 0.4s ease, box-shadow 0.4s ease;
-            animation: fadeIn 0.8s ease-in-out;
+            animation: fadeInUp 0.8s ease-in-out;
         }
 
         .upload-box:hover {
             transform: translateY(-8px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(30, 64, 175, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(21, 101, 192, 0.2);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .filter-form {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(187, 222, 251, 0.4);
+            max-width: 500px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeIn 0.8s ease-in-out;
         }
 
+        .filter-form label,
         .upload-box label {
             display: block;
-            color: #1e40af; /* Bluish tone */
+            color: #1565c0;
             font-size: 1.1rem;
             font-weight: 400;
             margin-bottom: 0.5rem;
@@ -124,8 +149,27 @@
             transition: color 0.3s ease;
         }
 
+        .filter-form label:hover,
         .upload-box label:hover {
-            color: #b3d4fc; /* Lighter blue on hover */
+            color: #42a5f5;
+        }
+
+        .filter-form select,
+        .upload-box select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid #42a5f5;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        .filter-form select:focus,
+        .upload-box select:focus {
+            border-color: #1565c0;
+            outline: none;
         }
 
         .upload-box input[type="text"],
@@ -135,7 +179,7 @@
             width: 100%;
             padding: 0.9rem;
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #b3d4fc, #e6f0fa) border-box; /* Bluish White gradient */
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #bbdefb, #e3f2fd) border-box;
             border-radius: 8px;
             font-size: 1rem;
             font-family: 'Poppins', sans-serif;
@@ -146,15 +190,16 @@
         .upload-box input[type="file"]:focus {
             outline: none;
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #1e40af, #b3d4fc) border-box; /* Bluish White focus */
-            box-shadow: 0 0 8px rgba(30, 64, 175, 0.3);
-            transform: scale(1.01); /* Subtle animation on focus */
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #1565c0, #42a5f5) border-box;
+            box-shadow: 0 0 8px rgba(21, 101, 192, 0.3);
+            transform: scale(1.01);
         }
 
-        .upload-box button {
+        .upload-box button,
+        .filter-form button {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(90deg, #1e40af, #b3d4fc); /* Bluish White gradient */
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
             border: none;
             border-radius: 8px;
             color: white;
@@ -165,31 +210,52 @@
             letter-spacing: 1px;
         }
 
-        .upload-box button:hover {
-            background: linear-gradient(90deg, #b3d4fc, #1e40af);
-            transform: scale(1.05); /* Subtle animation */
-            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+        .upload-box button:hover,
+        .filter-form button:hover {
+            background: linear-gradient(90deg, #42a5f5, #1565c0);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
         }
 
         .material-box {
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(179, 212, 252, 0.4); /* Bluish White border */
+            border: 1px solid rgba(187, 222, 251, 0.4);
             padding: 20px;
             margin-bottom: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             transition: transform 0.4s ease, box-shadow 0.4s ease;
-            animation: fadeIn 0.8s ease-in-out;
+            animation: fadeInUp 0.8s ease-in-out;
         }
 
         .material-box:hover {
             transform: translateY(-8px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(30, 64, 175, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(21, 101, 192, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .material-box h3 {
-            color: #1e40af; /* Bluish tone */
+            color: #1565c0;
             font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
@@ -198,11 +264,11 @@
         }
 
         .material-box h3:hover {
-            color: #b3d4fc; /* Lighter blue on hover */
+            color: #42a5f5;
         }
 
         .material-box p {
-            color: #666;
+            color: #1e3a8a;
             font-size: 1rem;
             font-weight: 400;
             margin-bottom: 0.5rem;
@@ -210,31 +276,36 @@
         }
 
         .material-box p strong {
-            color: #1e40af; /* Bluish tone */
+            color: #1565c0;
             font-weight: 600;
             transition: color 0.3s ease;
         }
 
         .material-box p strong:hover {
-            color: #b3d4fc; /* Lighter blue on hover */
+            color: #42a5f5;
         }
 
         .file-preview {
             margin-top: 1rem;
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .file-preview a {
-            color: #1e40af; /* Bluish tone */
+            color: #1565c0;
             font-size: 1rem;
             font-weight: 600;
             text-decoration: none;
-            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 5px;
+            background: #e3f2fd;
+            transition: color 0.3s ease, transform 0.3s ease, background 0.3s ease;
         }
 
         .file-preview a:hover {
-            color: #b3d4fc; /* Lighter blue on hover */
+            color: white;
+            background: #1976d2;
             transform: translateY(-2px);
         }
 
@@ -242,7 +313,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(90deg, #1e40af, #b3d4fc); /* Bluish White gradient */
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
             color: white;
             padding: 0.8rem 1.5rem;
             border-radius: 8px;
@@ -251,39 +322,66 @@
             font-weight: 600;
             z-index: 1000;
             transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .go-to-homework:hover {
-            background: linear-gradient(90deg, #b3d4fc, #1e40af);
-            transform: scale(1.05); /* Subtle animation */
-            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+            background: linear-gradient(90deg, #42a5f5, #1565c0);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+
+        p {
+            color: #1e3a8a;
+            text-align: center;
+            font-size: 1rem;
+            animation: fadeIn 0.5s ease-out;
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
+
+            .header {
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+                align-items: center;
+                justify-content: space-between;
+            }
+
             h1 {
-                font-size: 2rem;
-                margin-bottom: 1.5rem;
+                font-size: 1.8rem;
+                margin: 0;
+                flex-grow: 1;
+                text-align: center;
             }
 
             h2 {
                 font-size: 1.6rem;
             }
 
-            .upload-box {
+            .upload-box,
+            .filter-form {
                 padding: 20px;
             }
 
-            .upload-box label {
+            .upload-box label,
+            .filter-form label {
                 font-size: 1rem;
             }
 
             .upload-box input[type="text"],
-            .upload-box input[type="file"] {
+            .upload-box input[type="file"],
+            .upload-box select,
+            .filter-form select {
                 padding: 0.8rem;
                 font-size: 0.9rem;
             }
 
-            .upload-box button {
+            .upload-box button,
+            .filter-form button {
                 padding: 0.8rem;
                 font-size: 1rem;
             }
@@ -300,51 +398,84 @@
                 font-size: 0.9rem;
             }
 
+            .file-preview {
+                gap: 0.5rem;
+                justify-content: center;
+            }
+
             .file-preview a {
                 font-size: 0.9rem;
+                padding: 6px 12px;
             }
 
             .go-to-homework {
                 padding: 0.7rem 1.2rem;
                 font-size: 0.9rem;
+                bottom: 15px;
+                right: 15px;
             }
 
-            .header {
-                flex-direction: column;
-                gap: 1rem;
+            .back-btn {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
             }
 
             .logo {
                 width: 40px;
                 height: 40px;
             }
+
+            .logo-container {
+                top: 10px;
+                right: 10px;
+            }
+
+            p {
+                font-size: 0.9rem;
+            }
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
+            .header {
+                padding: 0.6rem 0.8rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
+            }
+
             h1 {
-                font-size: 1.6rem;
-                margin-bottom: 1rem;
+                font-size: 1.4rem;
             }
 
             h2 {
                 font-size: 1.4rem;
             }
 
-            .upload-box {
+            .upload-box,
+            .filter-form {
                 padding: 15px;
             }
 
-            .upload-box label {
+            .upload-box label,
+            .filter-form label {
                 font-size: 0.9rem;
             }
 
             .upload-box input[type="text"],
-            .upload-box input[type="file"] {
+            .upload-box input[type="file"],
+            .upload-box select,
+            .filter-form select {
                 padding: 0.7rem;
                 font-size: 0.8rem;
             }
 
-            .upload-box button {
+            .upload-box button,
+            .filter-form button {
                 padding: 0.7rem;
                 font-size: 0.9rem;
             }
@@ -361,12 +492,40 @@
                 font-size: 0.8rem;
             }
 
+            .file-preview {
+                flex-direction: column;
+                gap: 0.3rem;
+                align-items: center;
+            }
+
             .file-preview a {
                 font-size: 0.8rem;
+                padding: 5px 10px;
             }
 
             .go-to-homework {
                 padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .logo {
+                width: 35px;
+                height: 35px;
+            }
+
+            .logo-container {
+                top: 8px;
+                right: 8px;
+            }
+
+            p {
                 font-size: 0.8rem;
             }
         }
@@ -379,7 +538,6 @@
         <a href="{% url 'admin_page' %}">
             <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo" class="logo">
         </a>
-
     </div>
 
     {% if messages %}
@@ -393,11 +551,27 @@
     <div class="upload-box">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <label>Title:</label>
-            <input type="text" name="title" required>
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
 
-            <label>Upload File (PDF only):</label>
-            <input type="file" name="file" accept="application/pdf" required>
+            <label for="class">Select Class:</label>
+            <select id="class" name="class" required>
+                <option value="">Select Class</option>
+                {% for class in classes %}
+                    <option value="{{ class }}">{{ class }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="section">Select Section:</label>
+            <select id="section" name="section" required>
+                <option value="">Select Section</option>
+                {% for section in sections %}
+                    <option value="{{ section }}">{{ section|capfirst }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="file">Upload File (PDF only):</label>
+            <input type="file" id="file" name="file" accept="application/pdf" required>
 
             <button type="submit">Upload</button>
         </form>
@@ -405,9 +579,31 @@
 
     <h2>📂 Existing Study Materials</h2>
 
+    <form class="filter-form" method="GET">
+        <label for="class_filter">Filter by Class:</label>
+        <select id="class_filter" name="class">
+            <option value="">All Classes</option>
+            {% for class in classes %}
+                <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="section_filter">Filter by Section:</label>
+        <select id="section_filter" name="section">
+            <option value="">All Sections</option>
+            {% for section in sections %}
+                <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section|capfirst }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Filter</button>
+    </form>
+
     {% for material in study_materials %}
         <div class="material-box">
             <h3>{{ material.title }}</h3>
+            <p><strong>Class:</strong> {{ material.class|capfirst }}</p>
+            <p><strong>Section:</strong> {{ material.section|capfirst }}</p>
             <p><strong>Uploaded on:</strong> {{ material.upload_date }}</p>
             <div class="file-preview">
                 {% if material.file_path %}
@@ -419,7 +615,13 @@
             </div>
         </div>
     {% empty %}
-        <p style="text-align: center; color: #666;">No study materials uploaded yet.</p>
+        <p style="text-align: center; color: #666;">
+            {% if selected_class and selected_section %}
+                No study materials available for Class: {{ selected_class|capfirst }}, Section: {{ selected_section|capfirst }}.
+            {% else %}
+                No study materials uploaded yet.
+            {% endif %}
+        </p>
     {% endfor %}
 
     <a href="{% url 'admin_homework_panel' %}" class="go-to-homework">Go to Homework Panel</a>

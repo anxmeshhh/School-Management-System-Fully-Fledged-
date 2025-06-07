@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Timetable - Manavargal SMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        body {
+            background-color: #f4f7fa;
+            color: #333;
+        }
+        .header {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header img {
+            max-width: 50px;
+            margin-right: 15px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .filter-form {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .filter-form label {
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        .filter-form select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+            font-weight: 500;
+        }
+        tr:hover {
+            background-color: #f1faff;
+        }
+        .action-links a {
+            color: #007BFF;
+            text-decoration: none;
+            margin-right: 10px;
+            font-weight: 500;
+        }
+        .action-links a:hover {
+            text-decoration: underline;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 20px;
+            }
+            .header img {
+                max-width: 40px;
+            }
+            .filter-form {
+                flex-direction: column;
+            }
+            .filter-form select {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            th, td {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal SMS Logo">
+        <h1>MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
+    </header>
+    <div class="container">
+        <h2>Admin Timetable Dashboard</h2>
+        <div>
+            <a href="{% url 'admin_timetable_add' %}" class="btn">Add Single Entry</a>
+            <a href="{% url 'admin_timetable_weekly' %}" class="btn">Create Weekly Timetable</a>
+        </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form class="filter-form" method="get" action="{% url 'admin_timetable_filter' %}">
+            <label for="class">Class:</label>
+            <select id="class" name="class">
+                <option value="">All Classes</option>
+                {% for cls in classes %}
+                <option value="{{ cls }}" {% if cls == selected_class %}selected{% endif %}>{{ cls }}</option>
+                {% endfor %}
+            </select>
+            <label for="section">Section:</label>
+            <select id="section" name="section">
+                <option value="">All Sections</option>
+                {% for sec in sections %}
+                <option value="{{ sec }}" {% if sec == selected_section %}selected{% endif %}>{{ sec }}</option>
+                {% endfor %}
+            </select>
+            <label for="teacher_id">Teacher:</label>
+            <select id="teacher_id" name="teacher_id">
+                <option value="">All Teachers</option>
+                {% for teacher in teachers %}
+                <option value="{{ teacher.id }}" {% if teacher.id == selected_teacher %}selected{% endif %}>
+                    {{ teacher.name }}
+                </option>
+                {% endfor %}
+            </select>
+            <label for="day">Day:</label>
+            <select id="day" name="day">
+                <option value="">All Days</option>
+                <option value="Monday" {% if selected_day == 'Monday' %}selected{% endif %}>Monday</option>
+                <option value="Tuesday" {% if selected_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                <option value="Wednesday" {% if selected_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                <option value="Thursday" {% if selected_day == 'Thursday' %}selected{% endif %}>Thursday</option>
+                <option value="Friday" {% if selected_day == 'Friday' %}selected{% endif %}>Friday</option>
+                <option value="Saturday" {% if selected_day == 'Saturday' %}selected{% endif %}>Saturday</option>
+            </select>
+            <button type="submit" class="btn">Filter</button>
+        </form>
+        <table>
+            <tr>
+                <th>Class</th>
+                <th>Subject</th>
+                <th>Teacher</th>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Room</th>
+                <th>Actions</th>
+            </tr>
+            {% for timetable in timetables %}
+            <tr>
+                <td>{{ timetable.class_id }}</td>
+                <td>{{ timetable.subject }}</td>
+                <td>{{ timetable.teacher_name }}</td>
+                <td>{{ timetable.day_of_week }}</td>
+                <td>{{ timetable.start_time|time:"H:i" }} - {{ timetable.end_time|time:"H:i" }}</td>
+                <td>{{ timetable.room|default:"N/A" }}</td>
+                <td class="action-links">
+                    <a href="{% url 'admin_timetable_edit' timetable.id %}">Edit</a>
+                    <a href="{% url 'admin_timetable_delete' timetable.id %}" onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7">No timetable entries found.</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

@@ -14,7 +14,7 @@
 
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #e6f0fa 0%, #d6e4ff 50%, #e6f0fa 100%);
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #e3f2fd 100%);
             background-size: 200%;
             animation: gradient 20s ease infinite;
             min-height: 100vh;
@@ -31,28 +31,28 @@
         }
 
         header {
-            position: fixed;
-            top: 0;
-            right: 0;
             padding: 1.5rem;
             z-index: 10;
+            text-align: right;
         }
 
         .logo {
             height: 50px;
+            border-radius: 50%;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: transform 0.4s ease, box-shadow 0.4s ease;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .logo:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+            transform: rotate(360deg);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.3);
         }
 
         .container {
             max-width: 1000px;
             width: 100%;
-            margin: 5rem auto 0;
+            margin: 0 auto;
             animation: fadeIn 0.5s ease-out;
         }
 
@@ -64,7 +64,7 @@
         .header h1 {
             font-size: 38px;
             font-weight: 700;
-            color: #3b82f6;
+            color: #1565c0;
             letter-spacing: 2px;
             margin-bottom: 12px;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.08);
@@ -76,6 +76,7 @@
             font-weight: 400;
             color: #1e3a8a;
             letter-spacing: 1px;
+            animation: fadeInUp 0.7s ease-out;
         }
 
         .header-buttons {
@@ -86,7 +87,7 @@
 
         .back-btn {
             padding: 12px 24px;
-            background: linear-gradient(90deg, #6b7280, #9ca3af);
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
             color: white;
             border-radius: 8px;
             text-decoration: none;
@@ -95,10 +96,11 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .back-btn:hover {
-            background: linear-gradient(90deg, #4b5563, #6b7280);
+            background: linear-gradient(90deg, #1565c0, #1976d2);
             transform: translateY(-2px);
         }
 
@@ -106,10 +108,10 @@
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(14px);
             border: 2px solid transparent;
-            border-image: linear-gradient(45deg, rgba(59, 130, 246, 0.5), rgba(255, 255, 255, 0.3)) 1;
+            border-image: linear-gradient(45deg, rgba(21, 101, 192, 0.5), rgba(255, 255, 255, 0.3)) 1;
             padding: 45px;
             border-radius: 25px;
-            box-shadow: 0 8px 32px rgba(30, 58, 138, 0.15);
+            box-shadow: 0 8px 32px rgba(21, 101, 192, 0.15);
             margin-bottom: 60px;
             transition: transform 0.4s ease, box-shadow 0.4s ease;
             animation: fadeInUp 0.7s ease-out;
@@ -121,16 +123,17 @@
         }
 
         .upload-form h2 {
-            color: #3b82f6;
+            color: #1565c0;
             font-size: 32px;
             font-weight: 600;
             margin-bottom: 30px;
             letter-spacing: 1px;
+            animation: slideInLeft 0.6s ease-out;
         }
 
         .upload-form label {
             display: block;
-            color: #3b82f6;
+            color: #1565c0;
             font-size: 18px;
             font-weight: 400;
             margin-bottom: 12px;
@@ -138,27 +141,55 @@
         }
 
         .upload-form input[type="text"],
-        .upload-form input[type="file"] {
+        .upload-form input[type="file"],
+        .upload-form select {
             width: 100%;
             padding: 15px;
             margin-bottom: 30px;
             border-radius: 12px;
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #d6e4ff, #e6f0fa) border-box;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #bbdefb, #e3f2fd) border-box;
             font-size: 16px;
             transition: border 0.3s ease, background 0.3s ease;
         }
 
         .upload-form input[type="text"]:focus,
-        .upload-form input[type="file"]:focus {
+        .upload-form input[type="file"]:focus,
+        .upload-form select:focus {
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #3b82f6, #2563eb) border-box;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #1565c0, #1976d2) border-box;
             outline: none;
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 8px rgba(21, 101, 192, 0.3);
+        }
+
+        .upload-form .radio-group {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .upload-form .radio-group label {
+            display: inline-flex;
+            align-items: center;
+            color: #1565c0;
+            font-size: 16px;
+            margin-bottom: 0;
+        }
+
+        .upload-form .radio-group input[type="radio"] {
+            margin-right: 8px;
+            width: auto;
+            height: 18px;
+        }
+
+        .upload-form .class-section-group {
+            display: none;
+            margin-bottom: 30px;
         }
 
         .upload-form button {
-            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
             color: white;
             padding: 15px 50px;
             border: none;
@@ -171,7 +202,7 @@
         }
 
         .upload-form button:hover {
-            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            background: linear-gradient(90deg, #1976d2, #1565c0);
             transform: scale(1.03);
         }
 
@@ -180,22 +211,23 @@
             padding: 15px;
             border-radius: 8px;
             font-size: 16px;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .alert-message .success {
-            background-color: #dcfce7;
-            color: #166534;
-            border-left: 4px solid #16a34a;
+            background-color: #e0f7fa;
+            color: #006064;
+            border-left: 4px solid #00acc1;
         }
 
         .alert-message .error {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border-left: 4px solid #dc2626;
+            background-color: #e1f5fe;
+            color: #01579b;
+            border-left: 4px solid #0288d1;
         }
 
         .circulars-list h2 {
-            color: #3b82f6;
+            color: #1565c0;
             font-size: 32px;
             font-weight: 600;
             margin-bottom: 30px;
@@ -207,11 +239,11 @@
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(14px);
             border: 2px solid transparent;
-            border-image: linear-gradient(45deg, rgba(59, 130, 246, 0.5), rgba(255, 255, 255, 0.3)) 1;
+            border-image: linear-gradient(45deg, rgba(21, 101, 192, 0.5), rgba(255, 255, 255, 0.3)) 1;
             padding: 30px;
             margin-bottom: 30px;
             border-radius: 20px;
-            box-shadow: 0 5px 25px rgba(30, 58, 138, 0.1);
+            box-shadow: 0 5px 25px rgba(21, 101, 192, 0.1);
             transition: transform 0.4s ease, box-shadow 0.4s ease;
             animation: fadeInUp 0.7s ease-out;
         }
@@ -222,15 +254,21 @@
         }
 
         .circular h3 {
-            color: #3b82f6;
+            color: #1565c0;
             font-size: 26px;
             font-weight: 600;
             margin-bottom: 12px;
             letter-spacing: 0.5px;
         }
 
+        .circular p {
+            color: #1e3a8a;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
         .circular small {
-            color: #666;
+            color: #1e3a8a;
             font-size: 15px;
             font-weight: 300;
             letter-spacing: 0.5px;
@@ -269,7 +307,7 @@
             }
 
             .container {
-                margin-top: 4rem;
+                margin-top: 0;
             }
 
             .header h1 {
@@ -295,7 +333,8 @@
             }
 
             .upload-form input[type="text"],
-            .upload-form input[type="file"] {
+            .upload-form input[type="file"],
+            .upload-form select {
                 font-size: 14px;
                 padding: 12px;
             }
@@ -353,6 +392,17 @@
             }
         }
     </style>
+    <script>
+        function toggleClassSection() {
+            const specificRadio = document.getElementById('target-specific');
+            const classSectionGroup = document.querySelector('.class-section-group');
+            if (specificRadio.checked) {
+                classSectionGroup.style.display = 'block';
+            } else {
+                classSectionGroup.style.display = 'none';
+            }
+        }
+    </script>
 </head>
 <body>
     <header>
@@ -360,7 +410,6 @@
             <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MSMS Logo" class="logo">
         </a>
     </header>
-
 
     <div class="container">
         <div class="header">
@@ -377,6 +426,30 @@
                 {% csrf_token %}
                 <label for="title">Title:</label>
                 <input type="text" name="title" required>
+
+                <label>Target Audience:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="target" value="all" id="target-all" checked onclick="toggleClassSection()"> All</label>
+                    <label><input type="radio" name="target" value="specific" id="target-specific" onclick="toggleClassSection()"> Specific Class/Section</label>
+                </div>
+
+                <div class="class-section-group">
+                    <label for="class">Class:</label>
+                    <select name="class" id="class">
+                        <option value="">Select Class</option>
+                        {% for cls in classes %}
+                        <option value="{{ cls }}">{{ cls }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="section">Section:</label>
+                    <select name="section" id="section">
+                        <option value="">Select Section</option>
+                        {% for sec in sections %}
+                        <option value="{{ sec }}">{{ sec }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
                 <label for="image">Image:</label>
                 <input type="file" name="image" accept="image/*" required>
@@ -400,6 +473,7 @@
             {% for circular in circulars %}
                 <div class="circular">
                     <h3>{{ circular.title }}</h3>
+                    <p>Target: {{ circular.target }}</p>
                     <small>Uploaded on: {{ circular.date }}</small>
                     <img src="{{ circular.image_url }}" alt="{{ circular.title }}">
                 </div>
