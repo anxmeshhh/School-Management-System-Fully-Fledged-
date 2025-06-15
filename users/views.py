@@ -1496,7 +1496,7 @@ def teacher_accept_portal(request):
         else:
             messages.error(request, 'Leave ID or action missing.')
 
-        return redirect('admin_accept_portal')  # Redirect back to the leave requests page
+        return redirect('teacher_accept_portal')  # Redirect back to the leave requests page
 
     # Fetch leave requests to display on the page
     with connection.cursor() as cursor:
