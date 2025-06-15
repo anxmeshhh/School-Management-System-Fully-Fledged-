@@ -138,36 +138,37 @@
         </div>
         {% endif %}
 
-        <form method="POST">
+        <form method="POST" onsubmit="return confirm('Are you sure you want to update this student\'s information?');">
             {% csrf_token %}
-            
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+
             <!-- Basic Information Section -->
             <div class="form-section">
                 <h3>Basic Information</h3>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="name">Full Name*</label>
-                        <input type="text" id="name" name="name" value="{{ name }}" required>
+                        <input type="text" id="name" name="name" value="{{ name|default_if_none:'' }}" required>
                     </div>
                     <div class="form-group">
                         <label for="admission_number">Admission Number*</label>
-                        <input type="text" id="admission_number" name="admission_number" value="{{ admission_number }}" required>
+                        <input type="text" id="admission_number" name="admission_number" value="{{ admission_number|default_if_none:'' }}" required>
                     </div>
                     <div class="form-group">
                         <label for="class_section">Class-Section* (e.g., 2-A)</label>
-                        <input type="text" id="class_section" name="class_section" value="{{ class_section }}" required>
+                        <input type="text" id="class_section" name="class_section" value="{{ class_section|default_if_none:'' }}" required>
                     </div>
                     <div class="form-group">
                         <label for="roll_number">Roll Number*</label>
-                        <input type="text" id="roll_number" name="roll_number" value="{{ roll_number }}" required>
+                        <input type="text" id="roll_number" name="roll_number" value="{{ roll_number|default_if_none:'' }}" required>
                     </div>
                     <div class="form-group">
                         <label for="emis">EMIS Number*</label>
-                        <input type="text" id="emis" name="emis" value="{{ emis }}" required>
+                        <input type="text" id="emis" name="emis" value="{{ emis|default_if_none:'' }}" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Email*</label>
-                        <input type="email" id="email" name="email" value="{{ email }}" required>
+                        <input type="email" id="email" name="email" value="{{ email|default_if_none:'' }}" required>
                     </div>
                 </div>
             </div>
@@ -177,9 +178,9 @@
                 <h3>Personal Information</h3>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="gender">Gender*</label>
-                        <select id="gender" name="gender" required>
-                            <option value="">Select Gender</option>
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender">
+                            <option value="" {% if not gender %}selected{% endif %}>Select Gender</option>
                             {% for option in gender_options %}
                             <option value="{{ option }}" {% if gender == option %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
@@ -188,7 +189,7 @@
                     <div class="form-group">
                         <label for="community">Community</label>
                         <select id="community" name="community">
-                            <option value="">Select Community</option>
+                            <option value="" {% if not community %}selected{% endif %}>Select Community</option>
                             {% for option in community_options %}
                             <option value="{{ option }}" {% if community == option %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
@@ -196,20 +197,20 @@
                     </div>
                     <div class="form-group">
                         <label for="tamil_name">Tamil Name</label>
-                        <input type="text" id="tamil_name" name="tamil_name" value="{{ tamil_name }}">
+                        <input type="text" id="tamil_name" name="tamil_name" value="{{ tamil_name|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="dob">Date of Birth</label>
-                        <input type="date" id="dob" name="dob" value="{{ dob|date:'Y-m-d' }}">
+                        <input type="date" id="dob" name="dob" value="{{ dob|date:'Y-m-d'|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="nationality">Nationality</label>
-                        <input type="text" id="nationality" name="nationality" value="{{ nationality }}">
+                        <input type="text" id="nationality" name="nationality" value="{{ nationality|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="blood_group">Blood Group</label>
                         <select id="blood_group" name="blood_group">
-                            <option value="">Select Blood Group</option>
+                            <option value="" {% if not blood_group %}selected{% endif %}>Select Blood Group</option>
                             {% for option in blood_group_options %}
                             <option value="{{ option }}" {% if blood_group == option %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
@@ -217,47 +218,47 @@
                     </div>
                     <div class="form-group">
                         <label for="mother_tongue">Mother Tongue</label>
-                        <input type="text" id="mother_tongue" name="mother_tongue" value="{{ mother_tongue }}">
+                        <input type="text" id="mother_tongue" name="mother_tongue" value="{{ mother_tongue|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="caste">Caste</label>
-                        <input type="text" id="caste" name="caste" value="{{ caste }}">
+                        <input type="text" id="caste" name="caste" value="{{ caste|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="religion">Religion</label>
-                        <input type="text" id="religion" name="religion" value="{{ religion }}">
+                        <input type="text" id="religion" name="religion" value="{{ religion|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="place_of_birth">Place of Birth</label>
-                        <input type="text" id="place_of_birth" name="place_of_birth" value="{{ place_of_birth }}">
+                        <input type="text" id="place_of_birth" name="place_of_birth" value="{{ place_of_birth|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="aadhaar">Aadhaar Number</label>
-                        <input type="text" id="aadhaar" name="aadhaar" value="{{ aadhaar }}">
+                        <input type="text" id="aadhaar" name="aadhaar" value="{{ aadhaar|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="disability">Disability</label>
-                        <input type="text" id="disability" name="disability" value="{{ disability }}">
+                        <input type="text" id="disability" name="disability" value="{{ disability|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="id_mark1">Identification Mark 1</label>
-                        <input type="text" id="id_mark1" name="id_mark1" value="{{ id_mark1 }}">
+                        <input type="text" id="id_mark1" name="id_mark1" value="{{ id_mark1|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="id_mark2">Identification Mark 2</label>
-                        <input type="text" id="id_mark2" name="id_mark2" value="{{ id_mark2 }}">
+                        <input type="text" id="id_mark2" name="id_mark2" value="{{ id_mark2|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="admission_class">Admission Class</label>
-                        <input type="text" id="admission_class" name="admission_class" value="{{ admission_class }}">
+                        <input type="text" id="admission_class" name="admission_class" value="{{ admission_class|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="admission_year">Admission Year</label>
-                        <input type="text" id="admission_year" name="admission_year" value="{{ admission_year }}">
+                        <input type="text" id="admission_year" name="admission_year" value="{{ admission_year|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="admission_date">Admission Date</label>
-                        <input type="date" id="admission_date" name="admission_date" value="{{ admission_date|date:'Y-m-d' }}">
+                        <input type="date" id="admission_date" name="admission_date" value="{{ admission_date|date:'Y-m-d'|default_if_none:'' }}">
                     </div>
                 </div>
             </div>
@@ -268,43 +269,44 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="address">Address</label>
-                        <textarea id="address" name="address">{{ address }}</textarea>
+                        <textarea id="address" name="address">{{ address|default_if_none:'' }}</textarea>
                     </div>
                     <div class="form-group">
                         <label for="contact">Contact Number</label>
-                        <input type="text" id="contact" name="contact" value="{{ contact }}">
+                        <input type="text" id="contact" name="contact" value="{{ contact|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="alt_contact">Alternate Contact</label>
-                        <input type="text" id="alt_contact" name="alt_contact" value="{{ alt_contact }}">
+                        <input type="text" id="alt_contact" name="alt_contact" value="{{ alt_contact|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="country">Country</label>
-                        <input type="text" id="country" name="country" value="{{ country }}">
+                        <input type="text" id="country" name="country" value="{{ country|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="state">State</label>
-                        <input type="text" id="state" name="state" value="{{ state }}">
+                        <input type="text" id="state" name="state" value="{{ state|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="city">City</label>
-                        <input type="text" id="city" name="city" value="{{ city }}">
+                        <input type="text" id="city" name="city" value="{{ city|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="pincode">Pincode</label>
-                        <input type="text" id="pincode" name="pincode" value="{{ pincode }}">
+                        <input type="text" id="pincode" name="pincode" value="{{ pincode|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="status">Status</label>
-                        <input type="text" id="status" name="status" value="{{ status }}">
+                        <input type="text" id="status" name="status" value="{{ status|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="house">House</label>
-                        <input type="text" id="house" name="house" value="{{ house }}">
+                        <input type="text" id="house" name="house" value="{{ house|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="teacher_ward">Teacher Ward</label>
                         <select id="teacher_ward" name="teacher_ward">
+                            <option value="" {% if not teacher_ward %}selected{% endif %}>Select Option</option>
                             {% for option in teacher_ward_options %}
                             <option value="{{ option }}" {% if teacher_ward == option %}selected{% endif %}>{{ option|title }}</option>
                             {% endfor %}
@@ -313,6 +315,7 @@
                     <div class="form-group">
                         <label for="rte">RTE</label>
                         <select id="rte" name="rte">
+                            <option value="" {% if not rte %}selected{% endif %}>Select Option</option>
                             {% for option in rte_options %}
                             <option value="{{ option }}" {% if rte == option %}selected{% endif %}>{{ option|title }}</option>
                             {% endfor %}
@@ -321,6 +324,7 @@
                     <div class="form-group">
                         <label for="sports_quota">Sports Quota</label>
                         <select id="sports_quota" name="sports_quota">
+                            <option value="" {% if not sports_quota %}selected{% endif %}>Select Option</option>
                             {% for option in sports_quota_options %}
                             <option value="{{ option }}" {% if sports_quota == option %}selected{% endif %}>{{ option|title }}</option>
                             {% endfor %}
@@ -328,11 +332,11 @@
                     </div>
                     <div class="form-group">
                         <label for="prev_school">Previous School</label>
-                        <input type="text" id="prev_school" name="prev_school" value="{{ prev_school }}">
+                        <input type="text" id="prev_school" name="prev_school" value="{{ prev_school|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="prev_board">Previous Board</label>
-                        <input type="text" id="prev_board" name="prev_board" value="{{ prev_board }}">
+                        <input type="text" id="prev_board" name="prev_board" value="{{ prev_board|default_if_none:'' }}">
                     </div>
                 </div>
             </div>
@@ -343,103 +347,108 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="father_name">Father's Name</label>
-                        <input type="text" id="father_name" name="father_name" value="{{ father_name }}">
+                        <input type="text" id="father_name" name="father_name" value="{{ father_name|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="father_name_tamil">Father's Name (Tamil)</label>
-                        <input type="text" id="father_name_tamil" name="father_name_tamil" value="{{ father_name_tamil }}">
+                        <input type="text" id="father_name_tamil" name="father_name_tamil" value="{{ father_name_tamil|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="mother_name">Mother's Name</label>
-                        <input type="text" id="mother_name" name="mother_name" value="{{ mother_name }}">
+                        <input type="text" id="mother_name" name="mother_name" value="{{ mother_name|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="mother_name_tamil">Mother's Name (Tamil)</label>
-                        <input type="text" id="mother_name_tamil" name="mother_name_tamil" value="{{ mother_name_tamil }}">
+                        <input type="text" id="mother_name_tamil" name="mother_name_tamil" value="{{ mother_name_tamil|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="father_contact">Father's Contact</label>
-                        <input type="text" id="father_contact" name="father_contact" value="{{ father_contact }}">
+                        <input type="text" id="father_contact" name="father_contact" value="{{ father_contact|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="mother_contact">Mother's Contact</label>
-                        <input type="text" id="mother_contact" name="mother_contact" value="{{ mother_contact }}">
+                        <input type="text" id="mother_contact" name="mother_contact" value="{{ mother_contact|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="father_email">Father's Email</label>
-                        <input type="email" id="father_email" name="father_email" value="{{ father_email }}">
+                        <input type="email" id="father_email" name="father_email" value="{{ father_email|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="mother_email">Mother's Email</label>
-                        <input type="email" id="mother_email" name="mother_email" value="{{ mother_email }}">
+                        <input type="email" id="mother_email" name="mother_email" value="{{ mother_email|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="father_qualification">Father's Qualification</label>
-                        <input type="text" id="father_qualification" name="father_qualification" value="{{ father_qualification }}">
+                        <input type="text" id="father_qualification" name="father_qualification" value="{{ father_qualification|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="mother_qualification">Mother's Qualification</label>
-                        <input type="text" id="mother_qualification" name="mother_qualification" value="{{ mother_qualification }}">
+                        <input type="text" id="mother_qualification" name="mother_qualification" value="{{ mother_qualification|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="father_occupation">Father's Occupation</label>
-                        <input type="text" id="father_occupation" name="father_occupation" value="{{ father_occupation }}">
+                        <input type="text" id="father_occupation" name="father_occupation" value="{{ father_occupation|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="mother_occupation">Mother's Occupation</label>
-                        <input type="text" id="mother_occupation" name="mother_occupation" value="{{ mother_occupation }}">
+                        <input type="text" id="mother_occupation" name="mother_occupation" value="{{ mother_occupation|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="father_income">Father's Income</label>
-                        <input type="text" id="father_income" name="father_income" value="{{ father_income }}">
+                        <input type="text" id="father_income" name="father_income" value="{{ father_income|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="mother_income">Mother's Income</label>
-                        <input type="text" id="mother_income" name="mother_income" value="{{ mother_income }}">
+                        <input type="text" id="mother_income" name="mother_income" value="{{ mother_income|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="guardian_name">Guardian's Name</label>
-                        <input type="text" id="guardian_name" name="guardian_name" value="{{ guardian_name }}">
+                        <input type="text" id="guardian_name" name="guardian_name" value="{{ guardian_name|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="guardian_contact">Guardian's Contact</label>
-                        <input type="text" id="guardian_contact" name="guardian_contact" value="{{ guardian_contact }}">
+                        <input type="text" id="guardian_contact" name="guardian_contact" value="{{ guardian_contact|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="guardian_email">Guardian's Email</label>
-                        <input type="email" id="guardian_email" name="guardian_email" value="{{ guardian_email }}">
+                        <input type="email" id="guardian_email" name="guardian_email" value="{{ guardian_email|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="child_living">Child Living With</label>
-                        <input type="text" id="child_living" name="child_living" value="{{ child_living }}">
+                        <input type="text" id="child_living" name="child_living" value="{{ child_living|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="rights_on_child">Rights on Child</label>
-                        <input type="text" id="rights_on_child" name="rights_on_child" value="{{ rights_on_child }}">
+                        <input type="text" id="rights_on_child" name="rights_on_child" value="{{ rights_on_child|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="med_blood_group">Medical Blood Group</label>
-                        <input type="text" id="med_blood_group" name="med_blood_group" value="{{ med_blood_group }}">
+                        <select id="med_blood_group" name="med_blood_group">
+                            <option value="" {% if not med_blood_group %}selected{% endif %}>Select Blood Group</option>
+                            {% for option in blood_group_options %}
+                            <option value="{{ option }}" {% if med_blood_group == option %}selected{% endif %}>{{ option }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="diseases">Diseases</label>
-                        <input type="text" id="diseases" name="diseases" value="{{ diseases }}">
+                        <textarea id="diseases" name="diseases">{{ diseases|default_if_none:'' }}</textarea>
                     </div>
                     <div class="form-group">
                         <label for="allergies">Allergies</label>
-                        <input type="text" id="allergies" name="allergies" value="{{ allergies }}">
+                        <textarea id="allergies" name="allergies">{{ allergies|default_if_none:'' }}</textarea>
                     </div>
                     <div class="form-group">
                         <label for="medicines">Medicines</label>
-                        <input type="text" id="medicines" name="medicines" value="{{ medicines }}">
+                        <textarea id="medicines" name="medicines">{{ medicines|default_if_none:'' }}</textarea>
                     </div>
                     <div class="form-group">
                         <label for="hospital">Hospital</label>
-                        <input type="text" id="hospital" name="hospital" value="{{ hospital }}">
+                        <input type="text" id="hospital" name="hospital" value="{{ hospital|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
                         <label for="doctor">Doctor</label>
-                        <input type="text" id="doctor" name="doctor" value="{{ doctor }}">
+                        <input type="text" id="doctor" name="doctor" value="{{ doctor|default_if_none:'' }}">
                     </div>
                 </div>
             </div>

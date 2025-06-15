@@ -7,446 +7,447 @@
     <title>Manavargal School Management System - Attendance Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
         body {
-    background: linear-gradient(to bottom, #FF6B6B, #FF9A9E, #FFD1DC);
-    font-family: 'Poppins', sans-serif;
-    min-height: 100vh;
-}
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #fce4ec 100%);
+            background-size: 200%;
+            animation: gradient 20s ease infinite;
+            min-height: 100vh;
+            padding: 0;
+        }
 
-.container {
-    max-width: 1400px;
-    display: flex;
-    gap: 1.5rem;
-    margin: 0 auto;
-    padding: 1.5rem;
-}
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-.sidebar {
-    width: 250px;
-    background: linear-gradient(180deg, rgba(255, 245, 245, 0.98) 0%, rgba(255, 230, 230, 0.95) 100%);
-    color: #333;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-    height: fit-content;
-    border: 1px solid rgba(214, 51, 60, 0.3);
-    transition: transform 0.3s ease;
-}
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: linear-gradient(90deg, #be185d, #f472b6);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-.sidebar a {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem;
-    color: #333;
-    border-radius: 6px;
-    margin-bottom: 0.5rem;
-    transition: background-color 0.2s ease;
-    font-size: 1rem;
-}
+        .header h1 {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
 
-.sidebar a:hover {
-    background: linear-gradient(90deg, rgba(255, 245, 245, 0.8) 0%, rgba(255, 230, 230, 0.6) 100%);
-}
+        .header h1:hover {
+            color: #fef2f2;
+        }
 
-.main-content {
-    flex: 1;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 240, 0.9) 100%);
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-    padding: 2rem;
-}
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #6b7280, #9ca3af);
+            color: white;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
 
-.header {
-    background: linear-gradient(to right, #D6333C, #FF9A9E);
-    color: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-}
+        .back-btn:hover {
+            background: linear-gradient(90deg, #4b5563, #6b7280);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
+        }
 
-.attendance-table {
-    max-height: 500px;
-    overflow-y: auto;
-    border-radius: 8px;
-    border: 2px solid #FFD1DC;
-}
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-}
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 1.5rem;
+            width: 100%;
+        }
 
-th, td {
-    border: 1px solid #FFD1DC;
-    padding: 12px;
-    text-align: left;
-}
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(244, 114, 182, 0.4);
+            padding: 2rem;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
 
-th {
-    background-color: #FFF1F2;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    font-weight: 600;
-    color: #D6333C;
-}
+        .main-content:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(236, 72, 153, 0.15);
+        }
 
-td {
-    color: #1f2937;
-}
+        .form-header {
+            color: #be185d;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
 
-.error {
-    color: #D6333C;
-}
+        .form-header:hover {
+            color: #f472b6;
+        }
 
-.highlight {
-    background-color: #FFF1F2;
-}
+        .attendance-table {
+            max-height: 500px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 2px solid #f48fb1;
+        }
 
-.logo-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    color: #D6333C;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
 
-.logo-img {
-    height: 48px;
-    width: 48px;
-    object-fit: contain;
-    border-radius: 50%;
-    border: 2px solid #FFD1DC;
-}
+        th, td {
+            border: 1px solid #f48fb1;
+            padding: 12px;
+            text-align: left;
+        }
 
-.form-container {
-    background-color: #FFF1F2;
-    padding: 20px;
-    border-radius: 8px;
-    border: 2px solid #FFD1DC;
-}
+        th {
+            background-color: #f8bbd0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+            color: #be185d;
+        }
 
-.button {
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
-}
+        td {
+            color: #333;
+        }
 
-.button:hover {
-    transform: scale(1.05);
-}
+        tr:hover {
+            background-color: #fff1f7;
+        }
 
-.icon {
-    margin-right: 8px;
-}
+        .error {
+            color: #be185d;
+        }
 
-.attendance-btn {
-    padding: 8px 16px;
-    border-radius: 5px;
-    font-size: 0.95rem;
-    margin: 0 4px;
-    touch-action: manipulation;
-}
+        .highlight {
+            background-color: #fff1f7;
+        }
 
-.present { background-color: #16a34a; color: white; }
-.absent { background-color: #D6333C; color: white; }
-.leave { background-color: #eab308; color: white; }
-.selected { border: 2px solid #D6333C; box-shadow: 0 0 5px rgba(214, 51, 60, 0.5); }
+        .form-container {
+            background-color: #fff1f7;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #f48fb1;
+        }
 
-.no-sections {
-    color: #D6333C;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-}
+        .button {
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
 
-/* Mobile Responsiveness */
-@media (max-width: 1024px) {
-    .container {
-        padding: 1rem;
-    }
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
+        }
 
-    .sidebar {
-        width: 200px;
-    }
+        .icon {
+            margin-right: 8px;
+        }
 
-    .main-content {
-        padding: 1.5rem;
-    }
+        .attendance-btn {
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            margin: 0 4px;
+            touch-action: manipulation;
+        }
 
-    .header h1 {
-        font-size: 1.75rem;
-    }
+        .present { background: linear-gradient(90deg, #16a34a, #22c55e); color: white; }
+        .absent { background: linear-gradient(90deg, #be185d, #f472b6); color: white; }
+        .leave { background: linear-gradient(90deg, #eab308, #facc15); color: white; }
+        .selected { border: 2px solid #be185d; box-shadow: 0 0 5px rgba(190, 24, 93, 0.5); }
 
-    .attendance-btn {
-        padding: 6px 12px;
-        font-size: 0.9rem;
-    }
-}
+        .no-sections {
+            color: #be185d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
 
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        padding: 0.75rem;
-    }
+        .messages .success {
+            background: #f8bbd0;
+            color: #be185d;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
 
-    .sidebar {
-        width: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        transform: translateX(-100%);
-        z-index: 20;
-        height: auto;
-        max-height: 100vh;
-        overflow-y: auto;
-    }
+        .messages .error {
+            background: #ffcdd2;
+            color: #d32f2f;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
 
-    .sidebar.active {
-        transform: translateX(0);
-    }
+        /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 1rem;
+            }
 
-    .main-content {
-        margin-top: 0;
-        padding: 1rem;
-    }
+            .main-content {
+                padding: 1.5rem;
+            }
 
-    .header {
-        padding: 1rem;
-    }
+            .form-header {
+                font-size: 1.5rem;
+            }
 
-    .header h1 {
-        font-size: 1.5rem;
-    }
+            .attendance-btn {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+        }
 
-    .form-container {
-        padding: 1rem;
-    }
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 0.8rem;
+                padding: 0.8rem;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+                line-height: 1.2;
+            }
+            .back-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+                width: fit-content;
+            }
+            .logo {
+                width: 40px;
+                height: 40px;
+            }
+            .container {
+                padding: 0.75rem;
+                margin: 10px auto;
+            }
+            .main-content {
+                margin-top: 0;
+                padding: 1rem;
+            }
+            .form-container {
+                padding: 1rem;
+            }
+            .flex.items-end {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .flex-1 {
+                width: 100%;
+            }
+            .attendance-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                max-height: 400px;
+            }
+            th, td {
+                padding: 8px;
+                font-size: 0.9rem;
+                min-width: 100px;
+            }
+            .attendance-btn {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+                margin: 2px;
+            }
+        }
 
-    .flex.items-end {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .flex-1 {
-        width: 100%;
-    }
-
-    .attendance-table {
-        max-height: 400px;
-    }
-
-    th, td {
-        padding: 8px;
-        font-size: 0.9rem;
-    }
-
-    .attendance-btn {
-        padding: 6px 10px;
-        font-size: 0.85rem;
-        margin: 2px;
-    }
-}
-
-@media (max-width: 640px) {
-    .header {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-
-    .header h1 {
-        font-size: 1.25rem;
-    }
-
-    .form-container select,
-    .form-container input {
-        padding: 0.5rem;
-        font-size: 0.9rem;
-    }
-
-    .button {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
-
-    th, td {
-        padding: 6px;
-        font-size: 0.8rem;
-    }
-
-    .attendance-btn {
-        padding: 5px 8px;
-        font-size: 0.8rem;
-    }
-
-    .attendance-table {
-        max-height: 350px;
-    }
-
-    .logo-img {
-        height: 40px;
-        width: 40px;
-    }
-
-    .logo-button {
-        font-size: 0.9rem;
-    }
-
-    .sidebar a {
-        font-size: 0.9rem;
-        padding: 0.5rem;
-    }
-}
-
-/* Menu Toggle for Mobile */
-.menu-toggle {
-    display: none;
-    font-size: 1.5rem;
-    color: white;
-    background: rgba(214, 51, 60, 0.8);
-    border: none;
-    cursor: pointer;
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    z-index: 30;
-    padding: 0.5rem;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-}
-
-@media (max-width: 768px) {
-    .menu-toggle {
-        display: block;
-    }
-}
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.6rem;
+                gap: 0.5rem;
+            }
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            .back-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+            .logo {
+                width: 35px;
+                height: 35px;
+            }
+            .container {
+                padding: 0 5px;
+                margin: 5px auto;
+            }
+            .form-header {
+                font-size: 1.3rem;
+            }
+            .form-container select,
+            .form-container input {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            .button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            th, td {
+                padding: 6px;
+                font-size: 0.8rem;
+                min-width: 80px;
+            }
+            .attendance-btn {
+                padding: 5px 8px;
+                font-size: 0.8rem;
+            }
+            .attendance-table {
+                max-height: 350px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container mx-auto p-6">
-        <div class="sidebar">
-            <div class="mb-6">
-                <a href="{% url 'admin_page' %}" class="logo-button">
-                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
-                    <span>Manavargal School</span>
-                </a>
-            </div>
-            <a href="{% url 'admin_page' %}"><i class="fas fa-tachometer-alt icon"></i> Dashboard</a>
-            <a href="{% url 'admin_page' %}"><i class="fas fa-users icon"></i> Admin</a>
-            <a href="{% url 'bulk_upload' %}"><i class="fas fa-upload icon"></i> Bulk Upload</a>
-            <a href="{% url 'teacher_portal' %}"><i class="fas fa-calendar-check icon"></i> Attendance</a>
-            <a href="{% url 'admin_page' %}"><i class="fas fa-cog icon"></i> Settings</a>
+    <div id="app">
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='{% url 'teacher_dashboard' %}'">Back</button>
+            <h1>Attendance Portal</h1>
+            <a href="{% url 'teacher_dashboard' %}">
+                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal SMS Logo" class="logo">
+            </a>
         </div>
 
-        <div class="main-content">
-            <div class="header">
-                <div class="flex items-center justify-between">
-                    <h1 class="text-3xl font-semibold">Manavargal School Management System - Attendance Records</h1>
-                    <a href="{% url 'teacher_dashboard' %}" class="button bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                        <i class="fas fa-arrow-left icon"></i> Back to Dashboard
-                    </a>
+        <div class="container">
+            <div class="main-content">
+                <div class="messages">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
-            </div>
 
-            {% if messages %}
-                <div class="mb-6">
-                    {% for message in messages %}
-                        <div class="p-4 mb-2 text-white rounded-lg flex items-center {% if message.tags == 'error' %}bg-red-600{% else %}bg-green-600{% endif %}">
-                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-
-            <div class="form-container">
-                <form id="classSelectForm" action="{% url 'teacher_portal' %}" method="get" class="mb-6">
-                    <div class="flex gap-4 items-end">
-                        <div class="flex-1">
-                            <label for="class" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-chalkboard icon"></i> Select Class
-                            </label>
-                            <select name="class" id="class" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500" onchange="updateSections()">
-                                <option value="">Select a Class</option>
-                                {% for class in classes %}
-                                    <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="flex-1">
-                            <label for="section" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-chalkboard-teacher icon"></i> Select Section
-                            </label>
-                            <select name="section" id="section" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">Select a Section</option>
-                            </select>
-                            <div id="no-sections-message" class="no-sections hidden">No sections available for this class.</div>
-                        </div>
-                        <div class="flex-1">
-                            <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-calendar icon"></i> Select Date
-                            </label>
-                            <input type="date" name="date" id="date" value="{{ selected_date }}" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <button type="submit" class="button bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-                            <i class="fas fa-search icon"></i> Load
-                        </button>
-                    </div>
-                </form>
-
-                {% if students %}
-                    <form id="attendanceForm" action="{% url 'mark_attendance' %}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="class" value="{{ selected_class }}">
-                        <input type="hidden" name="section" value="{{ selected_section }}">
-                        <input type="hidden" name="date" value="{{ selected_date }}">
-                        <h2 class="text-xl font-semibold mb-4 text-blue-800">
-                            <i class="fas fa-table icon"></i> Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}
-                        </h2>
-                        <div class="attendance-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Student ID</th>
-                                        <th>Name</th>
-                                        <th>Admission Number</th>
-                                        <th>Class</th>
-                                        <th>Section</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for student in students %}
-                                        <tr class="{% cycle 'bg-white' 'highlight' %}">
-                                            <td>{{ student.user_id }}</td>
-                                            <td>{{ student.name }}</td>
-                                            <td>{{ student.admission_number }}</td>
-                                            <td>{{ student.class }}</td>
-                                            <td>{{ student.section|default:"N/A" }}</td>
-                                            <td>
-                                                <button type="submit" name="student_{{ student.user_id }}" value="present" class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">
-                                                    Present
-                                                </button>
-                                                <button type="submit" name="student_{{ student.user_id }}" value="absent" class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">
-                                                    Absent
-                                                </button>
-                                                <button type="submit" name="student_{{ student.user_id }}" value="leave" class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">
-                                                    Leave
-                                                </button>
-                                            </td>
-                                        </tr>
+                <div class="form-container">
+                    <form id="classSelectForm" action="{% url 'teacher_portal' %}" method="get" class="mb-6">
+                        <div class="flex gap-4 items-end">
+                            <div class="flex-1">
+                                <label for="class" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-chalkboard icon"></i> Select Class
+                                </label>
+                                <select name="class" id="class" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500" onchange="updateSections()">
+                                    <option value="">Select a Class</option>
+                                    {% for class in classes %}
+                                        <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
                                     {% endfor %}
-                                </tbody>
-                            </table>
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <label for="section" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-chalkboard-teacher icon"></i> Select Section
+                                </label>
+                                <select name="section" id="section" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select a Section</option>
+                                </select>
+                                <div id="no-sections-message" class="no-sections hidden">No sections available for this class.</div>
+                            </div>
+                            <div class="flex-1">
+                                <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-calendar icon"></i> Select Date
+                                </label>
+                                <input type="date" name="date" id="date" value="{{ selected_date }}" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <button type="submit" class="button bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-search icon"></i> Load
+                            </button>
                         </div>
                     </form>
-                    <div class="mt-6 flex gap-4">
-                        <a href="{% url 'generate_attendance_pdf' %}?class={{ selected_class|urlencode }}&section={{ selected_section|urlencode }}&date={{ selected_date|urlencode }}" class="button bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-                            <i class="fas fa-file-pdf icon"></i> Generate PDF Report
-                        </a>
-                    </div>
-                {% endif %}
+
+                    {% if students %}
+                        <form id="attendanceForm" action="{% url 'mark_attendance' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="class" value="{{ selected_class }}">
+                            <input type="hidden" name="section" value="{{ selected_section }}">
+                            <input type="hidden" name="date" value="{{ selected_date }}">
+                            <h2 class="form-header">
+                                <i class="fas fa-table icon"></i> Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}
+                            </h2>
+                            <div class="attendance-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Student ID</th>
+                                            <th>Name</th>
+                                            <th>Admission Number</th>
+                                            <th>Class</th>
+                                            <th>Section</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for student in students %}
+                                            <tr class="{% cycle 'bg-white' 'highlight' %}">
+                                                <td>{{ student.user_id }}</td>
+                                                <td>{{ student.name }}</td>
+                                                <td>{{ student.admission_number }}</td>
+                                                <td>{{ student.class }}</td>
+                                                <td>{{ student.section|default:"N/A" }}</td>
+                                                <td>
+                                                    <button type="submit" name="student_{{ student.user_id }}" value="present" class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">
+                                                        Present
+                                                    </button>
+                                                    <button type="submit" name="student_{{ student.user_id }}" value="absent" class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">
+                                                        Absent
+                                                    </button>
+                                                    <button type="submit" name="student_{{ student.user_id }}" value="leave" class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">
+                                                        Leave
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                        
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -457,7 +458,7 @@ td {
             if (table) {
                 table.addEventListener('mouseover', function(e) {
                     if (e.target.tagName === 'TD') {
-                        e.target.parentNode.style.backgroundColor = '#dbeafe';
+                        e.target.parentNode.style.backgroundColor = '#fff1f7';
                     }
                 });
                 table.addEventListener('mouseout', function(e) {
@@ -465,12 +466,11 @@ td {
                         const row = e.target.parentNode;
                         const rows = Array.from(table.querySelectorAll('tbody tr'));
                         const index = rows.indexOf(row);
-                        row.style.backgroundColor = index % 2 === 0 ? 'white' : '#eff6ff';
+                        row.style.backgroundColor = index % 2 === 0 ? 'white' : '#fff1f7';
                     }
                 });
             }
 
-            // JavaScript to dynamically update section dropdown based on class selection
             function updateSections() {
                 const classSelect = document.getElementById('class');
                 const sectionSelect = document.getElementById('section');
@@ -484,18 +484,14 @@ td {
                     classSections = [];
                 }
 
-                // Clear current options
                 sectionSelect.innerHTML = '<option value="">Select a Section</option>';
 
-                // Filter sections for the selected class
                 const availableSections = classSections
                     .filter(([cls, section]) => cls === selectedClass && section && section.trim() !== '')
                     .map(([_, section]) => section);
 
-                // Remove duplicates and sort
                 const uniqueSections = [...new Set(availableSections)].sort();
 
-                // Populate sections
                 if (uniqueSections.length > 0) {
                     uniqueSections.forEach(section => {
                         const option = document.createElement('option');
@@ -514,10 +510,7 @@ td {
                 }
             }
 
-            // Initialize sections on page load
             updateSections();
-
-            // Add event listener for class change
             document.getElementById('class').addEventListener('change', updateSections);
         });
     </script>

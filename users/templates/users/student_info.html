@@ -539,6 +539,13 @@
     </header>
 
     <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
         <div class="header">
             <h1><i class="fas fa-book-open"></i> Student Information</h1>
             <div class="header-buttons">
@@ -546,7 +553,7 @@
                 <a href="{% url 'admin_page' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
             </div>
         </div>
-
+        <!-- Rest of your template remains unchanged -->
         <div class="filters">
             <form method="get">
                 <select name="class" aria-label="Select Class">

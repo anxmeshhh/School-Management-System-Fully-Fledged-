@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Materials</title>
+    <title>Manavargal School Management System - Study Materials</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-
         * {
             margin: 0;
             padding: 0;
@@ -16,47 +16,42 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #e8f5e9 100%);
-            background-size: 200%;
-            animation: gradient 20s ease infinite;
-            padding: 80px 20px 40px 20px;
+            background: linear-gradient(135deg, #f7fafc 30%, #d4f4e2 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%2322c55e" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
+            background-size: cover, 30px 30px;
+            animation: backgroundFade 10s ease-in-out infinite alternate;
             min-height: 100vh;
-            position: relative;
+            padding: 80px 20px 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        @keyframes gradient {
+        @keyframes backgroundFade {
             0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
+            background: linear-gradient(90deg, #15803d, #22c55e);
+            color: #ffffff;
             padding: 1rem 2rem;
-            background: linear-gradient(90deg, #2e7d32, #4caf50);
-            border-radius: 15px;
+            border-bottom: 4px solid #a3e635;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            animation: fadeInDown 0.8s ease-out;
-            flex-wrap: wrap;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        h1 {
-            color: white;
-            font-size: 2.5rem;
+        .header h1 {
+            font-size: 2rem;
             font-weight: 700;
             text-align: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease, transform 0.3s ease;
             flex-grow: 1;
-        }
-
-        h1:hover {
-            color: #e8f5e9;
-            transform: scale(1.02);
         }
 
         .back-btn {
@@ -66,87 +61,101 @@
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            background: linear-gradient(90deg, #388e3c, #4caf50);
-            color: white;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            background: #22c55e;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
 
         .back-btn:hover {
-            background: linear-gradient(90deg, #2e7d32, #388e3c);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4);
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .logo-container {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            z-index: 1000;
-        }
-
-        .logo {
+        .logo-img {
             width: 50px;
             height: 50px;
             border-radius: 50%;
             object-fit: cover;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding-top: 1rem; /* Ensure spacing below fixed header */
+        }
+
+        .alert-message {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .alert-message .error {
+            background: #fef2f2;
+            color: #b91c1c;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-message .success {
+            background: #e6f3ec;
+            color: #15803d;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #22c55e;
+        }
+
+        .student-info {
+            text-align: center;
+            color: #4b5563;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .student-info p {
+            margin-bottom: 0.5rem;
         }
 
         .material-box {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 20px;
-            margin-bottom: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            animation: fadeIn 0.8s ease-in-out;
+            background: #ffffff;
+            border: 2px solid #22c55e;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .material-box:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(46, 125, 50, 0.2);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
 
         .material-box h3 {
-            color: #2e7d32;
-            font-size: 1.8rem;
+            color: #15803d;
+            font-size: 1.5rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
-        }
-
-        .material-box h3:hover {
-            color: #4caf50;
+            margin-bottom: 0.75rem;
         }
 
         .material-box p {
-            color: #666;
-            font-size: 1rem;
-            font-weight: 400;
+            color: #4b5563;
+            font-size: 0.875rem;
             margin-bottom: 0.5rem;
-            letter-spacing: 0.5px;
         }
 
         .material-box p strong {
-            color: #2e7d32;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-
-        .material-box p strong:hover {
-            color: #4caf50;
+            color: #15803d;
         }
 
         .file-preview {
@@ -157,48 +166,54 @@
         }
 
         .file-preview a {
-            color: #2e7d32;
-            font-size: 1rem;
+            color: #15803d;
+            font-size: 0.875rem;
             font-weight: 600;
             text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            background: #e8f5e9;
-            transition: color 0.3s ease, transform 0.3s ease, background 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: #f0fdf4;
+            transition: all 0.3s ease;
         }
 
         .file-preview a:hover {
-            color: white;
-            background: #4caf50;
+            color: #ffffff;
+            background: #22c55e;
             transform: translateY(-2px);
+        }
+
+        .no-materials {
+            font-size: 1rem;
+            color: #4b5563;
+            text-align: center;
+            margin-top: 1.5rem;
         }
 
         .go-to-homework {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(90deg, #2e7d32, #4caf50);
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: #22c55e;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
             text-decoration: none;
             font-size: 1rem;
             font-weight: 600;
             z-index: 1000;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
         }
 
         .go-to-homework:hover {
-            background: linear-gradient(90deg, #4caf50, #2e7d32);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4);
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
 
-        p {
-            color: #666;
-            text-align: center;
-            font-size: 1rem;
-            animation: fadeIn 0.5s ease-out;
+        .icon {
+            margin-right: 0.5rem;
         }
 
         @media (max-width: 768px) {
@@ -207,171 +222,162 @@
             }
 
             .header {
-                flex-direction: row;
-                gap: 0.5rem;
                 padding: 0.8rem 1rem;
-                align-items: center;
-                justify-content: space-between;
             }
 
-            h1 {
-                font-size: 1.8rem;
-                margin: 0;
-                flex-grow: 1;
-                text-align: center;
-            }
-
-            .material-box {
-                padding: 15px;
-            }
-
-            .material-box h3 {
+            .header h1 {
                 font-size: 1.5rem;
             }
 
-            .material-box p {
-                font-size: 0.9rem;
+            .container {
+                padding-top: 0.75rem;
             }
 
-            .file-preview a {
-                font-size: 0.9rem;
-                padding: 6px 12px;
+            .material-box {
+                padding: 1.2rem;
             }
 
-            .go-to-homework {
-                padding: 0.7rem 1.2rem;
+            .material-box h3 {
+                font-size: 1.25rem;
+            }
+
+            .material-box p, .file-preview a {
+                font-size: 0.8rem;
+            }
+
+            .student-info {
+                font-size: 1rem;
+            }
+
+            .no-materials {
                 font-size: 0.9rem;
-                bottom: 15px;
-                right: 15px;
             }
 
             .back-btn {
-                padding: 0.7rem 1.2rem;
+                padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
 
-            .logo {
+            .logo-img {
                 width: 40px;
                 height: 40px;
             }
 
-            .logo-container {
-                top: 10px;
-                right: 10px;
-            }
-
-            p {
+            .go-to-homework {
+                padding: 0.6rem 1.2rem;
                 font-size: 0.9rem;
             }
         }
 
         @media (max-width: 480px) {
             body {
-                padding: 60px 5px 15px;
+                padding: 60px 5px 15px 5px;
             }
 
             .header {
                 padding: 0.6rem 0.8rem;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                gap: 0.3rem;
             }
 
-            h1 {
-                font-size: 1.4rem;
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .container {
+                padding-top: 0.5rem;
             }
 
             .material-box {
-                padding: 12px;
+                padding: 1rem;
             }
 
             .material-box h3 {
-                font-size: 1.3rem;
+                font-size: 1.1rem;
             }
 
-            .material-box p {
-                font-size: 0.8rem;
+            .material-box p, .file-preview a {
+                font-size: 0.75rem;
             }
 
-            .file-preview {
-                flex-direction: column;
-                gap: 0.3rem;
-                align-items: center;
+            .student-info {
+                font-size: 0.9rem;
             }
 
-            .file-preview a {
-                font-size: 0.8rem;
-                padding: 5px 10px;
-            }
-
-            .go-to-homework {
-                padding: 0.6rem 1rem;
-                font-size: 0.8rem;
-                bottom: 10px;
-                right: 10px;
+            .no-materials {
+                font-size: 0.85rem;
             }
 
             .back-btn {
-                padding: 0.6rem 1rem;
+                padding: 0.5rem 0.8rem;
                 font-size: 0.8rem;
             }
 
-            .logo {
+            .logo-img {
                 width: 35px;
                 height: 35px;
             }
 
-            .logo-container {
-                top: 8px;
-                right: 8px;
+            .go-to-homework {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+                bottom: 1rem;
+                right: 1rem;
             }
 
-            p {
-                font-size: 0.8rem;
+            .file-preview {
+                flex-direction: column;
+                gap: 0.5rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <button class="back-btn" onclick="window.location.href='{% url 'dashboard' %}'">Back</button>
-        <h1>📚 Study Materials</h1>
+        <a href="{% url 'dashboard' %}" class="back-btn">
+            <i class="fas fa-arrow-left icon"></i> Back
+        </a>
+        <h1><i class="fas fa-book-open icon"></i> Study Materials</h1>
         <a href="{% url 'dashboard' %}">
-            <img src="{% static 'users/images/studentlogo.jpg' %}" alt="School Logo" class="logo">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
         </a>
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %}; text-align: center; margin-bottom: 1rem;">
-                {{ message }}
+    <div class="container">
+        {% if messages %}
+            <div class="alert-message">
+                {% for message in messages %}
+                    <div class="{{ message.tags }}">
+                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
-    {% endif %}
+        {% endif %}
 
-    <div style="text-align: center; margin-bottom: 1rem;">
-        <p><strong>Class:</strong> {{ student_class|capfirst }}</p>
-        <p><strong>Section:</strong> {{ student_section|capfirst }}</p>
-    </div>
-
-    {% for material in study_materials %}
-        <div class="material-box">
-            <h3>{{ material.title }}</h3>
-            <p><strong>Class:</strong> {{ material.class|capfirst }}</p>
-            <p><strong>Section:</strong> {{ material.section|capfirst }}</p>
-            <p><strong>Uploaded on:</strong> {{ material.upload_date }}</p>
-            <div class="file-preview">
-                <a href="{% url 'serve_pdf' material.file_path %}" target="_blank">📄 View PDF</a>
-                <a href="{% url 'serve_pdf' material.file_path %}?download=true" style="margin-left: 10px;" target="_blank">📥 Download PDF</a>
-            </div>
+        <div class="student-info">
+            <p><strong>Class:</strong> {{ student_class|capfirst }}</p>
+            <p><strong>Section:</strong> {{ student_section|capfirst }}</p>
         </div>
-    {% empty %}
-        <p style="text-align: center; color: #666;">
-            No study materials available for Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}.
-        </p>
-    {% endfor %}
 
-    <a href="{% url 'homework' %}" class="go-to-homework">Go to Homework</a>
+        {% for material in study_materials %}
+            <div class="material-box">
+                <h3>{{ material.title }}</h3>
+                <p><strong>Class:</strong> {{ material.class|capfirst }}</p>
+                <p><strong>Section:</strong> {{ material.section|capfirst }}</p>
+                <p><strong>Uploaded on:</strong> {{ material.upload_date }}</p>
+                <div class="file-preview">
+                    <a href="{% url 'serve_pdf' material.file_path %}" target="_blank"><i class="fas fa-eye icon"></i> View PDF</a>
+                    <a href="{% url 'serve_pdf' material.file_path %}?download=true" target="_blank"><i class="fas fa-download icon"></i> Download PDF</a>
+                </div>
+            </div>
+        {% empty %}
+            <p class="no-materials">
+                No study materials available for Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}.
+            </p>
+        {% endfor %}
+
+        <a href="{% url 'homework' %}" class="go-to-homework">
+            <i class="fas fa-book icon"></i> Go to Homework
+        </a>
+    </div>
 </body>
 </html>

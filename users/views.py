@@ -1461,7 +1461,53 @@ def admin_accept_portal(request):
 
 
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import connection
 
+def teacher_accept_portal(request):
+    if not request.session.get('teacher_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('teacher_login')  # Redirect to login page if not logged in
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        leave_id = request.POST.get('leave_id')
+
+        if action and leave_id:
+            # Update leave status based on action
+            if action == 'approve':
+                new_status = 'Approved'
+            elif action == 'reject':
+                new_status = 'Rejected'
+            else:
+                messages.error(request, 'Invalid action')
+                return redirect('teacher_accept_portal')  # Redirect back to the portal if action is invalid
+
+            with connection.cursor() as cursor:
+                # Update the leave request status
+                cursor.execute("""
+                    UPDATE student_leave_requests
+                    SET status = %s
+                    WHERE id = %s
+                """, [new_status, leave_id])
+
+            messages.success(request, f'Leave request {new_status.lower()} successfully.')
+        else:
+            messages.error(request, 'Leave ID or action missing.')
+
+        return redirect('teacher_accept_portal')  # Redirect back to the leave requests page
+
+    # Fetch leave requests to display on the page
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT id, student_name, reg_number, class_number, leave_reason, leave_start_date, leave_end_date, leave_duration, status
+            FROM student_leave_requests
+            WHERE status = 'Pending'
+        """)
+        leave_requests = cursor.fetchall()
+
+    return render(request, 'users/teacher_accept_portal.html', {'leave_requests': leave_requests})
 
 
 
@@ -2278,9 +2324,9 @@ def student_info(request):
     return render(request, 'users/student_info.html', context)
 
 
-from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import connection
+from django.shortcuts import render, redirect
 
 def add_student(request):
     if not request.session.get('admin_id'):
@@ -2310,7 +2356,14 @@ def add_student(request):
                 messages.error(request, f'Missing required fields: {", ".join(missing)}')
                 return render(request, 'users/add_student.html', {
                     'title': 'Add New Student',
-                    **request.POST
+                    # Pass all POST data to pre-populate form
+                    **request.POST.dict(),
+                    'gender_options': ['Male', 'Female', 'Other'],
+                    'community_options': ['General', 'OBC', 'SC', 'ST', 'Other'],
+                    'blood_group_options': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
+                    'teacher_ward_options': ['yes', 'no'],
+                    'rte_options': ['yes', 'no'],
+                    'sports_quota_options': ['yes', 'no']
                 })
 
             # Split class and section
@@ -2320,7 +2373,13 @@ def add_student(request):
                 messages.error(request, 'Class-Section must be in format "Class-Section" (e.g., 2-A)')
                 return render(request, 'users/add_student.html', {
                     'title': 'Add New Student',
-                    **request.POST
+                    **request.POST.dict(),
+                    'gender_options': ['Male', 'Female', 'Other'],
+                    'community_options': ['General', 'OBC', 'SC', 'ST', 'Other'],
+                    'blood_group_options': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
+                    'teacher_ward_options': ['yes', 'no'],
+                    'rte_options': ['yes', 'no'],
+                    'sports_quota_options': ['yes', 'no']
                 })
 
             with connection.cursor() as cursor:
@@ -2330,30 +2389,36 @@ def add_student(request):
                     messages.error(request, f'Admission number {admission_number} already exists.')
                     return render(request, 'users/add_student.html', {
                         'title': 'Add New Student',
-                        **request.POST
+                        **request.POST.dict(),
+                        'gender_options': ['Male', 'Female', 'Other'],
+                        'community_options': ['General', 'OBC', 'SC', 'ST', 'Other'],
+                        'blood_group_options': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
+                        'teacher_ward_options': ['yes', 'no'],
+                        'rte_options': ['yes', 'no'],
+                        'sports_quota_options': ['yes', 'no']
                     })
 
-                # 1. First create a user account
+                # Create a user account
                 username = f"student_{admission_number}"
-                password = admission_number  # Using admission number as default password
-                
+                password = admission_number  # Default password (Note: Not hashed for simplicity as per original code)
+
                 cursor.execute("""
                     INSERT INTO users (username, email, password)
                     VALUES (%s, %s, %s)
                 """, [username, email, password])
-                
+
                 # Get the new user_id
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 new_user_id = cursor.fetchone()[0]
 
-                # 2. Insert into student_page1
+                # Insert into student_page1
                 cursor.execute("""
                     INSERT INTO student_page1 
                     (user_id, name, admission_number, class, section, roll_number, emis)
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """, [new_user_id, name, admission_number, class_part, section, roll_number, emis])
 
-                # 3. Insert into student_page2 (personal info)
+                # Insert into student_page2
                 cursor.execute("""
                     INSERT INTO student_page2 
                     (user_id, gender, community, tamil_name, dob, nationality, 
@@ -2364,27 +2429,27 @@ def add_student(request):
                             %s, %s, %s, %s, %s, %s, %s, %s)
                 """, [
                     new_user_id,
-                    request.POST.get('gender'),
-                    request.POST.get('community'),
-                    request.POST.get('tamil_name'),
-                    request.POST.get('dob'),
-                    request.POST.get('nationality'),
-                    request.POST.get('blood_group'),
-                    request.POST.get('mother_tongue'),
-                    request.POST.get('caste'),
-                    request.POST.get('religion'),
-                    request.POST.get('place_of_birth'),
-                    request.POST.get('aadhaar'),
-                    request.POST.get('disability'),
-                    request.POST.get('id_mark1'),
-                    request.POST.get('id_mark2'),
-                    class_part,  # current_class
+                    request.POST.get('gender', ''),
+                    request.POST.get('community', ''),
+                    request.POST.get('tamil_name', ''),
+                    request.POST.get('dob', None) or None,
+                    request.POST.get('nationality', ''),
+                    request.POST.get('blood_group', ''),
+                    request.POST.get('mother_tongue', ''),
+                    request.POST.get('caste', ''),
+                    request.POST.get('religion', ''),
+                    request.POST.get('place_of_birth', ''),
+                    request.POST.get('aadhaar', ''),
+                    request.POST.get('disability', ''),
+                    request.POST.get('id_mark1', ''),
+                    request.POST.get('id_mark2', ''),
+                    class_part,
                     request.POST.get('admission_class', class_part),
-                    request.POST.get('admission_year'),
-                    request.POST.get('admission_date')
+                    request.POST.get('admission_year', ''),
+                    request.POST.get('admission_date', None) or None
                 ])
 
-                # 4. Insert into student_page3 (contact info)
+                # Insert into student_page3
                 cursor.execute("""
                     INSERT INTO student_page3 
                     (user_id, email, address, contact, alt_contact, country, 
@@ -2411,7 +2476,7 @@ def add_student(request):
                     request.POST.get('prev_board', '')
                 ])
 
-                # 5. Insert into student_page4 (family info)
+                # Insert into student_page4
                 cursor.execute("""
                     INSERT INTO student_page4 
                     (user_id, father_name, father_name_tamil, mother_name, mother_name_tamil,
@@ -2452,7 +2517,7 @@ def add_student(request):
                     request.POST.get('doctor', '')
                 ])
 
-                # 6. Insert into admin_student_classes
+                # Insert into admin_student_classes
                 cursor.execute("""
                     INSERT INTO admin_student_classes
                     (admin_id, class, section)
@@ -2466,7 +2531,13 @@ def add_student(request):
             messages.error(request, f'Error adding student: {str(e)}')
             return render(request, 'users/add_student.html', {
                 'title': 'Add New Student',
-                **request.POST
+                **request.POST.dict(),
+                'gender_options': ['Male', 'Female', 'Other'],
+                'community_options': ['General', 'OBC', 'SC', 'ST', 'Other'],
+                'blood_group_options': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
+                'teacher_ward_options': ['yes', 'no'],
+                'rte_options': ['yes', 'no'],
+                'sports_quota_options': ['yes', 'no']
             })
 
     # GET request - show empty form
@@ -2767,41 +2838,58 @@ def update_student(request, admission_number):
     }
 
     return render(request, 'users/add_update_student.html', context)
+
+from django.db import connection, transaction
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.db import IntegrityError
+
 def delete_student(request, admission_number):
     if not request.session.get('admin_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
 
     try:
-        with connection.cursor() as cursor:
-            # Get student info
-            cursor.execute("""
-                SELECT user_id, name 
-                FROM student_page1 
-                WHERE admission_number = %s
-            """, [admission_number])
-            student_info = cursor.fetchone()
-            
-            if not student_info:
-                messages.error(request, 'Student not found.')
-                return redirect('student_info')
+        with transaction.atomic():
+            with connection.cursor() as cursor:
+                # Get student info
+                cursor.execute("""
+                    SELECT user_id, name 
+                    FROM student_page1 
+                    WHERE admission_number = %s
+                """, [admission_number])
+                student_info = cursor.fetchone()
+                
+                if not student_info:
+                    messages.error(request, 'Student not found.')
+                    return redirect('student_info')
 
-            user_id, student_name = student_info
+                user_id, student_name = student_info
 
-            # Delete from all related tables
-            cursor.execute("DELETE FROM student_page1 WHERE admission_number = %s", [admission_number])
-            cursor.execute("DELETE FROM student_page2 WHERE user_id = %s", [user_id])
-            cursor.execute("DELETE FROM student_page3 WHERE user_id = %s", [user_id])
-            cursor.execute("DELETE FROM student_page4 WHERE user_id = %s", [user_id])
-            cursor.execute("DELETE FROM users WHERE id = %s", [user_id])
+                # Delete from all child tables referencing student_page1.user_id
+                cursor.execute("DELETE FROM admin_attendance WHERE student_id = %s", [user_id])
+                cursor.execute("DELETE FROM attendance WHERE student_id = %s", [user_id])
+                cursor.execute("DELETE FROM school_marks WHERE student_id = %s", [user_id])
+                cursor.execute("DELETE FROM student_page2 WHERE user_id = %s", [user_id])
+                cursor.execute("DELETE FROM student_page4 WHERE user_id = %s", [user_id])
+                
+                # Delete from student_page1
+                cursor.execute("DELETE FROM student_page1 WHERE admission_number = %s", [admission_number])
+                
+                # Delete from users table
+                cursor.execute("DELETE FROM users WHERE id = %s", [user_id])
 
         messages.success(request, f'Student {student_name} deleted successfully.')
+    except IntegrityError as e:
+        error_code, error_message = e.args
+        if error_code == 1451:
+            messages.error(request, f'Cannot delete student {student_name} due to related records in an unknown table. Contact the administrator.')
+        else:
+            messages.error(request, f'Error deleting student: {str(e)}')
     except Exception as e:
-        messages.error(request, f'Error deleting student: {str(e)}')
+        messages.error(request, f'Unexpected error deleting student: {str(e)}')
     
     return redirect('student_info')
-
-
 
 
 
@@ -4513,105 +4601,7 @@ def admin_generate_attendance_pdf(request):
     response.write(pdf)
     return response
 
-def generate_attendance_pdf(request):
-    if not request.session.get('admin_id'):
-        messages.error(request, 'Please log in to access this page.')
-        return redirect('admin_login')
 
-    selected_class = request.GET.get('class')
-    selected_section = request.GET.get('section')
-    selected_date = request.GET.get('date')
-    
-    with connection.cursor() as cursor:
-        cursor.execute(
-            """
-            SELECT s.user_id, s.name, s.admission_number, s.section, a.status 
-            FROM student_page1 s
-            LEFT JOIN attendance a ON s.user_id = a.student_id 
-                AND a.class = %s AND a.section = %s AND a.date = %s
-            WHERE s.class = %s AND s.section = %s
-            ORDER BY s.name, s.admission_number
-            """,
-            [selected_class, selected_section, selected_date, selected_class, selected_section]
-        )
-        data = cursor.fetchall()
-
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.5*inch, bottomMargin=0.5*inch)
-    elements = []
-    styles = getSampleStyleSheet()
-    
-    header_style = ParagraphStyle(
-        name='Header',
-        parent=styles['Heading2'],
-        fontSize=16,
-        alignment=1,
-        textColor=colors.HexColor('#1e40af'),
-        spaceAfter=10
-    )
-    subheader_style = ParagraphStyle(
-        name='Subheader',
-        parent=styles['Normal'],
-        fontSize=12,
-        alignment=1,
-        textColor=colors.HexColor('#1f2937'),
-        spaceAfter=10
-    )
-    
-    logo_url = "https://via.placeholder.com/80"
-    logo_img = None
-    try:
-        response = requests.get(logo_url, stream=True)
-        if response.status_code == 200:
-            logo_data = BytesIO(response.content)
-            logo_img = Image(logo_data, width=0.8*inch, height=0.8*inch)
-            logo_img.hAlign = 'LEFT'
-            elements.append(logo_img)
-    except Exception as e:
-        print(f"Failed to load logo: {e}")
-    
-    elements.append(Paragraph("Manavargal School Management System", header_style))
-    elements.append(Paragraph("Teacher Attendance Report", header_style))
-    elements.append(Paragraph(f"Class: {selected_class} | Section: {selected_section} | Date: {selected_date}", subheader_style))
-    elements.append(Paragraph(f"Generated on: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", subheader_style))
-    elements.append(Spacer(1, 0.25*inch))
-    
-    table_data = [['Student ID', 'Name', 'Admission Number', 'Class', 'Section', 'Status']]
-    for row in data:
-        status = row[4] if row[4] else 'Not Marked'
-        table_data.append([
-            str(row[0]),
-            row[1],
-            row[2],
-            selected_class,
-            row[3] if row[3] else 'N/A',
-            status.capitalize()
-        ])
-    
-    table = Table(table_data, colWidths=[0.7*inch, 1.5*inch, 2*inch, 1.5*inch, 0.7*inch, 1*inch])
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e40af')),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 12),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f8fafd')),
-        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#bfdbfe')),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 10),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-    ]))
-    elements.append(table)
-    
-    doc.build(elements)
-    pdf = buffer.getvalue()
-    buffer.close()
-    
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="Teacher_Attendance_{selected_class}_{selected_section}_{selected_date}.pdf"'
-    response.write(pdf)
-    return response
 
 def student_portal(request):
     if "user_id" not in request.session:
@@ -5168,7 +5158,419 @@ def get_subjects(request):
 
 
 
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.contrib import messages
+from django.db import connection
+import json
 
+def teacher_mark_entry(request):
+    if 'teacher_id' not in request.session:
+        messages.error(request, 'Please log in to access the mark entry system.')
+        return redirect('teacher_login')
+
+    with connection.cursor() as cursor:
+        # Get teacher details
+        cursor.execute(
+            "SELECT subject, class_teacher_of, name FROM teachers WHERE id = %s",
+            [request.session['teacher_id']]
+        )
+        teacher = cursor.fetchone()
+        if not teacher:
+            messages.error(request, 'Teacher not found.')
+            return redirect('teacher_login')
+
+        role = 'classTeacher' if teacher[1] else 'subjectTeacher'
+        teacher_subject = teacher[0] if role == 'subjectTeacher' else None
+        teacher_name = teacher[2]
+
+        # Get distinct classes and sections
+        cursor.execute("SELECT DISTINCT class FROM student_page1 ORDER BY class")
+        classes = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL ORDER BY section")
+        sections = [row[0] for row in cursor.fetchall()]
+
+        # Default class and section
+        default_class = ''
+        default_section = ''
+        if teacher[1]:
+            try:
+                class_section = teacher[1].split('-')
+                if len(class_section) == 2:
+                    default_class, default_section = class_section
+                else:
+                    messages.warning(request, 'Invalid class_teacher_of format.')
+            except Exception as e:
+                messages.error(request, f'Error parsing class_teacher_of: {str(e)}')
+
+        selected_class = request.GET.get('class', default_class or (classes[0] if classes else ''))
+        selected_section = request.GET.get('section', default_section or (sections[0] if sections else ''))
+
+        # Validate class and section
+        if selected_class not in classes or selected_section not in sections:
+            selected_class = classes[0] if classes else ''
+            selected_section = sections[0] if sections else ''
+            if not classes or not sections:
+                messages.warning(request, 'No classes or sections found.')
+
+        # Get subjects for selected class
+        subjects = []
+        if selected_class:
+            cursor.execute(
+                "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
+                [selected_class]
+            )
+            subjects = [{'id': row[0], 'name': row[1], 'max_marks': row[2]} for row in cursor.fetchall()]
+
+        # Get students for selected class and section
+        students = []
+        if selected_class and selected_section:
+            cursor.execute(
+                "SELECT id, name, roll_number FROM student_page1 WHERE class = %s AND section = %s ORDER BY name",
+                [selected_class, selected_section]
+            )
+            students = [{'id': row[0], 'name': row[1], 'roll_number': row[2]} for row in cursor.fetchall()]
+
+    return render(request, 'users/teacher_mark_entry.html', {
+        'subjects': subjects,
+        'students': students,
+        'teacher_name': teacher_name,
+        'role': role,
+        'teacher_subject': teacher_subject,
+        'classes': classes,
+        'sections': sections,
+        'selected_class': selected_class,
+        'selected_section': selected_section
+    })
+
+def teacher_save_marks(request):
+    if 'teacher_id' not in request.session:
+        return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            role = data.get('role')
+            student_id = data.get('studentId')
+            marks_data = data.get('marks')
+            class_name = data.get('class')
+            section = data.get('section')
+
+            if not all([student_id, role, marks_data, class_name, section]):
+                return JsonResponse({'success': False, 'message': 'Missing required fields.'}, status=400)
+
+            with connection.cursor() as cursor:
+                # Verify teacher role
+                cursor.execute(
+                    "SELECT subject, class_teacher_of FROM teachers WHERE id = %s",
+                    [request.session['teacher_id']]
+                )
+                teacher = cursor.fetchone()
+                expected_role = 'classTeacher' if teacher[1] else 'subjectTeacher'
+                if role != expected_role:
+                    return JsonResponse({'success': False, 'message': 'Invalid role.'}, status=403)
+
+                # Verify student, class, and section
+                cursor.execute(
+                    "SELECT user_id FROM student_page1 WHERE user_id = %s AND class = %s AND section = %s",
+                    [student_id, class_name, section]
+                )
+                if not cursor.fetchone():
+                    return JsonResponse({'success': False, 'message': 'Invalid student, class, or section.'}, status=400)
+
+                # Store signature
+                signature = marks_data[0].get('signature') if isinstance(marks_data, list) else marks_data.get('signature')
+                if not signature:
+                    return JsonResponse({'success': False, 'message': 'Signature is required.'}, status=400)
+                cursor.execute(
+                    "INSERT INTO teacher_signature (teacher_id, signature) VALUES (%s, %s) ON DUPLICATE KEY UPDATE signature=%s",
+                    [request.session['teacher_id'], signature, signature]
+                )
+
+                def calculate_grade(marks, max_marks):
+                    percentage = (marks / max_marks * 100) if max_marks > 0 else 0
+                    return 'A' if percentage >= 80 else 'B' if percentage >= 60 else 'C' if percentage >= 40 else 'D' if percentage >= 33 else 'E'
+
+                if role == 'subjectTeacher':
+                    subject_id = marks_data.get('subjectId')
+                    marks = marks_data.get('marks')
+                    max_marks = marks_data.get('maxMarks')
+
+                    if not all([subject_id, marks is not None, max_marks]):
+                        return JsonResponse({'success': False, 'message': 'Invalid subject or marks.'}, status=400)
+
+                    cursor.execute(
+                        "SELECT name FROM school_subjects WHERE id = %s AND class = %s",
+                        [subject_id, class_name]
+                    )
+                    subject_name = cursor.fetchone()
+                    if not subject_name or subject_name[0] != teacher[0]:
+                        return JsonResponse({'success': False, 'message': 'Unauthorized subject or class.'}, status=403)
+
+                    marks = int(marks)
+                    max_marks = int(max_marks)
+                    if marks < 0 or max_marks < 1 or marks > max_marks:
+                        return JsonResponse({'success': False, 'message': 'Invalid marks or max marks.'}, status=400)
+
+                    grade = calculate_grade(marks, max_marks)
+                    cursor.execute(
+                        "INSERT INTO school_marks (student_id, subject_id, marks, max_marks, grade) VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE marks=%s, max_marks=%s, grade=%s",
+                        [student_id, subject_id, marks, max_marks, grade, marks, max_marks, grade]
+                    )
+                else:
+                    for subject in marks_data:
+                        subject_id = subject.get('subjectId')
+                        marks = subject.get('marks')
+                        max_marks = subject.get('maxMarks')
+
+                        if not all([subject_id, marks is not None, max_marks]):
+                            return JsonResponse({'success': False, 'message': 'Invalid subject or marks.'}, status=400)
+
+                        cursor.execute(
+                            "SELECT name FROM school_subjects WHERE id = %s AND class = %s",
+                            [subject_id, class_name]
+                        )
+                        if not cursor.fetchone():
+                            return JsonResponse({'success': False, 'message': 'Subject not found for this class.'}, status=404)
+
+                        marks = int(marks)
+                        max_marks = int(max_marks)
+                        if marks < 0 or max_marks < 1 or marks > max_marks:
+                            return JsonResponse({'success': False, 'message': 'Invalid marks or max marks.'}, status=400)
+
+                        grade = calculate_grade(marks, max_marks)
+                        cursor.execute(
+                            "INSERT INTO school_marks (student_id, subject_id, marks, max_marks, grade) VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE marks=%s, max_marks=%s, grade=%s",
+                            [student_id, subject_id, marks, max_marks, grade, marks, max_marks, grade]
+                        )
+
+                connection.commit()
+                return JsonResponse({'success': True, 'message': 'Marks saved successfully.'})
+
+        except Exception as e:
+            connection.rollback()
+            return JsonResponse({'success': False, 'message': f'Error saving marks: {str(e)}'}, status=500)
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
+
+def teacher_add_subject(request):
+    if 'teacher_id' not in request.session:
+        return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            subject_name = data.get('subjectName')
+            max_marks = data.get('maxMarks')
+            class_name = data.get('class')
+
+            if not all([subject_name, max_marks, class_name]):
+                return JsonResponse({'success': False, 'message': 'Subject name, max marks, and class required.'}, status=400)
+
+            max_marks = int(max_marks)
+            if max_marks < 1:
+                return JsonResponse({'success': False, 'message': 'Max marks must be positive.'}, status=400)
+
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT COUNT(*) FROM student_page1 WHERE class = %s", [class_name])
+                if cursor.fetchone()[0] == 0:
+                    return JsonResponse({'success': False, 'message': 'Invalid class.'}, status=400)
+
+                cursor.execute(
+                    "SELECT COUNT(*) FROM school_subjects WHERE name = %s AND class = %s",
+                    [subject_name, class_name]
+                )
+                if cursor.fetchone()[0] > 0:
+                    return JsonResponse({'success': False, 'message': 'Subject already exists for this class.'}, status=400)
+
+                cursor.execute(
+                    "INSERT INTO school_subjects (name, max_marks, class) VALUES (%s, %s, %s)",
+                    [subject_name, max_marks, class_name]
+                )
+                connection.commit()
+
+                cursor.execute(
+                    "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
+                    [class_name]
+                )
+                subjects = [{'id': row[0], 'name': row[1], 'max_marks': row[2]} for row in cursor.fetchall()]
+
+                return JsonResponse({'success': True, 'message': f'Subject {subject_name} added for class {class_name}.', 'subjects': subjects})
+
+        except Exception as e:
+            connection.rollback()
+            return JsonResponse({'success': False, 'message': f'Error adding subject: {str(e)}'}, status=500)
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
+
+def teacher_delete_subject(request):
+    if 'teacher_id' not in request.session:
+        return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            subject_id = data.get('subjectId')
+            class_name = data.get('class')
+
+            if not all([subject_id, class_name]):
+                return JsonResponse({'success': False, 'message': 'Subject ID and class required.'}, status=400)
+
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT COUNT(*) FROM student_page1 WHERE class = %s", [class_name])
+                if cursor.fetchone()[0] == 0:
+                    return JsonResponse({'success': False, 'message': 'Invalid class.'}, status=400)
+
+                cursor.execute(
+                    "SELECT name FROM school_subjects WHERE id = %s AND class = %s",
+                    [subject_id, class_name]
+                )
+                subject = cursor.fetchone()
+                if not subject:
+                    return JsonResponse({'success': False, 'message': 'Subject not found for this class.'}, status=404)
+
+                cursor.execute("DELETE FROM school_marks WHERE subject_id = %s", [subject_id])
+                cursor.execute("DELETE FROM school_subjects WHERE id = %s", [subject_id])
+                connection.commit()
+
+                cursor.execute(
+                    "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
+                    [class_name]
+                )
+                subjects = [{'id': row[0], 'name': row[1], 'max_marks': row[2]} for row in cursor.fetchall()]
+
+                return JsonResponse({'success': True, 'message': f'Subject {subject[0]} deleted for class {class_name}.', 'subjects': subjects})
+
+        except Exception as e:
+            connection.rollback()
+            return JsonResponse({'success': False, 'message': f'Error deleting subject: {str(e)}'}, status=500)
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
+
+def teacher_progress_card(request):
+    if 'teacher_id' not in request.session:
+        return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            student_id = data.get('studentId')
+
+            if not student_id:
+                return JsonResponse({'success': False, 'message': 'Student ID required.'}, status=400)
+
+            with connection.cursor() as cursor:
+                # Fetch student details including profile picture
+                cursor.execute(
+                    """
+                    SELECT s.name, s.roll_number, s.class, s.section, p.image_path
+                    FROM student_page1 s
+                    LEFT JOIN profile_pics p ON s.user_id = p.user_id
+                    WHERE s.user_id = %s
+                    """,
+                    [student_id]
+                )
+                student = cursor.fetchone()
+                if not student:
+                    return JsonResponse({'success': False, 'message': 'Student not found.'}, status=404)
+
+                # Fetch marks
+                cursor.execute(
+                    """
+                    SELECT s.name, m.marks, m.max_marks, m.grade
+                    FROM school_marks m
+                    JOIN school_subjects s ON m.subject_id = s.id
+                    WHERE m.student_id = %s AND s.class = %s
+                    """,
+                    [student_id, student[2]]
+                )
+                marks = [{'subject': row[0], 'marks': row[1], 'max_marks': row[2], 'grade': row[3]} for row in cursor.fetchall()]
+
+                # Fetch teacher signature
+                cursor.execute(
+                    "SELECT signature FROM teacher_signature WHERE teacher_id = %s",
+                    [request.session['teacher_id']]
+                )
+                signature_row = cursor.fetchone()
+                signature = signature_row[0] if signature_row else None
+
+                # Fetch teacher name
+                cursor.execute("SELECT name FROM teachers WHERE id = %s", [request.session['teacher_id']])
+                teacher_name = cursor.fetchone()[0]
+
+                # Calculate totals and grade
+                total_marks = sum(mark['marks'] for mark in marks)
+                total_max_marks = sum(mark['max_marks'] for mark in marks)
+                percentage = (total_marks / total_max_marks * 100) if total_max_marks > 0 else 0
+                grade = 'A' if percentage >= 80 else 'B' if percentage >= 60 else 'C' if percentage >= 40 else 'D' if percentage >= 33 else 'E'
+                passed = all(mark['marks'] >= 0.33 * mark['max_marks'] for mark in marks) and marks
+
+                # Prepare response
+                response_data = {
+                    'success': True,
+                    'student': {
+                        'name': student[0],
+                        'roll_number': student[1],
+                        'class': student[2],
+                        'section': student[3],
+                        'image_path': student[4] or 'pfpics/default_profile.jpg'  # Fallback to default
+                    },
+                    'marks': marks,
+                    'total_marks': total_marks,
+                    'total_max_marks': total_max_marks,
+                    'percentage': round(percentage, 2),
+                    'grade': grade,
+                    'status': 'Pass' if passed else 'Fail',
+                    'teacher_name': teacher_name
+                }
+                if signature:
+                    response_data['signature'] = signature
+                return JsonResponse(response_data)
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'Error fetching progress card: {str(e)}'}, status=500)
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
+
+def teacher_get_students(request):
+    if 'teacher_id' not in request.session:
+        return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
+
+    try:
+        class_name = request.GET.get('class')
+        section = request.GET.get('section')
+
+        if not class_name or not section:
+            return JsonResponse({'success': False, 'message': 'Class and section required.'}, status=400)
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT user_id AS id, name, roll_number FROM student_page1 WHERE class = %s AND section = %s ORDER BY name",
+                [class_name, section]
+            )
+            students = [{'id': row[0], 'name': row[1], 'roll_number': row[2]} for row in cursor.fetchall()]
+            return JsonResponse({'success': True, 'students': students})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error fetching students: {str(e)}'}, status=500)
+
+def teacher_get_subjects(request):
+    if 'teacher_id' not in request.session:
+        return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
+
+    try:
+        class_name = request.GET.get('class')
+        if not class_name:
+            return JsonResponse({'success': False, 'message': 'Class required.'}, status=400)
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
+                [class_name]
+            )
+            subjects = [{'id': row[0], 'name': row[1], 'max_marks': row[2]} for row in cursor.fetchall()]
+            return JsonResponse({'success': True, 'subjects': subjects})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error fetching subjects: {str(e)}'}, status=500)
 
 
 
@@ -5272,14 +5674,26 @@ def admin_timetable_add(request):
         return redirect('admin_login')
     
     if request.method == 'POST':
-        class_id = request.POST.get('class_id')
+        class_name = request.POST.get('class')
+        section = request.POST.get('section')
         subject = request.POST.get('subject')
         teacher_id = request.POST.get('teacher_id')
         day_of_week = request.POST.get('day_of_week')
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
         room = request.POST.get('room')
-        
+
+        # Construct class_id
+        class_id = f"{class_name}{section}" if section else class_name
+
+        # Validate inputs
+        if not class_name or not class_id:
+            messages.error(request, 'Please select a valid class.')
+            return redirect('admin_timetable_add')
+        if not subject or not teacher_id or not day_of_week or not start_time or not end_time:
+            messages.error(request, 'Please fill in all required fields.')
+            return redirect('admin_timetable_add')
+
         with connection.cursor() as cursor:
             # Check for conflicts
             cursor.execute("""
@@ -5294,11 +5708,12 @@ def admin_timetable_add(request):
                 messages.error(request, 'Scheduling conflict detected.')
                 return redirect('admin_timetable')
             
+            # Insert into timetable
             cursor.execute("""
                 INSERT INTO timetable (class_id, subject, teacher_id, day_of_week, 
                                      start_time, end_time, room)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room])
+            """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room or None])
         
         messages.success(request, 'Timetable entry added successfully.')
         return redirect('admin_timetable')
@@ -5354,6 +5769,14 @@ def admin_timetable_edit(request, id):
             end_time = request.POST.get('end_time')
             room = request.POST.get('room')
             
+            # Validate inputs
+            if not class_name or not class_id:
+                messages.error(request, 'Please select a valid class.')
+                return redirect('admin_timetable_edit', id=id)
+            if not subject or not teacher_id or not day_of_week or not start_time or not end_time:
+                messages.error(request, 'Please fill in all required fields.')
+                return redirect('admin_timetable_edit', id=id)
+            
             # Check for conflicts
             cursor.execute("""
                 SELECT id FROM timetable 
@@ -5366,14 +5789,19 @@ def admin_timetable_edit(request, id):
             
             if conflict:
                 messages.error(request, 'Scheduling conflict detected.')
-                return redirect('admin_timetable')
+                return redirect('admin_timetable_edit', id=id)
             
-            cursor.execute("""
-                UPDATE timetable 
-                SET class_id = %s, subject = %s, teacher_id = %s, 
-                    day_of_week = %s, start_time = %s, end_time = %s, room = %s
-                WHERE id = %s
-            """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room, id])
+            # Update timetable
+            try:
+                cursor.execute("""
+                    UPDATE timetable 
+                    SET class_id = %s, subject = %s, teacher_id = %s, 
+                        day_of_week = %s, start_time = %s, end_time = %s, room = %s
+                    WHERE id = %s
+                """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room or None, id])
+            except IntegrityError as e:
+                messages.error(request, f'Error updating timetable entry: {str(e)}')
+                return redirect('admin_timetable_edit', id=id)
             
             messages.success(request, 'Timetable entry updated successfully.')
             return redirect('admin_timetable')
@@ -5425,12 +5853,17 @@ def admin_timetable_weekly(request):
         return redirect('admin_timetable_weekly')
     
     num_periods = request.session['num_periods']
-    periods = list(range(1, num_periods + 1))  # Create list for template iteration
+    periods = list(range(1, num_periods + 1))
     
     if request.method == 'POST' and 'create_timetable' in request.POST:
         class_name = request.POST.get('class')
         section = request.POST.get('section')
         class_id = f"{class_name}{section}" if section else class_name
+        
+        # Validate class_id
+        if not class_name or not class_id:
+            messages.error(request, 'Please select a valid class.')
+            return redirect('admin_timetable_weekly')
         
         with connection.cursor() as cursor:
             for day in days:
@@ -5441,25 +5874,33 @@ def admin_timetable_weekly(request):
                     end_time = request.POST.get(f'end_time_{day}_{period}')
                     room = request.POST.get(f'room_{day}_{period}')
                     
-                    if subject and teacher_id and start_time and end_time:
-                        # Check for conflicts
-                        cursor.execute("""
-                            SELECT id FROM timetable 
-                            WHERE (class_id = %s OR teacher_id = %s)
-                            AND day_of_week = %s
-                            AND start_time <= %s AND end_time >= %s
-                        """, [class_id, teacher_id, day, end_time, start_time])
-                        conflict = cursor.fetchone()
+                    # Skip if required fields are missing
+                    if not (subject and teacher_id and start_time and end_time):
+                        continue
                         
-                        if conflict:
-                            messages.error(request, f'Conflict detected for {day} period {period}.')
-                            continue
-                        
+                    # Check for conflicts
+                    cursor.execute("""
+                        SELECT id FROM timetable 
+                        WHERE (class_id = %s OR teacher_id = %s)
+                        AND day_of_week = %s
+                        AND start_time <= %s AND end_time >= %s
+                    """, [class_id, teacher_id, day, end_time, start_time])
+                    conflict = cursor.fetchone()
+                    
+                    if conflict:
+                        messages.error(request, f'Conflict detected for {day} period {period}.')
+                        continue
+                    
+                    # Insert into timetable
+                    try:
                         cursor.execute("""
                             INSERT INTO timetable (class_id, subject, teacher_id, day_of_week, 
                                                  start_time, end_time, room)
                             VALUES (%s, %s, %s, %s, %s, %s, %s)
-                        """, [class_id, subject, teacher_id, day, start_time, end_time, room])
+                        """, [class_id, subject, teacher_id, day, start_time, end_time, room or None])
+                    except IntegrityError as e:
+                        messages.error(request, f'Error adding timetable entry for {day} period {period}: {str(e)}')
+                        continue
         
         messages.success(request, 'Weekly timetable created successfully.')
         return redirect('admin_timetable')
@@ -5480,27 +5921,50 @@ def admin_timetable_weekly(request):
 # Teacher Timetable View
 def teacher_timetable_view(request):
     if 'teacher_id' not in request.session:
-        return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
+        messages.error(request, 'Please log in to access the teacher portal.')
+        return redirect('/teacher_login/')  # Adjust to your login URL
     
     teacher_id = request.session['teacher_id']
-    query = """
-        SELECT t.id, t.class_id, t.subject, tch.name, t.day_of_week, 
-               t.start_time, t.end_time, t.room
-        FROM timetable t
-        JOIN teachers tch ON t.teacher_id = tch.id
-        WHERE t.teacher_id = %s
-        ORDER BY FIELD(t.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
-    """
-    timetables = fetch_timetable_data(query, [teacher_id])
+    with connection.cursor() as cursor:
+        # Check if timetable entries exist for the teacher
+        cursor.execute("SELECT COUNT(*) FROM timetable WHERE teacher_id = %s", [teacher_id])
+        timetable_count = cursor.fetchone()[0]
+        if timetable_count == 0:
+            messages.warning(request, 'No timetable entries found for you.')
+            return render(request, 'users/teacher_timetable.html', {
+                'timetable_data': [], 'teacher_id': teacher_id
+            })
+        
+        # Fetch timetable with teacher details
+        query = """
+            SELECT t.id, t.class_id, t.subject, t.day_of_week, 
+                   t.start_time, t.end_time, t.room
+            FROM timetable t
+            WHERE t.teacher_id = %s
+            ORDER BY FIELD(t.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
+        """
+        cursor.execute(query, [teacher_id])
+        timetables = [
+            {
+                'id': row[0],
+                'class_id': row[1],
+                'subject': row[2],
+                'day_of_week': row[3],
+                'start_time': row[4],
+                'end_time': row[5],
+                'room': row[6]
+            } for row in cursor.fetchall()
+        ]
     
-    # Organize by day for table display
+    # Organize by day as a list of (day, entries)
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    timetable_by_day = {day: [] for day in days}
-    for entry in timetables:
-        timetable_by_day[entry['day_of_week']].append(entry)
+    timetable_data = []
+    for day in days:
+        entries = [entry for entry in timetables if entry['day_of_week'] == day]
+        timetable_data.append((day, entries))
     
     return render(request, 'users/teacher_timetable.html', {
-        'timetable_by_day': timetable_by_day, 'days': days
+        'timetable_data': timetable_data, 'teacher_id': teacher_id
     })
 
 # Student Timetable View
@@ -5511,6 +5975,7 @@ def student_timetable_view(request):
     
     user_id = request.session['user_id']
     with connection.cursor() as cursor:
+        # Fetch class and section for the student
         cursor.execute("SELECT class, section FROM student_page1 WHERE user_id = %s", [user_id])
         student = cursor.fetchone()
         if not student:
@@ -5518,8 +5983,23 @@ def student_timetable_view(request):
             return redirect('student_timetable')
         
         class_name, section = student
+        if not class_name:
+            messages.error(request, 'Invalid class information for the student.')
+            return redirect('student_timetable')
+        
+        # Construct class_id
         class_id = f"{class_name}{section}" if section else class_name
         
+        # Check if timetable entries exist
+        cursor.execute("SELECT COUNT(*) FROM timetable WHERE class_id = %s", [class_id])
+        timetable_count = cursor.fetchone()[0]
+        if timetable_count == 0:
+            messages.warning(request, f'No timetable entries found for class {class_id}.')
+            return render(request, 'users/student_timetable.html', {
+                'timetable_data': [], 'class_id': class_id
+            })
+        
+        # Fetch timetable with teacher details
         query = """
             SELECT t.id, t.class_id, t.subject, tch.name, t.day_of_week, 
                    t.start_time, t.end_time, t.room
@@ -5528,16 +6008,29 @@ def student_timetable_view(request):
             WHERE t.class_id = %s
             ORDER BY FIELD(t.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
         """
-        timetables = fetch_timetable_data(query, [class_id])
+        cursor.execute(query, [class_id])
+        timetables = [
+            {
+                'id': row[0],
+                'class_id': row[1],
+                'subject': row[2],
+                'name': row[3],
+                'day_of_week': row[4],
+                'start_time': row[5],
+                'end_time': row[6],
+                'room': row[7]
+            } for row in cursor.fetchall()
+        ]
     
-    # Organize by day for table display
+    # Organize by day as a list of (day, entries)
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    timetable_by_day = {day: [] for day in days}
-    for entry in timetables:
-        timetable_by_day[entry['day_of_week']].append(entry)
+    timetable_data = []
+    for day in days:
+        entries = [entry for entry in timetables if entry['day_of_week'] == day]
+        timetable_data.append((day, entries))
     
     return render(request, 'users/student_timetable.html', {
-        'timetable_by_day': timetable_by_day, 'days': days, 'class_id': class_id
+        'timetable_data': timetable_data, 'class_id': class_id
     })
 
 

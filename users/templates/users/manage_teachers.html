@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Manage Teachers</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
         * {
             margin: 0;
@@ -20,52 +20,77 @@
                         url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
             background-size: 200%, 20px 20px;
             min-height: 100vh;
-            padding: 20px;
+            padding: 80px 20px 40px 20px;
             position: relative;
         }
 
-        .logo {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            overflow: hidden;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+            flex-wrap: wrap;
+            position: fixed;
+            top: 0;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
         }
 
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .welcome-header {
-            position: absolute;
-            top: 20px;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
             text-align: center;
-            color: #2563eb;
-            font-size: 1.8rem;
-            font-weight: 600;
             letter-spacing: 1px;
-            width: 100%;
+            text-transform: uppercase;
+            transition: color 0.3s ease, transform 0.3s ease;
+            flex-grow: 1;
+            margin: 0;
+        }
+
+        .welcome-header:hover {
+            color: #e3f2fd;
+            transform: scale(1.02);
         }
 
         .back-button {
-            position: absolute;
-            top: 80px;
-            left: 20px;
-            padding: 0.5rem 1rem;
-            background: #2563eb;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
             color: white;
             text-decoration: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
         }
 
         .back-button:hover {
-            background: #1d4ed8;
+            background: linear-gradient(90deg, #1565c0, #1976d2);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+
+        .logo-container {
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .container {
@@ -77,7 +102,7 @@
             border: 1px solid rgba(255, 255, 255, 0.4);
             width: 100%;
             max-width: 1200px;
-            margin: 120px auto 20px;
+            margin: 100px auto 20px;
             transition: box-shadow 0.3s ease;
         }
 
@@ -278,36 +303,70 @@
         }
 
         @media (max-width: 768px) {
+            .header {
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+                align-items: center;
+                justify-content: space-between;
+                left: 10px;
+                right: 10px;
+            }
+
             .welcome-header {
-                font-size: 1.6rem;
+                font-size: 1.8rem;
+                margin: 0;
+                flex-grow: 1;
+                text-align: center;
+            }
+
+            .back-button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .logo {
+                width: 40px;
+                height: 40px;
             }
 
             .teacher-grid {
                 grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             }
+
+            .container {
+                margin-top: 90px;
+            }
         }
 
         @media (max-width: 480px) {
-            .welcome-header {
-                font-size: 1.4rem;
-                padding: 0 10px;
+            .header {
+                padding: 0.6rem 0.8rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
+                left: 5px;
+                right: 5px;
             }
 
-            .logo {
-                width: 50px;
-                height: 50px;
-                top: 15px;
-                left: 15px;
+            .welcome-header {
+                font-size: 1.4rem;
             }
 
             .back-button {
-                top: 70px;
+                padding: 0.6rem 1rem;
                 font-size: 0.8rem;
+            }
+
+            .logo {
+                width: 35px;
+                height: 35px;
             }
 
             .container {
                 padding: 1.5rem;
-                margin-top: 100px;
+                margin-top: 80px;
             }
 
             h2 {
@@ -335,11 +394,13 @@
     </style>
 </head>
 <body>
-    <div class="logo">
-        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
+    <div class="header">
+        <a href="{% url 'admin_page' %}" class="back-button">Back</a>
+        <h1 class="welcome-header">Manage Teachers</h1>
+        <div class="logo-container">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo" class="logo">
+        </div>
     </div>
-    <div class="welcome-header">Welcome to Manavargal School System, Admin</div>
-    <a href="{% url 'admin_page' %}" class="back-button">Back to Admin Page</a>
     <div class="container">
         <h2>Manage Teachers</h2>
         {% if messages %}

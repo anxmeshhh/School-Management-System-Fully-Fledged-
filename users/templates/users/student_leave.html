@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Leave Requests</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -14,383 +13,488 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            background: linear-gradient(135deg, #f7fafc 30%, #d4f4e2 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%2322c55e" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
             font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f7fafc 30%, #d4f4e2 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%2322c55e" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
+            background-size: cover, 30px 30px;
             animation: backgroundFade 10s ease-in-out infinite alternate;
             min-height: 100vh;
-            padding: 2rem 1rem;
+            padding: 80px 20px 40px 20px;
         }
+
         @keyframes backgroundFade {
             0% { background-position: 0% 50%; }
             100% { background-position: 100% 50%; }
         }
-        #app {
-            max-width: 1280px;
+
+        .container {
+            max-width: 1000px;
             margin: 0 auto;
         }
-        h1 {
-            text-align: center;
-            color: #15803d;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-        }
-        h1:hover {
-            color: #22c55e;
-        }
-        .main-content {
+
+        .header {
+            background: linear-gradient(90deg, #15803d, #22c55e);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            border-bottom: 4px solid #a3e635;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
             display: flex;
-            flex-direction: column;
-            gap: 2rem;
+            align-items: center;
+            justify-content: space-between;
         }
-        .section {
-            background: rgba(255, 255, 255, 0.98);
+
+        .header .logo-button {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .main-content {
+            background: #ffffff;
+            border: 2px solid #22c55e;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             padding: 2rem;
+            margin-top: 1rem;
+        }
+
+        .alert-message {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-message .error {
+            background: #fef2f2;
+            color: #b91c1c;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-message .success {
+            background: #e6f3ec;
+            color: #15803d;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #22c55e;
+        }
+
+        .section {
+            background: #f7fafc;
+            padding: 1.5rem;
             border-radius: 12px;
+            border: 2px solid #22c55e;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border: 1px solid #22c55e;
-            animation: fadeIn 0.8s ease-in-out;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
-        .leave-section {
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-        .leave-section:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
+
         h2 {
             color: #15803d;
             font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
         }
-        h2:hover {
-            color: #22c55e;
-        }
+
         .form-group {
             margin-bottom: 1.5rem;
         }
+
         .form-group label {
             display: block;
             color: #15803d;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
         }
-        .form-group label:hover {
-            color: #22c55e;
-        }
+
         .form-group input[type="text"],
         .form-group input[type="date"],
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 0.9rem;
-            border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #22c55e, #15803d) border-box;
+            padding: 0.75rem;
             border-radius: 8px;
+            border: 2px solid #22c55e;
+            background: #f0fdf4;
             font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-            transition: border 0.3s ease, box-shadow 0.3s ease;
-            min-height: 44px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
+
         .form-group textarea {
             resize: vertical;
         }
+
         .form-group input[type="text"]:focus,
         .form-group input[type="date"]:focus,
         .form-group select:focus,
         .form-group textarea:focus {
+            border-color: #15803d;
+            box-shadow: 0 0 8px rgba(21, 128, 61, 0.3);
             outline: none;
-            border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #15803d, #22c55e) border-box;
-            box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
         }
+
         .date-range {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
+
         .date-range span {
             color: #1f2937;
             font-size: 1rem;
         }
+
         .leave-duration {
             display: flex;
             gap: 1.5rem;
         }
+
         .half-day-container {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
+
         .radio-label {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             color: #1f2937;
             font-size: 1rem;
-            cursor: pointer;
-            transition: color 0.3s ease;
         }
-        .radio-label:hover {
-            color: #22c55e;
-        }
+
         .radio-label input[type="radio"] {
             accent-color: #22c55e;
+            width: 1.2rem;
+            height: 1.2rem;
         }
+
         .half-day-options {
             margin-left: 1.5rem;
             display: flex;
             gap: 1rem;
         }
+
         .sub-option {
             font-size: 0.9rem;
         }
+
         .submit-btn {
             width: 100%;
-            padding: 1rem;
-            background: linear-gradient(90deg, #22c55e, #15803d);
+            padding: 0.75rem;
+            background: #22c55e;
             border: none;
             border-radius: 8px;
-            color: white;
-            font-size: 1.1rem;
+            color: #ffffff;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            letter-spacing: 1px;
-            min-height: 48px;
+            transition: all 0.3s ease;
         }
+
         .submit-btn:hover {
-            background: linear-gradient(90deg, #15803d, #22c55e);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
         .table-container {
             overflow-x: auto;
         }
+
         .attendance-table {
             width: 100%;
             min-width: 600px;
             border-collapse: collapse;
-            margin-top: 1rem;
-            table-layout: fixed;
+            border: 2px solid #22c55e;
+            background: #f0fdf4;
         }
+
         .attendance-table th,
         .attendance-table td {
             padding: 0.75rem;
             text-align: left;
-            border-bottom: 1px solid #22c55e;
+            border: 1px solid #22c55e;
+            font-size: 0.9rem;
         }
+
         .attendance-table th {
             background: #d4f4e2;
             color: #15803d;
             font-weight: 700;
-            font-size: 0.9rem;
             position: sticky;
             top: 0;
             z-index: 10;
         }
+
         .attendance-table td {
             color: #1f2937;
-            font-size: 0.85rem;
         }
-        .attendance-table tr {
-            transition: background 0.3s ease;
-        }
-        .attendance-table tr:hover {
+
+        .attendance-table tr:nth-child(even) {
             background: #e6f3ec;
         }
+
+        .status-approved { color: #15803d; font-weight: 600; }
+        .status-pending { color: #ca8a04; font-weight: 600; }
+        .status-rejected { color: #b91c1c; font-weight: 600; }
+
         .download-btn {
             padding: 0.5rem 1rem;
-            background: linear-gradient(90deg, #22c55e, #15803d);
+            background: #22c55e;
             border: none;
-            border-radius: 5px;
-            color: white;
+            border-radius: 8px;
+            color: #ffffff;
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease;
-            min-height: 44px;
+            transition: all 0.3s ease;
         }
+
         .download-btn:hover {
-            background: linear-gradient(90deg, #15803d, #22c55e);
+            background: #15803d;
             transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .nav-to-attendance {
-            text-align: center;
-            margin-top: 2rem;
-        }
+
         .nav-to-attendance-btn {
             display: inline-block;
-            background: linear-gradient(90deg, #22c55e, #15803d);
-            color: white;
-            padding: 0.8rem 1.5rem;
+            background: #22c55e;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
             border-radius: 8px;
             text-decoration: none;
             font-size: 1rem;
             font-weight: 600;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            min-height: 44px;
+            transition: all 0.3s ease;
         }
+
         .nav-to-attendance-btn:hover {
-            background: linear-gradient(90deg, #15803d, #22c55e);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
         .icon {
             margin-right: 0.5rem;
         }
-        /* Tablet Responsiveness */
+
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-                margin-bottom: 1.5rem;
+            body {
+                padding: 70px 10px 20px 10px;
             }
+
+            .header {
+                padding: 0.8rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .section {
+                padding: 1.2rem;
+            }
+
             h2 {
                 font-size: 1.5rem;
             }
-            .section {
-                padding: 1.5rem;
-            }
+
             .form-group label {
-                font-size: 1rem;
+                font-size: 0.9rem;
             }
+
             .form-group input[type="text"],
             .form-group input[type="date"],
             .form-group select,
             .form-group textarea {
-                padding: 0.8rem;
                 font-size: 0.9rem;
-                min-height: 44px;
+                padding: 0.6rem;
             }
+
             .date-range {
                 flex-direction: column;
                 gap: 0.5rem;
             }
+
             .leave-duration {
                 flex-direction: column;
                 gap: 0.8rem;
             }
+
             .half-day-options {
                 flex-direction: column;
                 gap: 0.5rem;
             }
+
             .radio-label {
                 font-size: 0.9rem;
             }
+
             .sub-option {
                 font-size: 0.85rem;
             }
+
             .submit-btn {
-                padding: 0.8rem;
-                font-size: 1rem;
+                font-size: 0.9rem;
+                padding: 0.6rem;
             }
+
             .attendance-table th,
             .attendance-table td {
+                font-size: 0.85rem;
                 padding: 0.6rem;
-                font-size: 0.8rem;
             }
+
             .download-btn {
-                padding: 0.4rem 0.8rem;
                 font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
             }
+
             .nav-to-attendance-btn {
-                padding: 0.7rem 1.2rem;
                 font-size: 0.9rem;
+                padding: 0.6rem 1.2rem;
+            }
+
+            .logo-img {
+                width: 40px;
+                height: 40px;
             }
         }
-        /* Mobile Responsiveness */
-        @media (max-width: 640px) {
+
+        @media (max-width: 480px) {
             body {
-                padding: 1rem 0.5rem;
+                padding: 60px 5px 15px 5px;
             }
-            h1 {
-                font-size: 1.75rem;
-                margin-bottom: 1rem;
+
+            .header {
+                padding: 0.6rem 0.8rem;
             }
-            h2 {
+
+            .header h1 {
                 font-size: 1.25rem;
             }
+
+            .main-content {
+                padding: 1rem;
+            }
+
             .section {
                 padding: 1rem;
             }
-            .form-group label {
-                font-size: 0.9rem;
+
+            h2 {
+                font-size: 1.25rem;
             }
+
+            .form-group label {
+                font-size: 0.85rem;
+            }
+
             .form-group input[type="text"],
             .form-group input[type="date"],
             .form-group select,
             .form-group textarea {
-                padding: 0.7rem;
                 font-size: 0.85rem;
-                min-height: 44px;
+                padding: 0.5rem;
             }
+
             .radio-label {
                 font-size: 0.85rem;
             }
+
             .sub-option {
                 font-size: 0.8rem;
             }
+
             .submit-btn {
-                padding: 0.7rem;
-                font-size: 0.9rem;
+                font-size: 0.85rem;
+                padding: 0.5rem;
             }
+
             .attendance-table th,
             .attendance-table td {
-                padding: 0.5rem;
                 font-size: 0.75rem;
-                white-space: nowrap;
+                padding: 0.5rem;
             }
+
             .download-btn {
-                padding: 0.3rem 0.6rem;
                 font-size: 0.7rem;
-                min-height: 40px;
+                padding: 0.3rem 0.6rem;
             }
+
             .nav-to-attendance-btn {
-                padding: 0.6rem 1rem;
                 font-size: 0.85rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .logo-img {
+                width: 35px;
+                height: 35px;
             }
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <div class="header">
-            <div class="logo-button">
-                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img" style="height: 6cm; width: 6cm; object-fit: contain; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); transition: transform 0.3s ease;">
-                <span class="text-2xl font-bold">Manavargal School</span>
-            </div>
-            <h1>Leave Requests</h1>
+    <div class="header">
+        <div class="logo-button">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
         </div>
-        
-        <!-- Messages section (Django template syntax) -->
-        {% if messages %}
-        <div class="mb-6">
-            {% for message in messages %}
-            <div class="p-3 mb-3 text-white rounded-lg flex items-center {% if message.tags == 'error' %}bg-red-500{% else %}bg-green-600{% endif %} shadow-md">
-                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+        <h1><i class="fas fa-envelope icon"></i> Leave Requests</h1>
+        <div></div> <!-- Empty div for spacing -->
+    </div>
 
+    <div class="container">
         <div class="main-content">
-            <div class="section leave-section">
-                <h2>Submit Leave Request</h2>
+            {% if messages %}
+            <div class="alert-message">
+                {% for message in messages %}
+                <div class="{{ message.tags }}">
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="section">
+                <h2><i class="fas fa-paper-plane icon"></i> Submit Leave Request</h2>
                 <form method="POST" action="{% url 'student_leave' %}">
                     {% csrf_token %}
                     <div class="form-group">
@@ -461,7 +565,7 @@
             </div>
 
             <div class="section">
-                <h2>Your Leave Requests</h2>
+                <h2><i class="fas fa-list icon"></i> Your Leave Requests</h2>
                 <div class="table-container">
                     <table class="attendance-table">
                         <thead>
@@ -513,6 +617,7 @@
             </div>
         </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const table = document.querySelector('table');

@@ -1,12 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Circulars</title>
+    <title>Manavargal School Management System - Student Circulars</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-
         * {
             margin: 0;
             padding: 0;
@@ -15,104 +16,157 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c2 50%, #e8f5e9 100%);
-            background-size: 200%;
-            animation: gradient 20s ease infinite;
-            padding: 40px 20px;
+            background: linear-gradient(135deg, #f7fafc 30%, #d4f4e2 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%2322c55e" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
+            background-size: cover, 30px 30px;
+            animation: backgroundFade 10s ease-in-out infinite alternate;
             min-height: 100vh;
+            padding: 80px 20px 40px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        @keyframes gradient {
+        @keyframes backgroundFade {
             0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
 
-        h1 {
-            text-align: center;
-            color: #4caf50;
-            font-size: 2.5rem;
+        .header {
+            background: linear-gradient(90deg, #15803d, #22c55e);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            border-bottom: 4px solid #a3e635;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 1rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
+            text-align: center;
+            flex-grow: 1;
         }
 
-        h1:hover {
-            color: #388e3c;
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: #22c55e;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
         }
 
         .student-info {
             text-align: center;
-            color: #666;
+            color: #4b5563;
             font-size: 1.2rem;
             margin-bottom: 1.5rem;
         }
 
         .filter-form {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(12px);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            border: 2px solid #22c55e;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.4);
             max-width: 500px;
             width: 100%;
-            animation: fadeIn;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .filter-form:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
 
         .filter-form label {
             display: block;
+            color: #15803d;
+            font-size: 1rem;
+            font-weight: 500;
             margin-bottom: 0.5rem;
-            color: #555;
-            font-weight: 400;
         }
 
         .filter-form select {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 1rem;
-            border: 1px solid #81c784;
-            border-radius: 5px;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 2px solid #22c55e;
+            background: #f0fdf4;
             font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-            transition: border-color 0.3s ease-in-out;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .filter-form select:focus {
-            border-color: #4caf50;
+            border-color: #15803d;
+            box-shadow: 0 0 8px rgba(21, 128, 61, 0.3);
             outline: none;
         }
 
         .filter-form button {
-            background: #4caf50;
-            color: white;
-            padding: 12px 20px;
+            width: 100%;
+            padding: 0.75rem;
+            background: #22c55e;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            color: #ffffff;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
-            width: 100%;
+            transition: all 0.3s ease;
         }
 
         .filter-form button:hover {
-            background: #388e3c;
+            background: #15803d;
             transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .error-message {
-            background: #ffcdd2;
-            color: #d32f2f;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 1rem;
+            background: #fef2f2;
+            color: #b91c1c;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+            margin-bottom: 1.5rem;
             max-width: 500px;
             width: 100%;
             text-align: center;
@@ -121,123 +175,82 @@
         .circular-container {
             max-width: 900px;
             width: 100%;
-            animation: fadeIn 0.8s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: none; }
         }
 
         .circular {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(12px);
-            padding: 25px;
+            background: #ffffff;
+            border: 2px solid #22c55e;
+            padding: 1.5rem;
             border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .circular:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15), 0 0 10px rgba(76, 175, 80, 0.2);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
 
         .circular h3 {
-            margin: 0;
-            color: #4caf50;
-            font-size: 1.8rem;
+            color: #15803d;
+            font-size: 1.5rem;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease-in-out;
-        }
-
-        .circular h3:hover {
-            color: #388e3c;
+            margin-bottom: 0.75rem;
         }
 
         .circular small {
-            color: #666;
-            font-size: 1rem;
-            font-weight: 300;
-            margin-top: 0.5rem;
+            color: #4b5563;
+            font-size: 0.875rem;
+            font-weight: 400;
             display: block;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease-in-out;
-        }
-
-        .circular small:hover {
-            color: #4caf50;
+            margin-bottom: 0.5rem;
         }
 
         .circular img {
             max-width: 100%;
-            margin-top: 10px;
             border-radius: 8px;
-            display: block;
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            margin-top: 1rem;
+            transition: transform 0.3s ease;
         }
 
         .circular img:hover {
-            transform: scale(1.02);
-            opacity: 0.95;
+            transform: scale(1.03);
         }
 
         .no-circulars {
-            font-size: 1.2rem;
-            color: #666;
+            font-size: 1rem;
+            color: #4b5563;
             text-align: center;
-            margin-top: 20px;
-            font-weight: 400;
+            margin-top: 1.5rem;
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-                margin-bottom: 0.5rem;
+            body {
+                padding: 70px 10px 20px 10px;
             }
 
-            .student-info {
-                font-size: 1.1rem;
+            .header {
+                padding: 0.8rem 1rem;
             }
 
-            .filter-form,
-            .circular {
-                padding: 15px;
-            }
-
-            .circular h3 {
+            .header h1 {
                 font-size: 1.5rem;
             }
 
-            .circular small {
+            .filter-form,
+            .circular {
+                padding: 1.2rem;
+            }
+
+            .filter-form label,
+            .filter-form select,
+            .filter-form button {
                 font-size: 0.9rem;
             }
 
-            .no-circulars {
-                font-size: 1.1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.6rem;
-                margin-bottom: 0.25rem;
-            }
-
-            .student-info {
-                font-size: 1rem;
-            }
-
-            .filter-form,
-            .circular {
-                padding: 10px;
-            }
-
             .circular h3 {
-                font-size: 1.3rem;
+                font-size: 1.25rem;
             }
 
             .circular small {
@@ -245,50 +258,125 @@
             }
 
             .no-circulars {
+                font-size: 0.9rem;
+            }
+
+            .student-info {
                 font-size: 1rem;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .logo-img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
+            .header {
+                padding: 0.6rem 0.8rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .filter-form,
+            .circular {
+                padding: 1rem;
+            }
+
+            .filter-form label,
+            .filter-form select,
+            .filter-form button {
+                font-size: 0.85rem;
+            }
+
+            .circular h3 {
+                font-size: 1.1rem;
+            }
+
+            .circular small {
+                font-size: 0.75rem;
+            }
+
+            .no-circulars {
+                font-size: 0.85rem;
+            }
+
+            .student-info {
+                font-size: 0.9rem;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .logo-img {
+                width: 35px;
+                height: 35px;
             }
         }
     </style>
 </head>
 <body>
-    <h1>School Circulars</h1>
+    <div class="header">
+        <a href="{% url 'dashboard' %}" class="back-btn">
+            <i class="fas fa-arrow-left icon"></i> Back
+        </a>
+        <h1><i class="fas fa-file-alt icon"></i> School Circulars</h1>
+        <a href="{% url 'dashboard' %}">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+        </a>
+    </div>
 
-    {% if error_message %}
-        <div class="error-message">{{ error_message }}</div>
-    {% endif %}
+    <div class="container">
+        {% if error_message %}
+            <div class="error-message">{{ error_message }}</div>
+        {% endif %}
 
-    {% if student_class and student_section %}
-        <div class="student-info">
-            Your Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}
-        </div>
-    {% endif %}
-
-    <form class="filter-form" method="post">
-        {% csrf_token %}
-        <label for="filter_type">Filter Circulars</label>
-        <select id="filter_type" name="filter_type" required>
-            <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Circulars</option>
-            <option value="specific" {% if filter_type == 'specific' %}selected{% endif %}>Class/Section Only</option>
-        </select>
-        <button type="submit">Apply Filter</button>
-    </form>
-
-    <div class="circular-container">
-        {% for circular in circulars %}
-            <div class="circular">
-                <h3>{{ circular.title }}</h3>
-                <small>Posted on: {{ circular.date }}</small>
-                <small>Target: {{ circular.target }}</small>
-                <img src="{{ circular.image_url }}" alt="Circular Image">
+        {% if student_class and student_section %}
+            <div class="student-info">
+                Your Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}
             </div>
-        {% empty %}
-            <p class="no-circulars">
-                No circulars available for {% if filter_type == 'specific' %}your class and section{% else %}the selected filter{% endif %}.
-                {% if student_class and student_section %}
-                    (Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }})
-                {% endif %}
-            </p>
-        {% endfor %}
+        {% endif %}
+
+        <form class="filter-form" method="post">
+            {% csrf_token %}
+            <label for="filter_type"><i class="fas fa-filter icon"></i> Filter Circulars</label>
+            <select id="filter_type" name="filter_type" required>
+                <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Circulars</option>
+                <option value="specific" {% if filter_type == 'specific' %}selected{% endif %}>Class/Section Only</option>
+            </select>
+            <button type="submit"><i class="fas fa-check icon"></i> Apply Filter</button>
+        </form>
+
+        <div class="circular-container">
+            {% for circular in circulars %}
+                <div class="circular">
+                    <h3>{{ circular.title }}</h3>
+                    <small>Posted on: {{ circular.date }}</small>
+                    <small>Target: {{ circular.target }}</small>
+                    <img src="{{ circular.image_url }}" alt="Circular Image">
+                </div>
+            {% empty %}
+                <p class="no-circulars">
+                    No circulars available for {% if filter_type == 'specific' %}your class and section{% else %}the selected filter{% endif %}.
+                    {% if student_class and student_section %}
+                        (Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }})
+                    {% endif %}
+                </p>
+            {% endfor %}
+        </div>
     </div>
 </body>
 </html>

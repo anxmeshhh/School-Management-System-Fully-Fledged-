@@ -22,6 +22,7 @@
             padding: 1rem;
             position: relative;
             overflow-x: hidden;
+            padding-top: 90px;
         }
 
         @keyframes gradient {
@@ -30,20 +31,76 @@
             100% { background-position: 0% 50%; }
         }
 
-        header {
+        /* Header styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+            flex-wrap: wrap;
             position: fixed;
             top: 0;
-            left: 0;
-            right: 0;
-            padding: 1rem;
+            left: 20px;
+            right: 20px;
             z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(to right, #1e40af, #3b82f6);
         }
 
-        .logo-img {
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-header {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease, transform 0.3s ease;
+            flex-grow: 1;
+            margin: 0;
+        }
+
+        .welcome-header:hover {
+            color: #e3f2fd;
+            transform: scale(1.02);
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(90deg, #1565c0, #1976d2);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .logo {
             height: 40px;
             width: 40px;
             object-fit: cover;
@@ -56,18 +113,18 @@
             align-items: center;
             gap: 8px;
             font-weight: 500;
-            padding: 0;
-            margin: 0;
             color: white;
             text-decoration: none;
+        }
+
+        .logo-text {
+            display: inline-block;
         }
 
         .hamburger {
             font-size: 1.5rem;
             color: white;
             cursor: pointer;
-            margin-left: 1rem;
-            z-index: 1001;
             transition: transform 0.3s ease;
         }
 
@@ -279,6 +336,45 @@
         }
 
         @media (max-width: 768px) {
+            .header {
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+                align-items: center;
+                justify-content: space-between;
+                left: 10px;
+                right: 10px;
+            }
+
+            .welcome-header {
+                font-size: 1.8rem;
+                margin: 0;
+                flex-grow: 1;
+                text-align: center;
+            }
+
+            .back-button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .logo {
+                height: 35px;
+                width: 35px;
+            }
+
+            .logo-text {
+                font-size: 0.9rem;
+            }
+
+            .hamburger {
+                font-size: 1.3rem;
+            }
+
+            body {
+                padding-top: 80px;
+            }
+
             .container {
                 padding: 1rem;
                 margin-top: 4rem;
@@ -313,21 +409,48 @@
                 font-size: 0.9rem;
             }
 
-            .logo-img {
-                height: 35px;
-                width: 35px;
-            }
-
-            .hamburger {
-                font-size: 1.3rem;
-            }
-
             .sidebar {
                 width: 200px;
             }
         }
 
         @media (max-width: 480px) {
+            .header {
+                padding: 0.6rem 0.8rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
+                left: 5px;
+                right: 5px;
+            }
+
+            .welcome-header {
+                font-size: 1.4rem;
+            }
+
+            .back-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .logo {
+                height: 30px;
+                width: 30px;
+            }
+
+            .logo-text {
+                font-size: 0.8rem;
+            }
+
+            .hamburger {
+                font-size: 1.2rem;
+            }
+
+            body {
+                padding-top: 70px;
+            }
+
             .container {
                 margin-top: 3.5rem;
             }
@@ -357,14 +480,6 @@
                 font-size: 0.8rem;
             }
 
-            header {
-                padding: 0.75rem;
-            }
-
-            .hamburger {
-                font-size: 1.2rem;
-            }
-
             .sidebar {
                 width: 180px;
             }
@@ -372,13 +487,19 @@
     </style>
 </head>
 <body>
-    <header>
-        <a href="{% url 'admin_page' %}" class="logo-button">
-            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MSMS Logo" class="logo-img">
-            <span>MSMS</span>
+    <div class="header">
+        <a href="{% url 'admin_page' %}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back
         </a>
-        <i class="fas fa-bars hamburger" onclick="toggleSidebar()"></i>
-    </header>
+        <h1 class="welcome-header">MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
+        <div class="logo-container">
+            <a href="{% url 'admin_page' %}" class="logo-button">
+                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MSMS Logo" class="logo">
+                <span class="logo-text">MSMS</span>
+            </a>
+            <i class="fas fa-bars hamburger" onclick="toggleSidebar()"></i>
+        </div>
+    </div>
 
     <div class="sidebar" id="sidebar">
         <div class="close-btn">

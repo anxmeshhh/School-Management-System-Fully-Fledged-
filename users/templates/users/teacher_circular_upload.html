@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,305 +6,399 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Circular Upload</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+       @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #fce4ec 100%);
-            background-size: 200%;
-            animation: gradient 20s ease infinite;
-            padding: 40px 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #fce4ec 100%);
+    background-size: 200%;
+    animation: gradient 20s ease infinite;
+    padding: 20px 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-        h1 {
-            text-align: center;
-            color: #c2185b;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 2.5rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-        }
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem;
+    padding: 1rem;
+    background: linear-gradient(90deg, #be185d, #f472b6);
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-        h1:hover {
-            color: #880e4f;
-        }
+.header h1 {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+    font-family: 'Roboto', sans-serif;
+}
 
-        .upload-form {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(12px);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            max-width: 500px;
-            width: 100%;
-            animation: fadeIn 0.8s ease-in-out;
-        }
+.header h1:hover {
+    color: #fef2f2;
+}
 
-        .upload-form h2 {
-            color: #c2185b;
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
+.back-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: linear-gradient(90deg, #6b7280, #9ca3af);
+    color: white;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    font-family: 'Roboto', sans-serif;
+}
 
-        .upload-form label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #555;
-            font-weight: 400;
-        }
+.back-btn:hover {
+    background: linear-gradient(90deg, #4b5563, #6b7280);
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
+}
 
-        .upload-form input[type="text"],
-        .upload-form select,
-        .upload-form input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 1rem;
-            border: 1px solid #f48fb1;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-            transition: border-color 0.3s ease;
-        }
+.logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
 
-        .upload-form input[type="text"]:focus,
-        .upload-form select:focus {
-            border-color: #c2185b;
-            outline: none;
-        }
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-        .upload-form input[type="file"] {
-            padding: 5px;
-        }
+.upload-form {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    max-width: 500px;
+    width: 100%;
+    animation: fadeIn 0.8s ease-in-out;
+}
 
-        .upload-form button {
-            background: #c2185b;
-            color: #fff;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.3s ease;
-            width: 100%;
-        }
+.upload-form h2 {
+    color: #be185d;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
 
-        .upload-form button:hover {
-            background: #880e4f;
-            transform: translateY(-2px);
-        }
+.upload-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #555;
+    font-weight: 400;
+}
 
-        .circular-container {
-            max-width: 900px;
-            width: 100%;
-            animation: fadeIn 0.8s ease-in-out;
-        }
+.upload-form input[type="text"],
+.upload-form select,
+.upload-form input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 1rem;
+    border: 1px solid #f48fb1;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.3s ease;
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+.upload-form input[type="text"]:focus,
+.upload-form select:focus {
+    border-color: #be185d;
+    outline: none;
+}
 
-        .circular {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(12px);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
+.upload-form input[type="file"] {
+    padding: 5px;
+}
 
-        .circular:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(194, 24, 91, 0.2);
-        }
+.upload-form button {
+    background: #be185d;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+    width: 100%;
+}
 
-        .circular h3 {
-            margin: 0;
-            color: #c2185b;
-            font-size: 1.8rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
-        }
+.upload-form button:hover {
+    background: #880e4f;
+    transform: translateY(-2px);
+}
 
-        .circular h3:hover {
-            color: #880e4f;
-        }
+.circular-container {
+    max-width: 900px;
+    width: 100%;
+    animation: fadeIn 0.8s ease-in-out;
+}
 
-        .circular small {
-            color: #666;
-            font-size: 1rem;
-            font-weight: 300;
-            margin-top: 0.5rem;
-            display: block;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
-        }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        .circular small:hover {
-            color: #c2185b;
-        }
+.circular {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
 
-        .circular img {
-            max-width: 100%;
-            margin-top: 1rem;
-            border-radius: 10px;
-            display: block;
-            transition: transform 0.4s ease, opacity 0.4s ease;
-        }
+.circular:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(194, 24, 91, 0.2);
+}
 
-        .circular img:hover {
-            transform: scale(1.03);
-            opacity: 0.9;
-        }
+.circular h3 {
+    margin: 0;
+    color: #be185d;
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
 
-        .no-circulars {
-            text-align: center;
-            color: #666;
-            font-size: 1.2rem;
-            margin-top: 2rem;
-            font-weight: 400;
-        }
+.circular h3:hover {
+    color: #880e4f;
+}
 
-        .messages {
-            max-width: 500px;
-            width: 100%;
-            margin-bottom: 1rem;
-        }
+.circular small {
+    color: #666;
+    font-size: 1rem;
+    font-weight: 300;
+    margin-top: 0.5rem;
+    display: block;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
 
-        .messages .success {
-            background: #f8bbd0;
-            color: #c2185b;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
+.circular small:hover {
+    color: #be185d;
+}
 
-        .messages .error {
-            background: #ffcdd2;
-            color: #d32f2f;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
+.circular img {
+    max-width: 100%;
+    margin-top: 1rem;
+    border-radius: 10px;
+    display: block;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-                margin-bottom: 2rem;
-            }
+.circular img:hover {
+    transform: scale(1.03);
+    opacity: 0.9;
+}
 
-            .upload-form, .circular {
-                padding: 20px;
-            }
+.no-circulars {
+    text-align: center;
+    color: #666;
+    font-size: 1.2rem;
+    margin-top: 2rem;
+    font-weight: 400;
+}
 
-            .circular h3 {
-                font-size: 1.5rem;
-            }
+.messages {
+    max-width: 500px;
+    width: 100%;
+    margin-bottom: 1rem;
+}
 
-            .circular small {
-                font-size: 0.9rem;
-            }
+.messages .success {
+    background: #f8bbd0;
+    color: #be185d;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
 
-            .no-circulars {
-                font-size: 1.1rem;
-            }
-        }
+.messages .error {
+    background: #ffcdd2;
+    color: #d32f2f;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
 
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.6rem;
-                margin-bottom: 1.5rem;
-            }
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 0.8rem;
+        padding: 0.8rem;
+        margin: 0.5rem;
+    }
+    .header h1 {
+        font-size: 1.5rem;
+        line-height: 1.2;
+    }
+    .back-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+        width: fit-content;
+    }
+    .logo {
+        width: 40px;
+        height: 40px;
+    }
+    .content-wrapper {
+        padding: 0 10px;
+    }
+    .upload-form, .circular {
+        padding: 20px;
+    }
+    .upload-form h2, .circular h3 {
+        font-size: 1.5rem;
+    }
+    .circular small {
+        font-size: 0.9rem;
+    }
+    .no-circulars {
+        font-size: 1.1rem;
+    }
+    .messages {
+        margin: 0 0 1rem;
+    }
+}
 
-            .upload-form, .circular {
-                padding: 15px;
-            }
-
-            .circular h3 {
-                font-size: 1.3rem;
-            }
-
-            .circular small {
-                font-size: 0.8rem;
-            }
-
-            .no-circulars {
-                font-size: 1rem;
-            }
-        }
+@media (max-width: 480px) {
+    .header {
+        padding: 0.6rem;
+        gap: 0.5rem;
+    }
+    .header h1 {
+        font-size: 1.2rem;
+    }
+    .back-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+    .logo {
+        width: 35px;
+        height: 35px;
+    }
+    .content-wrapper {
+        padding: 0 5px;
+    }
+    .upload-form, .circular {
+        padding: 15px;
+    }
+    .upload-form h2, .circular h3 {
+        font-size: 1.3rem;
+    }
+    .circular small {
+        font-size: 0.8rem;
+    }
+    .no-circulars {
+        font-size: 1rem;
+    }
+    .upload-form input[type="text"],
+    .upload-form select,
+    .upload-form input[type="file"],
+    .upload-form button {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+    .messages {
+        margin: 0 0 1rem;
+    }
+}
     </style>
 </head>
 <body>
-    <h1>Teacher Circular Upload</h1>
+    <div id="app">
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='{% url 'teacher_dashboard' %}'">Back</button>
+            <h1>Teacher Circular Upload</h1>
+            <a href="{% url 'teacher_dashboard' %}">
+                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal SMS Logo" class="logo">
+            </a>
+        </div>
 
-    <div class="messages">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    </div>
-
-    <form class="upload-form" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <h2>Upload New Circular</h2>
-        <label for="title">Title</label>
-        <input type="text" id="title" name="title" required>
-        <label for="class">Class</label>
-        <select id="class" name="class" required>
-            <option value="" disabled selected>Select Class</option>
-            {% for class in classes %}
-                <option value="{{ class }}">{{ class }}</option>
-            {% endfor %}
-        </select>
-        <label for="section">Section</label>
-        <select id="section" name="section" required>
-            <option value="" disabled selected>Select Section</option>
-            {% for section in sections %}
-                <option value="{{ section }}">{{ section }}</option>
-            {% endfor %}
-        </select>
-        <label for="image">Upload Image</label>
-        <input type="file" id="image" name="image" accept="image/*" required>
-        <button type="submit">Upload Circular</button>
-    </form>
-
-    <div class="circular-container">
-        {% for circular in circulars %}
-            <div class="circular">
-                <h3>{{ circular.title }}</h3>
-                <small>Posted on: {{ circular.date }}</small>
-                <small>Target: {{ circular.target }}</small>
-                <img src="{{ circular.image_url }}" alt="Circular Image">
+        <div class="content-wrapper">
+            <div class="messages">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
             </div>
-        {% empty %}
-            <p class="no-circulars">No circulars available right now. Please check back later.</p>
-        {% endfor %}
+
+            <form class="upload-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h2>Upload New Circular</h2>
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" required>
+                <label for="class">Class</label>
+                <select id="class" name="class" required>
+                    <option value="" disabled selected>Select Class</option>
+                    {% for class in classes %}
+                        <option value="{{ class }}">{{ class }}</option>
+                    {% endfor %}
+                </select>
+                <label for="section">Section</label>
+                <select id="section" name="section" required>
+                    <option value="" disabled selected>Select Section</option>
+                    {% for section in sections %}
+                        <option value="{{ section }}">{{ section }}</option>
+                    {% endfor %}
+                </select>
+                <label for="image">Upload Image</label>
+                <input type="file" id="image" name="image" accept="image/*" required>
+                <button type="submit">Upload Circular</button>
+            </form>
+
+            <div class="circular-container">
+                {% for circular in circulars %}
+                    <div class="circular">
+                        <h3>{{ circular.title }}</h3>
+                        <small>Posted on: {{ circular.date }}</small>
+                        <small>Target: {{ circular.target }}</small>
+                        <img src="{{ circular.image_url }}" alt="Circular Image">
+                    </div>
+                {% empty %}
+                    <p class="no-circulars">No circulars available right now. Please check back later.</p>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Exam Mark Entry</title>
+    <title>Manavargal School Management System - Teacher Mark Entry</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -15,8 +15,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #e6edff 0%, #b3c8ff 50%, #e6edff 100%);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #fce4ec 100%);
             background-size: 200%;
             animation: gradient 15s ease infinite;
             min-height: 100vh;
@@ -32,7 +32,7 @@
         }
 
         .header {
-            background: linear-gradient(to right, #1e40af, #3b82f6);
+            background: linear-gradient(to right, #d81b60, #f06292);
             color: white;
             padding: 1rem;
             position: fixed;
@@ -41,7 +41,7 @@
             right: 0;
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-bottom: 3px solid #bfdbfe;
+            border-bottom: 3px solid #f8bbd0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -82,7 +82,7 @@
             height: 50px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #bfdbfe;
+            border: 2px solid #f8bbd0;
         }
 
         .container {
@@ -97,7 +97,7 @@
             padding: 1.5rem;
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            margin: 4.5rem auto 1.5rem;
+            margin-bottom: 1.5rem;
             animation: slideIn 0.6s ease-out;
         }
 
@@ -109,7 +109,7 @@
         .section h2 {
             font-size: 1.5rem;
             font-weight: 600;
-            color: #1e40af;
+            color: #d81b60;
             margin-bottom: 1rem;
         }
 
@@ -129,13 +129,13 @@
         }
 
         .alert-success {
-            background-color: #d1fae5;
-            color: #065f46;
+            background-color: #fce4ec;
+            color: #880e4f;
         }
 
         .alert-error {
-            background-color: #fee2e2;
-            color: #991b1b;
+            background-color: #fff1f2;
+            color: #831843;
         }
 
         .form-group {
@@ -146,13 +146,13 @@
             display: block;
             font-size: 0.9rem;
             font-weight: 500;
-            color: #1e40af;
+            color: #d81b60;
             margin-bottom: 0.5rem;
             transition: color 0.3s ease;
         }
 
         .form-group label:hover {
-            color: #2563eb;
+            color: #ad1457;
         }
 
         .form-group input,
@@ -160,7 +160,7 @@
             width: 100%;
             padding: 0.75rem;
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #d6e4ff, #e6f0fa) border-box;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #f8bbd0, #fce4ec) border-box;
             border-radius: 6px;
             font-size: 0.9rem;
             transition: border 0.3s ease, box-shadow 0.3s ease;
@@ -170,8 +170,8 @@
         .form-group select:focus {
             outline: none;
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #3b82f6, #2563eb) border-box;
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #f06292, #d81b60) border-box;
+            box-shadow: 0 0 8px rgba(240, 98, 146, 0.3);
         }
 
         .subject-row {
@@ -180,7 +180,7 @@
             margin-bottom: 1rem;
             padding: 0.75rem;
             border-radius: 6px;
-            background-color: #f8fafc;
+            background-color: #fdf2f8;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -219,12 +219,12 @@
         }
 
         .button-primary {
-            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            background: linear-gradient(90deg, #f06292, #f48fb1);
             color: white;
         }
 
         .button-primary:hover {
-            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            background: linear-gradient(90deg, #d81b60, #f06292);
         }
 
         .button-secondary {
@@ -237,30 +237,30 @@
         }
 
         .button-green {
-            background: linear-gradient(90deg, #10b981, #34d399);
+            background: linear-gradient(90deg, #f06292, #f48fb1);
             color: white;
         }
 
         .button-green:hover {
-            background: linear-gradient(90deg, #059669, #10b981);
+            background: linear-gradient(90deg, #d81b60, #f06292);
         }
 
         .button-purple {
-            background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+            background: linear-gradient(90deg, #f06292, #f48fb1);
             color: white;
         }
 
         .button-purple:hover {
-            background: linear-gradient(90deg, #7c3aed, #8b5cf6);
+            background: linear-gradient(90deg, #d81b60, #f06292);
         }
 
         .button-red {
-            background: linear-gradient(90deg, #ef4444, #f87171);
+            background: linear-gradient(90deg, #455a64, #607d8b);
             color: white;
         }
 
         .button-red:hover {
-            background: linear-gradient(90deg, #dc2626, #ef4444);
+            background: linear-gradient(90deg, #37474f, #455a64);
         }
 
         .nav-buttons {
@@ -273,10 +273,11 @@
         .nav-buttons span {
             font-size: 0.9rem;
             font-weight: 500;
+            color: #d81b60;
         }
 
         .nav-button {
-            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            background: linear-gradient(90deg, #f06292, #f48fb1);
             color: white;
             padding: 0.6rem 1.2rem;
             border: none;
@@ -290,9 +291,9 @@
         }
 
         .nav-button:hover {
-            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            background: linear-gradient(90deg, #d81b60, #f06292);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 12px rgba(240, 98, 146, 0.3);
         }
 
         .nav-button:active {
@@ -300,12 +301,13 @@
         }
 
         .logout-button {
-            background: linear-gradient(90deg, #ef4444, #f87171);
+            background: linear-gradient(90deg, #455a64, #607d8b);
+            color: white;
         }
 
         .logout-button:hover {
-            background: linear-gradient(90deg, #dc2626, #ef4444);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            background: linear-gradient(90deg, #37474f, #455a64);
+            box-shadow: 0 4px 12px rgba(69, 90, 100, 0.3);
         }
 
         .modal {
@@ -342,15 +344,15 @@
 
         .table th,
         .table td {
-            border: 1px solid #bfdbfe;
+            border: 1px solid #f8bbd0;
             padding: 0.75rem;
             text-align: left;
             font-size: 0.9rem;
         }
 
         .table th {
-            background-color: #dbeafe;
-            color: #1e40af;
+            background-color: #fce4ec;
+            color: #d81b60;
             font-weight: 600;
             position: sticky;
             top: 0;
@@ -362,23 +364,23 @@
         }
 
         .table tr:nth-child(even) {
-            background-color: #f8fafc;
+            background-color: #fdf2f8;
         }
 
         .table tr:hover {
-            background-color: #eff6ff;
+            background-color: #fff1f2;
         }
 
         .signature-pad {
-            border: 2px solid #bfdbfe;
+            border: 2px solid #f8bbd0;
             border-radius: 6px;
             margin-bottom: 1rem;
-            background-color: #f8fafc;
+            background-color: #fdf2f8;
             transition: border-color 0.3s ease;
         }
 
         .signature-pad:hover {
-            border-color: #3b82f6;
+            border-color: #f06292;
         }
 
         .class-section {
@@ -397,7 +399,7 @@
             width: 80px;
             height: 80px;
             border-radius: 8px;
-            border: 2px solid #bfdbfe;
+            border: 2px solid #f8bbd0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             object-fit: cover;
         }
@@ -408,7 +410,7 @@
 
         .student-info-header h3 {
             margin: 0 0 0.5rem 0;
-            color: #1e40af;
+            color: #d81b60;
             font-size: 1.25rem;
         }
 
@@ -436,7 +438,6 @@
 
             .section {
                 padding: 1rem;
-                margin-top: 0;
             }
 
             .section h2 {
@@ -596,11 +597,11 @@
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
     <div class="header">
-        <a href="{% url 'admin_page' %}" class="back-btn">
+        <a href="{% url 'teacher_dashboard' %}" class="back-btn">
             <i class="fas fa-arrow-left icon"></i> Back
         </a>
-        <h1><i class="fas fa-book-open icon"></i> Exam Mark Entry</h1>
-        <a href="{% url 'admin_page' %}">
+        <h1><i class="fas fa-book-open icon"></i> Teacher Mark Entry</h1>
+        <a href="{% url 'teacher_dashboard' %}">
             <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
         </a>
     </div>
@@ -610,7 +611,7 @@
             <span>Welcome, {{ teacher_name }}</span>
             <button id="showMarkEntry" class="nav-button">Mark Entry</button>
             <button id="showProgressCard" class="nav-button">Progress Card</button>
-            <a href="{% url 'admin_page' %}" class="nav-button logout-button">Back to Admin</a>
+            <a href="{% url 'teacher_dashboard' %}" class="nav-button logout-button">Back to Teacher Dashboard</a>
         </div>
     </div>
     </nav>

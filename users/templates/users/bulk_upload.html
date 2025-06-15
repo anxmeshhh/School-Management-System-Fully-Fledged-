@@ -8,100 +8,94 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            background: linear-gradient(to bottom, #e0f2fe, #bfdbfe);
-        }
-        .container {
-            max-width: 1400px;
-            display: flex;
-            gap: 1.5rem;
-        }
-        .sidebar {
-            width: 250px;
-            background-color: #1e40af;
-            color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            height: fit-content;
-        }
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem;
-            color: white;
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
-            transition: background-color 0.2s ease;
-        }
-        .sidebar a:hover {
-            background-color: #3b82f6;
-        }
-        .main-content {
-            flex: 1;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-        }
-        .header {
-            background: linear-gradient(to right, #1e40af, #3b82f6);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-        .preview-table {
-            max-height: 500px;
-            overflow-y: auto;
-            border-radius: 8px;
-            border: 1px solid #bfdbfe;
-        }
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background-color: white;
-        }
-        th, td {
-            border: 1px solid #bfdbfe;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #dbeafe;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            font-weight: 600;
-            color: #1e40af;
-        }
-        td {
-            color: #1f2937;
-        }
-        .error {
-            color: #dc2626;
-        }
-        .highlight {
-            background-color: #eff6ff;
-        }
-        .logo-button {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-            padding: 0;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #e3f2fd 100%);
+            background-size: 200%;
+            animation: gradient 20s ease infinite;
+            min-height: 100vh;
+            padding: 80px 20px 40px 20px;
+            position: relative;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            border-radius: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            flex-grow: 1;
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
+            color: white;
+            text-decoration: none;
         }
 
         .logo-img {
-            height: 48px;
-            width: 48px;
-            object-fit: cover; /* fills the container completely */
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            border: none; /* remove border if not needed */
-            display: block; /* removes small whitespace under image */
+            object-fit: cover;
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(14px);
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, rgba(21, 101, 192, 0.5), rgba(255, 255, 255, 0.3)) 1;
+            padding: 45px;
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(21, 101, 192, 0.15);
+            margin-bottom: 60px;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        .main-content:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
         }
 
         .form-container {
@@ -110,46 +104,172 @@
             border-radius: 8px;
             border: 1px solid #bfdbfe;
         }
+
+        .preview-table {
+            max-height: 500px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid #bfdbfe;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background-color: white;
+        }
+
+        th, td {
+            border: 1px solid #bfdbfe;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #dbeafe;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        td {
+            color: #1f2937;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        .highlight {
+            background-color: #eff6ff;
+        }
+
         .button {
             transition: background-color 0.2s ease-in-out, transform 0.1s ease;
         }
+
         .button:hover {
             transform: translateY(-1px);
         }
+
         .icon {
             margin-right: 8px;
+        }
+
+        .alert-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .alert-message.success {
+            background-color: #e0f7fa;
+            color: #006064;
+            border-left: 4px solid #00acc1;
+        }
+
+        .alert-message.error {
+            background-color: #e1f5fe;
+            color: #01579b;
+            border-left: 4px solid #0288d1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
+
+            .header {
+                padding: 0.8rem 1rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+                margin: 0;
+                flex-grow: 1;
+                text-align: center;
+            }
+
+            .back-btn {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .logo-img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .main-content {
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
+            .header {
+                padding: 0.6rem 0.8rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .logo-img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container mx-auto p-6">
-        <div class="sidebar">
-            <div class="mb-6">
-                <a href="{% url 'admin_page' %}" class="logo-button">
-                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
-                    <span>Manavargal School</span>
-                </a>
-            </div>
-            <a href="{% url 'admin_page' %}"><i class="fas fa-tachometer-alt icon"></i> Dashboard</a>
-            <a href="{% url 'admin_page' %}"><i class="fas fa-users icon"></i> Manage Students</a>
-            <a href="{% url 'bulk_upload' %}"><i class="fas fa-upload icon"></i> Bulk Upload</a>
-            <a href="{% url 'admin_page' %}"><i class="fas fa-cog icon"></i> Settings</a>
-        </div>
-
+    <div class="header">
+        <a href="{% url 'admin_page' %}" class="back-btn"><i class="fas fa-arrow-left icon"></i> Back</a>
+        <h1>Manavargal School Management System - Bulk Upload</h1>
+        <a href="{% url 'admin_page' %}">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+        </a>
+    </div>
+    <div class="container mx-auto">
         <div class="main-content">
-            <div class="header">
-                <div class="flex items-center justify-between">
-                    <h1 class="text-3xl font-bold">Manavargal School Management System - Bulk Upload</h1>
-                    <a href="{% url 'admin_page' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 button">
-                        <i class="fas fa-arrow-left icon"></i> Back to Admin
-                    </a>
-                </div>
-            </div>
-
             {% if messages %}
                 <div class="mb-4">
                     {% for message in messages %}
-                        <div class="p-4 mb-3 text-white rounded-lg flex items-center {% if message.tags == 'error' %}bg-red-500{% else %}bg-green-500{% endif %}">
+                        <div class="alert-message {% if message.tags == 'error' %}error{% else %}success{% endif %} flex items-center">
                             <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
                             {{ message }}
                         </div>
@@ -182,9 +302,6 @@
                         <p><strong>Total Columns:</strong> {{ preview_columns|length }}</p>
                     </div>
 
-                    <h2 class="text-xl font-semibold mb-4 text-blue-800">
-                        <i class="fas fa-table icon"></i> Data Preview (First 50 rows shown)
-                    </h2>
                     <div class="preview-table">
                         <table>
                             <thead>

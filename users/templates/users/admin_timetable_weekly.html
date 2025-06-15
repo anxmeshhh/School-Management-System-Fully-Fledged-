@@ -16,27 +16,73 @@
         body {
             background-color: #f4f7fa;
             color: #333;
+            padding: 80px 20px 40px 20px;
+            position: relative;
         }
         .header {
-            background-color: #007BFF;
-            color: white;
-            padding: 15px 20px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+            flex-wrap: wrap;
+            position: fixed;
+            top: 0;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
         }
-        .header img {
-            max-width: 50px;
-            margin-right: 15px;
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .header h1 {
-            font-size: 24px;
+        .welcome-header {
+            color: white;
+            font-size: 2.5rem;
             font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease, transform 0.3s ease;
+            flex-grow: 1;
+            margin: 0;
+        }
+        .welcome-header:hover {
+            color: #e3f2fd;
+            transform: scale(1.02);
+        }
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+        .back-button:hover {
+            background: linear-gradient(90deg, #1565c0, #1976d2);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+        .logo-container {
+            z-index: 1000;
+        }
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
         }
         .container {
             max-width: 1200px;
-            margin: 20px auto;
+            margin: 100px auto 20px;
             padding: 0 15px;
         }
         h2 {
@@ -137,11 +183,28 @@
             color: #155724;
         }
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 20px;
+            .header {
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+                align-items: center;
+                justify-content: space-between;
+                left: 10px;
+                right: 10px;
             }
-            .header img {
-                max-width: 40px;
+            .welcome-header {
+                font-size: 1.8rem;
+                margin: 0;
+                flex-grow: 1;
+                text-align: center;
+            }
+            .back-button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            .logo {
+                width: 40px;
+                height: 40px;
             }
             .form-group {
                 flex-direction: column;
@@ -159,6 +222,34 @@
             input, select {
                 font-size: 12px;
             }
+            .container {
+                margin-top: 90px;
+            }
+        }
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.6rem 0.8rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
+                left: 5px;
+                right: 5px;
+            }
+            .welcome-header {
+                font-size: 1.4rem;
+            }
+            .back-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
+            .logo {
+                width: 35px;
+                height: 35px;
+            }
+            .container {
+                margin-top: 80px;
+            }
         }
     </style>
     <script>
@@ -166,28 +257,26 @@
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = window.location.href;
-            
-            // Add CSRF token
             const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]').cloneNode(true);
             form.appendChild(csrfInput);
-            
-            // Add action
             const actionInput = document.createElement('input');
             actionInput.type = 'hidden';
             actionInput.name = 'action';
             actionInput.value = action;
             form.appendChild(actionInput);
-            
             document.body.appendChild(form);
             form.submit();
         }
     </script>
 </head>
 <body>
-    <header class="header">
-        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal SMS Logo">
-        <h1>MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
-    </header>
+    <div class="header">
+        <a href="{% url 'admin_timetable' %}" class="back-button">Back</a>
+        <h1 class="welcome-header">MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
+        <div class="logo-container">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal SMS Logo" class="logo">
+        </div>
+    </div>
     <div class="container">
         <h2>Create Weekly Timetable</h2>
         {% if messages %}
@@ -200,7 +289,7 @@
             <div class="form-group">
                 <label for="class">Class:</label>
                 <select id="class" name="class" required>
-                    <option value="">Select Class</option>
+                    <option value="" disabled selected>Select a class</option>
                     {% for cls in classes %}
                     <option value="{{ cls }}">{{ cls }}</option>
                     {% endfor %}
@@ -230,15 +319,15 @@
                     <td>Period {{ period }}</td>
                     {% for day in days %}
                     <td>
-                        <input type="text" name="subject_{{ day }}_{{ period }}" placeholder="Subject">
-                        <select name="teacher_{{ day }}_{{ period }}">
-                            <option value="">Select Teacher</option>
+                        <input type="text" name="subject_{{ day }}_{{ period }}" placeholder="Subject" required>
+                        <select name="teacher_{{ day }}_{{ period }}" required>
+                            <option value="" disabled selected>Select a teacher</option>
                             {% for teacher in teachers %}
                             <option value="{{ teacher.id }}">{{ teacher.name }} ({{ teacher.subject }})</option>
                             {% endfor %}
                         </select>
-                        <input type="time" name="start_time_{{ day }}_{{ period }}">
-                        <input type="time" name="end_time_{{ day }}_{{ period }}">
+                        <input type="time" name="start_time_{{ day }}_{{ period }}" required>
+                        <input type="time" name="end_time_{{ day }}_{{ period }}" required>
                         <input type="text" name="room_{{ day }}_{{ period }}" placeholder="Room">
                     </td>
                     {% endfor %}

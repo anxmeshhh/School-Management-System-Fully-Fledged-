@@ -382,6 +382,50 @@
                             {% endfor %}
                         </select>
                     </div>
+                    <div>
+                        <label><i class="fas fa-language text-blue-500"></i> Mother Tongue</label>
+                        <input type="text" name="mother_tongue" value="{{ mother_tongue|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-users text-blue-500"></i> Caste</label>
+                        <input type="text" name="caste" value="{{ caste|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-pray text-blue-500"></i> Religion</label>
+                        <input type="text" name="religion" value="{{ religion|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-map-marker-alt text-blue-500"></i> Place of Birth</label>
+                        <input type="text" name="place_of_birth" value="{{ place_of_birth|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-id-card text-blue-500"></i> Aadhaar Number</label>
+                        <input type="text" name="aadhaar" value="{{ aadhaar|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-wheelchair text-blue-500"></i> Disability</label>
+                        <input type="text" name="disability" value="{{ disability|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-fingerprint text-blue-500"></i> Identification Mark 1</label>
+                        <input type="text" name="id_mark1" value="{{ id_mark1|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-fingerprint text-blue-500"></i> Identification Mark 2</label>
+                        <input type="text" name="id_mark2" value="{{ id_mark2|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-chalkboard text-blue-500"></i> Admission Class</label>
+                        <input type="text" name="admission_class" value="{{ admission_class|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-calendar-alt text-blue-500"></i> Admission Year</label>
+                        <input type="text" name="admission_year" value="{{ admission_year|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-calendar-check text-blue-500"></i> Admission Date</label>
+                        <input type="date" name="admission_date" value="{{ admission_date|default:'' }}">
+                    </div>
                 </div>
             </div>
             <div class="section" style="animation-delay: 0.45s;">
@@ -402,12 +446,71 @@
                         <label><i class="fas fa-phone-alt text-blue-500"></i> Alternate Contact</label>
                         <input type="text" name="alt_contact" value="{{ alt_contact|default:'' }}">
                     </div>
+                    <div>
+                        <label><i class="fas fa-globe text-blue-500"></i> Country</label>
+                        <input type="text" name="country" value="{{ country|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-map text-blue-500"></i> State</label>
+                        <input type="text" name="state" value="{{ state|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-city text-blue-500"></i> City</label>
+                        <input type="text" name="city" value="{{ city|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-mail-bulk text-blue-500"></i> Pincode</label>
+                        <input type="text" name="pincode" value="{{ pincode|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-info-circle text-blue-500"></i> Status</label>
+                        <input type="text" name="status" value="{{ status|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-home text-blue-500"></i> House</label>
+                        <input type="text" name="house" value="{{ house|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-chalkboard-teacher text-blue-500"></i> Teacher Ward</label>
+                        <select name="teacher_ward">
+                            <option value="">Select Option</option>
+                            {% for option in teacher_ward_options %}
+                                <option value="{{ option }}" {% if teacher_ward == option %}selected{% endif %}>{{ option|capfirst }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label><i class="fas fa-school text-blue-500"></i> RTE</label>
+                        <select name="rte">
+                            <option value="">Select Option</option>
+                            {% for option in rte_options %}
+                                <option value="{{ option }}" {% if rte == option %}selected{% endif %}>{{ option|capfirst }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label><i class="fas fa-trophy text-blue-500"></i> Sports Quota</label>
+                        <select name="sports_quota">
+                            <option value="">Select Option</option>
+                            {% for option in sports_quota_options %}
+                                <option value="{{ option }}" {% if sports_quota == option %}selected{% endif %}>{{ option|capfirst }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label><i class="fas fa-school text-blue-500"></i> Previous School</label>
+                        <input type="text" name="prev_school" value="{{ prev_school|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-certificate text-blue-500"></i> Previous Board</label>
+                        <input type="text" name="prev_board" value="{{ prev_board|default:'' }}">
+                    </div>
                 </div>
             </div>
             <div class="section" style="animation-delay: 0.6s;">
                 <div class="subheading">
                     <span style="font-size: 1.5em;">👨‍👩‍👦</span>
-                    <h3>Parent Information</h3>
+                    <h3>Family Information</h3>
                 </div>
                 <div class="grid">
                     <div>
@@ -415,16 +518,105 @@
                         <input type="text" name="father_name" value="{{ father_name|default:'' }}">
                     </div>
                     <div>
-                        <label><i class="fas fa-phone text-blue-500"></i> Father's Contact</label>
-                        <input type="text" name="father_contact" value="{{ father_contact|default:'' }}">
+                        <label><i class="fas fa-font text-blue-500"></i> Father's Name (Tamil)</label>
+                        <input type="text" name="father_name_tamil" value="{{ father_name_tamil|default:'' }}">
                     </div>
                     <div>
                         <label><i class="fas fa-user text-blue-500"></i> Mother's Name</label>
                         <input type="text" name="mother_name" value="{{ mother_name|default:'' }}">
                     </div>
                     <div>
+                        <label><i class="fas fa-font text-blue-500"></i> Mother's Name (Tamil)</label>
+                        <input type="text" name="mother_name_tamil" value="{{ mother_name_tamil|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-phone text-blue-500"></i> Father's Contact</label>
+                        <input type="text" name="father_contact" value="{{ father_contact|default:'' }}">
+                    </div>
+                    <div>
                         <label><i class="fas fa-phone text-blue-500"></i> Mother's Contact</label>
                         <input type="text" name="mother_contact" value="{{ mother_contact|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-envelope text-blue-500"></i> Father's Email</label>
+                        <input type="email" name="father_email" value="{{ father_email|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-envelope text-blue-500"></i> Mother's Email</label>
+                        <input type="email" name="mother_email" value="{{ mother_email|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-graduation-cap text-blue-500"></i> Father's Qualification</label>
+                        <input type="text" name="father_qualification" value="{{ father_qualification|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-graduation-cap text-blue-500"></i> Mother's Qualification</label>
+                        <input type="text" name="mother_qualification" value="{{ mother_qualification|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-briefcase text-blue-500"></i> Father's Occupation</label>
+                        <input type="text" name="father_occupation" value="{{ father_occupation|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-briefcase text-blue-500"></i> Mother's Occupation</label>
+                        <input type="text" name="mother_occupation" value="{{ mother_occupation|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-money-bill text-blue-500"></i> Father's Income</label>
+                        <input type="text" name="father_income" value="{{ father_income|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-money-bill text-blue-500"></i> Mother's Income</label>
+                        <input type="text" name="mother_income" value="{{ mother_income|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-user-shield text-blue-500"></i> Guardian's Name</label>
+                        <input type="text" name="guardian_name" value="{{ guardian_name|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-phone text-blue-500"></i> Guardian's Contact</label>
+                        <input type="text" name="guardian_contact" value="{{ guardian_contact|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-envelope text-blue-500"></i> Guardian's Email</label>
+                        <input type="email" name="guardian_email" value="{{ guardian_email|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-home text-blue-500"></i> Child Living With</label>
+                        <input type="text" name="child_living" value="{{ child_living|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-gavel text-blue-500"></i> Rights on Child</label>
+                        <input type="text" name="rights_on_child" value="{{ rights_on_child|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-tint text-blue-500"></i> Medical Blood Group</label>
+                        <select name="med_blood_group">
+                            <option value="">Select Blood Group</option>
+                            {% for option in blood_group_options %}
+                                <option value="{{ option }}" {% if med_blood_group == option %}selected{% endif %}>{{ option }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label><i class="fas fa-stethoscope text-blue-500"></i> Diseases</label>
+                        <textarea name="diseases" rows="4">{{ diseases|default:'' }}</textarea>
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label><i class="fas fa-allergies text-blue-500"></i> Allergies</label>
+                        <textarea name="allergies" rows="4">{{ allergies|default:'' }}</textarea>
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label><i class="fas fa-prescription-bottle text-blue-500"></i> Medicines</label>
+                        <textarea name="medicines" rows="4">{{ medicines|default:'' }}</textarea>
+                    </div>
+                    <div>
+                        <label><i class="fas fa-hospital text-blue-500"></i> Hospital</label>
+                        <input type="text" name="hospital" value="{{ hospital|default:'' }}">
+                    </div>
+                    <div>
+                        <label><i class="fas fa-user-md text-blue-500"></i> Doctor</label>
+                        <input type="text" name="doctor" value="{{ doctor|default:'' }}">
                     </div>
                 </div>
             </div>
@@ -442,9 +634,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             {% for field, value in request.POST.items %}
                 {% if value %}
-                    const {{ field }}Field = document.querySelector('[name="{{ field }}"]');
-                    if ({{ field }}Field && {{ field }}Field.tagName === 'SELECT') {
-                        {{ field }}Field.value = '{{ value }}';
+                    const field = document.querySelector('[name="{{ field }}"]');
+                    if (field && field.tagName === 'SELECT') {
+                        field.value = '{{ value }}';
                     }
                 {% endif %}
             {% endfor %}

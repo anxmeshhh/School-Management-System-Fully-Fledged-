@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Circular Upload</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -13,14 +15,14 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #e3f2fd 100%);
             background-size: 200%;
             animation: gradient 20s ease infinite;
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            padding: 40px;
+            padding: 80px 20px 40px 20px;
             position: relative;
         }
 
@@ -30,23 +32,48 @@
             100% { background-position: 0% 50%; }
         }
 
-        header {
-            padding: 1.5rem;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            border-radius: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
             z-index: 10;
-            text-align: right;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            flex-grow: 1;
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
+            color: white;
+            text-decoration: none;
         }
 
         .logo {
+            width: 50px;
             height: 50px;
             border-radius: 50%;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .logo:hover {
-            transform: rotate(360deg);
-            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.3);
+            object-fit: cover;
         }
 
         .container {
@@ -54,54 +81,6 @@
             width: 100%;
             margin: 0 auto;
             animation: fadeIn 0.5s ease-out;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        .header h1 {
-            font-size: 38px;
-            font-weight: 700;
-            color: #1565c0;
-            letter-spacing: 2px;
-            margin-bottom: 12px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.08);
-            animation: slideInLeft 0.5s ease-out;
-        }
-
-        .header p {
-            font-size: 20px;
-            font-weight: 400;
-            color: #1e3a8a;
-            letter-spacing: 1px;
-            animation: fadeInUp 0.7s ease-out;
-        }
-
-        .header-buttons {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .back-btn {
-            padding: 12px 24px;
-            background: linear-gradient(90deg, #1976d2, #42a5f5);
-            color: white;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.95em;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .back-btn:hover {
-            background: linear-gradient(90deg, #1565c0, #1976d2);
-            transform: translateY(-2px);
         }
 
         .upload-form {
@@ -303,20 +282,22 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 15px;
+                padding: 70px 10px 20px 10px;
             }
 
-            .container {
-                margin-top: 0;
+            .header {
+                padding: 0.8rem 1rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
             }
 
             .header h1 {
-                font-size: 30px;
-                letter-spacing: 1px;
-            }
-
-            .header p {
-                font-size: 18px;
+                font-size: 1.8rem;
+                margin: 0;
+                flex-grow: 1;
+                text-align: center;
             }
 
             .upload-form {
@@ -353,19 +334,32 @@
                 font-size: 13px;
             }
 
+            .back-btn {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
             .logo {
+                width: 40px;
                 height: 40px;
             }
         }
 
         @media (max-width: 480px) {
-            .header h1 {
-                font-size: 26px;
-                letter-spacing: 1px;
+            body {
+                padding: 60px 5px 15px 5px;
             }
 
-            .header p {
-                font-size: 16px;
+            .header {
+                padding: 0.6rem 0.8rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
             }
 
             .upload-form h2,
@@ -386,9 +380,14 @@
                 font-size: 22px;
             }
 
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
+
             .logo {
+                width: 35px;
                 height: 35px;
-                padding: 1rem;
             }
         }
     </style>
@@ -405,21 +404,15 @@
     </script>
 </head>
 <body>
-    <header>
+    <div class="header">
+        <a href="{% url 'admin_page' %}" class="back-btn">Back</a>
+        <h1>📄 Upload Circulars</h1>
         <a href="{% url 'admin_page' %}">
             <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MSMS Logo" class="logo">
         </a>
-    </header>
+    </div>
 
     <div class="container">
-        <div class="header">
-            <h1>Upload Circulars</h1>
-            <p>Share important updates with the school community</p>
-            <div class="header-buttons">
-                <a href="{% url 'admin_page' %}" class="back-btn">Back to Dashboard</a>
-            </div>
-        </div>
-
         <div class="upload-form">
             <h2>Upload New Circular</h2>
             <form method="POST" enctype="multipart/form-data">

@@ -24,6 +24,14 @@ urlpatterns = [
     path('get_students/', views.get_students, name='get_students'),
     path('get_subjects/', views.get_subjects, name='get_subjects'),
 
+    path('teacher_mark_entry/', views.teacher_mark_entry, name='teacher_mark_entry'),
+    path('teacher_save_marks/', views.teacher_save_marks, name='teacher_save_marks'),
+    path('teacher_add_subject/', views.teacher_add_subject, name='teacher_add_subject'),
+    path('teacher_delete_subject/', views.teacher_delete_subject, name='teacher_delete_subject'),
+    path('teacher_progress_card/', views.teacher_progress_card, name='teacher_progress_card'),
+    path('teacher_get_students/', views.teacher_get_students, name='teacher_get_students'),
+    path('teacher_get_subjects/', views.teacher_get_subjects, name='teacher_get_subjects'),
+
     path('homework/', views.homework_view, name='homework'),
     path('study_materials/', views.study_materials, name='study_materials'),
     
@@ -45,6 +53,7 @@ urlpatterns = [
     path('media/<path:file_path>', views.serve_pdf, name='serve_pdf'),
     path('admin_homework_panel/', views.admin_homework_panel, name='admin_homework_panel'),
     path('teacher_homework_panel/', views.teacher_homework_panel, name='teacher_homework_panel'),
+    path('teacher_accept_portal/', views.teacher_accept_portal, name='teacher_accept_portal'),
 
     path('admin_circular_upload/', views.admin_circular_upload, name='admin_circular_upload'),
     path('student_circular/', views.student_circular, name='student_circular'),
@@ -100,14 +109,14 @@ urlpatterns = [
    
     path('teacher_portal/', views.teacher_portal, name='teacher_portal'),
     path('mark_attendance/', views.mark_attendance, name='mark_attendance'),
-    path('generate_attendance_pdf/', views.generate_attendance_pdf, name='generate_attendance_pdf'),
+    
     path('student_portal/', views.student_portal, name='student_portal'),
     path('admin_attendance/', views.admin_attendance_portal, name='admin_attendance_portal'),
     path('admin_mark_attendance/', views.admin_mark_attendance, name='admin_mark_attendance'),
     path('admin_generate_attendance_pdf/', views.admin_generate_attendance_pdf, name='admin_generate_attendance_pdf'),
 
 
-   path('admin_timetable/', views.admin_timetable_view, name='admin_timetable'),
+    path('admin_timetable/', views.admin_timetable_view, name='admin_timetable'),
     path('admin_timetable/add/', views.admin_timetable_add, name='admin_timetable_add'),
     path('admin_timetable/edit/<int:id>/', views.admin_timetable_edit, name='admin_timetable_edit'),
     path('admin_timetable/delete/<int:id>/', views.admin_timetable_delete, name='admin_timetable_delete'),
