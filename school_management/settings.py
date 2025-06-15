@@ -33,6 +33,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    '178.16.137.178',
 
     'manavargalsms.up.railway.app',
     'manavargalsms.com',
@@ -156,7 +157,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CSRF_TRUSTED_ORIGINS = [
     'https://manavargalsms.up.railway.app',  # Railway app URL
     'https://www.manavargalsms.com',         # Your domain with www
-    'https://manavargalsms.com',             # Your domain without www
+    'https://manavargalsms.com',            # Your domain without www
+    'http://178.16.137.178:8000',
 ]
 
 
