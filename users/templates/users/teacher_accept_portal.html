@@ -265,7 +265,7 @@
     <div id="app">
         <div class="header">
             <button class="back-btn" onclick="window.location.href='{% url 'teacher_dashboard' %}'">Back</button>
-            <h1>Teacher Portal</h1>
+            <h1>Teacher Accept Portal</h1>
             <a href="{% url 'teacher_dashboard' %}">
                 <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo" class="logo">
             </a>
@@ -283,23 +283,23 @@
                 <div class="leave-cards">
                     {% for request in leave_requests %}
                     <div class="leave-card">
-                        <p><strong>Student Name:</strong> {{ request.student_name }}</p>
-                        <p><strong>Reg Number:</strong> {{ request.reg_number }}</p>
-                        <p><strong>Class:</strong> {{ request.class_number }}</p> 
-                        <p><strong>Leave Reason:</strong> {{ request.leave_reason }}</p>
-                        <p><strong>Start Date:</strong> {{ request.leave_start_date }}</p> 
-                        <p><strong>End Date:</strong> {{ request.leave_end_date }}</p>
-                        <p><strong>Duration:</strong> {{ request.leave_duration }}</p>
-                        <p><strong>Status:</strong> {{ request.status }}</p>
-                        {% if request.status == 'Pending' %}
-                            <div class="action-buttons">
-                                <form method="POST" action="{% url 'teacher_accept_portal' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="leave_id" value="{{ request.id }}">
-                                    <button type="submit" name="action" value="approve" class="submit-btn">Approve</button>
-                                    <button type="submit" name="action" value="reject" class="remove-btn">Reject</button>
-                                </form>
-                            </div>
+                        <p><strong>Student Name:</strong> {{ request.1 }}</p> <!-- student_name -->
+                        <p><strong>Reg Number:</strong> {{ request.2 }}</p> <!-- reg_number -->
+                        <p><strong>Class:</strong> {{ request.3 }}</p> <!-- class_number -->
+                        <p><strong>Leave Reason:</strong> {{ request.4 }}</p> <!-- leave_reason -->
+                        <p><strong>Start Date:</strong> {{ request.5 }}</p> <!-- leave_start_date -->
+                        <p><strong>End Date:</strong> {{ request.6 }}</p> <!-- leave_end_date -->
+                        <p><strong>Duration:</strong> {{ request.7 }}</p> <!-- leave_duration -->
+                        <p><strong>Status:</strong> {{ request.8 }}</p> <!-- status -->
+                        {% if request.8 == 'Pending' %}
+                        <div class="action-buttons">
+                            <form method="POST" action="{% url 'teacher_accept_portal' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="leave_id" value="{{ request.0 }}">
+                                <button type="submit" name="action" value="approve" class="submit-btn">Approve</button>
+                                <button type="submit" name="action" value="reject" class="remove-btn">Reject</button>
+                            </form>
+                        </div>
                         {% endif %}
                     </div>
                     {% empty %}
