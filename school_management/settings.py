@@ -35,7 +35,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '178.16.137.178',
 
-    'manavargalsms.up.railway.app',
+    
     'manavargalsms.com',
     'www.manavargalsms.com',  # Add this line to allow www.manavargalsms.com
 ]
@@ -155,7 +155,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CSRF_TRUSTED_ORIGINS = [
-    'https://manavargalsms.up.railway.app',  # Railway app URL
+      # Railway app URL
     'https://www.manavargalsms.com',         # Your domain with www
     'https://manavargalsms.com',            # Your domain without www
     'http://178.16.137.178:8000',
