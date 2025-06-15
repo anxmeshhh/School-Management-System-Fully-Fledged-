@@ -1482,7 +1482,7 @@ def teacher_accept_portal(request):
                 new_status = 'Rejected'
             else:
                 messages.error(request, 'Invalid action')
-                return redirect('teacher_accept_portal')  # Redirect back to the portal if action is invalid
+                return redirect('admin_accept_portal')  # Redirect back to the portal if action is invalid
 
             with connection.cursor() as cursor:
                 # Update the leave request status
@@ -1496,7 +1496,7 @@ def teacher_accept_portal(request):
         else:
             messages.error(request, 'Leave ID or action missing.')
 
-        return redirect('teacher_accept_portal')  # Redirect back to the leave requests page
+        return redirect('admin_accept_portal')  # Redirect back to the leave requests page
 
     # Fetch leave requests to display on the page
     with connection.cursor() as cursor:
@@ -1507,7 +1507,11 @@ def teacher_accept_portal(request):
         """)
         leave_requests = cursor.fetchall()
 
-    return render(request, 'users/teacher_accept_portal.html', {'leave_requests': leave_requests})
+    return render(request, 'users/admin_accept_portal.html', {'leave_requests': leave_requests})
+
+
+
+
 
 
 
