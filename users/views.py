@@ -4205,9 +4205,9 @@ import requests
 import json
 
 def teacher_portal(request):
-    if not request.session.get('admin_id'):
+    if not request.session.get('teacher_id'):
         messages.error(request, 'Please log in to access this page.')
-        return redirect('admin_login')
+        return redirect('teacher_login')
 
     today_date = datetime.date.today().strftime('%Y-%m-%d')
     selected_date = request.GET.get('date', today_date)
@@ -4265,9 +4265,9 @@ def teacher_portal(request):
     })
 
 def mark_attendance(request):
-    if not request.session.get('admin_id'):
+    if not request.session.get('teacher_id'):
         messages.error(request, 'Please log in to access this page.')
-        return redirect('admin_login')
+        return redirect('teacher_login')
 
     if request.method == 'POST':
         selected_class = request.POST.get('class')
