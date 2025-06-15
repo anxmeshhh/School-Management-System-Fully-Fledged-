@@ -1507,7 +1507,7 @@ def teacher_accept_portal(request):
         """)
         leave_requests = cursor.fetchall()
 
-    return render(request, 'users/admin_accept_portal.html', {'leave_requests': leave_requests})
+    return render(request, 'users/teacher_accept_portal.html', {'leave_requests': leave_requests})
 
 
 
