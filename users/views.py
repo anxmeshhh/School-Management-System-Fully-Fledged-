@@ -4698,6 +4698,10 @@ def parent_signup(request):
     
     return render(request, 'users/parent_signup.html')
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import connection
+
 def parent_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -4713,7 +4717,7 @@ def parent_login(request):
             result = cursor.fetchone()
             if result and result[1] == password:
                 # Set session for authenticated user
-                request.session['parent_id'] = result[0]
+                request.session['user_id'] = result[0]
                 messages.success(request, 'Logged in successfully!')
                 return redirect('parent_dashboard')
             else:
@@ -4721,15 +4725,19 @@ def parent_login(request):
 
     return render(request, 'users/parent_login.html')
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import connection
+
 def parent_dashboard(request):
-    if 'parent_id' not in request.session:
+    if 'user_id' not in request.session:
         messages.error(request, 'Please log in to access the dashboard.')
         return redirect('parent_login')
 
     # Fetch username from users table
     admin_name = "Guest"
     with connection.cursor() as cursor:
-        cursor.execute("SELECT username FROM users WHERE id = %s", [request.session['parent_id']])
+        cursor.execute("SELECT username FROM users WHERE id = %s", [request.session['user_id']])
         result = cursor.fetchone()
         if result:
             admin_name = result[0]
@@ -6186,7 +6194,7 @@ def teacher_profile(request):
 
 def parent_profile_view(request):
     if "user_id" not in request.session:
-        return redirect("/login/")  # Redirect to login if not authenticated
+        return redirect("/parent_login/")  # Redirect to login if not authenticated
 
     user_id = request.session["user_id"]  # Get logged-in user's ID
 
