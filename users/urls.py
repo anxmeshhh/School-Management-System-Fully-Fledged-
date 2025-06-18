@@ -140,6 +140,9 @@ urlpatterns = [
     path('parent-student-timetable/', views.parent_student_timetable, name='parent_student_timetable'),
     path('student-progress-card/', views.student_progress_card, name='student_progress_card'),
     path('parent-student-progress-card/', views.parent_student_progress_card, name='parent_student_progress_card'),
+    path('qr_scan/', views.render_qr_scan, name='qr_scan'),
+    path('scan_qr/', views.scan_qr_code, name='scan_qr_code'),
+    path('download_student_pdf/', views.download_student_pdf, name='download_student_pdf'),
 ]
 
 if settings.DEBUG:

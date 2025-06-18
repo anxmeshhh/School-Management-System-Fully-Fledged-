@@ -7012,3 +7012,492 @@ def parent_student_progress_card(request):
         'class_name': class_name,
         'section': section
     })
+
+
+    
+
+
+from django.shortcuts import render, redirect
+from django.http import JsonResponse, HttpResponse
+from django.db import connection
+from django.conf import settings
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
+import json
+import os
+from io import BytesIO
+
+def render_qr_scan(request):
+    if "admin_id" not in request.session:
+        return redirect("/admin_login/")
+    return render(request, 'users/qr_scan.html')
+
+def scan_qr_code(request):
+    if "admin_id" not in request.session:
+        return JsonResponse({"error": "Admin not authenticated."}, status=401)
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            qr_url = data.get('url', '')
+            
+            # Extract admission number from URL
+            admission_number = qr_url.split('/')[-2] if qr_url.endswith('/') else qr_url.split('/')[-1]
+            
+            # Remove any query parameters or fragments
+            admission_number = admission_number.split('?')[0].split('#')[0]
+
+            with connection.cursor() as cursor:
+                # Fetch student data with better error handling
+                cursor.execute("""
+                    SELECT 
+                        sp1.user_id, sp1.name, sp1.admission_number, sp1.class, sp1.section, 
+                        sp1.roll_number, sp1.emis, 
+                        sp2.gender, sp2.community, sp2.tamil_name, sp2.dob, 
+                        sp2.nationality, sp2.blood_group, sp2.mother_tongue, 
+                        sp2.caste, sp2.religion, sp2.place_of_birth, sp2.aadhaar, 
+                        sp2.disability, sp2.id_mark1, sp2.id_mark2, sp2.current_class, 
+                        sp2.admission_class, sp2.admission_year, sp2.admission_date,
+                        sp3.email, sp3.address, sp3.contact, sp3.alt_contact, 
+                        sp3.country, sp3.state, sp3.city, sp3.pincode, sp3.status, 
+                        sp3.house, sp3.teacher_ward, sp3.rte, sp3.sports_quota, 
+                        sp3.prev_school, sp3.prev_board,
+                        sp4.father_name, sp4.father_name_tamil, sp4.mother_name, 
+                        sp4.mother_name_tamil, sp4.father_contact, sp4.mother_contact, 
+                        sp4.father_email, sp4.mother_email, sp4.father_qualification, 
+                        sp4.mother_qualification, sp4.father_occupation, 
+                        sp4.mother_occupation, sp4.father_income, sp4.mother_income, 
+                        sp4.guardian_name, sp4.guardian_contact, sp4.guardian_email, 
+                        sp4.child_living, sp4.rights_on_child, sp4.med_blood_group, 
+                        sp4.diseases, sp4.allergies, sp4.medicines, sp4.hospital, 
+                        sp4.doctor
+                    FROM 
+                        student_page1 sp1
+                    LEFT JOIN 
+                        student_page2 sp2 ON sp1.user_id = sp2.user_id
+                    LEFT JOIN 
+                        student_page3 sp3 ON sp1.user_id = sp3.user_id
+                    LEFT JOIN 
+                        student_page4 sp4 ON sp1.user_id = sp4.user_id
+                    WHERE 
+                        sp1.admission_number = %s
+                """, [admission_number])
+                
+                student_data = cursor.fetchone()
+
+                if not student_data:
+                    return JsonResponse({"error": f"Student not found with admission number: {admission_number}"}, status=404)
+
+                user_id = student_data[0]
+                profile_picture = None
+                
+                # Fetch profile picture with better error handling
+                try:
+                    cursor.execute("SELECT image_path FROM profile_pics WHERE user_id = %s", [user_id])
+                    profile_picture_result = cursor.fetchone()
+                    if profile_picture_result and profile_picture_result[0]:
+                        # For HTML display, use MEDIA_URL; for PDF, use full path
+                        profile_picture_web = f"{settings.MEDIA_URL}{profile_picture_result[0]}"
+                        profile_picture_path = os.path.join(settings.MEDIA_ROOT, profile_picture_result[0])
+                    else:
+                        profile_picture_web = None
+                        profile_picture_path = None
+                except Exception as e:
+                    print(f"Error fetching profile picture: {str(e)}")
+                    profile_picture_web = None
+                    profile_picture_path = None
+
+                # Helper function to safely convert values
+                def safe_str(value):
+                    if value is None:
+                        return "N/A"
+                    return str(value)
+
+                response_data = {
+                    "user_id": user_id,
+                    "profile_picture": profile_picture_web,  # For HTML display
+                    "profile_picture_path": profile_picture_path,  # For PDF generation
+                    "name": safe_str(student_data[1]),
+                    "admission_number": safe_str(student_data[2]),
+                    "class": safe_str(student_data[3]),
+                    "section": safe_str(student_data[4]),
+                    "roll_number": safe_str(student_data[5]),
+                    "emis": safe_str(student_data[6]),
+                    "gender": safe_str(student_data[7]),
+                    "community": safe_str(student_data[8]),
+                    "tamil_name": safe_str(student_data[9]),
+                    "dob": safe_str(student_data[10]) if student_data[10] else "N/A",
+                    "nationality": safe_str(student_data[11]),
+                    "blood_group": safe_str(student_data[12]),
+                    "mother_tongue": safe_str(student_data[13]),
+                    "caste": safe_str(student_data[14]),
+                    "religion": safe_str(student_data[15]),
+                    "place_of_birth": safe_str(student_data[16]),
+                    "aadhaar": safe_str(student_data[17]),
+                    "disability": safe_str(student_data[18]),
+                    "id_mark1": safe_str(student_data[19]),
+                    "id_mark2": safe_str(student_data[20]),
+                    "current_class": safe_str(student_data[21]),
+                    "admission_class": safe_str(student_data[22]),
+                    "admission_year": safe_str(student_data[23]),
+                    "admission_date": safe_str(student_data[24]) if student_data[24] else "N/A",
+                    "email": safe_str(student_data[25]),
+                    "address": safe_str(student_data[26]),
+                    "contact": safe_str(student_data[27]),
+                    "alt_contact": safe_str(student_data[28]),
+                    "country": safe_str(student_data[29]),
+                    "state": safe_str(student_data[30]),
+                    "city": safe_str(student_data[31]),
+                    "pincode": safe_str(student_data[32]),
+                    "status": safe_str(student_data[33]),
+                    "house": safe_str(student_data[34]),
+                    "teacher_ward": safe_str(student_data[35]),
+                    "rte": safe_str(student_data[36]),
+                    "sports_quota": safe_str(student_data[37]),
+                    "prev_school": safe_str(student_data[38]),
+                    "prev_board": safe_str(student_data[39]),
+                    "father_name": safe_str(student_data[40]),
+                    "father_name_tamil": safe_str(student_data[41]),
+                    "mother_name": safe_str(student_data[42]),
+                    "mother_name_tamil": safe_str(student_data[43]),
+                    "father_contact": safe_str(student_data[44]),
+                    "mother_contact": safe_str(student_data[45]),
+                    "father_email": safe_str(student_data[46]),
+                    "mother_email": safe_str(student_data[47]),
+                    "father_qualification": safe_str(student_data[48]),
+                    "mother_qualification": safe_str(student_data[49]),
+                    "father_occupation": safe_str(student_data[50]),
+                    "mother_occupation": safe_str(student_data[51]),
+                    "father_income": safe_str(student_data[52]),
+                    "mother_income": safe_str(student_data[53]),
+                    "guardian_name": safe_str(student_data[54]),
+                    "guardian_contact": safe_str(student_data[55]),
+                    "guardian_email": safe_str(student_data[56]),
+                    "child_living": safe_str(student_data[57]),
+                    "rights_on_child": safe_str(student_data[58]),
+                    "med_blood_group": safe_str(student_data[59]),
+                    "diseases": safe_str(student_data[60]),
+                    "allergies": safe_str(student_data[61]),
+                    "medicines": safe_str(student_data[62]),
+                    "hospital": safe_str(student_data[63]),
+                    "doctor": safe_str(student_data[64])
+                }
+
+                # Store student data in session for PDF generation
+                request.session['student_data'] = response_data
+
+                return JsonResponse(response_data)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Error processing request: {str(e)}"}, status=500)
+    
+    return JsonResponse({"error": "POST request required with QR code URL."}, status=400)
+
+def download_student_pdf(request):
+    if "admin_id" not in request.session:
+        return JsonResponse({"error": "Admin not authenticated."}, status=401)
+    
+    if 'student_data' not in request.session:
+        return JsonResponse({"error": "No student data found. Please scan QR code first."}, status=400)
+    
+    try:
+        student_data = request.session['student_data']
+        
+        # Create PDF
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+        
+        # Container for the 'Flowable' objects
+        elements = []
+        
+        # Define styles
+        styles = getSampleStyleSheet()
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=18,
+            spaceAfter=30,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor('#0052cc')
+        )
+        
+        heading_style = ParagraphStyle(
+            'CustomHeading',
+            parent=styles['Heading2'],
+            fontSize=14,
+            spaceAfter=12,
+            spaceBefore=20,
+            textColor=colors.HexColor('#0052cc'),
+            backColor=colors.HexColor('#f0f8ff'),
+            borderPadding=8
+        )
+        
+        normal_style = ParagraphStyle(
+            'CustomNormal',
+            parent=styles['Normal'],
+            fontSize=10,
+            spaceAfter=6,
+            textColor=colors.black
+        )
+        
+        # Add title
+        title = Paragraph("Student Information Report", title_style)
+        elements.append(title)
+        
+        subtitle = Paragraph("Manavargal School Management System", normal_style)
+        elements.append(subtitle)
+        
+        from datetime import datetime
+        date_para = Paragraph(f"Generated on: {datetime.now().strftime('%B %d, %Y')}", normal_style)
+        elements.append(date_para)
+        elements.append(Spacer(1, 20))
+        
+        # Add profile picture if available
+        profile_picture = student_data.get('profile_picture_path')
+        if profile_picture and os.path.exists(profile_picture):
+            try:
+                img = Image(profile_picture, width=2*inch, height=2*inch)
+                img.hAlign = 'CENTER'
+                elements.append(img)
+                elements.append(Spacer(1, 20))
+            except:
+                pass
+        
+        # Basic Information Section
+        elements.append(Paragraph("Basic Information", heading_style))
+        basic_data = [
+            ['Name:', student_data.get('name', 'N/A')],
+            ['Admission Number:', student_data.get('admission_number', 'N/A')],
+            ['Class:', f"{student_data.get('class', 'N/A')}-{student_data.get('section', 'N/A')}"],
+            ['Roll Number:', student_data.get('roll_number', 'N/A')],
+            ['EMIS:', student_data.get('emis', 'N/A')],
+            ['Email:', student_data.get('email', 'N/A')]
+        ]
+        basic_table = Table(basic_data, colWidths=[2*inch, 4*inch])
+        basic_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#e6f0ff')),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#0052cc')),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cccccc')),
+            ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, colors.HexColor('#f9f9f9')])
+        ]))
+        elements.append(basic_table)
+        elements.append(Spacer(1, 15))
+        
+        # Personal Details Section
+        elements.append(Paragraph("Personal Details", heading_style))
+        personal_data = [
+            ['Gender:', student_data.get('gender', 'N/A')],
+            ['Date of Birth:', student_data.get('dob', 'N/A')],
+            ['Tamil Name:', student_data.get('tamil_name', 'N/A')],
+            ['Nationality:', student_data.get('nationality', 'N/A')],
+            ['Blood Group:', student_data.get('blood_group', 'N/A')],
+            ['Mother Tongue:', student_data.get('mother_tongue', 'N/A')],
+            ['Community:', student_data.get('community', 'N/A')],
+            ['Caste:', student_data.get('caste', 'N/A')],
+            ['Religion:', student_data.get('religion', 'N/A')],
+            ['Place of Birth:', student_data.get('place_of_birth', 'N/A')],
+            ['Aadhaar:', student_data.get('aadhaar', 'N/A')],
+            ['Disability:', student_data.get('disability', 'N/A')]
+        ]
+        personal_table = Table(personal_data, colWidths=[2*inch, 4*inch])
+        personal_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#e6f0ff')),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#0052cc')),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cccccc')),
+            ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, colors.HexColor('#f9f9f9')])
+        ]))
+        elements.append(personal_table)
+        elements.append(Spacer(1, 15))
+        
+        # Academic Information Section
+        elements.append(Paragraph("Academic Information", heading_style))
+        academic_data = [
+            ['Current Class:', student_data.get('current_class', 'N/A')],
+            ['Admission Class:', student_data.get('admission_class', 'N/A')],
+            ['Admission Year:', student_data.get('admission_year', 'N/A')],
+            ['Admission Date:', student_data.get('admission_date', 'N/A')],
+            ['House:', student_data.get('house', 'N/A')],
+            ['Teacher Ward:', student_data.get('teacher_ward', 'N/A')],
+            ['RTE:', student_data.get('rte', 'N/A')],
+            ['Sports Quota:', student_data.get('sports_quota', 'N/A')],
+            ['Previous School:', student_data.get('prev_school', 'N/A')],
+            ['Previous Board:', student_data.get('prev_board', 'N/A')]
+        ]
+        academic_table = Table(academic_data, colWidths=[2*inch, 4*inch])
+        academic_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#e6f0ff')),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#0052cc')),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cccccc')),
+            ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, colors.HexColor('#f9f9f9')])
+        ]))
+        elements.append(academic_table)
+        elements.append(Spacer(1, 15))
+        
+        # Contact Information Section
+        elements.append(Paragraph("Contact Information", heading_style))
+        contact_data = [
+            ['Address:', student_data.get('address', 'N/A')],
+            ['Contact:', student_data.get('contact', 'N/A')],
+            ['Alternate Contact:', student_data.get('alt_contact', 'N/A')],
+            ['Country:', student_data.get('country', 'N/A')],
+            ['State:', student_data.get('state', 'N/A')],
+            ['City:', student_data.get('city', 'N/A')],
+            ['Pincode:', student_data.get('pincode', 'N/A')],
+            ['Status:', student_data.get('status', 'N/A')]
+        ]
+        contact_table = Table(contact_data, colWidths=[2*inch, 4*inch])
+        contact_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#e6f0ff')),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#0052cc')),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cccccc')),
+            ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, colors.HexColor('#f9f9f9')])
+        ]))
+        elements.append(contact_table)
+        elements.append(Spacer(1, 15))
+        
+        # Father's Information Section
+        elements.append(Paragraph("Father's Information", heading_style))
+        father_data = [
+            ['Father\'s Name:', student_data.get('father_name', 'N/A')],
+            ['Father\'s Tamil Name:', student_data.get('father_name_tamil', 'N/A')],
+            ['Father\'s Contact:', student_data.get('father_contact', 'N/A')],
+            ['Father\'s Email:', student_data.get('father_email', 'N/A')],
+            ['Father\'s Qualification:', student_data.get('father_qualification', 'N/A')],
+            ['Father\'s Occupation:', student_data.get('father_occupation', 'N/A')],
+            ['Father\'s Income:', student_data.get('father_income', 'N/A')]
+        ]
+        father_table = Table(father_data, colWidths=[2*inch, 4*inch])
+        father_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#e6f0ff')),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#0052cc')),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cccccc')),
+            ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, colors.HexColor('#f9f9f9')])
+        ]))
+        elements.append(father_table)
+        elements.append(Spacer(1, 15))
+        
+        # Mother's Information Section
+        elements.append(Paragraph("Mother's Information", heading_style))
+        mother_data = [
+            ['Mother\'s Name:', student_data.get('mother_name', 'N/A')],
+            ['Mother\'s Tamil Name:', student_data.get('mother_name_tamil', 'N/A')],
+            ['Mother\'s Contact:', student_data.get('mother_contact', 'N/A')],
+            ['Mother\'s Email:', student_data.get('mother_email', 'N/A')],
+            ['Mother\'s Qualification:', student_data.get('mother_qualification', 'N/A')],
+            ['Mother\'s Occupation:', student_data.get('mother_occupation', 'N/A')],
+            ['Mother\'s Income:', student_data.get('mother_income', 'N/A')]
+        ]
+        mother_table = Table(mother_data, colWidths=[2*inch, 4*inch])
+        mother_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#e6f0ff')),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#0052cc')),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cccccc')),
+            ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, colors.HexColor('#f9f9f9')])
+        ]))
+        elements.append(mother_table)
+        elements.append(Spacer(1, 15))
+        
+        # Guardian Information Section
+        elements.append(Paragraph("Guardian Information", heading_style))
+        guardian_data = [
+            ['Guardian\'s Name:', student_data.get('guardian_name', 'N/A')],
+            ['Guardian\'s Contact:', student_data.get('guardian_contact', 'N/A')],
+            ['Guardian\'s Email:', student_data.get('guardian_email', 'N/A')],
+            ['Child Living With:', student_data.get('child_living', 'N/A')],
+            ['Rights on Child:', student_data.get('rights_on_child', 'N/A')]
+        ]
+        guardian_table = Table(guardian_data, colWidths=[2*inch, 4*inch])
+        guardian_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#e6f0ff')),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#0052cc')),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cccccc')),
+            ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, colors.HexColor('#f9f9f9')])
+        ]))
+        elements.append(guardian_table)
+        elements.append(Spacer(1, 15))
+        
+        # Medical Information Section
+        elements.append(Paragraph("Medical Information", heading_style))
+        medical_data = [
+            ['Medical Blood Group:', student_data.get('med_blood_group', 'N/A')],
+            ['Diseases:', student_data.get('diseases', 'N/A')],
+            ['Allergies:', student_data.get('allergies', 'N/A')],
+            ['Medicines:', student_data.get('medicines', 'N/A')],
+            ['Hospital:', student_data.get('hospital', 'N/A')],
+            ['Doctor:', student_data.get('doctor', 'N/A')]
+        ]
+        medical_table = Table(medical_data, colWidths=[2*inch, 4*inch])
+        medical_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#e6f0ff')),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#0052cc')),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cccccc')),
+            ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, colors.HexColor('#f9f9f9')])
+        ]))
+        elements.append(medical_table)
+        
+        # Build PDF
+        doc.build(elements)
+        
+        # Get the value of the BytesIO buffer and write it to the response
+        pdf = buffer.getvalue()
+        buffer.close()
+        
+        # Create filename as requested: <name> <class and section> details.pdf
+        name = student_data.get('name', 'Student').replace(' ', '_')
+        class_section = f"{student_data.get('class', 'N/A')}{student_data.get('section', 'N/A')}"
+        filename = f"{name}_{class_section}_details.pdf"
+        
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response.write(pdf)
+        
+        return response
+        
+    except Exception as e:
+        return JsonResponse({"error": f"Error generating PDF: {str(e)}"}, status=500)

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Scan - Manavargal School Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #e6f0ff 0%, #f0f4f8 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            background: linear-gradient(90deg, #0052cc, #007bff);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            text-align: center;
+            flex-grow: 1;
+            margin: 0;
+        }
+        .back-btn {
+            background: white;
+            color: #0052cc;
+            border: 2px solid white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #e6f0ff;
+            color: #003d99;
+            transform: translateY(-2px);
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #fff, #e6f0ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0052cc;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .container {
+            max-width: 700px;
+            width: 90%;
+            margin: 20px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .container:hover {
+            transform: translateY(-5px);
+        }
+        .container h2 {
+            color: #0052cc;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .controls button, .controls input[type="file"]::file-selector-button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #0052cc, #007bff);
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .controls button:hover, .controls input[type="file"]::file-selector-button:hover {
+            background: linear-gradient(45deg, #003d99, #0052cc);
+            transform: translateY(-2px);
+        }
+        .controls input[type="file"] {
+            padding: 8px;
+            border: 2px solid #e6f0ff;
+            border-radius: 25px;
+            background: #f9f9f9;
+            cursor: pointer;
+        }
+        #video, #canvas {
+            width: 100%;
+            max-width: 400px;
+            margin: 15px auto;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #student-data {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background: white;
+            border: 2px solid #0052cc;
+            max-height: 800px;
+            overflow-y: auto;
+            animation: fadeIn 0.5s ease;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .student-info-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #0052cc;
+            padding-bottom: 15px;
+        }
+        
+        .student-info-header h2 {
+            color: #0052cc;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+        }
+        
+        .student-info-header .school-name {
+            color: #666;
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        
+        .profile-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin: 10px auto;
+            display: block;
+            border: 3px solid #0052cc;
+        }
+        
+        .info-section {
+            margin: 25px 0;
+        }
+        
+        .section-title {
+            background: #0052cc;
+            color: white;
+            padding: 10px 15px;
+            margin: 15px 0 10px 0;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            margin: 8px 0;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #0052cc;
+            min-width: 150px;
+            flex-shrink: 0;
+        }
+        
+        .info-value {
+            color: #333;
+            flex-grow: 1;
+            word-wrap: break-word;
+        }
+        
+        #download-btn {
+            display: none;
+            padding: 12px 24px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #28a745, #38c172);
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+        #download-btn:hover {
+            background: linear-gradient(45deg, #218838, #28a745);
+            transform: translateY(-2px);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #0052cc;
+        }
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.2rem; }
+            .container { padding: 15px; }
+            .controls button, .controls input[type="file"]::file-selector-button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            #video, #canvas { max-width: 100%; }
+            .info-grid { grid-template-columns: 1fr; }
+            .profile-pic { width: 100px; height: 100px; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <a href="/admin_page/" class="back-btn">Back</a>
+        <h1>Manavargal School Management System</h1>
+        <div class="logo">MS</div>
+    </div>
+    <div class="container">
+        <h2>Scan QR Code</h2>
+        <div class="controls">
+            <button id="start-camera">Start Camera</button>
+            <input type="file" id="file-upload" accept="image/jpeg,image/png,application/pdf">
+        </div>
+        <video id="video" autoplay></video>
+        <canvas id="canvas"></canvas>
+        <div id="student-data"></div>
+        <button id="download-btn">Download PDF Report</button>
+    </div>
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const startCameraBtn = document.getElementById('start-camera');
+        const fileUpload = document.getElementById('file-upload');
+        const studentDataDiv = document.getElementById('student-data');
+        const downloadBtn = document.getElementById('download-btn');
+        let isScanning = false;
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
+        async function qr_data_retrieval(source) {
+            try {
+                studentDataDiv.innerHTML = '<div class="loading">Processing...</div>';
+                downloadBtn.style.display = 'none';
+                
+                if (source === 'camera') {
+                    if (isScanning) return;
+                    isScanning = true;
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                    canvas.style.display = 'none';
+                    
+                    await new Promise(resolve => {
+                        video.onloadedmetadata = () => {
+                            video.play();
+                            resolve();
+                        };
+                    });
+                    
+                    const scanFromVideo = () => {
+                        if (!isScanning) return;
+                        if (video.videoWidth === 0 || video.videoHeight === 0) {
+                            requestAnimationFrame(scanFromVideo);
+                            return;
+                        }
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = jsQR(imageData.data, canvas.width, canvas.height);
+                        if (code) {
+                            isScanning = false;
+                            video.srcObject.getTracks().forEach(track => track.stop());
+                            video.style.display = 'none';
+                            fetchStudentData(code.data);
+                        } else {
+                            requestAnimationFrame(scanFromVideo);
+                        }
+                    };
+                    scanFromVideo();
+                } else if (source === 'file') {
+                    const file = fileUpload.files[0];
+                    if (!file) {
+                        studentDataDiv.innerHTML = '<div class="error">No file selected.</div>';
+                        return;
+                    }
+                    const fileType = file.type;
+                    if (fileType === 'application/pdf') {
+                        const arrayBuffer = await file.arrayBuffer();
+                        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                        let qrCodeFound = false;
+                        for (let pageNum = 1; pageNum <= pdf.numPages && !qrCodeFound; pageNum++) {
+                            const page = await pdf.getPage(pageNum);
+                            const viewport = page.getViewport({ scale: 2.0 });
+                            canvas.width = viewport.width;
+                            canvas.height = viewport.height;
+                            await page.render({
+                                canvasContext: ctx,
+                                viewport: viewport
+                            }).promise;
+                            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                            const code = jsQR(imageData.data, canvas.width, canvas.height);
+                            if (code) {
+                                qrCodeFound = true;
+                                video.style.display = 'none';
+                                canvas.style.display = 'block';
+                                fetchStudentData(code.data);
+                            }
+                        }
+                        if (!qrCodeFound) {
+                            studentDataDiv.innerHTML = '<div class="error">No QR code found in PDF.</div>';
+                            canvas.style.display = 'none';
+                        }
+                    } else if (fileType === 'image/jpeg' || fileType === 'image/png') {
+                        const img = new Image();
+                        img.onload = () => {
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            ctx.drawImage(img, 0, 0);
+                            video.style.display = 'none';
+                            canvas.style.display = 'block';
+                            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                            const code = jsQR(imageData.data, canvas.width, canvas.height);
+                            if (code) {
+                                fetchStudentData(code.data);
+                            } else {
+                                studentDataDiv.innerHTML = '<div class="error">No QR code found in image.</div>';
+                                canvas.style.display = 'none';
+                            }
+                        };
+                        img.src = URL.createObjectURL(file);
+                    } else {
+                        studentDataDiv.innerHTML = '<div class="error">Unsupported file type. Please use JPEG, PNG, or PDF.</div>';
+                    }
+                }
+            } catch (err) {
+                isScanning = false;
+                if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
+                studentDataDiv.innerHTML = `<div class="error">Error: ${err.message}</div>`;
+                canvas.style.display = 'none';
+            }
+        }
+
+        async function fetchStudentData(url) {
+            try {
+                studentDataDiv.innerHTML = '<div class="loading">Fetching student data...</div>';
+                
+                const response = await fetch('/scan_qr/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ url })
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    studentDataDiv.innerHTML = `<div class="error">Error ${response.status}: ${errorText}</div>`;
+                    return;
+                }
+                
+                const data = await response.json();
+                if (data.error) {
+                    studentDataDiv.innerHTML = `<div class="error">${data.error}</div>`;
+                } else {
+                    displayStudentData(data);
+                    downloadBtn.style.display = 'block';
+                }
+            } catch (err) {
+                studentDataDiv.innerHTML = `<div class="error">Error fetching data: ${err.message}</div>`;
+            }
+        }
+
+        function displayStudentData(data) {
+    const formatValue = (value) => value && value !== 'None' && value !== 'N/A' ? value : 'N/A';
+
+    studentDataDiv.innerHTML = `
+        <div class="student-info-header">
+            <h2>Student Information</h2>
+            <div class="school-name">Manavargal School Management System</div>
+            <div class="school-name">Generated on: ${new Date().toLocaleDateString()}</div>
+        </div>
+        
+        <div class="profile-section">
+            ${data.profile_picture ? 
+                `<img src="${data.profile_picture}" class="profile-pic" alt="Profile Picture" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                 <div style="display: none; text-align: center; color: #666; padding: 20px; border: 2px dashed #ccc; margin: 10px 0;">Profile picture not available</div>` : 
+                `<div style="text-align: center; color: #666; padding: 20px; border: 2px dashed #ccc; margin: 10px 0;">No profile picture available</div>`
+            }
+        </div>
+        
+        <div class="info-section">
+            <div class="section-title">Basic Information</div>
+            <div class="info-row">
+                <div class="info-label">Name:</div>
+                <div class="info-value">${formatValue(data.name)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Admission Number:</div>
+                <div class="info-value">${formatValue(data.admission_number)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Class:</div>
+                <div class="info-value">${formatValue(data.class)}-${formatValue(data.section)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Roll Number:</div>
+                <div class="info-value">${formatValue(data.roll_number)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">EMIS:</div>
+                <div class="info-value">${formatValue(data.emis)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Email:</div>
+                <div class="info-value">${formatValue(data.email)}</div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-title">Personal Details</div>
+            <div class="info-row">
+                <div class="info-label">Gender:</div>
+                <div class="info-value">${formatValue(data.gender)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Date of Birth:</div>
+                <div class="info-value">${formatValue(data.dob)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Tamil Name:</div>
+                <div class="info-value">${formatValue(data.tamil_name)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Nationality:</div>
+                <div class="info-value">${formatValue(data.nationality)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Blood Group:</div>
+                <div class="info-value">${formatValue(data.blood_group)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Mother Tongue:</div>
+                <div class="info-value">${formatValue(data.mother_tongue)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Community:</div>
+                <div class="info-value">${formatValue(data.community)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Caste:</div>
+                <div class="info-value">${formatValue(data.caste)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Religion:</div>
+                <div class="info-value">${formatValue(data.religion)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Place of Birth:</div>
+                <div class="info-value">${formatValue(data.place_of_birth)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Aadhaar:</div>
+                <div class="info-value">${formatValue(data.aadhaar)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Disability:</div>
+                <div class="info-value">${formatValue(data.disability)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">ID Mark 1:</div>
+                <div class="info-value">${formatValue(data.id_mark1)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">ID Mark 2:</div>
+                <div class="info-value">${formatValue(data.id_mark2)}</div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-title">Academic Information</div>
+            <div class="info-row">
+                <div class="info-label">Current Class:</div>
+                <div class="info-value">${formatValue(data.current_class)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Admission Class:</div>
+                <div class="info-value">${formatValue(data.admission_class)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Admission Year:</div>
+                <div class="info-value">${formatValue(data.admission_year)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Admission Date:</div>
+                <div class="info-value">${formatValue(data.admission_date)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">House:</div>
+                <div class="info-value">${formatValue(data.house)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Teacher Ward:</div>
+                <div class="info-value">${formatValue(data.teacher_ward)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">RTE:</div>
+                <div class="info-value">${formatValue(data.rte)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Sports Quota:</div>
+                <div class="info-value">${formatValue(data.sports_quota)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Previous School:</div>
+                <div class="info-value">${formatValue(data.prev_school)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Previous Board:</div>
+                <div class="info-value">${formatValue(data.prev_board)}</div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-title">Contact Information</div>
+            <div class="info-row">
+                <div class="info-label">Address:</div>
+                <div class="info-value">${formatValue(data.address)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Contact:</div>
+                <div class="info-value">${formatValue(data.contact)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Alternate Contact:</div>
+                <div class="info-value">${formatValue(data.alt_contact)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Country:</div>
+                <div class="info-value">${formatValue(data.country)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">State:</div>
+                <div class="info-value">${formatValue(data.state)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">City:</div>
+                <div class="info-value">${formatValue(data.city)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Pincode:</div>
+                <div class="info-value">${formatValue(data.pincode)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Status:</div>
+                <div class="info-value">${formatValue(data.status)}</div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-title">Father's Information</div>
+            <div class="info-row">
+                <div class="info-label">Father's Name:</div>
+                <div class="info-value">${formatValue(data.father_name)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Father's Tamil Name:</div>
+                <div class="info-value">${formatValue(data.father_name_tamil)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Father's Contact:</div>
+                <div class="info-value">${formatValue(data.father_contact)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Father's Email:</div>
+                <div class="info-value">${formatValue(data.father_email)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Father's Qualification:</div>
+                <div class="info-value">${formatValue(data.father_qualification)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Father's Occupation:</div>
+                <div class="info-value">${formatValue(data.father_occupation)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Father's Income:</div>
+                <div class="info-value">${formatValue(data.father_income)}</div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-title">Mother's Information</div>
+            <div class="info-row">
+                <div class="info-label">Mother's Name:</div>
+                <div class="info-value">${formatValue(data.mother_name)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Mother's Tamil Name:</div>
+                <div class="info-value">${formatValue(data.mother_name_tamil)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Mother's Contact:</div>
+                <div class="info-value">${formatValue(data.mother_contact)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Mother's Email:</div>
+                <div class="info-value">${formatValue(data.mother_email)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Mother's Qualification:</div>
+                <div class="info-value">${formatValue(data.mother_qualification)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Mother's Occupation:</div>
+                <div class="info-value">${formatValue(data.mother_occupation)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Mother's Income:</div>
+                <div class="info-value">${formatValue(data.mother_income)}</div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-title">Guardian Information</div>
+            <div class="info-row">
+                <div class="info-label">Guardian's Name:</div>
+                <div class="info-value">${formatValue(data.guardian_name)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Guardian's Contact:</div>
+                <div class="info-value">${formatValue(data.guardian_contact)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Guardian's Email:</div>
+                <div class="info-value">${formatValue(data.guardian_email)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Child Living With:</div>
+                <div class="info-value">${formatValue(data.child_living)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Rights on Child:</div>
+                <div class="info-value">${formatValue(data.rights_on_child)}</div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-title">Medical Information</div>
+            <div class="info-row">
+                <div class="info-label">Medical Blood Group:</div>
+                <div class="info-value">${formatValue(data.med_blood_group)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Diseases:</div>
+                <div class="info-value">${formatValue(data.diseases)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Allergies:</div>
+                <div class="info-value">${formatValue(data.allergies)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Medicines:</div>
+                <div class="info-value">${formatValue(data.medicines)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Hospital:</div>
+                <div class="info-value">${formatValue(data.hospital)}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Doctor:</div>
+                <div class="info-value">${formatValue(data.doctor)}</div>
+            </div>
+        </div>
+    `;
+}
+
+        startCameraBtn.addEventListener('click', () => qr_data_retrieval('camera'));
+        fileUpload.addEventListener('change', () => qr_data_retrieval('file'));
+
+        downloadBtn.addEventListener('click', async () => {
+            try {
+                downloadBtn.innerHTML = 'Generating PDF...';
+                downloadBtn.disabled = true;
+                
+                const response = await fetch('/download_student_pdf/', {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                
+                // Get filename from response headers or use default
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = 'student_details.pdf';
+                if (contentDisposition) {
+                    const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                    if (filenameMatch) {
+                        filename = filenameMatch[1];
+                    }
+                }
+                
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+            } catch (error) {
+                console.error('PDF download error:', error);
+                alert('Error downloading PDF. Please try again.');
+            } finally {
+                downloadBtn.innerHTML = 'Download PDF Report';
+                downloadBtn.disabled = false;
+            }
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
