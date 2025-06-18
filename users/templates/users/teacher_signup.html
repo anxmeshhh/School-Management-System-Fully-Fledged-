@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,16 +13,64 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #fff0f5 0%, #fce4ec 100%),
-                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(219,112,147,0.1)"/></svg>') repeat;
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(219,112,147,0.1)"/></svg>') repeat;
             background-size: 200%, 20px 20px;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
             position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'users/images/bg_image.png' %}?v=3") no-repeat center center fixed;
+            opacity: 0.5;
+            mix-blend-mode: overlay;
+            z-index: 1;
+            background-size: cover;
+            background-position: center;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to top, rgba(219, 112, 147, 0.4) 0%, transparent 100%);
+            z-index: 1;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(219, 112, 147, 0.3), rgba(255, 182, 193, 0.3));
+            z-index: 1;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        /* Ensure all content stays above the background layers */
+        body > * {
+            position: relative;
+            z-index: 2;
         }
 
         .logo {
@@ -29,7 +79,7 @@
             left: 20px;
             width: 60px;
             height: 60px;
-            background: url('https://via.placeholder.com/60?text=Logo') no-repeat center;
+            background: url('{% static 'users/images/adminlogo.jpg' %}') no-repeat center;
             background-size: cover;
             border-radius: 50%;
             border: 2px solid #ffffff;
@@ -145,6 +195,11 @@
 
         .login-link a:hover {
             text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
 
         @media (max-width: 480px) {

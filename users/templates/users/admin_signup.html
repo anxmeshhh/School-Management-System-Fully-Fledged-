@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,6 +20,7 @@
             background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 100%),
             url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
             background-size: 200%, 20px 20px;
+            background: url("{% static 'users/images/bg_image.png' %}?v=3") no-repeat center center fixed;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -33,7 +36,7 @@
             left: 20px;
             width: 60px;
             height: 60px;
-            background: url('https://via.placeholder.com/60?text=Logo') no-repeat center;
+            background: url('{% static 'users/images/adminlogo.jpg' %}') no-repeat center;
             background-size: cover;
             border-radius: 50%;
             border: 2px solid #ffffff;

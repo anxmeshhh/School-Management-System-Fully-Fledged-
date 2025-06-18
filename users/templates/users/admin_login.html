@@ -17,8 +17,8 @@
 
     body {
       background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 100%),
-      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
-      background-size: 200%, 20px 20px;
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
+      background-size: 200%, 40px 40px; /* Larger pattern for subtler effect */
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -36,10 +36,17 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, rgba(30, 144, 255, 0.3), rgba(173, 216, 230, 0.3));
-      opacity: 0.5;
+      background: linear-gradient(135deg, rgba(30, 144, 255, 0.15), rgba(173, 216, 230, 0.15));
+      background: url("{% static 'users/images/bg_image.png' %}?v=3") no-repeat center center fixed;
+      opacity: 0.3; /* Low opacity for a faded, subtle look */
       z-index: 1;
-      animation: subtlePulse 10s ease-in-out infinite;
+      animation: subtlePulse 12s ease-in-out infinite; /* Slower pulse for smoother effect */
+    }
+
+    /* Ensure all content stays above the faded background */
+    body > * {
+      position: relative;
+      z-index: 2;
     }
 
     .logo {
@@ -250,9 +257,9 @@
     }
 
     @keyframes subtlePulse {
-      0% { opacity: 0.5; }
-      50% { opacity: 0.7; }
-      100% { opacity: 0.5; }
+      0% { opacity: 0.3; }
+      50% { opacity: 0.15; }
+      100% { opacity: 0.3; }
     }
 
     @media (max-width: 768px) {
@@ -349,9 +356,10 @@
         right: 8px;
       }
     }
-  </style>
+</style>
 </head>
 <body>
+    <div class="background"></div>
     <div class="logo">
         <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
     </div>
