@@ -1,0 +1,612 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manavargal School Management System - Register Student</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'users/parent_profile.css' %}?v=4" />
+</head>
+<body>
+  <div class="header">
+    <a href="{% url 'parent_dashboard' %}" class="back-btn">
+      <i class="fas fa-arrow-left icon"></i> Back
+    </a>
+    <h1><i class="fas fa-user-plus icon"></i> Register New Student</h1>
+    <a href="{% url 'dashboard' %}">
+      <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+    </a>
+  </div>
+
+  <div class="container">
+    <!-- Multi-step form container -->
+    <div class="form-container">
+      <!-- Progress indicator -->
+      <div class="progress-container">
+        <div class="step active" data-page="1">
+          <div class="step-number">1</div>
+          <div class="step-text">Registration</div>
+        </div>
+        <div class="step" data-page="2">
+          <div class="step-number">2</div>
+          <div class="step-text">Personal</div>
+        </div>
+        <div class="step" data-page="3">
+          <div class="step-number">3</div>
+          <div class="step-text">Communication</div>
+        </div>
+        <div class="step" data-page="4">
+          <div class="step-number">4</div>
+          <div class="step-text">Parents & Medical</div>
+        </div>
+      </div>
+
+      <form id="student-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-pages">
+          <!-- Page 1: Registration Details -->
+          <div class="page active" id="page1">
+            <div class="page-header">
+              <h2><i class="fas fa-plus icon"></i> Add New Student</h2>
+            </div>
+
+            <div class="form-content">
+              <div class="form-layout">
+                <div class="photo-section">
+                  <button type="button" class="photo-btn" onclick="document.getElementById('profile-picture-input').click()">
+                    <i class="fas fa-camera icon"></i> Add Photo
+                  </button>
+                  <div class="photo-placeholder">
+                    <img id="profile-picture-img" 
+                         src="{% if profile_picture %}{{ profile_picture }}{% else %}{% static 'users/images/default_profile.jpg' %}{% endif %}" 
+                         alt="Student placeholder">
+                  </div>
+                  <input type="file" id="profile-picture-input" name="profile_picture" accept="image/png,image/jpeg,image/jpg" style="display: none;">
+                  <button type="button" class="upload-btn">
+                    <i class="fas fa-upload icon"></i> Upload Picture
+                  </button>
+                  <div id="profile-picture-error" class="error-message"></div>
+
+                  <!-- Success/error message display -->
+                  {% if messages %}
+                    <div class="alert-message">
+                      {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                          <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                          {{ message }}
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+
+                <div class="form-fields">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="name">Name <span class="required">*</span></label>
+                      <input type="text" id="name" name="name" value="{{ student_data.0|default_if_none:'' }}" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="admission-number">Admission Number <span class="required">*</span></label>
+                      <input type="text" id="admission-number" name="admission_number" value="{{ student_data.1|default_if_none:'' }}" required>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="class">Class <span class="required">*</span></label>
+                      <div class="select-wrapper">
+                        <select id="class" name="class" required>
+                          <option value="" disabled selected>Select Class</option>
+                          <option value="1" {% if student_data.2 == "1" %}selected{% endif %}>Class 1</option>
+                          <option value="2" {% if student_data.2 == "2" %}selected{% endif %}>Class 2</option>
+                          <option value="3" {% if student_data.2 == "3" %}selected{% endif %}>Class 3</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="section">Section</label>
+                      <div class="select-wrapper">
+                        <select id="section" name="section">
+                          <option value="" disabled selected>Select Section</option>
+                          <option value="A" {% if student_data.3 == "A" %}selected{% endif %}>Section A</option>
+                          <option value="B" {% if student_data.3 == "B" %}selected{% endif %}>Section B</option>
+                          <option value="C" {% if student_data.3 == "C" %}selected{% endif %}>Section C</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="roll-number">Roll Number</label>
+                      <input type="text" id="roll-number" name="roll_number" value="{{ student_data.4|default_if_none:'' }}">
+                    </div>
+                    <div class="form-group">
+                      <label for="emis">EMIS</label>
+                      <input type="text" id="emis" name="emis" value="{{ student_data.5|default_if_none:'' }}">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sidebar">
+                  <div class="sidebar-text">Registration Details</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-navigation">
+              <button type="button" class="nav-btn prev-btn">
+                <a href="{% url 'dashboard' %}" style="text-decoration: none; color: inherit;"><i class="fas fa-arrow-left icon"></i> Return to Dashboard</a>
+              </button>
+              <button type="submit" class="nav-btn save-btn">
+                <i class="fas fa-save icon"></i> Save
+              </button>
+              <button type="button" class="nav-btn next-btn" data-next="2">
+                <i class="fas fa-arrow-right icon"></i> Next
+              </button>
+            </div>
+          </div>
+
+          <!-- Page 2: Personal Details -->
+          <div class="page" id="page2">
+            <div class="page-header">
+              <h2><i class="fas fa-user icon"></i> Personal Details</h2>
+            </div>
+
+            <div class="form-content">
+              <div class="form-layout">
+                <div class="form-fields wide-fields">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="gender">Gender</label>
+                      <div class="select-wrapper">
+                        <select id="gender" name="gender">
+                          <option value="" disabled selected>Select Gender</option>
+                          <option value="male" {% if student_data.6 == "male" %}selected{% endif %}>Male</option>
+                          <option value="female" {% if student_data.6 == "female" %}selected{% endif %}>Female</option>
+                          <option value="other" {% if student_data.6 == "other" %}selected{% endif %}>Other</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="community">Community</label>
+                      <div class="select-wrapper">
+                        <select id="community" name="community">
+                          <option value="" disabled selected>Select Community</option>
+                          <option value="bc" {% if student_data.7 == "bc" %}selected{% endif %}>BC</option>
+                          <option value="mbc" {% if student_data.7 == "mbc" %}selected{% endif %}>MBC</option>
+                          <option value="sc" {% if student_data.7 == "sc" %}selected{% endif %}>SC</option>
+                          <option value="st" {% if student_data.7 == "st" %}selected{% endif %}>ST</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="tamil-name">Tamil Name</label>
+                      <input type="text" id="tamil-name" name="tamil_name" value="{{ student_data.8|default_if_none:'' }}">
+                    </div>
+                    <div class="form-group">
+                      <label for="dob">Date of Birth</label>
+                      <input type="date" id="dob" name="dob" value="{{ student_data.9|default_if_none:'' }}">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="nationality">Nationality</label>
+                      <input type="text" id="nationality" name="nationality" value="{{ student_data.10|default_if_none:'' }}">
+                    </div>
+                    <div class="form-group">
+                      <label for="blood-group">Blood Group</label>
+                      <input type="text" id="blood-group" name="blood_group" value="{{ student_data.11|default_if_none:'' }}">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="mother-tongue">Mother Tongue</label>
+                      <input type="text" id="mother-tongue" name="mother_tongue" value="{{ student_data.12|default_if_none:'' }}">
+                    </div>
+                    <div class="form-group">
+                      <label for="caste">Caste</label>
+                      <input type="text" id="caste" name="caste" value="{{ student_data.13|default_if_none:'' }}">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="religion">Religion</label>
+                      <input type="text" id="religion" name="religion" value="{{ student_data.14|default_if_none:'' }}">
+                    </div>
+                    <div class="form-group">
+                      <label for="place-of-birth">Place of Birth - City / State</label>
+                      <input type="text" id="place-of-birth" name="place_of_birth" value="{{ student_data.15|default_if_none:'' }}">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="aadhaar">Aadhaar Number</label>
+                      <input type="text" id="aadhaar" name="aadhaar" value="{{ student_data.16|default_if_none:'' }}">
+                    </div>
+                    <div class="form-group">
+                      <label for="disability">Disability</label>
+                      <input type="text" id="disability" name="disability" value="{{ student_data.17|default_if_none:'' }}">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="id-mark1">Personal Identification Mark 1</label>
+                      <input type="text" id="id-mark1" name="id_mark1" value="{{ student_data.18|default_if_none:'' }}">
+                    </div>
+                    <div class="form-group">
+                      <label for="id-mark2">Personal Identification Mark 2</label>
+                      <input type="text" id="id-mark2" name="id_mark2" value="{{ student_data.19|default_if_none:'' }}">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sidebar">
+                  <div class="sidebar-text">Personal Details</div>
+                </div>
+
+                <div class="class-details">
+                  <h3>Class Details</h3>
+                  <div class="form-group">
+                    <label for="current-class">Current Class <span class="required">*</span></label>
+                    <div class="select-wrapper">
+                      <select id="current-class" name="current_class" required>
+                        <option value="" disabled selected>Select Class</option>
+                        <option value="1" {% if student_data.20 == "1" %}selected{% endif %}>Class 1</option>
+                        <option value="2" {% if student_data.20 == "2" %}selected{% endif %}>Class 2</option>
+                        <option value="3" {% if student_data.20 == "3" %}selected{% endif %}>Class 3</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="admission-class">Admission Class</label>
+                    <input type="text" id="admission-class" name="admission_class" value="{{ student_data.21|default_if_none:'' }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="admission-year">Admission Year</label>
+                    <input type="text" id="admission-year" name="admission_year" value="{{ student_data.22|default_if_none:'' }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="admission-date">Admission Date</label>
+                    <input type="date" id="admission-date" name="admission_date" value="{{ student_data.23|default_if_none:'' }}">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-navigation">
+              <button type="button" class="nav-btn prev-btn" data-prev="1">
+                <i class="fas fa-arrow-left icon"></i> Previous
+              </button>
+              <button type="button" class="nav-btn next-btn" data-next="3">
+                <i class="fas fa-arrow-right icon"></i> Next
+              </button>
+            </div>
+          </div>
+
+          <!-- Page 3: Communication Details -->
+          <div class="page" id="page3" data-user-id="{{ user.id }}">
+            <div class="page-header">
+              <h2><i class="fas fa-envelope icon"></i> Communication Details</h2>
+            </div>
+
+            <div class="form-content">
+              <div class="form-layout">
+                <div class="form-fields wide-fields">
+                  <div class="contact-section">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="email">Email ID</label>
+                        <input type="email" id="email" name="email" value="{{ student_data.24|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group address-group">
+                        <label for="address">Address</label>
+                        <textarea id="address" name="address" rows="4">{{ student_data.25|default_if_none:'' }}</textarea>
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="contact">Contact Number (WhatsApp)</label>
+                        <input type="tel" id="contact" name="contact" value="{{ student_data.26|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="alt_contact">Alternate Contact Number</label>
+                        <input type="tel" id="alt_contact" name="alt_contact" value="{{ student_data.27|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="country">Country</label>
+                        <input type="text" id="country" name="country" value="{{ student_data.28|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" id="state" name="state" value="{{ student_data.29|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" value="{{ student_data.30|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="pincode">Pin Code</label>
+                        <input type="text" id="pincode" name="pincode" value="{{ student_data.31|default_if_none:'' }}">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sidebar">
+                  <div class="sidebar-text">Communication Details</div>
+                </div>
+
+                <div class="generic-details">
+                  <h3>Generic Details</h3>
+                  <div class="form-group">
+                    <label for="status">Status</label>
+                    <input type="text" id="status" name="status" value="{{ student_data.32|default_if_none:'' }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="house">House</label>
+                    <input type="text" id="house" name="house" value="{{ student_data.33|default_if_none:'' }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="teacher_ward">Teacher Ward</label>
+                    <div class="select-wrapper">
+                      <select id="teacher_ward" name="teacher_ward">
+                        <option value="" disabled selected>Select</option>
+                        <option value="yes" {% if student_data.34 == "yes" %}selected{% endif %}>Yes</option>
+                        <option value="no" {% if student_data.34 == "no" %}selected{% endif %}>No</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="rte">RTE</label>
+                    <div class="select-wrapper">
+                      <select id="rte" name="rte">
+                        <option value="" disabled selected>Select</option>
+                        <option value="yes" {% if student_data.35 == "yes" %}selected{% endif %}>Yes</option>
+                        <option value="no" {% if student_data.35 == "no" %}selected{% endif %}>No</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="sports_quota">Sports Quota</label>
+                    <div class="select-wrapper">
+                      <select id="sports_quota" name="sports_quota">
+                        <option value="" disabled selected>Select</option>
+                        <option value="yes" {% if student_data.36 == "yes" %}selected{% endif %}>Yes</option>
+                        <option value="no" {% if student_data.36 == "no" %}selected{% endif %}>No</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="prev_school">Previous School Studied</label>
+                    <input type="text" id="prev_school" name="prev_school" value="{{ student_data.37|default_if_none:'' }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="prev_board">Previous School Board</label>
+                    <input type="text" id="prev_board" name="prev_board" value="{{ student_data.38|default_if_none:'' }}">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-navigation">
+              <button type="button" class="nav-btn prev-btn" data-prev="2">
+                <i class="fas fa-arrow-left icon"></i> Previous
+              </button>
+              <button type="button" class="nav-btn next-btn" data-next="4">
+                <i class="fas fa-arrow-right icon"></i> Next
+              </button>
+            </div>
+          </div>
+
+          <!-- Page 4: Parents Details and Medical Info -->
+          <div class="page" id="page4" data-user-id="{{ user.id }}">
+            <div class="page-header">
+              <h2><i class="fas fa-users icon"></i> Parents & Medical Info</h2>
+            </div>
+
+            <div class="form-content">
+              <div class="form-layout">
+                <div class="form-fields wide-fields">
+                  <div class="parents-section">
+                    <!-- Parent Details -->
+                    <h3><i class="fas fa-user-friends icon"></i> Parent Details</h3>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="father_name">Father Name</label>
+                        <input type="text" id="father_name" name="father_name" value="{{ student_data.39|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="father_name_tamil">Father Name (Tamil)</label>
+                        <input type="text" id="father_name_tamil" name="father_name_tamil" value="{{ student_data.40|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="mother_name">Mother Name</label>
+                        <input type="text" id="mother_name" name="mother_name" value="{{ student_data.41|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="mother_name_tamil">Mother Name (Tamil)</label>
+                        <input type="text" id="mother_name_tamil" name="mother_name_tamil" value="{{ student_data.42|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="father_contact">Father Contact Number</label>
+                        <input type="tel" id="father_contact" name="father_contact" value="{{ student_data.43|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="mother_contact">Mother Contact Number</label>
+                        <input type="tel" id="mother_contact" name="mother_contact" value="{{ student_data.44|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="father_email">Father Email</label>
+                        <input type="email" id="father_email" name="father_email" value="{{ student_data.45|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="mother_email">Mother Email</label>
+                        <input type="email" id="mother_email" name="mother_email" value="{{ student_data.46|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <!-- Qualification & Occupation -->
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="father_qualification">Father Qualification</label>
+                        <input type="text" id="father_qualification" name="father_qualification" value="{{ student_data.47|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="mother_qualification">Mother Qualification</label>
+                        <input type="text" id="mother_qualification" name="mother_qualification" value="{{ student_data.48|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="father_occupation">Father Occupation</label>
+                        <input type="text" id="father_occupation" name="father_occupation" value="{{ student_data.49|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="mother_occupation">Mother Occupation</label>
+                        <input type="text" id="mother_occupation" name="mother_occupation" value="{{ student_data.50|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <!-- Income -->
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="father_income">Father Income (Annual)</label>
+                        <input type="text" id="father_income" name="father_income" value="{{ student_data.51|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="mother_income">Mother Income (Annual)</label>
+                        <input type="text" id="mother_income" name="mother_income" value="{{ student_data.52|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <!-- Guardian Details -->
+                    <h3><i class="fas fa-user-shield icon"></i> Guardian Details</h3>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="guardian_name">Guardian Name</label>
+                        <input type="text" id="guardian_name" name="guardian_name" value="{{ student_data.53|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="guardian_contact">Guardian Contact</label>
+                        <input type="tel" id="guardian_contact" name="guardian_contact" value="{{ student_data.54|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="guardian_email">Guardian Email</label>
+                        <input type="email" id="guardian_email" name="guardian_email" value="{{ student_data.55|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="child_living">Child Living With</label>
+                        <input type="text" id="child_living" name="child_living" value="{{ student_data.56|default_if_none:'' }}">
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="rights_on_child">Rights On Child</label>
+                      <input type="text" id="rights_on_child" name="rights_on_child" value="{{ student_data.57|default_if_none:'' }}">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sidebar">
+                  <div class="sidebar-text">Parents Details</div>
+                </div>
+
+                <!-- Medical Info -->
+                <div class="medical-info">
+                  <h3><i class="fas fa-medkit icon"></i> Medical Information</h3>
+                  <div class="form-group">
+                    <label for="med_blood_group">Blood Group</label>
+                    <input type="text" id="med_blood_group" name="med_blood_group" value="{{ student_data.58|default_if_none:'' }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="diseases">Diseases (If Any)</label>
+                    <input type="text" id="diseases" name="diseases" value="{{ student_data.59|default_if_none:'' }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="allergies">Allergies (If Any)</label>
+                    <input type="text" id="allergies" name="allergies" value="{{ student_data.60|default_if_none:'' }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="medicines">Regular Medicines</label>
+                    <input type="text" id="medicines" name="medicines" value="{{ student_data.61|default_if_none:'' }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="hospital">Regular Hospital</label>
+                    <input type="text" id="hospital" name="hospital" value="{{ student_data.62|default_if_none:'' }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="doctor">Regular Doctor</label>
+                    <input type="text" id="doctor" name="doctor" value="{{ student_data.63|default_if_none:'' }}">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-navigation">
+              <button type="button" class="nav-btn prev-btn" data-prev="3">
+                <i class="fas fa-arrow-left icon"></i> Previous
+              </button>
+              <button type="submit" class="nav-btn submit-btn">
+                <i class="fas fa-check icon"></i> Submit
+              </button>
+              <a href="{% url 'qr_page' %}" class="nav-btn submit-btn">
+                <i class="fas fa-qrcode icon"></i> QR Image
+              </a>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="{% static 'users/profile.js' %}"></script>
+</body>
+</html>

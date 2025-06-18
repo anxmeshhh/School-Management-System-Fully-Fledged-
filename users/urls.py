@@ -128,6 +128,18 @@ urlpatterns = [
     
     # Student route
     path('student_timetable/', views.student_timetable_view, name='student_timetable'),
+
+
+
+    path('parent-profile/', views.parent_profile_view, name='parent_profile_view'),
+    path('parent-student-portal/', views.parent_student_portal, name='parent_student_portal'),
+    path('parent-student-leave/', views.parent_student_leave, name='parent_student_leave'),
+    path('parent-student-circular/', views.parent_student_circular, name='parent_student_circular'),
+    path('parent-study-materials/', views.parent_study_materials, name='parent_study_materials'),
+    path('parent-homework/', views.parent_homework, name='parent_homework'),
+    path('parent-student-timetable/', views.parent_student_timetable, name='parent_student_timetable'),
+    path('student-progress-card/', views.student_progress_card, name='student_progress_card'),
+    path('parent-student-progress-card/', views.parent_student_progress_card, name='parent_student_progress_card'),
 ]
 
 if settings.DEBUG:

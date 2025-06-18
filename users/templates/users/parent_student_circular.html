@@ -1,0 +1,382 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Student Circulars</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f3ff 30%, #e9d5ff 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%23a855f7" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
+            background-size: cover, 30px 30px;
+            animation: backgroundFade 10s ease-in-out infinite alternate;
+            min-height: 100vh;
+            padding: 80px 20px 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes backgroundFade {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .header {
+            background: linear-gradient(90deg, #6b21a8, #a855f7); /* Primary to secondary purple */
+            color: #ffffff;
+            padding: 1rem 2rem;
+            border-bottom: 4px solid #d8b4fe; /* Accent purple */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: #a855f7; /* Secondary purple */
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #6b21a8; /* Primary purple */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .student-info {
+            text-align: center;
+            color: #4b5563;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-form {
+            background: #ffffff;
+            border: 2px solid #a855f7; /* Secondary purple */
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            width: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .filter-form:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .filter-form label {
+            display: block;
+            color: #6b21a8; /* Primary purple */
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-form select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 2px solid #a855f7; /* Secondary purple */
+            background: #f5f3ff; /* Light purple */
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .filter-form select:focus {
+            border-color: #6b21a8; /* Primary purple */
+            box-shadow: 0 0 8px rgba(107, 33, 168, 0.3); /* Purple shadow */
+            outline: none;
+        }
+
+        .filter-form button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #a855f7; /* Secondary purple */
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-form button:hover {
+            background: #6b21a8; /* Primary purple */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #b91c1c;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+            margin-bottom: 1.5rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .circular-container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .circular {
+            background: #ffffff;
+            border: 2px solid #a855f7; /* Secondary purple */
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .circular:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .circular h3 {
+            color: #6b21a8; /* Primary purple */
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .circular small {
+            color: #4b5563;
+            font-size: 0.875rem;
+            font-weight: 400;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .circular img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .circular img:hover {
+            transform: scale(1.03);
+        }
+
+        .no-circulars {
+            font-size: 1rem;
+            color: #4b5563;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
+
+            .header {
+                padding: 0.8rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .filter-form,
+            .circular {
+                padding: 1.2rem;
+            }
+
+            .filter-form label,
+            .filter-form select,
+            .filter-form button {
+                font-size: 0.9rem;
+            }
+
+            .circular h3 {
+                font-size: 1.25rem;
+            }
+
+            .circular small {
+                font-size: 0.8rem;
+            }
+
+            .no-circulars {
+                font-size: 0.9rem;
+            }
+
+            .student-info {
+                font-size: 1rem;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .logo-img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
+            .header {
+                padding: 0.6rem 0.8rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .filter-form,
+            .circular {
+                padding: 1rem;
+            }
+
+            .filter-form label,
+            .filter-form select,
+            .filter-form button {
+                font-size: 0.85rem;
+            }
+
+            .circular h3 {
+                font-size: 1.1rem;
+            }
+
+            .circular small {
+                font-size: 0.75rem;
+            }
+
+            .no-circulars {
+                font-size: 0.85rem;
+            }
+
+            .student-info {
+                font-size: 0.9rem;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .logo-img {
+                width: 35px;
+                height: 35px;
+            }
+        }
+</style>
+</head>
+<body>
+    <div class="header">
+        <a href="{% url 'parent_dashboard' %}" class="back-btn">
+            <i class="fas fa-arrow-left icon"></i> Back
+        </a>
+        <h1><i class="fas fa-file-alt icon"></i> School Circulars</h1>
+        <a href="{% url 'parent_dashboard' %}">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+        </a>
+    </div>
+
+    <div class="container">
+        {% if error_message %}
+            <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+
+        {% if student_class and student_section %}
+            <div class="student-info">
+                Your Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}
+            </div>
+        {% endif %}
+
+        <form class="filter-form" method="post">
+            {% csrf_token %}
+            <label for="filter_type"><i class="fas fa-filter icon"></i> Filter Circulars</label>
+            <select id="filter_type" name="filter_type" required>
+                <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Circulars</option>
+                <option value="specific" {% if filter_type == 'specific' %}selected{% endif %}>Class/Section Only</option>
+            </select>
+            <button type="submit"><i class="fas fa-check icon"></i> Apply Filter</button>
+        </form>
+
+        <div class="circular-container">
+            {% for circular in circulars %}
+                <div class="circular">
+                    <h3>{{ circular.title }}</h3>
+                    <small>Posted on: {{ circular.date }}</small>
+                    <small>Target: {{ circular.target }}</small>
+                    <img src="{{ circular.image_url }}" alt="Circular Image">
+                </div>
+            {% empty %}
+                <p class="no-circulars">
+                    No circulars available for {% if filter_type == 'specific' %}your class and section{% else %}the selected filter{% endif %}.
+                    {% if student_class and student_section %}
+                        (Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }})
+                    {% endif %}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

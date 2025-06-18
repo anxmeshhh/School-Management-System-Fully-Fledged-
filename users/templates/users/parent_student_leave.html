@@ -1,0 +1,653 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Leave Requests</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f3ff 30%, #e9d5ff 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%23a855f7" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
+            background-size: cover, 30px 30px;
+            animation: backgroundFade 10s ease-in-out infinite alternate;
+            min-height: 100vh;
+            padding: 80px 20px 40px 20px;
+        }
+
+        @keyframes backgroundFade {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #6b21a8, #a855f7); /* Primary to secondary purple */
+            color: #ffffff;
+            padding: 1rem 2rem;
+            border-bottom: 4px solid #d8b4fe; /* Accent purple */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header .logo-button {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .main-content {
+            background: #ffffff;
+            border: 2px solid #a855f7; /* Secondary purple */
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: 1rem;
+        }
+
+        .alert-message {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-message .error {
+            background: #fef2f2;
+            color: #b91c1c;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-message .success {
+            background: #ede9fe; /* Light purple */
+            color: #6b21a8; /* Primary purple */
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #a855f7; /* Secondary purple */
+        }
+
+        .section {
+            background: #f5f3ff; /* Light purple */
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #a855f7; /* Secondary purple */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            color: #6b21a8; /* Primary purple */
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #6b21a8; /* Primary purple */
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 2px solid #a855f7; /* Secondary purple */
+            background: #f5f3ff; /* Light purple */
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="date"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #6b21a8; /* Primary purple */
+            box-shadow: 0 0 8px rgba(107, 33, 168, 0.3); /* Purple shadow */
+            outline: none;
+        }
+
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-range span {
+            color: #1f2937;
+            font-size: 1rem;
+        }
+
+        .leave-duration {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .half-day-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1f2937;
+            font-size: 1rem;
+        }
+
+        .radio-label input[type="radio"] {
+            accent-color: #a855f7; /* Secondary purple */
+            width: 1.2rem;
+            height: 1.2rem;
+        }
+
+        .half-day-options {
+            margin-left: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .sub-option {
+            font-size: 0.9rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #a855f7; /* Secondary purple */
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #6b21a8; /* Primary purple */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .attendance-table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            border: 2px solid #a855f7; /* Secondary purple */
+            background: #f5f3ff; /* Light purple */
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #a855f7; /* Secondary purple */
+            font-size: 0.9rem;
+        }
+
+        .attendance-table th {
+            background: #e9d5ff; /* Light purple */
+            color: #6b21a8; /* Primary purple */
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .attendance-table td {
+            color: #1f2937;
+        }
+
+        .attendance-table tr:nth-child(even) {
+            background: #ede9fe; /* Light purple */
+        }
+
+        .status-approved { color: #6b21a8; font-weight: 600; } /* Primary purple */
+        .status-pending { color: #ca8a04; font-weight: 600; } /* Retained yellow */
+        .status-rejected { color: #b91c1c; font-weight: 600; } /* Retained red */
+
+        .download-btn {
+            padding: 0.5rem 1rem;
+            background: #a855f7; /* Secondary purple */
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #6b21a8; /* Primary purple */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-to-attendance-btn {
+            display: inline-block;
+            background: #a855f7; /* Secondary purple */
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-to-attendance-btn:hover {
+            background: #6b21a8; /* Primary purple */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .icon {
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
+
+            .header {
+                padding: 0.8rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .section {
+                padding: 1.2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .form-group label {
+                font-size: 0.9rem;
+            }
+
+            .form-group input[type="text"],
+            .form-group input[type="date"],
+            .form-group select,
+            .form-group textarea {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+            }
+
+            .date-range {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .leave-duration {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .half-day-options {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .radio-label {
+                font-size: 0.9rem;
+            }
+
+            .sub-option {
+                font-size: 0.85rem;
+            }
+
+            .submit-btn {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+            }
+
+            .attendance-table th,
+            .attendance-table td {
+                font-size: 0.85rem;
+                padding: 0.6rem;
+            }
+
+            .download-btn {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .nav-to-attendance-btn {
+                font-size: 0.9rem;
+                padding: 0.6rem 1.2rem;
+            }
+
+            .logo-img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
+            .header {
+                padding: 0.6rem 0.8rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            .form-group label {
+                font-size: 0.85rem;
+            }
+
+            .form-group input[type="text"],
+            .form-group input[type="date"],
+            .form-group select,
+            .form-group textarea {
+                font-size: 0.85rem;
+                padding: 0.5rem;
+            }
+
+            .radio-label {
+                font-size: 0.85rem;
+            }
+
+            .sub-option {
+                font-size: 0.8rem;
+            }
+
+            .submit-btn {
+                font-size: 0.85rem;
+                padding: 0.5rem;
+            }
+
+            .attendance-table th,
+            .attendance-table td {
+                font-size: 0.75rem;
+                padding: 0.5rem;
+            }
+
+            .download-btn {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.6rem;
+            }
+
+            .nav-to-attendance-btn {
+                font-size: 0.85rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .logo-img {
+                width: 35px;
+                height: 35px;
+            }
+        }
+</style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-button">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+        </div>
+        <h1><i class="fas fa-envelope icon"></i> Leave Requests</h1>
+        <div></div> <!-- Empty div for spacing -->
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            {% if messages %}
+            <div class="alert-message">
+                {% for message in messages %}
+                <div class="{{ message.tags }}">
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="section">
+                <h2><i class="fas fa-paper-plane icon"></i> Submit Leave Request</h2>
+                <form method="POST" action="{% url 'student_leave' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="student_name"><i class="fas fa-user icon"></i> Student Name</label>
+                        <input type="text" id="student_name" name="student_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg_number"><i class="fas fa-id-card icon"></i> Registration Number</label>
+                        <input type="text" id="reg_number" name="reg_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="class"><i class="fas fa-school icon"></i> Select Class</label>
+                        <select id="class" name="class" required>
+                            <option value="">Select Class</option>
+                            <option value="1">Class 1</option>
+                            <option value="2">Class 2</option>
+                            <option value="3">Class 3</option>
+                            <option value="4">Class 4</option>
+                            <option value="5">Class 5</option>
+                            <option value="6">Class 6</option>
+                            <option value="7">Class 7</option>
+                            <option value="8">Class 8</option>
+                            <option value="9">Class 9</option>
+                            <option value="10">Class 10</option>
+                            <option value="11">Class 11</option>
+                            <option value="12">Class 12</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="leave_reason"><i class="fas fa-comment icon"></i> Leave Reason</label>
+                        <textarea id="leave_reason" name="leave_reason" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="leave-dates"><i class="fas fa-calendar icon"></i> Leave Dates</label>
+                        <div class="date-range">
+                            <input type="date" id="leave_start_date" name="leave_start_date" required>
+                            <span>to</span>
+                            <input type="date" id="leave_end_date" name="leave_end_date" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-clock icon"></i> Leave Duration</label>
+                        <div class="leave-duration">
+                            <label class="radio-label">
+                                <input type="radio" name="leave_duration" value="full" checked>
+                                <span>Full Day</span>
+                            </label>
+                            <div class="half-day-container">
+                                <label class="radio-label">
+                                    <input type="radio" name="leave_duration" value="half">
+                                    <span>Half Day</span>
+                                </label>
+                                <div class="half-day-options" id="half-day-options" style="display: none;">
+                                    <label class="radio-label sub-option">
+                                        <input type="radio" name="half_day_type" value="first">
+                                        <span>First Half</span>
+                                    </label>
+                                    <label class="radio-label sub-option">
+                                        <input type="radio" name="half_day_type" value="second">
+                                        <span>Second Half</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn"><i class="fas fa-paper-plane icon"></i> Submit Leave Request</button>
+                </form>
+            </div>
+
+            <div class="section">
+                <h2><i class="fas fa-list icon"></i> Your Leave Requests</h2>
+                <div class="table-container">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Student Name</th>
+                                <th style="width: 15%;">Reg Number</th>
+                                <th style="width: 10%;">Class</th>
+                                <th style="width: 20%;">Leave Reason</th>
+                                <th style="width: 10%;">Start Date</th>
+                                <th style="width: 10%;">End Date</th>
+                                <th style="width: 10%;">Duration</th>
+                                <th style="width: 10%;">Status</th>
+                                <th style="width: 10%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in leave_requests %}
+                            <tr>
+                                <td>{{ request.1 }}</td>
+                                <td>{{ request.2 }}</td>
+                                <td>{{ request.3 }}</td>
+                                <td>{{ request.4 }}</td>
+                                <td>{{ request.5 }}</td>
+                                <td>{{ request.6 }}</td>
+                                <td>{{ request.7 }}{% if request.7 == 'half' and request.8 %} ({{ request.8 }}){% endif %}</td>
+                                <td class="status-{{ request.9|lower }}">{{ request.9|capfirst }}</td>
+                                <td>
+                                    <form method="POST" action="{% url 'download_leave_pdf' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="leave_id" value="{{ request.0 }}">
+                                        <button type="submit" class="download-btn"><i class="fas fa-download icon"></i> Download PDF</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="9">No leave requests submitted.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="nav-to-attendance">
+                <a href="{% url 'parent_student_portal' %}" class="nav-to-attendance-btn">
+                    <i class="fas fa-arrow-left icon"></i> Go to Attendance
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('table');
+            if (table) {
+                table.addEventListener('mouseover', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        e.target.parentNode.style.backgroundColor = '#d4f4e2';
+                    }
+                });
+                table.addEventListener('mouseout', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        const row = e.target.parentNode;
+                        const rows = Array.from(table.querySelectorAll('tbody tr'));
+                        const index = rows.indexOf(row);
+                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#e6f3ec';
+                    }
+                });
+            }
+            document.querySelectorAll('input[name="leave_duration"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.getElementById('half-day-options').style.display = 
+                        this.value === 'half' ? 'block' : 'none';
+                    if (this.value === 'full') {
+                        document.querySelectorAll('input[name="half_day_type"]').forEach(
+                            input => input.checked = false
+                        );
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

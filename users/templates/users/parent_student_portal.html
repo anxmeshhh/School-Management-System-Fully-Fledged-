@@ -1,0 +1,497 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Student Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f3ff 30%, #e9d5ff 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%23a855f7" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
+            background-size: cover, 30px 30px;
+            animation: backgroundFade 10s ease-in-out infinite alternate;
+            min-height: 100vh;
+            padding: 80px 20px 40px 20px;
+        }
+
+        @keyframes backgroundFade {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            background: #ffffff;
+            border: 2px solid #a855f7; /* Secondary purple */
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #6b21a8, #a855f7); /* Primary to secondary purple */
+            color: #ffffff;
+            padding: 1rem 2rem;
+            border-bottom: 4px solid #d8b4fe; /* Accent purple */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header .logo-button {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: #a855f7; /* Secondary purple */
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #6b21a8; /* Primary purple */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-section {
+            background: #ede9fe; /* Light purple */
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #a855f7; /* Secondary purple */
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .welcome-section h2 {
+            color: #6b21a8; /* Primary purple */
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: #4b5563;
+            font-size: 1rem;
+        }
+
+        .form-container {
+            background: #f5f3ff; /* Light purple */
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #a855f7; /* Secondary purple */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h2 {
+            color: #6b21a8; /* Primary purple */
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .form-container label {
+            color: #6b21a8; /* Primary purple */
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-container input[type="date"] {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 2px solid #a855f7; /* Secondary purple */
+            background: #f5f3ff; /* Light purple */
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-container input[type="date"]:focus {
+            border-color: #6b21a8; /* Primary purple */
+            box-shadow: 0 0 8px rgba(107, 33, 168, 0.3); /* Purple shadow */
+            outline: none;
+        }
+
+        .form-container button {
+            background: #a855f7; /* Secondary purple */
+            color: #ffffff;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .form-container button:hover {
+            background: #6b21a8; /* Primary purple */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .attendance-table {
+            max-height: 450px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 2px solid #a855f7; /* Secondary purple */
+            background: #f5f3ff; /* Light purple */
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            background: #ffffff;
+        }
+
+        th, td {
+            border: 1px solid #a855f7; /* Secondary purple */
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: #e9d5ff; /* Light purple */
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 700;
+            color: #6b21a8; /* Primary purple */
+        }
+
+        td {
+            color: #1f2937;
+        }
+
+        .highlight {
+            background: #ede9fe; /* Light purple */
+        }
+
+        .status-present { color: #6b21a8; font-weight: 600; } /* Primary purple */
+        .status-absent { color: #b91c1c; font-weight: 600; } /* Retained red */
+        .status-leave { color: #ca8a04; font-weight: 600; } /* Retained yellow */
+
+        .leave-request-button {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: #a855f7; /* Secondary purple */
+            color: #ffffff;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .leave-request-button:hover {
+            background: #6b21a8; /* Primary purple */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .alert-message {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-message .error {
+            background: #fef2f2;
+            color: #b91c1c;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-message .success {
+            background: #ede9fe; /* Light purple */
+            color: #6b21a8; /* Primary purple */
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #a855f7; /* Secondary purple */
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
+
+            .header {
+                padding: 0.8rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .welcome-section {
+                padding: 1.2rem;
+            }
+
+            .form-container {
+                padding: 1.2rem;
+            }
+
+            .form-container h2 {
+                font-size: 1.25rem;
+            }
+
+            .form-container label {
+                font-size: 0.9rem;
+            }
+
+            .form-container input[type="date"],
+            .form-container button {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+            }
+
+            .attendance-table {
+                max-height: 350px;
+            }
+
+            th, td {
+                font-size: 0.85rem;
+                padding: 0.6rem;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .logo-img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .leave-request-button {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
+            .header {
+                padding: 0.6rem 0.8rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+                border-radius: 8px;
+            }
+
+            .welcome-section {
+                padding: 1rem;
+            }
+
+            .welcome-section h2 {
+                font-size: 1.25rem;
+            }
+
+            .form-container {
+                padding: 1rem;
+            }
+
+            .form-container h2 {
+                font-size: 1.1rem;
+            }
+
+            .form-container label {
+                font-size: 0.85rem;
+            }
+
+            .form-container button {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                font-size: 0.75rem;
+                padding: 0.5rem;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .logo-img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .leave-request-button {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="{% url 'parent_dashboard' %}" class="back-btn">
+            <i class="fas fa-arrow-left icon"></i> Back to Dashboard
+        </a>
+        <h1><i class="fas fa-user-graduate icon"></i> Student Portal</h1>
+        <div class="logo-button">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="welcome-section">
+                <h2><i class="fas fa-user-graduate icon"></i> Welcome, Student!</h2>
+                <p>Access your attendance and stay updated with your academic journey.</p>
+            </div>
+
+            {% if messages %}
+                <div class="alert-message">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="form-container">
+                <form id="dateSelectForm" action="{% url 'student_portal' %}" method="get" class="mb-6">
+                    <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
+                        <div class="flex-1">
+                            <label for="date"><i class="fas fa-calendar icon"></i> Select Date</label>
+                            <input type="date" name="date" id="date" value="{{ selected_date }}">
+                        </div>
+                        <button type="submit"><i class="fas fa-search icon"></i> View Attendance</button>
+                    </div>
+                </form>
+
+                <h2><i class="fas fa-calendar-check icon"></i> Your Attendance History</h2>
+                {% if attendance_records %}
+                    <div class="attendance-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%;">Date</th>
+                                    <th style="width: 25%;">Admission Number</th>
+                                    <th style="width: 20%;">Class</th>
+                                    <th style="width: 20%;">Section</th>
+                                    <th style="width: 15%;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in attendance_records %}
+                                    <tr class="{% cycle 'bg-white' 'highlight' %}">
+                                        <td>{{ record.date }}</td>
+                                        <td>{{ record.admission_number }}</td>
+                                        <td>{{ record.class }}</td>
+                                        <td>{{ record.section|default:"N/A" }}</td>
+                                        <td class="status-{{ record.status }}">{{ record.status|capfirst }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p>No attendance records found for the selected date.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'parent_student_leave' %}" class="leave-request-button">
+        <i class="fas fa-envelope icon"></i> Request Leave
+    </a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('table');
+            if (table) {
+                table.addEventListener('mouseover', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        e.target.parentNode.style.backgroundColor = '#d4f4e2';
+                    }
+                });
+                table.addEventListener('mouseout', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        const row = e.target.parentNode;
+                        const rows = Array.from(table.querySelectorAll('tbody tr'));
+                        const index = rows.indexOf(row);
+                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#e6f3ec';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

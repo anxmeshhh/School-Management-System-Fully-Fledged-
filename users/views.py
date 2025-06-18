@@ -6178,3 +6178,829 @@ def teacher_profile(request):
         'profile_pic_url': profile_pic_url,
     }
     return render(request, 'users/teacher_profile.html', context)
+
+
+
+
+
+
+def parent_profile_view(request):
+    if "user_id" not in request.session:
+        return redirect("/login/")  # Redirect to login if not authenticated
+
+    user_id = request.session["user_id"]  # Get logged-in user's ID
+
+    # Fetch profile picture
+    profile_picture = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT image_path FROM profile_pics WHERE user_id = %s", [user_id])
+            profile_picture_result = cursor.fetchone()
+            if profile_picture_result:
+                profile_picture = f"{settings.MEDIA_URL}{profile_picture_result[0]}"
+                print(f"DEBUG: Found profile picture: {profile_picture}")
+    except Exception as e:
+        print("Error fetching profile picture:", e)
+
+    if request.method == "POST":
+        print(f"DEBUG: POST request received")
+        print(f"DEBUG: FILES in request: {request.FILES}")
+        print(f"DEBUG: POST data: {list(request.POST.keys())}")
+        
+        try:
+            with transaction.atomic():
+                # Handle ONLY profile picture upload
+                if 'profile_picture' in request.FILES and request.FILES['profile_picture']:
+                    print("DEBUG: Processing profile picture upload")
+                    profile_picture_file = request.FILES['profile_picture']
+                    print(f"DEBUG: File name: {profile_picture_file.name}, Size: {profile_picture_file.size}")
+                    
+                    # Validate file type
+                    allowed_extensions = ['.png', '.jpg', '.jpeg']
+                    file_ext = os.path.splitext(profile_picture_file.name)[1].lower()
+                    if file_ext not in allowed_extensions:
+                        messages.error(request, "Only PNG, JPG, or JPEG files are allowed.")
+                        return redirect('parent_profile_view')
+
+                    # Validate file size (5MB limit)
+                    if profile_picture_file.size > 5 * 1024 * 1024:
+                        messages.error(request, "File size must be less than 5MB.")
+                        return redirect('parent_profile_view')
+
+                    # Generate file path using UUID and user_id
+                    filename = f"{uuid.uuid4().hex}_{user_id}{file_ext}"
+                    
+                    # Create pfpics directory in MEDIA_ROOT
+                    pfpics_dir = os.path.join(settings.MEDIA_ROOT, 'pfpics')
+                    os.makedirs(pfpics_dir, exist_ok=True)
+                    
+                    file_path = os.path.join(pfpics_dir, filename)
+                    print(f"DEBUG: Saving file to: {file_path}")
+                    
+                    # Delete old profile picture if exists
+                    try:
+                        with connection.cursor() as cursor:
+                            cursor.execute("SELECT image_path FROM profile_pics WHERE user_id = %s", [user_id])
+                            old_pic = cursor.fetchone()
+                            if old_pic:
+                                old_file_path = os.path.join(settings.MEDIA_ROOT, old_pic[0])
+                                if os.path.exists(old_file_path):
+                                    os.remove(old_file_path)
+                                    print(f"DEBUG: Deleted old file: {old_file_path}")
+                    except Exception as e:
+                        print(f"Error deleting old profile picture: {e}")
+
+                    # Save new file
+                    try:
+                        with open(file_path, 'wb+') as destination:
+                            for chunk in profile_picture_file.chunks():
+                                destination.write(chunk)
+                        print(f"DEBUG: File saved successfully to {file_path}")
+                    except Exception as e:
+                        print(f"ERROR: Failed to save file: {e}")
+                        messages.error(request, "Failed to save file.")
+                        return redirect('parent_profile_view')
+
+                    # Update or insert profile picture path in database
+                    try:
+                        with connection.cursor() as cursor:
+                            cursor.execute("SELECT id FROM profile_pics WHERE user_id = %s", [user_id])
+                            existing = cursor.fetchone()
+                            
+                            db_path = f"pfpics/{filename}"
+                            if existing:
+                                cursor.execute(
+                                    "UPDATE profile_pics SET image_path = %s, uploaded_at = %s WHERE user_id = %s",
+                                    [db_path, timezone.now(), user_id]
+                                )
+                                print(f"DEBUG: Updated existing record with path: {db_path}")
+                            else:
+                                cursor.execute(
+                                    "INSERT INTO profile_pics (user_id, image_path, uploaded_at) VALUES (%s, %s, %s)",
+                                    [user_id, db_path, timezone.now()]
+                                )
+                                print(f"DEBUG: Inserted new record with path: {db_path}")
+                    except Exception as e:
+                        print(f"ERROR: Database operation failed: {e}")
+                        messages.error(request, "Failed to update database.")
+                        return redirect('parent_profile_view')
+                    
+                    messages.success(request, "Profile picture uploaded successfully!")
+                    return redirect('parent_profile_view')
+
+                # Handle regular form submission (when no file is uploaded)
+                else:
+                    print("DEBUG: Processing regular form submission")
+                    # Your existing form processing logic here
+                    name = request.POST.get("name")
+                    admission_number = request.POST.get("admission_number")
+                    student_class = request.POST.get("class")
+                    section = request.POST.get("section")
+                    roll_number = request.POST.get("roll_number")
+                    emis = request.POST.get("emis")
+
+                    # Only process if we have actual form data
+                    if name or admission_number:
+                        # Validate required fields for Page 1
+                        if not all([name, admission_number, student_class]):
+                            messages.error(request, "Please fill in all required fields.")
+                            return redirect('parent_profile_view')
+
+                        # Convert roll_number to integer if provided
+                        if roll_number:
+                            try:
+                                roll_number = int(roll_number)
+                            except (ValueError, TypeError):
+                                messages.error(request, "Roll number must be a valid integer.")
+                                return redirect('parent_profile_view')
+
+                        # Page 2 data
+                        gender = request.POST.get("gender")
+                        community = request.POST.get("community")
+                        tamil_name = request.POST.get("tamil_name")
+                        dob = request.POST.get("dob") or None
+                        nationality = request.POST.get("nationality")
+                        blood_group = request.POST.get("blood_group")
+                        mother_tongue = request.POST.get("mother_tongue")
+                        caste = request.POST.get("caste")
+                        religion = request.POST.get("religion")
+                        place_of_birth = request.POST.get("place_of_birth")
+                        aadhaar = request.POST.get("aadhaar")
+                        disability = request.POST.get("disability")
+                        id_mark1 = request.POST.get("id_mark1")
+                        id_mark2 = request.POST.get("id_mark2")
+                        current_class = request.POST.get("current_class")
+                        admission_class = request.POST.get("admission_class")
+                        admission_year = request.POST.get("admission_year")
+                        admission_date = request.POST.get("admission_date") or None
+
+                        # Page 3 data (Communication Details)
+                        email = request.POST.get("email")
+                        address = request.POST.get("address")
+                        contact = request.POST.get("contact")
+                        alt_contact = request.POST.get("alt_contact")
+                        country = request.POST.get("country")
+                        state = request.POST.get("state")
+                        city = request.POST.get("city")
+                        pincode = request.POST.get("pincode")
+                        status = request.POST.get("status")
+                        house = request.POST.get("house")
+                        teacher_ward = request.POST.get("teacher_ward")
+                        rte = request.POST.get("rte")
+                        sports_quota = request.POST.get("sports_quota")
+                        prev_school = request.POST.get("prev_school")
+                        prev_board = request.POST.get("prev_board")
+
+                        # Page 4 data (Parent & Medical Information)
+                        father_name = request.POST.get("father_name")
+                        father_name_tamil = request.POST.get("father_name_tamil")
+                        mother_name = request.POST.get("mother_name")
+                        mother_name_tamil = request.POST.get("mother_name_tamil")
+                        father_contact = request.POST.get("father_contact")
+                        mother_contact = request.POST.get("mother_contact")
+                        father_email = request.POST.get("father_email")
+                        mother_email = request.POST.get("mother_email")
+                        father_qualification = request.POST.get("father_qualification")
+                        mother_qualification = request.POST.get("mother_qualification")
+                        father_occupation = request.POST.get("father_occupation")
+                        mother_occupation = request.POST.get("mother_occupation")
+                        father_income = request.POST.get("father_income")
+                        mother_income = request.POST.get("mother_income")
+                        guardian_name = request.POST.get("guardian_name")
+                        guardian_contact = request.POST.get("guardian_contact")
+                        guardian_email = request.POST.get("guardian_email")
+                        child_living = request.POST.get("child_living")
+                        rights_on_child = request.POST.get("rights_on_child")
+                        med_blood_group = request.POST.get("med_blood_group")
+                        diseases = request.POST.get("diseases")
+                        allergies = request.POST.get("allergies")
+                        medicines = request.POST.get("medicines")
+                        hospital = request.POST.get("hospital")
+                        doctor = request.POST.get("doctor")
+
+                        with connection.cursor() as cursor:
+                            # Insert or Update student_page1
+                            cursor.execute("""
+                                INSERT INTO student_page1 (user_id, name, admission_number, class, section, roll_number, emis)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                                ON DUPLICATE KEY UPDATE 
+                                    name=VALUES(name), admission_number=VALUES(admission_number), 
+                                    class=VALUES(class), section=VALUES(section), 
+                                    roll_number=VALUES(roll_number), emis=VALUES(emis)
+                            """, (user_id, name, admission_number, student_class, section, roll_number, emis))
+
+                            # Insert or Update student_page2
+                            cursor.execute("""
+                                INSERT INTO student_page2 (user_id, gender, community, tamil_name, dob, nationality, blood_group, 
+                                                           mother_tongue, caste, religion, place_of_birth, aadhaar, disability, 
+                                                           id_mark1, id_mark2, current_class, admission_class, admission_year, admission_date)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                ON DUPLICATE KEY UPDATE 
+                                    gender=VALUES(gender), community=VALUES(community), tamil_name=VALUES(tamil_name), dob=VALUES(dob),
+                                    nationality=VALUES(nationality), blood_group=VALUES(blood_group), 
+                                    mother_tongue=VALUES(mother_tongue), caste=VALUES(caste), religion=VALUES(religion),
+                                    place_of_birth=VALUES(place_of_birth), aadhaar=VALUES(aadhaar),
+                                    disability=VALUES(disability), id_mark1=VALUES(id_mark1), id_mark2=VALUES(id_mark2),
+                                    current_class=VALUES(current_class), admission_class=VALUES(admission_class),
+                                    admission_year=VALUES(admission_year), admission_date=VALUES(admission_date)
+                            """, (user_id, gender, community, tamil_name, dob, nationality, blood_group, mother_tongue, 
+                                  caste, religion, place_of_birth, aadhaar, disability, id_mark1, id_mark2, current_class, 
+                                  admission_class, admission_year, admission_date))
+
+                            # Insert or Update student_page3
+                            cursor.execute("""
+                                INSERT INTO student_page3 (user_id, email, address, contact, alt_contact, country, state, city, pincode, status, 
+                                                           house, teacher_ward, rte, sports_quota, prev_school, prev_board)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                ON DUPLICATE KEY UPDATE 
+                                    email=VALUES(email), address=VALUES(address), contact=VALUES(contact), alt_contact=VALUES(alt_contact),
+                                    country=VALUES(country), state=VALUES(state), city=VALUES(city), pincode=VALUES(pincode), 
+                                    status=VALUES(status), house=VALUES(house), teacher_ward=VALUES(teacher_ward), rte=VALUES(rte), 
+                                    sports_quota=VALUES(sports_quota), prev_school=VALUES(prev_school), prev_board=VALUES(prev_board)
+                            """, (user_id, email, address, contact, alt_contact, country, state, city, pincode, status, 
+                                  house, teacher_ward, rte, sports_quota, prev_school, prev_board))
+
+                            # Insert or Update student_page4 (Parent & Medical Information)
+                            cursor.execute("""
+                                INSERT INTO student_page4 (
+                                    user_id, father_name, father_name_tamil, mother_name, mother_name_tamil, father_contact, 
+                                    mother_contact, father_email, mother_email, father_qualification, mother_qualification, 
+                                    father_occupation, mother_occupation, father_income, mother_income, guardian_name, 
+                                    guardian_contact, guardian_email, child_living, rights_on_child, med_blood_group, 
+                                    diseases, allergies, medicines, hospital, doctor
+                                ) 
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                ON DUPLICATE KEY UPDATE 
+                                    father_name=VALUES(father_name), father_name_tamil=VALUES(father_name_tamil),
+                                    mother_name=VALUES(mother_name), mother_name_tamil=VALUES(mother_name_tamil),
+                                    father_contact=VALUES(father_contact), mother_contact=VALUES(mother_contact),
+                                    father_email=VALUES(father_email), mother_email=VALUES(mother_email),
+                                    father_qualification=VALUES(father_qualification), mother_qualification=VALUES(mother_qualification),
+                                    father_occupation=VALUES(father_occupation), mother_occupation=VALUES(mother_occupation),
+                                    father_income=VALUES(father_income), mother_income=VALUES(mother_income),
+                                    guardian_name=VALUES(guardian_name), guardian_contact=VALUES(guardian_contact),
+                                    guardian_email=VALUES(guardian_email), child_living=VALUES(child_living),
+                                    rights_on_child=VALUES(rights_on_child), med_blood_group=VALUES(med_blood_group),
+                                    diseases=VALUES(diseases), allergies=VALUES(allergies), medicines=VALUES(medicines),
+                                    hospital=VALUES(hospital), doctor=VALUES(doctor)
+                            """, (
+                                user_id, father_name, father_name_tamil, mother_name, mother_name_tamil, father_contact,
+                                mother_contact, father_email, mother_email, father_qualification, mother_qualification,
+                                father_occupation, mother_occupation, father_income, mother_income, guardian_name,
+                                guardian_contact, guardian_email, child_living, rights_on_child, med_blood_group,
+                                diseases, allergies, medicines, hospital, doctor
+                            ))
+
+                        messages.success(request, "Profile updated successfully.")
+                        return redirect('parent_profile_view')
+
+        except Exception as e:
+            print(f"ERROR: Exception in POST processing: {e}")
+            messages.error(request, f"Failed to process request: {str(e)}")
+            return redirect('parent_profile_view')
+
+    # Fetch student details for display
+    student_data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    s1.name, s1.admission_number, s1.class, s1.section, s1.roll_number, s1.emis,
+                    s2.gender, s2.community, s2.tamil_name, s2.dob, s2.nationality, s2.blood_group, 
+                    s2.mother_tongue, s2.caste, s2.religion, s2.place_of_birth, s2.aadhaar, s2.disability,
+                    s2.id_mark1, s2.id_mark2, s2.current_class, s2.admission_class, s2.admission_year, s2.admission_date,
+                    s3.email, s3.address, s3.contact, s3.alt_contact, s3.country, s3.state, s3.city, s3.pincode,
+                    s3.status, s3.house, s3.teacher_ward, s3.rte, s3.sports_quota, s3.prev_school, s3.prev_board,
+                    s4.father_name, s4.father_name_tamil, s4.mother_name, s4.mother_name_tamil, 
+                    s4.father_contact, s4.mother_contact, s4.father_email, s4.mother_email,
+                    s4.father_qualification, s4.mother_qualification, s4.father_occupation, s4.mother_occupation,
+                    s4.father_income, s4.mother_income, s4.guardian_name, s4.guardian_contact,
+                    s4.guardian_email, s4.child_living, s4.rights_on_child,
+                    s4.med_blood_group, s4.diseases, s4.allergies, s4.medicines, 
+                    s4.hospital, s4.doctor
+                FROM student_page1 s1
+                LEFT JOIN student_page2 s2 ON s1.user_id = s2.user_id
+                LEFT JOIN student_page3 s3 ON s1.user_id = s3.user_id
+                LEFT JOIN student_page4 s4 ON s1.user_id = s4.user_id
+                WHERE s1.user_id = %s
+            """, [user_id])
+            student_data = cursor.fetchone()
+    except Exception as e:
+        print(f"DEBUG: Error fetching student data: {e}")
+
+    print(f"DEBUG: Rendering template with profile_picture: {profile_picture}")
+    return render(request, "users/parent_profile_view.html", {
+        "student_data": student_data,
+        "profile_picture": profile_picture,
+        "user_id": user_id
+    })
+
+
+
+
+def parent_student_portal(request):
+    if "user_id" not in request.session:
+        return redirect("/")
+    
+    user_id = request.session['user_id']
+    selected_date = request.GET.get('date', '')
+    
+    with connection.cursor() as cursor:
+        if selected_date:
+            cursor.execute(
+                """
+                SELECT a.date, s.admission_number, s.name, a.class, a.section, a.status 
+                FROM attendance a
+                JOIN student_page1 s ON a.student_id = s.user_id
+                WHERE s.user_id = %s AND a.date = %s
+                ORDER BY a.date DESC
+                """,
+                [user_id, selected_date]
+            )
+        else:
+            cursor.execute(
+                """
+                SELECT a.date, s.admission_number, s.name, a.class, a.section, a.status
+                FROM attendance a
+                JOIN student_page1 s ON a.student_id = s.user_id
+                WHERE s.user_id = %s
+                ORDER BY a.date DESC
+                """,
+                [user_id]
+            )
+        attendance_records = [
+            {
+                'date': row[0],
+                'admission_number': row[1],
+                'name': row[2],
+                'class': row[3],
+                'section': row[4] if row[4] else 'N/A',
+                'status': row[5]
+            } for row in cursor.fetchall()
+        ]
+
+    return render(request, 'users/parent_student_portal.html', {
+        'attendance_records': attendance_records,
+        'selected_date': selected_date
+    })
+
+
+
+def parent_student_leave(request):
+    """Handle parent student leave request submission and viewing."""
+    if "user_id" not in request.session:
+        messages.error(request, "Please log in to access the parent student portal.")
+        return redirect("/parent_login/")
+
+    user_id = request.session["user_id"]
+    
+    if request.method == "POST":
+        try:
+            form_data = {
+                "student_name": request.POST.get("student_name", "").strip(),
+                "reg_number": request.POST.get("reg_number", "").strip(),
+                "class_number": request.POST.get("class", "").strip(),
+                "leave_reason": request.POST.get("leave_reason", "").strip(),
+                "leave_start_date": request.POST.get("leave_start_date", ""),
+                "leave_end_date": request.POST.get("leave_end_date", ""),
+                "leave_duration": request.POST.get("leave_duration", ""),
+                "half_day_type": request.POST.get("half_day_type", "")
+            }
+
+            required_fields = ["student_name", "reg_number", "class_number", "leave_reason", 
+                             "leave_start_date", "leave_end_date", "leave_duration"]
+            missing_fields = [field for field in required_fields if not form_data[field]]
+            if missing_fields:
+                messages.error(request, f"Missing required fields: {', '.join(missing_fields)}")
+                return redirect("parent_student_leave")
+            
+            if form_data["leave_duration"] not in ["full", "half"]:
+                messages.error(request, "Invalid leave duration.")
+                return redirect("parent_student_leave")
+                
+            if form_data["leave_duration"] == "half" and not form_data["half_day_type"]:
+                messages.error(request, "Please select half day type for half-day leave.")
+                return redirect("parent_student_leave")
+
+            try:
+                start_date = datetime.datetime.strptime(form_data["leave_start_date"], "%Y-%m-%d")
+                end_date = datetime.datetime.strptime(form_data["leave_end_date"], "%Y-%m-%d")
+                if start_date > end_date:
+                    messages.error(request, "End date must be on or after start date.")
+                    return redirect("parent_student_leave")
+            except ValueError:
+                messages.error(request, "Invalid date format.")
+                return redirect("parent_student_leave")
+
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO student_leave_requests 
+                    (user_id, student_name, reg_number, class_number, leave_reason,
+                    leave_start_date, leave_end_date, leave_duration, half_day_type, status)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, [user_id, form_data["student_name"], form_data["reg_number"], 
+                      form_data["class_number"], form_data["leave_reason"], 
+                      form_data["leave_start_date"], form_data["leave_end_date"],
+                      form_data["leave_duration"], 
+                      form_data["half_day_type"] if form_data["leave_duration"] == "half" else None,
+                      "Pending"])
+                connection.commit()
+            messages.success(request, "Leave request submitted successfully.")
+        except Exception as e:
+            connection.rollback()
+            messages.error(request, f"Error submitting leave request: {str(e)}")
+        return redirect("parent_student_leave")
+
+    # Fetch leave requests for this parent student
+    leave_requests = []
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute("""
+                SELECT id, student_name, reg_number, class_number, leave_reason, 
+                leave_start_date, leave_end_date, leave_duration, half_day_type, status
+                FROM student_leave_requests WHERE user_id = %s
+                ORDER BY leave_start_date DESC
+            """, [user_id])
+            leave_requests = cursor.fetchall()
+        except Exception as e:
+            messages.error(request, f"Error fetching leave requests: {str(e)}")
+
+    return render(request, "users/parent_student_leave.html", {
+        "leave_requests": leave_requests
+    })
+
+
+
+
+def parent_student_circular(request):
+    # Get the logged-in user's user_id from session and fetch class/section from student_page1
+    student_class = None
+    student_section = None
+    error_message = None
+
+    if "user_id" not in request.session:
+        error_message = "Please log in to view circulars."
+        print("No user_id found in session")
+    else:
+        user_id = request.session['user_id']
+        print(f"Session user_id: {user_id}")
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT class, section FROM student_page1 WHERE user_id = %s",
+                    [user_id]
+                )
+                result = cursor.fetchone()
+                if result:
+                    student_class, student_section = [normalize_value(r) for r in result]
+                    print(f"Parent student user_id={user_id}: class={student_class}, section={student_section}")
+                else:
+                    error_message = "No class or section found for your account. Please contact the admin."
+                    print(f"No student record found for user_id: {user_id}")
+        except Exception as e:
+            error_message = "Error fetching your class/section. Please try again later."
+            print(f"Error fetching parent student class/section for user_id={user_id}: {e}")
+
+    # Get filter type from POST request (default to 'all')
+    filter_type = request.POST.get('filter_type', 'all')
+    print(f"Filter type: {filter_type}")
+
+    circulars = []
+    for file in os.listdir(UPLOAD_DIR):
+        if file.endswith(('.jpg', '.png', '.jpeg', '.webp', '.gif')):
+            full_path = os.path.join(UPLOAD_DIR, file)
+            if not os.path.exists(full_path):
+                print(f"Image file missing in parent student view: {full_path}")
+                continue
+
+            title_file = f"{file}.txt"
+            title_path = os.path.join(UPLOAD_DIR, title_file)
+            title = "Untitled"
+            target = "all"
+            class_name = ""
+            section = ""
+
+            if os.path.exists(title_path):
+                try:
+                    with open(title_path, 'r') as f:
+                        lines = f.readlines()
+                        title = lines[0].strip() if lines else "Untitled"
+                        target = lines[1].strip().lower() if len(lines) > 1 else "all"
+                        if target == 'specific' and len(lines) >= 4:
+                            class_name = normalize_value(lines[2])
+                            section = normalize_value(lines[3])
+                        print(f"Circular {file}: title={title}, target={target}, class={class_name}, section={section}")
+                except Exception as e:
+                    print(f"Error reading metadata from {title_path}: {e}")
+                    continue
+
+            # Filter circulars based on filter_type
+            include_circular = False
+            if filter_type == 'all':
+                if target == "all" or (
+                    target == "specific" and
+                    student_class and student_section and
+                    class_name == student_class and section == student_section
+                ):
+                    include_circular = True
+            elif filter_type == 'specific':
+                if target == "specific" and student_class and student_section and class_name == student_class and section == student_section:
+                    include_circular = True
+
+            if include_circular:
+                try:
+                    created_at = datetime.datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
+                    image_url = f"/static/uploads/{file}"  # Consistent path
+                    print(f"Included circular: {file}, image_url: {image_url}, full_path: {full_path}")
+                    display_target = "All" if target == "all" else f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
+                    circulars.append({
+                        'title': title,
+                        'image_url': image_url,
+                        'date': created_at,
+                        'target': display_target
+                    })
+                except Exception as e:
+                    print(f"Error processing file {file}: {e}")
+
+    # Sort by newest first
+    circulars = sorted(circulars, key=lambda x: x['date'], reverse=True)
+    print(f"Total circulars displayed: {len(circulars)}")
+
+    return render(request, 'users/parent_student_circular.html', {
+        'circulars': circulars,
+        'student_class': student_class,
+        'student_section': student_section,
+        'filter_type': filter_type,
+        'error_message': error_message
+    })
+
+
+def parent_study_materials(request):
+    if "user_id" not in request.session:
+        messages.error(request, "Please log in to access the parent student portal.")
+        return redirect("/parent_login/")
+
+    user_id = request.session["user_id"]
+    student_class = None
+    student_section = None
+
+    # Fetch student's class and section
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT class, section FROM student_page1 WHERE user_id = %s",
+                [user_id]
+            )
+            result = cursor.fetchone()
+            if result:
+                student_class, student_section = result
+            else:
+                messages.error(request, "No class or section found for your account. Please contact the admin.")
+                return redirect("/parent-study-materials/")
+    except Exception as e:
+        messages.error(request, f"Error fetching class/section: {str(e)}")
+        return redirect("/parent-study-materials/")
+
+    try:
+        with connection.cursor() as cursor:
+            query = """
+                SELECT title, file_path, upload_date, class, section
+                FROM study_materials
+                WHERE class = %s AND section = %s
+                ORDER BY upload_date DESC
+            """
+            cursor.execute(query, [student_class, student_section])
+            study_materials = [
+                {
+                    "title": r[0],
+                    "file_path": r[1],
+                    "upload_date": r[2],
+                    "class": r[3],
+                    "section": r[4]
+                } for r in cursor.fetchall()
+            ]
+    except Exception as e:
+        messages.error(request, f"Error retrieving study materials: {str(e)}")
+        study_materials = []
+
+    return render(request, "users/parent_study_materials.html", {
+        "study_materials": study_materials,
+        "media_url": settings.MEDIA_URL,
+        "student_class": student_class,
+        "student_section": student_section
+    })
+
+
+
+def parent_homework(request):
+    if "user_id" not in request.session:
+        messages.error(request, "Please log in to access the parent student portal.")
+        return redirect("/parent_login/")
+
+    user_id = request.session["user_id"]
+    student_class = None
+    student_section = None
+
+    # Fetch student's class and section
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT class, section FROM student_page1 WHERE user_id = %s",
+                [user_id]
+            )
+            result = cursor.fetchone()
+            if result:
+                student_class, student_section = result
+            else:
+                messages.error(request, "No class or section found for your account. Please contact the admin.")
+                return redirect("/parent-homework/")
+    except Exception as e:
+        messages.error(request, f"Error fetching class/section: {str(e)}")
+        return redirect("/parent-homework/")
+
+    if request.method == "POST":
+        title = request.POST.get("title")
+        submission_date = request.POST.get("submission_date")
+        uploaded_file = request.FILES.get("file")
+
+        if not all([title, submission_date, uploaded_file]):
+            messages.error(request, "All fields are required.")
+            return redirect("/parent-homework/")
+
+        # Validate file is a PDF
+        validator = FileExtensionValidator(allowed_extensions=['pdf'])
+        try:
+            validator(uploaded_file)
+        except ValidationError:
+            messages.error(request, "Only PDF files are allowed.")
+            return redirect("/parent-homework/")
+
+        try:
+            # Save file with unique filename
+            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'Uploads'))
+            filename = f"{uuid.uuid4().hex}_{uploaded_file.name}"
+            filename = fs.save(filename, uploaded_file)
+            file_path = f"Uploads/{filename}"
+
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO homework (user_id, title, submission_date, file_path, class, section)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    [user_id, title, submission_date, file_path, student_class, student_section]
+                )
+            messages.success(request, "Homework submitted successfully!")
+        except Exception as e:
+            messages.error(request, f"Error submitting homework: {str(e)}")
+        return redirect("/parent-homework/")
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT h.title, h.submission_date, h.file_path
+                FROM homework h
+                WHERE h.user_id = %s
+                ORDER BY h.submission_date DESC
+                """,
+                [user_id]
+            )
+            homework_list = [
+                {"title": r[0], "submission_date": r[1], "file_path": r[2]}
+                for r in cursor.fetchall()
+            ]
+    except Exception as e:
+        messages.error(request, f"Error retrieving homework: {str(e)}")
+        homework_list = []
+
+    return render(request, "users/parent_homework.html", {
+        "homework_list": homework_list,
+        "student_class": student_class,
+        "student_section": student_section
+    })
+
+
+
+def parent_student_timetable(request):
+    if 'user_id' not in request.session:
+        messages.error(request, 'Please log in to access the parent student portal.')
+        return redirect('/parent_login/')
+    
+    user_id = request.session['user_id']
+    with connection.cursor() as cursor:
+        # Fetch class and section for the student
+        cursor.execute("SELECT class, section FROM student_page1 WHERE user_id = %s", [user_id])
+        student = cursor.fetchone()
+        if not student:
+            messages.error(request, 'Student class information not found.')
+            return redirect('parent_student_timetable')
+        
+        class_name, section = student
+        if not class_name:
+            messages.error(request, 'Invalid class information for the student.')
+            return redirect('parent_student_timetable')
+        
+        # Construct class_id
+        class_id = f"{class_name}{section}" if section else class_name
+        
+        # Check if timetable entries exist
+        cursor.execute("SELECT COUNT(*) FROM timetable WHERE class_id = %s", [class_id])
+        timetable_count = cursor.fetchone()[0]
+        if timetable_count == 0:
+            messages.warning(request, f'No timetable entries found for class {class_id}.')
+            return render(request, 'users/parent_student_timetable.html', {
+                'timetable_data': [], 'class_id': class_id
+            })
+        
+        # Fetch timetable with teacher details
+        query = """
+            SELECT t.id, t.class_id, t.subject, tch.name, t.day_of_week, 
+                   t.start_time, t.end_time, t.room
+            FROM timetable t
+            JOIN teachers tch ON t.teacher_id = tch.id
+            WHERE t.class_id = %s
+            ORDER BY FIELD(t.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
+        """
+        cursor.execute(query, [class_id])
+        timetables = [
+            {
+                'id': row[0],
+                'class_id': row[1],
+                'subject': row[2],
+                'name': row[3],
+                'day_of_week': row[4],
+                'start_time': row[5],
+                'end_time': row[6],
+                'room': row[7]
+            } for row in cursor.fetchall()
+        ]
+    
+    # Organize by day as a list of (day, entries)
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    timetable_data = []
+    for day in days:
+        entries = [entry for entry in timetables if entry['day_of_week'] == day]
+        timetable_data.append((day, entries))
+    
+    return render(request, 'users/parent_student_timetable.html', {
+        'timetable_data': timetable_data, 'class_id': class_id
+    })
+
+
+def student_progress_card(request):
+    if 'user_id' not in request.session:
+        messages.error(request, 'Please log in to access the student portal.')
+        return redirect('/login/')
+    
+    user_id = request.session['user_id']
+    with connection.cursor() as cursor:
+        # Fetch class and section for the student
+        cursor.execute("SELECT class, section FROM student_page1 WHERE user_id = %s", [user_id])
+        student = cursor.fetchone()
+        if not student:
+            messages.error(request, 'Student class information not found.')
+            return redirect('student_progress_card')
+        
+        class_name, section = student
+        if not class_name:
+            messages.error(request, 'Invalid class information for the student.')
+            return redirect('student_progress_card')
+        
+        # Placeholder for progress card data (since results are not yet available)
+        progress_card_data = []
+
+    return render(request, 'users/student_progress_card.html', {
+        'progress_card_data': progress_card_data,
+        'class_name': class_name,
+        'section': section
+    })
+
+
+def parent_student_progress_card(request):
+    if 'user_id' not in request.session:
+        messages.error(request, 'Please log in to access the parent student portal.')
+        return redirect('/login/')
+    
+    user_id = request.session['user_id']
+    with connection.cursor() as cursor:
+        # Fetch class and section for the student
+        cursor.execute("SELECT class, section FROM student_page1 WHERE user_id = %s", [user_id])
+        student = cursor.fetchone()
+        if not student:
+            messages.error(request, 'Student class information not found.')
+            return redirect('parent_student_progress_card')
+        
+        class_name, section = student
+        if not class_name:
+            messages.error(request, 'Invalid class information for the student.')
+            return redirect('parent_student_progress_card')
+        
+        # Placeholder for progress card data (since results are not yet available)
+        progress_card_data = []
+
+    return render(request, 'users/parent_student_progress_card.html', {
+        'progress_card_data': progress_card_data,
+        'class_name': class_name,
+        'section': section
+    })
