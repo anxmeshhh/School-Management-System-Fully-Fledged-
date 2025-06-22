@@ -4,23 +4,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Login</title>
+    <title>Manavargal School Management System - Parent Login</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary-color: #6a0dad;
+            --primary-hover: #7b1fa2;
+            --white: #ffffff;
+            --light-bg: rgba(255, 255, 255, 0.95);
+            --border-color: #ddd;
+            --text-color: #666;
+            --error-color: #dc3545;
+            --success-color: #28a745;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 4px 15px rgba(106, 13, 173, 0.2);
+            --space-xs: 5px;
+            --space-sm: 10px;
+            --space-md: 15px;
+            --space-lg: 20px;
+            --space-xl: 30px;
+            --font-xs: 12px;
+            --font-sm: 14px;
+            --font-md: 16px;
+            --font-lg: 18px;
+            --font-xl: 24px;
+            --radius-sm: 5px;
+            --radius-md: 10px;
+            --radius-lg: 20px;
+            --radius-full: 50%;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
         }
 
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: linear-gradient(135deg, #e6f5ee 0%, #d4edda 100%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(106,13,173,0.1)"/></svg>') repeat;
+            background-size: 200%, 20px 20px;
             min-height: 100vh;
-            background: linear-gradient(135deg, #6a0dad, #b19cd9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            touch-action: pan-y;
         }
 
         body::before {
@@ -31,36 +72,21 @@
             width: 100%;
             height: 100%;
             background: url("{% static 'users/images/bg_image.png' %}?v=3") no-repeat center center fixed;
-            opacity: 0.5;
-            z-index: 1;
-            mix-blend-mode: overlay;
             background-size: cover;
-            background-position: center;
+            opacity: 0.5;
+            mix-blend-mode: overlay;
+            z-index: 1;
         }
 
         body::after {
             content: '';
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 0;
             width: 100%;
-            height: 100px;
-            background: linear-gradient(
-                to top,
-                rgba(106, 13, 173, 0.4) 0%,
-                transparent 100%
-            );
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
             z-index: 1;
-        }
-
-        .container {
-            position: relative;
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
         }
 
         .background {
@@ -74,165 +100,215 @@
             animation: fadeIn 2s ease-in-out;
         }
 
+        body > * {
+            position: relative;
+            z-index: 2;
+        }
+
         .logo {
             position: absolute;
             top: 20px;
             left: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
             z-index: 3;
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.1);
+            transition: transform 0.6s ease-in-out;
         }
 
         .logo img {
-            width: 60px;
-            height: auto;
-        }
-
-        .header-text {
-            position: absolute;
-            top: 30px;
-            z-index: 3;
-            color: #fff;
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            animation: slideInDown 1s ease-in-out;
-        }
-
-        .header-text span {
-            display: block;
-            font-size: 18px;
-            font-weight: normal;
-            margin-top: 5px;
-        }
-
-        .login-box {
-            position: absolute;
-            right: 50px;
-            background: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            z-index: 3;
-            width: 350px;
-            max-width: 90%;
-            animation: slideInRight 1s ease-in-out;
-            transition: transform 0.3s ease;
-        }
-
-        .login-box:hover {
-            transform: translateY(-5px);
-        }
-
-        .login-box h2 {
-            font-size: 24px;
-            color: #6a0dad;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .textbox {
-            margin-bottom: 20px;
-            text-align: left;
-            position: relative;
-        }
-
-        .textbox label {
-            display: block;
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .textbox input {
             width: 100%;
-            padding: 10px 40px 10px 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            object-fit: cover;
+            animation: bounceIn 1.2s ease-out;
         }
 
-        .textbox input:focus {
-            border-color: #b19cd9;
-            box-shadow: 0 0 5px rgba(177, 156, 217, 0.5);
+        .logo:hover {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .welcome-header {
+            position: absolute;
+            top: 20px;
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            width: 100%;
+            z-index: 3;
+            animation: slideInDown 1.2s ease-in-out;
+        }
+
+        .welcome-header span {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: normal;
+            color: #170d0d;
+        }
+
+        .container {
+            background: var(--light-bg);
+            backdrop-filter: blur(8px);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            width: 100%;
+            max-width: 400px;
+            margin-top: 120px;
+            z-index: 3;
+            animation: slideInRight 1.2s ease-in-out;
+            transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+        }
+
+        .container:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+            animation: fadeInUp 1s ease-in-out;
+        }
+
+        .form-group label {
+            position: absolute;
+            top: 0.8rem;
+            left: 0.8rem;
+            color: var(--text-color);
+            transition: 0.3s;
+            pointer-events: none;
+            font-size: var(--font-md);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 40px 0.8rem 0.8rem;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--border-color), var(--primary-color)) border-box;
+            border-radius: 8px;
+            font-size: var(--font-md);
+            transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
+            outline: none;
+        }
+
+        .form-group input:focus ~ label,
+        .form-group input:valid ~ label {
+            top: -0.5rem;
+            font-size: var(--font-sm);
+            color: var(--primary-color);
+            background: var(--white);
+            padding: 0 5px;
+        }
+
+        .form-group input:focus {
+            box-shadow: 0 0 8px rgba(106, 13, 173, 0.3);
+            transform: scale(1.02);
         }
 
         .toggle-password {
             position: absolute;
             right: 10px;
-            top: 50%;
-            transform: translateY(-10%);
+            top: 60%;
+            transform: translateY(-50%);
             cursor: pointer;
             width: 24px;
             height: 24px;
-            fill: #6a0dad;
-            transition: fill 0.3s ease;
+            fill: var(--primary-color);
+            transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
         }
 
         .toggle-password:hover {
-            fill: #7b1fa2;
+            fill: var(--primary-hover);
+            transform: translateY(-50%) scale(1.1);
         }
 
-        .btn {
+        button {
             width: 100%;
-            padding: 10px;
-            background: #6a0dad;
+            padding: 1rem;
+            background: var(--primary-color);
             border: none;
             border-radius: 25px;
-            color: #fff;
-            font-size: 16px;
+            color: var(--white);
+            font-size: var(--font-md);
+            font-weight: 600;
             cursor: pointer;
             margin-bottom: 10px;
-            transition: background 0.3s ease, transform 0.3s ease;
+            transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
         }
 
-        .btn:hover {
-            background: #7b1fa2;
-            transform: scale(1.05);
+        button:hover {
+            background: var(--primary-hover);
+            transform: scale(1.08);
+            box-shadow: var(--shadow-lg);
         }
 
         .signup-btn {
             width: 100%;
-            padding: 10px;
-            background: #fff;
-            border: 1px solid #6a0dad;
+            padding: 1rem;
+            background: var(--white);
+            border: 1px solid var(--primary-color);
             border-radius: 25px;
-            color: #6a0dad;
-            font-size: 16px;
+            color: var(--primary-color);
+            font-size: var(--font-md);
+            font-weight: 600;
             cursor: pointer;
             text-align: center;
             text-decoration: none;
-            transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+            display: block;
+            margin-bottom: 10px;
+            transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
         }
 
         .signup-btn:hover {
-            background: #6a0dad;
-            color: #fff;
-            transform: scale(1.05);
+            background: var(--primary-color);
+            color: var(--white);
+            transform: scale(1.08);
+            box-shadow: var(--shadow-lg);
         }
 
-        .error-message, .success-message {
+        .notification-box {
             text-align: center;
             margin-bottom: 15px;
             font-size: 14px;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            opacity: 0.95;
         }
 
-        .error-message {
-            color: red;
+        .notification-box.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 5px solid var(--success-color);
         }
 
-        .success-message {
-            color: green;
+        .notification-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid var(--error-color);
         }
 
         @keyframes fadeIn {
             0% { opacity: 0; }
             100% { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes slideInDown {
@@ -245,115 +321,114 @@
             100% { transform: translateX(0); opacity: 1; }
         }
 
-        @media (max-width: 1024px) {
-            .login-box {
-                right: 20px;
-                width: 320px;
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                max-width: 360px;
+                margin-top: 110px;
             }
 
-            .header-text {
-                font-size: 22px;
+            .welcome-header {
+                font-size: 1.6rem;
             }
 
-            .header-text span {
-                font-size: 16px;
+            .welcome-header span {
+                font-size: 1.1rem;
             }
         }
 
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                min-height: auto;
-                padding: 15px;
+            .welcome-header {
+                font-size: 1.4rem;
+                padding: 0 10px;
+            }
+
+            .welcome-header span {
+                font-size: 1rem;
             }
 
             .logo {
+                width: 60px;
+                height: 60px;
                 top: 15px;
                 left: 15px;
             }
 
-            .logo img {
-                width: 50px;
+            .container {
+                padding: 1.5rem;
+                max-width: 90%;
+                margin-top: 100px;
             }
 
-            .header-text {
-                top: 80px;
-                font-size: 20px;
+            h2 {
+                font-size: 1.5rem;
             }
 
-            .header-text span {
-                font-size: 15px;
+            .form-group label {
+                font-size: 0.9rem;
             }
 
-            .login-box {
-                position: relative;
-                right: auto;
-                width: 100%;
-                max-width: 340px;
-                margin: 120px auto 20px;
-                padding: 25px;
+            .form-group input {
+                padding: 0.7rem 40px 0.7rem 0.7rem;
+                font-size: 0.9rem;
             }
 
-            .login-box h2 {
-                font-size: 22px;
-            }
-
-            .textbox input {
-                font-size: 15px;
-            }
-
-            .btn, .signup-btn {
-                font-size: 15px;
-                padding: 9px;
+            button, .signup-btn {
+                padding: 0.8rem;
+                font-size: 0.9rem;
             }
 
             .toggle-password {
                 width: 22px;
                 height: 22px;
             }
+
+            .notification-box {
+                font-size: var(--font-sm);
+                padding: var(--space-xs) var(--space-sm);
+            }
         }
 
         @media (max-width: 480px) {
-            .container {
-                padding: 10px;
-            }
-
             .logo {
+                width: 50px;
+                height: 50px;
                 top: 10px;
                 left: 10px;
             }
 
-            .logo img {
-                width: 45px;
-            }
-
-            .header-text {
+            .welcome-header {
                 top: 70px;
-                font-size: 18px;
+                font-size: 1.2rem;
             }
 
-            .header-text span {
-                font-size: 14px;
+            .welcome-header span {
+                font-size: 0.9rem;
             }
 
-            .login-box {
+            .container {
                 max-width: 300px;
-                padding: 20px;
-                margin: 100px auto 15px;
+                padding: 1.2rem;
+                margin-top: 90px;
             }
 
-            .login-box h2 {
-                font-size: 20px;
+            h2 {
+                font-size: 1.3rem;
             }
 
-            .textbox input {
-                font-size: 14px;
-                padding: 8px 40px 8px 8px;
+            .form-group input {
+                font-size: 0.85rem;
+                padding: 0.6rem 40px 0.6rem 0.6rem;
             }
 
-            .btn, .signup-btn {
-                font-size: 14px;
-                padding: 8px;
+            button, .signup-btn {
+                font-size: 0.85rem;
+                padding: 0.7rem;
             }
 
             .toggle-password {
@@ -361,84 +436,134 @@
                 height: 20px;
                 right: 8px;
             }
+
+            .notification-box {
+                font-size: var(--font-sm);
+                padding: var(--space-xs) var(--space-sm);
+            }
         }
 
-        @media (max-width: 360px) {
-            .header-text {
-                font-size: 16px;
-            }
-
-            .header-text span {
-                font-size: 13px;
-            }
-
-            .login-box {
+        @media (max-width: 320px) {
+            .container {
                 max-width: 280px;
-                padding: 15px;
+                margin-top: 80px;
             }
 
-            .login-box h2 {
-                font-size: 18px;
+            .welcome-header {
+                font-size: 1rem;
             }
 
-            .textbox input {
-                font-size: 13px;
+            .welcome-header span {
+                font-size: 0.8rem;
             }
 
-            .btn, .signup-btn {
-                font-size: 13px;
-                padding: 7px;
+            .logo {
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .container {
+                margin-top: 80px;
+                padding: 1rem;
             }
 
-            .toggle-password {
-                width: 18px;
-                height: 18px;
+            .logo {
+                width: 50px;
+                height: 50px;
+                top: 10px;
+                left: 10px;
+            }
+
+            .welcome-header {
+                top: 10px;
+                font-size: 1.2rem;
+            }
+
+            .welcome-header span {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (hover: none) {
+            .container:hover {
+                transform: none;
+                box-shadow: var(--shadow-md);
+            }
+
+            button:hover, .signup-btn:hover {
+                transform: none;
+                box-shadow: none;
+            }
+
+            button:active, .signup-btn:active {
+                transform: scale(0.98);
+            }
+
+            .toggle-password:hover {
+                transform: translateY(-50%);
+                fill: var(--primary-color);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
+        @supports (padding: max(0px)) {
+            .container {
+                padding-left: max(15px, env(safe-area-inset-left));
+                padding-right: max(15px, env(safe-area-inset-right));
+                padding-bottom: max(15px, env(safe-area-inset-bottom));
             }
         }
     </style>
 </head>
 <body>
+    <div class="background"></div>
+    <div class="logo">
+        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
+    </div>
+    <div class="welcome-header">
+        Welcome to Manavargal School Management System
+        <span>INFORMATION AT EASE | தகவல் உங்கள் எளிதாக</span>
+    </div>
     <div class="container">
-        <div class="background"></div>
-        <div class="logo">
-            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
-        </div>
-        <div class="header-text">
-            தகவல் உங்கள் எளிதாக<br>
-            <span>INFORMATION AT EASE</span>
-        </div>
-        <div class="login-box">
-            
-            {% if error %}
-                <p class="error-message">{{ error }}</p>
-            {% endif %}
-            {% if messages %}
-                {% for message in messages %}
-                    <p class="{% if message.tags == 'success' %}success-message{% else %}error-message{% endif %}">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-            <form method="POST" action="{% url 'parent_login' %}">
-                {% csrf_token %}
-                <div class="textbox">
-                    <label>Username*</label>
-                    <input type="text" name="username" required>
-                </div>
-                <div class="textbox">
-                    <label>Password*</label>
-                    <input type="password" id="password" name="password" required>
-                    <svg class="toggle-password" onclick="togglePassword()" viewBox="0 0 24 24">
-                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                    </svg>
-                </div>
-                <button type="submit" class="btn">Login</button>
-                <a href="{% url 'parent_signup' %}" class="signup-btn">New User Signup</a>
-            </form>
-        </div>
+        <h2>Parent Login</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="notification-box {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="POST" action="{% url 'parent_login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" id="username" name="username" required>
+                <label for="username">Username*</label>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" name="password" required>
+                <label for="password">Password*</label>
+                <svg class="toggle-password" onclick="togglePassword('password')" viewBox="0 0 24 24">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                </svg>
+            </div>
+            <button type="submit">Login</button>
+            <a href="{% url 'parent_signup' %}" class="signup-btn">New User? Signup</a>
+        </form>
     </div>
     <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleButton = document.querySelector('.toggle-password');
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const toggleButton = passwordInput.nextElementSibling.nextElementSibling;
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 toggleButton.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-4.01.68l2.02 2.02c.57-.23 1.18-.36 1.83-.36zm-6.36 1.47l2.43 2.43.02.02c-.54.38-1.03.86-1.39 1.42l-2.92-2.92C2.27 10.68 1.08 12.31.35 14.17c1.73 4.39 6 7.5 11 7.5 1.4 0 2.74-.25 4.01-.68l-2.02-2.02c-.57.23-1.18.36-1.83.36-2.76 0-5-2.24-5-5 0-.65.13-1.26.36-1.83l-2.43-2.43z"/>';
