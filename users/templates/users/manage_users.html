@@ -4,24 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users</title>
+    <title>Manavargal School Management System - Manage Users</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary-color: #1e40af;
+            --primary-hover: #3b82f6;
+            --white: #ffffff;
+            --light-bg: rgba(255, 255, 255, 0.95);
+            --border-color: #b3d4fc;
+            --text-color: #666;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 4px 15px rgba(30, 58, 138, 0.2);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #e6f0fa 0%, #b3d4fc 50%, #e6f0fa 100%);
             background-size: 200%;
             animation: gradient 15s ease infinite;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            padding: 40px;
             position: relative;
+            overflow-x: hidden;
         }
 
         @keyframes gradient {
@@ -30,57 +49,78 @@
             100% { background-position: 0% 50%; }
         }
 
-        .dashboard-title {
+        body::before {
+            content: '';
             position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #1e40af;
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(30,64,175,0.15)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(30, 64, 175, 0.2) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(230, 240, 250, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(16px);
-            border: 2px solid transparent;
-            border-image: linear-gradient(45deg, rgba(179, 212, 252, 0.7), rgba(255, 255, 255, 0.4)) 1;
-            box-shadow: 0 12px 40px rgba(30, 58, 138, 0.2);
-            border-radius: 24px;
-            padding: 24px;
-            width: 90%;
-            max-width: 1200px;
-            margin-top: 80px;
-            animation: fadeIn 0.6s ease-out;
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .main-content {
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 24px;
-            background: linear-gradient(90deg, #1e40af, #b3d4fc);
-            color: white;
-            border-radius: 16px 16px 0 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .header h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(230, 240, 250, 0.9) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 12px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: var(--shadow-md);
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 1rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-text {
+            color: var(--primary-color);
+            font-size: 1.125rem;
+            font-weight: 500;
         }
 
         .back-btn {
@@ -89,7 +129,7 @@
             border-radius: 24px;
             cursor: pointer;
             background: #ef4444;
-            color: white;
+            color: var(--white);
             font-weight: 500;
             font-size: 1rem;
             transition: all 0.3s ease;
@@ -101,12 +141,6 @@
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
         }
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
         .search-bar {
             display: flex;
             align-items: center;
@@ -116,7 +150,7 @@
         .search-bar input {
             padding: 10px;
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #bfdbfe, #dbeafe) border-box;
+            background: linear-gradient(var(--white), var(--white)) padding-box, linear-gradient(90deg, #bfdbfe, #dbeafe) border-box;
             border-radius: 8px;
             font-size: 1rem;
             outline: none;
@@ -125,7 +159,7 @@
 
         .search-bar input:focus {
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #b3d4fc, #1e40af) border-box;
+            background: linear-gradient(var(--white), var(--white)) padding-box, linear-gradient(90deg, #b3d4fc, var(--primary-color)) border-box;
             box-shadow: 0 0 10px rgba(179, 212, 252, 0.4);
         }
 
@@ -134,7 +168,7 @@
             border: none;
             cursor: pointer;
             font-size: 1.2rem;
-            color: white;
+            color: var(--primary-color);
         }
 
         .create-btn {
@@ -143,11 +177,10 @@
             border-radius: 24px;
             cursor: pointer;
             background: #2dd4bf;
-            color: white;
+            color: var(--white);
             font-weight: 500;
             font-size: 1rem;
             transition: all 0.3s ease;
-            margin-left: 15px;
         }
 
         .create-btn:hover {
@@ -156,11 +189,47 @@
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
         }
 
-        .logo {
+        .logo-container {
             width: 50px;
             height: 50px;
             border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(30, 64, 175, 0.2);
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
+        }
+
+        .title {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-container {
+            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(230, 240, 250, 0.9) 100%);
+            backdrop-filter: blur(15px);
+            padding: 2.5rem;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            max-width: 100%;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            overflow-x: auto;
+        }
+
+        .card-container:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(230, 240, 250, 0.95) 100%);
         }
 
         .user-table {
@@ -172,31 +241,31 @@
         .user-table th, .user-table td {
             padding: 16px;
             text-align: left;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .user-table th {
-            background: #f8fafc;
-            color: #1e40af;
+            background: rgba(248, 250, 252, 0.9);
+            color: var(--primary-color);
             font-weight: 600;
         }
 
         .user-table tr:hover {
-            background: #e6f0fa;
+            background: rgba(230, 240, 250, 0.6);
         }
 
         .user-table td:first-child {
             display: flex;
             align-items: center;
-            gap: 10px; /* Space between image and name */
+            gap: 10px;
         }
 
         .user-table .profile-pic {
-            width: 40px; /* Smaller circular image */
+            width: 40px;
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #1e40af;
+            border: 2px solid var(--primary-color);
         }
 
         .action-btn {
@@ -209,8 +278,8 @@
         }
 
         .update-btn {
-            background: #3b82f6;
-            color: white;
+            background: var(--primary-hover);
+            color: var(--white);
             margin-right: 20px;
         }
 
@@ -221,12 +290,29 @@
 
         .delete-btn {
             background: #ef4444;
-            color: white;
+            color: var(--white);
         }
 
         .delete-btn:hover {
             background: #dc2626;
             transform: translateY(-2px);
+        }
+
+        .messages {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            color: var(--text-color);
+        }
+
+        .messages .success {
+            color: #2dd4bf;
+        }
+
+        .messages .error {
+            color: #ef4444;
         }
 
         .popup {
@@ -244,11 +330,11 @@
         }
 
         .popup-content {
-            background: white;
+            background: var(--light-bg);
             border-radius: 16px;
             width: 90%;
             max-width: 500px;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-md);
             overflow: hidden;
             animation: popIn 0.4s ease-out;
         }
@@ -263,8 +349,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 24px;
-            background: linear-gradient(90deg, #1e40af, #b3d4fc);
-            color: white;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+            color: var(--white);
         }
 
         .popup-header h3 {
@@ -275,7 +361,7 @@
         .close-btn {
             background: none;
             border: none;
-            color: white;
+            color: var(--white);
             font-size: 1.4rem;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -295,7 +381,7 @@
 
         .popup-body label {
             font-size: 1rem;
-            color: #1e40af;
+            color: var(--primary-color);
             font-weight: 500;
             margin-bottom: 5px;
         }
@@ -303,7 +389,7 @@
         .popup-body input, .popup-body select {
             padding: 12px 15px;
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #bfdbfe, #dbeafe) border-box;
+            background: linear-gradient(var(--white), var(--white)) padding-box, linear-gradient(90deg, #bfdbfe, #dbeafe) border-box;
             border-radius: 8px;
             font-size: 1rem;
             outline: none;
@@ -313,7 +399,7 @@
 
         .popup-body input:focus, .popup-body select:focus {
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #b3d4fc, #1e40af) border-box;
+            background: linear-gradient(var(--white), var(--white)) padding-box, linear-gradient(90deg, #b3d4fc, var(--primary-color)) border-box;
             box-shadow: 0 0 10px rgba(179, 212, 252, 0.4);
         }
 
@@ -332,7 +418,7 @@
 
         .popup-body button {
             background: #2dd4bf;
-            color: white;
+            color: var(--white);
             padding: 12px;
             border: none;
             border-radius: 8px;
@@ -349,32 +435,96 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        @media (max-width: 768px) {
-            .container {
-                width: 95%;
-                padding: 16px;
+        .pulse {
+            animation: pulse 4s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(30, 64, 175, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                padding: 1.5rem;
             }
 
-            .dashboard-title {
-                font-size: 1.5rem;
-            }
-
-            .header h2 {
-                font-size: 1.4rem;
+            .title {
+                font-size: 2.2rem;
             }
 
             .user-table th, .user-table td {
                 padding: 12px;
-                font-size: 0.9rem;
+                font-size: 0.95rem;
             }
 
             .action-btn {
                 padding: 6px 12px;
                 font-size: 0.9rem;
             }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .user-table th, .user-table td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .action-btn {
+                padding: 5px 10px;
+                font-size: 0.85rem;
+            }
 
             .update-btn {
                 margin-right: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .header-right {
+                justify-content: center;
+                gap: 1rem;
+            }
+
+            .search-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-bar input {
+                width: 100%;
+            }
+
+            .create-btn {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 0.5rem;
             }
 
             .popup-content {
@@ -382,97 +532,163 @@
                 max-width: 400px;
             }
 
-            .header-right {
-                gap: 15px;
-            }
-
-            .create-btn {
-                margin-left: 10px;
-            }
-
             .popup-body {
                 padding: 20px;
                 gap: 15px;
             }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .card-container {
+                padding: 1.5rem;
+            }
+
+            .title {
+                font-size: 1.75rem;
+            }
+
+            .user-table th, .user-table td {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+
+            .action-btn {
+                padding: 4px 8px;
+                font-size: 0.8rem;
+            }
+
+            .logo-container {
+                width: 36px;
+                height: 36px;
+            }
+
+            .popup-body {
+                padding: 15px;
+                gap: 10px;
+            }
 
             .popup-body label {
-                margin-bottom: 3px;
+                font-size: 0.9rem;
+            }
+
+            .popup-body input, .popup-body select {
+                padding: 10px;
+                font-size: 0.9rem;
             }
 
             .popup-body button {
-                margin-top: 5px;
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (hover: none) {
+            .card-container:hover, .header:hover {
+                transform: none;
+                box-shadow: var(--shadow-md);
+            }
+
+            .back-btn:hover, .create-btn:hover, .update-btn:hover, .delete-btn:hover, .close-btn:hover, .logo-container:hover {
+                transform: none;
+                background: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
             }
         }
     </style>
 </head>
 <body>
-    <div class="dashboard-title">
-        Manavargal School Management Admin Dashboard
-    </div>
-
     <div class="container">
-        <div class="header">
-            <div class="header-left">
-                <button class="back-btn" onclick="window.location.href='{% url 'admin_page' %}'">Back</button>
-                <h2>View and Edit Users</h2>
-            </div>
-            <div class="header-right">
-                <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchUsers()">
-                    <button>🔍</button>
-                    <button class="create-btn" onclick="showPopup('add')">Create New User</button>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header Section -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="back-btn" onclick="window.location.href='{% url 'admin_page' %}'">Back</button>
+                    <span class="header-text">Manavargal School Management System, Admin v1.0</span>
                 </div>
-                <a href="{% url 'admin_page' %}">
-                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo" class="logo">
-                </a>
+                <div class="header-right">
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchUsers()">
+                        <button>🔍</button>
+                    </div>
+                    <button class="create-btn" onclick="showPopup('add')">Create New User</button>
+                    <div class="logo-container">
+                        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Title Section -->
+            <h1 class="title">Manage Users</h1>
+
+            <!-- Content Section -->
+            <div id="contentSection">
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="card-container">
+                    <table class="user-table" id="userTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email Id</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>Role</th>
+                                <th>Update</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                <tr>
+                                    <td>
+                                        <img src="{{ user.profile_pic_url }}" alt="{{ user.name }}" class="profile-pic" onerror="this.src='{% static 'users/images/adminlogo.jpg' %}';">
+                                        {{ user.name }}
+                                    </td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.password }}</td>
+                                    <td>{{ user.role }}</td>
+                                    <td>
+                                        <button class="action-btn update-btn" onclick="showPopup('update', '{{ user.id }}', '{{ user.name }}', '{{ user.email }}', '{{ user.username }}', '{{ user.password }}', '{{ user.role }}')">Update</button>
+                                    </td>
+                                    <td>
+                                        <button class="action-btn delete-btn" onclick="deleteUser('{{ user.id }}')">🗑️</button>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7">No users found.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <table class="user-table" id="userTable">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email Id</th>
-                    <th>Username</th>
-                    <th>Password</th>
-                    <th>Role</th>
-                    <th>Update</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                    <tr>
-                        <td>
-                            <img src="{{ user.profile_pic_url }}" alt="{{ user.name }}" class="profile-pic" onerror="this.src='{% static 'users/images/adminlogo.jpg' %}';">
-                            {{ user.name }}
-                        </td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.username }}</td>
-                        <td>{{ user.password }}</td>
-                        <td>{{ user.role }}</td>
-                        <td>
-                            <button class="action-btn update-btn" onclick="showPopup('update', '{{ user.id }}', '{{ user.name }}', '{{ user.email }}', '{{ user.username }}', '{{ user.password }}', '{{ user.role }}')">Update</button>
-                        </td>
-                        <td>
-                            <button class="action-btn delete-btn" onclick="deleteUser('{{ user.id }}')">🗑️</button>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="7">No users found.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 
     <div class="popup" id="userPopup">
@@ -536,7 +752,7 @@
                 passwordInput.value = '';
                 passwordInput.setAttribute('required', 'required');
                 roleInput.value = '';
-                imageUploadSection.style.display = 'block'; // Show image upload for new users
+                imageUploadSection.style.display = 'block';
             } else if (type === 'update') {
                 title.textContent = 'Update User';
                 form.action = `/update_user/${userId}/`;
@@ -548,7 +764,7 @@
                 passwordInput.value = '';
                 passwordInput.removeAttribute('required');
                 roleInput.value = role;
-                imageUploadSection.style.display = role !== 'teacher' ? 'block' : 'none'; // Show image upload only for non-teachers
+                imageUploadSection.style.display = role !== 'teacher' ? 'block' : 'none';
             }
 
             popup.style.display = 'flex';
@@ -573,6 +789,29 @@
                 row.style.display = text.includes(input) ? '' : 'none';
             });
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card-container');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('pulse');
+                }, index * 300);
+            });
+
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach((button) => {
+                button.addEventListener('click', function(e) {
+                    const x = e.clientX - e.target.getBoundingClientRect().left;
+                    const y = e.clientY - e.target.getBoundingClientRect().top;
+                    const ripple = document.createElement('span');
+                    ripple.className = 'ripple';
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    this.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            });
+        });
     </script>
 </body>
 </html>
