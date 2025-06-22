@@ -3343,6 +3343,9 @@ def delete_user(request, user_id):
 
                 # Delete from teachers if applicable
                 if role == 'teacher':
+                    # Delete dependent timetable records
+                    cursor.execute("DELETE FROM timetable WHERE teacher_id = %s", [user_id])
+                    # Delete from teachers table
                     cursor.execute("DELETE FROM teachers WHERE id = %s", [user_id])
 
                 # Delete from admin_manage_users
@@ -4037,27 +4040,39 @@ def delete_teacher(request, teacher_id):
         messages.error(request, f'Error deleting teacher: {e}')
     return redirect('manage_teachers')
 
-def delete_user(request, user_id):
+def delete_teacher(request, teacher_id):
     """
-    Handles deleting a user by ID from admin_manage_users and, if teacher, from teachers.
+    Handles deleting a teacher by ID from both teachers and admin_manage_users.
+    Also deletes dependent timetable records to avoid foreign key constraints.
     """
     try:
         with transaction.atomic():
             with connection.cursor() as cursor:
-                cursor.execute("SELECT email, role FROM admin_manage_users WHERE id = %s", [user_id])
-                user = cursor.fetchone()
-                if not user:
-                    messages.error(request, 'User not found.')
-                    return redirect('manage_users')  # Assumes a manage_users view exists
+                # Check if teacher exists
+                cursor.execute("SELECT id, email FROM teachers WHERE id = %s", [teacher_id])
+                teacher = cursor.fetchone()
+                if not teacher:
+                    messages.error(request, 'Teacher not found.')
+                    return redirect('manage_teachers')
 
-                email, role = user
-                cursor.execute("DELETE FROM admin_manage_users WHERE id = %s", [user_id])
-                if role == 'teacher':
-                    cursor.execute("DELETE FROM teachers WHERE email = %s", [email])
-        messages.success(request, 'User deleted successfully.')
+                email = teacher[1]
+
+                # Delete dependent timetable records
+                cursor.execute("DELETE FROM timetable WHERE teacher_id = %s", [teacher_id])
+
+                # Delete from teachers table
+                cursor.execute("DELETE FROM teachers WHERE id = %s", [teacher_id])
+
+                # Delete from admin_manage_users table
+                cursor.execute(
+                    "DELETE FROM admin_manage_users WHERE email = %s AND role = %s",
+                    [email, 'teacher']
+                )
+
+        messages.success(request, 'Teacher deleted successfully.')
     except Error as e:
-        messages.error(request, f'Error deleting user: {e}')
-    return redirect('manage_users')
+        messages.error(request, f'Error deleting teacher: {e}')
+    return redirect('manage_teachers')
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
