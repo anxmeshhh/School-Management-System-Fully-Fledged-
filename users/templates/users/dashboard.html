@@ -1,339 +1,746 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System</title>
-    <link rel="stylesheet" href="{% static 'users/dashboard.css' %}?v=3">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Manavargal School Management System - Student Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary-color: #006b3e;
+            --primary-hover: #008b4f;
+            --white: #ffffff;
+            --light-bg: rgba(255, 255, 255, 0.95);
+            --border-color: #ddd;
+            --text-color: #666;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 4px 15px rgba(0, 107, 62, 0.2);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e6f5ee 0%, #d4edda 100%);
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(0,107,62,0.2)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(0, 107, 62, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(0, 139, 79, 0.25) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(212, 237, 218, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar {
+            width: 300px;
+            height: 100vh;
+            background: linear-gradient(180deg, var(--light-bg) 0%, rgba(212, 237, 218, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            color: var(--text-color);
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 20;
+            transition: transform 0.3s ease;
+            border-right: 1px solid rgba(0, 107, 62, 0.3);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 2rem 2rem;
+            background: linear-gradient(135deg, rgba(212, 237, 218, 0.95) 0%, rgba(230, 245, 230, 0.9) 100%);
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid rgba(0, 107, 62, 0.2);
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 96px;
+            background: linear-gradient(135deg, rgba(230, 245, 230, 0.9) 0%, rgba(212, 237, 218, 0.8) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 107, 62, 0.25);
+            border: 2px solid rgba(0, 107, 62, 0.2);
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 107, 62, 0.35);
+        }
+
+        .logo-container:hover img {
+            transform: scale(1.1);
+        }
+
+        .sidebar-header:hover {
+            background: linear-gradient(135deg, rgba(230, 245, 230, 1) 0%, rgba(212, 237, 218, 1) 100%);
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.125rem;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-nav a:hover {
+            background: linear-gradient(90deg, rgba(212, 237, 218, 0.8) 0%, rgba(230, 245, 230, 0.6) 100%);
+            transform: translateX(5px);
+            border-left: 4px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .sidebar-nav a .nav-icon {
+            margin-right: 1rem;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav a:hover .nav-icon {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .main-content {
+            margin-left: 320px;
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(212, 237, 218, 0.9) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 12px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-text {
+            color: var(--primary-color);
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .username-box {
+            background: linear-gradient(135deg, var(--white) 0%, rgba(212, 237, 218, 1) 100%);
+            color: var(--text-color);
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 107, 62, 0.5);
+            min-width: 100px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .notification-panel {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(212, 237, 218, 0.95) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+            border: 1px solid rgba(0, 107, 62, 0.25);
+        }
+
+        .notification-panel.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .notification-panel h3 {
+            color: var(--primary-color);
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .notification-panel ul {
+            list-style: none;
+            color: var(--text-color);
+            font-size: 0.875rem;
+        }
+
+        .notification-panel li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(230, 245, 230, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .notification-panel li:last-child {
+            border-bottom: none;
+        }
+
+        .notification-panel li:hover {
+            background: rgba(230, 245, 230, 0.6);
+            padding-left: 0.5rem;
+            border-radius: 6px;
+        }
+
+        .bell-button,
+        .profile-button {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+        }
+
+        .bell-button:hover,
+        .profile-button:hover {
+            transform: scale(1.2);
+            background: rgba(0, 107, 62, 0.25);
+        }
+
+        .title {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-container {
+            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(212, 237, 218, 0.9) 100%);
+            backdrop-filter: blur(15px);
+            padding: 2.5rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .card-container:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, rgba(230, 245, 230, 0.98) 0%, rgba(212, 237, 218, 0.95) 100%);
+        }
+
+        .card-container h2 {
+            color: var(--primary-color);
+            font-size: 1.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .quote {
+            color: var(--text-color);
+            font-style: italic;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1.5rem;
+            font-size: 1.125rem;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            background: rgba(0, 107, 62, 0.1);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .pulse {
+            animation: pulse 4s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            background: var(--light-bg);
+            border: none;
+            cursor: pointer;
+            position: absolute;
+            top: 1.5rem;
+            left: 1rem;
+            z-index: 30;
+            padding: 0.5rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 107, 62, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 250px;
+            }
+
+            .main-content {
+                margin-left: 270px;
+            }
+
+            .logo-container {
+                width: 100px;
+                height: 80px;
+            }
+
+            .title {
+                font-size: 2.2rem;
+            }
+
+            .card-container h2 {
+                font-size: 1.75rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                width: 250px;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .card-container h2 {
+                font-size: 1.5rem;
+            }
+
+            .quote {
+                font-size: 1rem;
+            }
+
+            .header-text {
+                font-size: 1rem;
+            }
+
+            .logo-container {
+                width: 80px;
+                height: 64px;
+            }
+
+            .notification-panel {
+                width: 100%;
+                right: 0;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: fixed;
+                top: 0;
+                left: 0;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .card-container {
+                max-width: 100%;
+                padding: 1.5rem;
+            }
+
+            .title {
+                font-size: 1.75rem;
+            }
+
+            .card-container h2 {
+                font-size: 1.25rem;
+            }
+
+            .quote {
+                font-size: 0.9rem;
+                padding-left: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .header-right {
+                justify-content: center;
+                gap: 1rem;
+            }
+
+            .username-box {
+                font-size: 0.85rem;
+                padding: 0.4rem 1rem;
+                min-width: 80px;
+            }
+
+            .logo-container {
+                width: 60px;
+                height: 48px;
+            }
+
+            .sidebar-nav a {
+                font-size: 1rem;
+                padding: 0.8rem 1.5rem;
+            }
+
+            .sidebar-nav a .nav-icon {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (hover: none) {
+            .card-container:hover, .sidebar:hover, .header:hover {
+                transform: none;
+                box-shadow: var(--shadow-md);
+            }
+
+            .bell-button:hover, .profile-button:hover, .logo-container:hover {
+                transform: none;
+                background: none;
+            }
+
+            .sidebar-nav a:hover {
+                transform: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
+        <!-- Mobile Menu Toggle -->
+        <button class="menu-toggle" id="menuToggle">☰</button>
+
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
-            <div class="logo-section">
-                <div class="brand-container">
-                    <div class="logo" id="logo">
-                        <img src="{% static 'users/images/verrgroup.png' %}" alt="Brand Logo" class="logo-img">
-                        <span class="logo-text">MS</span>
-                    </div>
-                    <div class="brand-text">
-                        <h1 class="brand-name">MANAVARGAL</h1>
-                        <p class="brand-subtitle">SCHOOL MANAGEMENT SYSTEM</p>
-                    </div>
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
                 </div>
-                <p class="dashboard-text">Dashboard</p>
-                <button class="menu-toggle" id="menuToggle">☰</button>
+                Manavargal SMS
             </div>
-            
-            <div class="nav-wrapper">
-                <nav class="nav-menu">
-                    <a href="{% url 'profile_view' %}" class="nav-item">
-                        <span class="nav-icon">📊</span>
-                        <span class="nav-text">Master Data</span>
-                    </a>
-                    <a href="{% url 'student_portal' %}" class="nav-item">
-                        <span class="nav-icon">📅</span>
-                        <span class="nav-text">Attendance & Leave</span>
-                    </a>
-                    <a href="{% url 'student_circular' %}" class="nav-item">
-                        <span class="nav-icon">📢</span>
-                        <span class="nav-text">Circulars</span>
-                    </a>
-                    <a href="{% url 'study_materials' %}" class="nav-item">
-                        <span class="nav-icon">📚</span>
-                        <span class="nav-text">Study Materials</span>
-                    </a>
-                    <a href="{% url 'homework' %}" class="nav-item">
-                        <span class="nav-icon">✒</span>
-                        <span class="nav-text">Homework</span>
-                    </a>
-                    <a href="{% url 'student_timetable' %}" class="nav-item">
-                        <span class="nav-icon">🎯</span>
-                        <span class="nav-text">Timetable</span>
-                    </a>
-                    <a href="{% url 'student_progress_card' %}" class="nav-item">
-                        <span class="nav-icon">📈</span>
-                        <span class="nav-text">Progress Card</span>
-                    </a>
-                    <a href="{% url 'fees' %}" class="nav-item">
-                        <span class="nav-icon">💰</span>
-                        <span class="nav-text">Fees Panel</span>
-                    </a>
-                </nav>
-            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'profile_view' %}" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    Master Data
+                </a>
+                <a href="{% url 'student_portal' %}" class="nav-item">
+                    <span class="nav-icon">📅</span>
+                    Attendance & Leave
+                </a>
+                <a href="{% url 'student_circular' %}" class="nav-item">
+                    <span class="nav-icon">📢</span>
+                    Circulars
+                </a>
+                <a href="{% url 'study_materials' %}" class="nav-item">
+                    <span class="nav-icon">📚</span>
+                    Study Materials
+                </a>
+                <a href="{% url 'homework' %}" class="nav-item">
+                    <span class="nav-icon">✒</span>
+                    Homework
+                </a>
+                <a href="{% url 'student_timetable' %}" class="nav-item">
+                    <span class="nav-icon">🎯</span>
+                    Timetable
+                </a>
+                <a href="{% url 'student_progress_card' %}" class="nav-item">
+                    <span class="nav-icon">📈</span>
+                    Progress Card
+                </a>
+                <a href="{% url 'fees' %}" class="nav-item">
+                    <span class="nav-icon">💰</span>
+                    Fees Panel
+                </a>
+            </nav>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            <div class="animated-background"></div>
-            <div class="top-bar">
-                <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
-                <div class="system-info">
-                    School Management System v1.0
+            <!-- Header Section -->
+            <header class="header">
+                <div class="header-left">
+                    <span class="header-text">Manavargal School Management System, Student Dashboard v1.0</span>
                 </div>
-                <div class="user-section">
-                    <div class="notification-icon">🔔</div>
-                    <div class="user-info">
-                        <div class="welcome-text">Welcome</div>
-                        <button class="user-button">
-                          <span class="user-avatar">👤</span>
-                          <span class="username">{{ username }}</span>
-                        </button>
-                      
+                <div class="header-right">
+                    <button class="bell-button" id="notificationBell">🔔</button>
+                    <div id="notificationPanel" class="notification-panel">
+                        <h3>Notifications</h3>
+                        <ul>
+                            <li>New circular: School Event - 10:00 PM, May 24, 2025</li>
+                            <li>Homework submission deadline - 8:00 PM, May 24, 2025</li>
+                            <li>Study material uploaded - 3:00 PM, May 24, 2025</li>
+                            <li>Fee payment reminder - 1:00 PM, May 24, 2025</li>
+                        </ul>
                     </div>
+                    <span class="header-text">Welcome</span>
+                    <span class="username-box">{{ username }}</span>
+                    <button class="profile-button">👤</button>
                 </div>
-            </div>
+            </header>
 
-            <div class="content">
-                <h1>Manavargal School Management System</h1>
-                <div class="welcome-card">
-                    <h2>Welcome to Dashboard</h2>
-                    <p id="quote" class="quote"></p>
+            <!-- Title Section -->
+            <h1 class="title">Student Dashboard</h1>
+
+            <!-- Content Section -->
+            <div id="contentSection">
+                <!-- Welcome Section -->
+                <div class="welcome-section" id="welcomeSection">
+                    <div class="card-container">
+                        <h2>Welcome, {{ username }}!</h2>
+                        <p id="quote" class="quote"></p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-    // Elements
-    const sidebar = document.getElementById("sidebar")
-    const menuToggle = document.getElementById("menuToggle")
-    const mobileMenuToggle = document.getElementById("mobileMenuToggle")
-    const quoteElement = document.getElementById("quote")
-    const logo = document.getElementById("logo")
-    const mainContent = document.querySelector(".main-content")
-  
-    // Check if desktop or mobile
-    const checkViewport = () => {
-      return window.innerWidth <= 768
-    }
-  
-    // Toggle menu functions
-    function toggleMenu() {
-      sidebar.classList.toggle("active")
-    }
-  
-    // Only show menu toggle on mobile by default
-    function updateMenuVisibility() {
-      if (checkViewport()) {
-        menuToggle.style.display = "block"
-      } else {
-        menuToggle.style.display = sidebar.classList.contains("active") ? "block" : "none"
-      }
-    }
-  
-    // Initialize menu visibility
-    updateMenuVisibility()
-  
-    // Event listeners
-    menuToggle.addEventListener("click", () => {
-      toggleMenu()
-      updateMenuVisibility()
-    })
-  
-    mobileMenuToggle.addEventListener("click", toggleMenu)
-  
-    // Update on resize
-    window.addEventListener("resize", updateMenuVisibility)
-  
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener("click", (e) => {
-      const isMobile = checkViewport()
-      const isClickOutsideSidebar =
-        !sidebar.contains(e.target) && !menuToggle.contains(e.target) && !mobileMenuToggle.contains(e.target)
-  
-      if (isClickOutsideSidebar && sidebar.classList.contains("active")) {
-        sidebar.classList.remove("active")
-        if (!isMobile) {
-          menuToggle.style.display = "none"
+        const quotes = [
+            "Education is the passport to the future, for tomorrow belongs to those who prepare for it today.",
+            "The beautiful thing about learning is that no one can take it away from you.",
+            "Education is not preparation for life; education is life itself.",
+            "Knowledge is power. Information is liberating. Education is the premise of progress.",
+            "Live as if you were to die tomorrow. Learn as if you were to live forever."
+        ];
+
+        let currentQuoteIndex = 0;
+        const quoteElement = document.getElementById('quote');
+
+        function updateQuote() {
+            quoteElement.textContent = quotes[currentQuoteIndex];
+            currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
         }
-      }
-    })
-  
-    // Logo animation
-    function animateLogo() {
-      logo.classList.add("pulse")
-      setTimeout(() => {
-        logo.classList.remove("pulse")
-      }, 2000)
-    }
-  
-    // Animate logo on hover and periodically
-    logo.addEventListener("mouseenter", animateLogo)
-    setInterval(animateLogo, 5000)
-  
-    // Dynamic background effect
-    function createBubble() {
-      const animatedBg = document.querySelector(".animated-background")
-      const bubble = document.createElement("div")
-  
-      bubble.className = "bubble"
-  
-      const size = Math.random() * 60 + 20
-      const left = Math.random() * 100
-      const duration = Math.random() * 20 + 10
-  
-      bubble.style.width = `${size}px`
-      bubble.style.height = `${size}px`
-      bubble.style.left = `${left}%`
-      bubble.style.animationDuration = `${duration}s`
-  
-      animatedBg.appendChild(bubble)
-  
-      setTimeout(() => {
-        bubble.remove()
-      }, duration * 1000)
-    }
-  
-    // Create bubbles periodically
-    setInterval(createBubble, 1000)
-  
-    // Add parallax effect to main content
-    mainContent.addEventListener("mousemove", (e) => {
-      const moveX = (e.clientX - window.innerWidth / 2) * 0.01
-      const moveY = (e.clientY - window.innerHeight / 2) * 0.01
-  
-      document.querySelector(".animated-background").style.transform = `translate(${moveX}px, ${moveY}px)`
-    })
-  
-    // Quotes system
-    const quotes = [
-      "Education is the passport to the future, for tomorrow belongs to those who prepare for it today.",
-      "The beautiful thing about learning is that no one can take it away from you.",
-      "Education is not preparation for life; education is life itself.",
-      "Knowledge is power. Information is liberating. Education is the premise of progress.",
-      "Live as if you were to die tomorrow. Learn as if you were to live forever.",
-    ]
-  
-    function showRandomQuote() {
-      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)]
-      quoteElement.textContent = randomQuote
-      quoteElement.classList.add("visible")
-    }
-  
-    // Show initial quote with delay
-    setTimeout(showRandomQuote, 500)
-  
-    // Change quote every 10 seconds
-    setInterval(() => {
-      quoteElement.classList.remove("visible")
-      setTimeout(() => {
-        showRandomQuote()
-      }, 500)
-    }, 10000)
-  
-    // Enhanced hover effects for nav items
-    const navItems = document.querySelectorAll(".nav-item")
-    navItems.forEach((item) => {
-      item.addEventListener("mouseenter", () => {
-        const icon = item.querySelector(".nav-icon")
-        icon.style.transform = "scale(1.2) rotate(360deg)"
-        icon.style.transition = "transform 0.5s ease"
-      })
-  
-      item.addEventListener("mouseleave", () => {
-        const icon = item.querySelector(".nav-icon")
-        icon.style.transform = "none"
-      })
-  
-      // Add click effect
-      item.addEventListener("click", () => {
-        const icon = item.querySelector(".nav-icon")
-        icon.style.transform = "scale(0.9)"
-        setTimeout(() => {
-          icon.style.transform = "none"
-        }, 150)
-      })
-    })
-  
-    // Add hover effects to all interactive elements
-    const interactiveElements = document.querySelectorAll(
-      "button, .brand-name, .brand-subtitle, .dashboard-text, .system-info, .welcome-text",
-    )
-  
-    interactiveElements.forEach((element) => {
-      element.addEventListener("mouseenter", () => {
-        element.style.transition = "all 0.3s ease"
-        element.style.transform = "scale(1.05)"
-      })
-  
-      element.addEventListener("mouseleave", () => {
-        element.style.transform = ""
-      })
-    })
-  
-    // Add ripple effect to buttons
-    const buttons = document.querySelectorAll("button")
-  
-    buttons.forEach((button) => {
-      button.addEventListener("click", function (e) {
-        const x = e.clientX - e.target.getBoundingClientRect().left
-        const y = e.clientY - e.target.getBoundingClientRect().top
-  
-        const ripple = document.createElement("span")
-        ripple.className = "ripple"
-        ripple.style.left = `${x}px`
-        ripple.style.top = `${y}px`
-  
-        this.appendChild(ripple)
-  
-        setTimeout(() => {
-          ripple.remove()
-        }, 600)
-      })
-    })
-  })
-  
-  // Add CSS for bubbles and ripple effect
-  document.addEventListener("DOMContentLoaded", () => {
-    const style = document.createElement("style")
-    style.textContent = `
-          .bubble {
-              position: absolute;
-              bottom: -100px;
-              border-radius: 50%;
-              background: rgba(255, 255, 255, 0.1);
-              animation: rise linear forwards;
-              pointer-events: none;
-          }
-          
-          @keyframes rise {
-              0% {
-                  transform: translateY(0) scale(1);
-                  opacity: 0;
-              }
-              50% {
-                  opacity: 0.5;
-              }
-              100% {
-                  transform: translateY(-100vh) scale(1.5);
-                  opacity: 0;
-              }
-          }
-          
-          .ripple {
-              position: absolute;
-              border-radius: 50%;
-              background: rgba(255, 255, 255, 0.4);
-              transform: scale(0);
-              animation: ripple 0.6s linear;
-              pointer-events: none;
-          }
-          
-          @keyframes ripple {
-              to {
-                  transform: scale(4);
-                  opacity: 0;
-              }
-          }
-      `
-    document.head.appendChild(style)
-  })
-  
-  
+
+        updateQuote();
+        setInterval(updateQuote, 120000);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card-container');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('pulse');
+                }, index * 300);
+            });
+
+            const bell = document.getElementById('notificationBell');
+            const panel = document.getElementById('notificationPanel');
+
+            bell.addEventListener('click', () => {
+                panel.classList.toggle('active');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!bell.contains(e.target) && !panel.contains(e.target)) {
+                    panel.classList.remove('active');
+                }
+            });
+
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // Ripple effect for buttons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach((button) => {
+                button.addEventListener('click', function(e) {
+                    const x = e.clientX - e.target.getBoundingClientRect().left;
+                    const y = e.clientY - e.target.getBoundingClientRect().top;
+                    const ripple = document.createElement('span');
+                    ripple.className = 'ripple';
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    this.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            });
+
+            // Hover effects for nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach((item) => {
+                item.addEventListener('mouseenter', () => {
+                    const icon = item.querySelector('.nav-icon');
+                    icon.style.transform = 'scale(1.2) rotate(360deg)';
+                    icon.style.transition = 'transform 0.5s ease';
+                });
+
+                item.addEventListener('mouseleave', () => {
+                    const icon = item.querySelector('.nav-icon');
+                    icon.style.transform = 'none';
+                });
+
+                item.addEventListener('click', () => {
+                    const icon = item.querySelector('.nav-icon');
+                    icon.style.transform = 'scale(0.9)';
+                    setTimeout(() => icon.style.transform = 'none', 150);
+                });
+            });
+        });
     </script>
 </body>
 </html>
