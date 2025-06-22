@@ -50,7 +50,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #e6d7f5 0%, #d4c9ed 100%),
+            background: linear-gradient(135deg, #e6f5ee 0%, #d4edda 100%),
                 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(106,13,173,0.1)"/></svg>') repeat;
             background-size: 200%, 20px 20px;
             min-height: 100vh;
@@ -268,32 +268,25 @@
             box-shadow: var(--shadow-lg);
         }
 
-        .notification-box {
-            position: fixed;
-            top: var(--space-md);
-            right: var(--space-md);
-            z-index: 1000;
+        .error-message, .success-message {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 14px;
             padding: var(--space-sm) var(--space-md);
             border-radius: var(--radius-md);
-            font-size: var(--font-md);
-            font-weight: 600;
             box-shadow: var(--shadow-md);
-            opacity: 0.95;
-            transition: opacity 0.3s ease-in-out;
-            max-width: 90%;
-            display: none;
         }
 
-        .notification-box.success {
-            background-color: #d4edda;
-            color: #155724;
-            border-left: 5px solid var(--success-color);
-        }
-
-        .notification-box.error {
+        .error-message {
             background-color: #f8d7da;
             color: #721c24;
             border-left: 5px solid var(--error-color);
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 5px solid var(--success-color);
         }
 
         @keyframes fadeIn {
@@ -427,7 +420,7 @@
                 right: 8px;
             }
 
-            .notification-box {
+            .error-message, .success-message {
                 font-size: var(--font-sm);
                 padding: var(--space-xs) var(--space-sm);
             }
@@ -514,32 +507,29 @@
                 padding-right: max(15px, env(safe-area-inset-right));
                 padding-bottom: max(15px, env(safe-area-inset-bottom));
             }
-
-            .notification-box {
-                top: max(10px, env(safe-area-inset-top));
-                right: max(10px, env(safe-area-inset-right));
-            }
         }
     </style>
 </head>
 <body>
     <div class="background"></div>
     <div class="logo">
-        <img src="{% static 'users/images/adminlogo.png' %}" alt="Logo">
-    </div>
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
+        </div>
     <div class="welcome-header">
-        Welcome to Manavargal School Management System, Parent
-        <span>INFORMATION AT EASE | தகவல் உங்கள் கையில்</span>
+        VERR GROUP
+        <span>INFORMATION AT EASE | தகவல் உங்கள் எளிதாக</span>
     </div>
     <div class="container">
         <h2>Parent Signup</h2>
-        <div id="successMessage" class="notification-box success">
-            ✅ Signup Successful! Redirecting...
-        </div>
-        <div id="errorMessage" class="notification-box error">
-            ❌ Signup failed! Please try again.
-        </div>
-        <form id="signupForm" method="POST" action="{% url 'parent_signup' %}">
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'success' %}success-message{% else %}error-message{% endif %}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="POST" action="{% url 'parent_signup' %}">
             {% csrf_token %}
             <div class="form-group">
                 <input type="text" id="username" name="username" required>
@@ -579,55 +569,6 @@
                 toggleButton.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
             }
         }
-
-        document.getElementById("signupForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
-            const username = document.getElementById("username").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirm_password").value;
-            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-
-            if (password !== confirmPassword) {
-                document.getElementById("errorMessage").textContent = "❌ Passwords do not match!";
-                document.getElementById("errorMessage").style.display = "block";
-                document.getElementById("successMessage").style.display = "none";
-                return;
-            }
-
-            const formData = new URLSearchParams();
-            formData.append("username", username);
-            formData.append("email", email);
-            formData.append("password", password);
-            formData.append("confirm_password", confirmPassword);
-
-            try {
-                const response = await fetch(this.action, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "X-CSRFToken": csrfToken
-                    },
-                    body: formData
-                });
-                const result = await response.text();
-                if (result.trim() === "Success") {
-                    document.getElementById("successMessage").style.display = "block";
-                    document.getElementById("errorMessage").style.display = "none";
-                    setTimeout(() => {
-                        window.location.href = "{% url 'parent_login' %}";
-                    }, 2000);
-                } else {
-                    document.getElementById("errorMessage").textContent = `❌ ${result}`;
-                    document.getElementById("errorMessage").style.display = "block";
-                    document.getElementById("successMessage").style.display = "none";
-                }
-            } catch (error) {
-                document.getElementById("errorMessage").textContent = "❌ An error occurred. Please try again.";
-                document.getElementById("errorMessage").style.display = "block";
-                document.getElementById("successMessage").style.display = "none";
-            }
-        });
     </script>
 </body>
 </html>
