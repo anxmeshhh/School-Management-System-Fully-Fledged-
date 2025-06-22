@@ -19,6 +19,10 @@ def get_db_connection():
 
 
 
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+import pymysql
+
 def signup_view(request):
     if request.method == "POST":
         username = request.POST["username"]
@@ -28,8 +32,7 @@ def signup_view(request):
 
         # Check if passwords match
         if password != confirm_password:
-            messages.error(request, "Passwords do not match!")
-            return render(request, "users/index.html")
+            return HttpResponse("Passwords do not match!")
 
         try:
             conn = get_db_connection()
@@ -43,12 +46,10 @@ def signup_view(request):
             cursor.close()
             conn.close()
 
-            messages.success(request, "Account created successfully! Please log in.")
-            return redirect("login")
+            return HttpResponse("Success")
 
         except pymysql.MySQLError as e:
-            messages.error(request, f"Database error: {e}")
-            return render(request, "users/index.html")
+            return HttpResponse(f"Database error: {e}")
 
     return render(request, "users/index.html")
 
