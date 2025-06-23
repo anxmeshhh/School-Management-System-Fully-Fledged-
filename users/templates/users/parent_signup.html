@@ -184,13 +184,11 @@
         }
 
         .form-group label {
-            position: absolute;
-            top: 0.8rem;
-            left: 0.8rem;
-            color: var(--text-color);
-            transition: 0.3s;
-            pointer-events: none;
+            display: block;
+            color: var(--primary-color);
             font-size: var(--font-md);
+            font-weight: 400;
+            margin-bottom: var(--space-xs);
         }
 
         .form-group input {
@@ -204,35 +202,9 @@
             outline: none;
         }
 
-        .form-group input:focus ~ label,
-        .form-group input:valid ~ label {
-            top: -0.5rem;
-            font-size: var(--font-sm);
-            color: var(--primary-color);
-            background: var(--white);
-            padding: 0 5px;
-        }
-
         .form-group input:focus {
             box-shadow: 0 0 8px rgba(106, 13, 173, 0.3);
             transform: scale(1.02);
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 60%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            width: 24px;
-            height: 24px;
-            fill: var(--primary-color);
-            transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
-        }
-
-        .toggle-password:hover {
-            fill: var(--primary-hover);
-            transform: translateY(-50%) scale(1.1);
         }
 
         button {
@@ -268,25 +240,26 @@
             box-shadow: var(--shadow-lg);
         }
 
-        .error-message, .success-message {
+        .notification-box {
             text-align: center;
             margin-bottom: 15px;
             font-size: 14px;
             padding: var(--space-sm) var(--space-md);
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-md);
+            opacity: 0.95;
         }
 
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-left: 5px solid var(--error-color);
-        }
-
-        .success-message {
+        .notification-box.success {
             background-color: #d4edda;
             color: #155724;
             border-left: 5px solid var(--success-color);
+        }
+
+        .notification-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid var(--error-color);
         }
 
         @keyframes fadeIn {
@@ -370,11 +343,6 @@
                 padding: 0.8rem;
                 font-size: 0.9rem;
             }
-
-            .toggle-password {
-                width: 22px;
-                height: 22px;
-            }
         }
 
         @media (max-width: 480px) {
@@ -414,13 +382,7 @@
                 padding: 0.7rem;
             }
 
-            .toggle-password {
-                width: 20px;
-                height: 20px;
-                right: 8px;
-            }
-
-            .error-message, .success-message {
+            .notification-box {
                 font-size: var(--font-sm);
                 padding: var(--space-xs) var(--space-sm);
             }
@@ -483,11 +445,6 @@
             button:active {
                 transform: scale(0.98);
             }
-
-            .toggle-password:hover {
-                transform: translateY(-50%);
-                fill: var(--primary-color);
-            }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -513,60 +470,54 @@
 <body>
     <div class="background"></div>
     <div class="logo">
-            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
-        </div>
+        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
+    </div>
     <div class="welcome-header">
-        Welcome to Manavargal School Management System, Parent
+        Welcome to Manavargal School Management System
         <span>INFORMATION AT EASE | தகவல் உங்கள் எளிதாக</span>
     </div>
     <div class="container">
         <h2>Parent Signup</h2>
-        {% if error %}
-            <div class="error-message">{{ error }}</div>
-        {% endif %}
         {% if messages %}
             {% for message in messages %}
-                <div class="{% if message.tags == 'success' %}success-message{% else %}error-message{% endif %}">{{ message }}</div>
+                <div class="notification-box {{ message.tags }}">{{ message }}</div>
             {% endfor %}
         {% endif %}
         <form method="POST" action="{% url 'parent_signup' %}">
             {% csrf_token %}
             <div class="form-group">
-                <input type="text" id="username" name="username" required>
-                <label for="username">Username*</label>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter Email" required>
             </div>
             <div class="form-group">
-                <input type="email" id="email" name="email" required>
-                <label for="email">Email*</label>
+                <label for="admission_number">Admission Number</label>
+                <input type="text" id="admission_number" name="admission_number" placeholder="Enter Admission Number" required>
             </div>
             <div class="form-group">
-                <input type="password" id="password" name="password" required>
-                <label for="password">Password*</label>
-                <svg class="toggle-password" onclick="togglePassword('password')" viewBox="0 0 24 24">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                </svg>
+                <label for="contact">Contact Number</label>
+                <input type="number" id="contact" name="contact" placeholder="Enter Contact Number" maxlength="10" min="0" oninput="restrictToNumbers(this)" required>
             </div>
             <div class="form-group">
-                <input type="password" id="confirm_password" name="confirm_password" required>
-                <label for="confirm_password">Confirm Password*</label>
-                <svg class="toggle-password" onclick="togglePassword('confirm_password')" viewBox="0 0 24 24">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                </svg>
+                <label for="class">Class</label>
+                <input type="text" id="class" name="class" placeholder="Enter Class (e.g., 10)" required>
+            </div>
+            <div class="form-group">
+                <label for="section">Section</label>
+                <input type="text" id="section" name="section" placeholder="Enter Section (e.g., A)" required>
+            </div>
+            <div class="form-group">
+                <label for="roll_number">Roll Number</label>
+                <input type="number" id="roll_number" name="roll_number" placeholder="Enter Roll Number" min="1" required>
             </div>
             <button type="submit">Sign Up</button>
             <button type="button" class="login-btn" onclick="window.location.href='{% url 'parent_login' %}'">Already have an account? Login</button>
         </form>
     </div>
     <script>
-        function togglePassword(fieldId) {
-            const passwordInput = document.getElementById(fieldId);
-            const toggleButton = passwordInput.nextElementSibling.nextElementSibling;
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleButton.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-4.01.68l2.02 2.02c.57-.23 1.18-.36 1.83-.36zm-6.36 1.47l2.43 2.43.02.02c-.54.38-1.03.86-1.39 1.42l-2.92-2.92C2.27 10.68 1.08 12.31.35 14.17c1.73 4.39 6 7.5 11 7.5 1.4 0 2.74-.25 4.01-.68l-2.02-2.02c-.57.23-1.18.36-1.83.36-2.76 0-5-2.24-5-5 0-.65.13-1.26.36-1.83l-2.43-2.43z"/>';
-            } else {
-                passwordInput.type = 'password';
-                toggleButton.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
+        function restrictToNumbers(input) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+            if (input.value.length > 10) {
+                input.value = input.value.slice(0, 10);
             }
         }
     </script>

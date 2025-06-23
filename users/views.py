@@ -4670,47 +4670,92 @@ def student_portal(request):
     })
 
 
+
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import connection
+import re
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import connection
+import re
 
 def parent_signup(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        admission_number = request.POST.get('admission_number')
+        contact = request.POST.get('contact')
         email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
+        class_grade = request.POST.get('class')
+        section = request.POST.get('section')
+        roll_number = request.POST.get('roll_number')
 
         # Validate inputs
-        if not all([username, email, password, confirm_password]):
-            return render(request, 'users/parent_signup.html', {'error': 'All fields are required'})
+        if not all([admission_number, contact, email, class_grade, section, roll_number]):
+            messages.error(request, 'All fields are required')
+            return render(request, 'users/parent_signup.html')
 
-        # Check if passwords match
-        if password != confirm_password:
-            return render(request, 'users/parent_signup.html', {'error': 'Passwords do not match'})
+        # Validate email format
+        if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
+            messages.error(request, 'Invalid email format')
+            return render(request, 'users/parent_signup.html')
 
-        # Check if username or email already exists
+        # Validate contact number (10 digits)
+        if not re.match(r'^\d{10}$', contact):
+            messages.error(request, 'Contact number must be 10 digits')
+            return render(request, 'users/parent_signup.html')
+
+        # Validate roll_number (positive integer)
+        try:
+            roll_number = int(roll_number)
+            if roll_number <= 0:
+                raise ValueError
+        except ValueError:
+            messages.error(request, 'Roll number must be a positive integer')
+            return render(request, 'users/parent_signup.html')
+
+        # Check if admission_number or email already exists
         with connection.cursor() as cursor:
-            cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", [username])
+            cursor.execute("SELECT COUNT(*) FROM student_page1 WHERE admission_number = %s", [admission_number])
             if cursor.fetchone()[0] > 0:
-                return render(request, 'users/parent_signup.html', {'error': 'Username already exists'})
-            
+                messages.error(request, 'Admission number already exists')
+                return render(request, 'users/parent_signup.html')
+
             cursor.execute("SELECT COUNT(*) FROM users WHERE email = %s", [email])
             if cursor.fetchone()[0] > 0:
-                return render(request, 'users/parent_signup.html', {'error': 'Email already exists'})
+                messages.error(request, 'Email already exists')
+                return render(request, 'users/parent_signup.html')
 
-            # Insert new user with plain text password
-            try:
+        # Insert new user and related data
+        try:
+            with connection.cursor() as cursor:
+                # Insert into users (using admission_number as username, contact as password)
                 cursor.execute(
                     "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)",
-                    [username, email, password]
+                    [admission_number, email, contact]
                 )
+                user_id = cursor.lastrowid
+
+                # Insert into student_page1 (using placeholder for name)
+                cursor.execute(
+                    "INSERT INTO student_page1 (user_id, name, admission_number, class, section, roll_number) VALUES (%s, %s, %s, %s, %s, %s)",
+                    [user_id, 'Placeholder Name', admission_number, class_grade, section, roll_number]
+                )
+
+                # Insert into student_page3
+                cursor.execute(
+                    "INSERT INTO student_page3 (user_id, contact) VALUES (%s, %s)",
+                    [user_id, contact]
+                )
+
                 connection.commit()
                 messages.success(request, 'Account created successfully! Please log in.')
                 return redirect('parent_login')
-            except Exception as e:
-                connection.rollback()
-                return render(request, 'users/parent_signup.html', {'error': 'An error occurred during signup: ' + str(e)})
+        except Exception as e:
+            connection.rollback()
+            messages.error(request, 'An error occurred during signup: ' + str(e))
+            return render(request, 'users/parent_signup.html')
     
     return render(request, 'users/parent_signup.html')
 
