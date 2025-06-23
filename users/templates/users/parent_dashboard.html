@@ -16,15 +16,16 @@
         }
 
         :root {
-            --primary-color: #6a0dad;
-            --primary-hover: #7b1fa2;
-            --white: #ffffff;
-            --light-bg: rgba(255, 255, 255, 0.95);
-            --border-color: #ddd;
-            --text-color: #666;
-            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
-            --shadow-lg: 0 4px 15px rgba(106, 13, 173, 0.2);
+            --primary-color: #800080; /* Vibrant purple for accents */
+            --primary-hover: #9932CC; /* Lighter purple for hover effects */
+            --white: #FFFFFF; /* White for text and accents */
+            --dark-bg: #4B0082; /* Dark purple for backgrounds */
+            --light-bg: rgba(75, 0, 130, 0.95); /* Slightly transparent dark purple */
+            --border-color: #DDA0DD; /* Light purple for borders */
+            --text-color: #FFFFFF; /* White for text */
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 4px 15px rgba(128, 0, 128, 0.4);
         }
 
         html {
@@ -34,7 +35,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #e6f5ee 0%, #d4edda 100%);
+            background: linear-gradient(135deg, #4B0082 0%, #6A5ACD 100%); /* Dark purple gradient */
             min-height: 100vh;
             display: flex;
             position: relative;
@@ -48,7 +49,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(106,13,173,0.2)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(128,0,128,0.3)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
             pointer-events: none;
             z-index: 0;
         }
@@ -60,9 +61,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 20% 80%, rgba(106, 13, 173, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(123, 31, 162, 0.25) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 40%, rgba(212, 237, 218, 0.2) 0%, transparent 50%);
+            background: radial-gradient(circle at 20% 80%, rgba(128, 0, 128, 0.4) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(147, 112, 219, 0.35) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(75, 0, 130, 0.3) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
         }
@@ -79,7 +80,7 @@
         .sidebar {
             width: 300px;
             height: 100vh;
-            background: linear-gradient(180deg, var(--light-bg) 0%, rgba(212, 237, 218, 0.95) 100%);
+            background: linear-gradient(180deg, var(--light-bg) 0%, rgba(75, 0, 130, 0.95) 100%);
             backdrop-filter: blur(10px);
             color: var(--text-color);
             overflow-y: auto;
@@ -90,37 +91,37 @@
             left: 0;
             z-index: 20;
             transition: transform 0.3s ease;
-            border-right: 1px solid rgba(106, 13, 173, 0.3);
+            border-right: 1px solid rgba(221, 160, 221, 0.3);
         }
 
         .sidebar-header {
             padding: 1.5rem 2rem 2rem;
-            background: linear-gradient(135deg, rgba(212, 237, 218, 0.95) 0%, rgba(230, 245, 230, 0.9) 100%);
+            background: linear-gradient(135deg, rgba(75, 0, 130, 0.95) 0%, rgba(147, 112, 219, 0.9) 100%);
             text-align: center;
             font-size: 1.5rem;
             font-weight: 600;
-            color: var(--primary-color);
+            color: var(--white);
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 1rem;
-            border-bottom: 2px solid rgba(106, 13, 173, 0.2);
+            border-bottom: 2px solid rgba(221, 160, 221, 0.2);
         }
 
         .logo-container {
             width: 120px;
             height: 96px;
-            background: linear-gradient(135deg, rgba(230, 245, 230, 0.9) 0%, rgba(212, 237, 218, 0.8) 100%);
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.9) 0%, rgba(75, 0, 130, 0.8) 100%);
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(106, 13, 173, 0.25);
-            border: 2px solid rgba(106, 13, 173, 0.2);
+            box-shadow: 0 4px 15px rgba(128, 0, 128, 0.25);
+            border: 2px solid rgba(221, 160, 221, 0.2);
         }
 
         .logo-container img {
@@ -132,7 +133,7 @@
 
         .logo-container:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(106, 13, 173, 0.35);
+            box-shadow: 0 6px 20px rgba(128, 0, 128, 0.35);
         }
 
         .logo-container:hover img {
@@ -140,7 +141,7 @@
         }
 
         .sidebar-header:hover {
-            background: linear-gradient(135deg, rgba(230, 245, 230, 1) 0%, rgba(212, 237, 218, 1) 100%);
+            background: linear-gradient(135deg, rgba(147, 112, 219, 1) 0%, rgba(75, 0, 130, 1) 100%);
         }
 
         .sidebar-nav {
@@ -159,10 +160,10 @@
         }
 
         .sidebar-nav a:hover {
-            background: linear-gradient(90deg, rgba(212, 237, 218, 0.8) 0%, rgba(230, 245, 230, 0.6) 100%);
+            background: linear-gradient(90deg, rgba(75, 0, 130, 0.8) 0%, rgba(147, 112, 219, 0.6) 100%);
             transform: translateX(5px);
             border-left: 4px solid var(--primary-color);
-            color: var(--primary-color);
+            color: var(--white);
         }
 
         .sidebar-nav a .nav-icon {
@@ -189,11 +190,11 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.5rem;
-            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(212, 237, 218, 0.9) 100%);
+            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(75, 0, 130, 0.9) 100%);
             backdrop-filter: blur(15px);
             border-radius: 12px;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(221, 160, 221, 0.4);
             box-shadow: var(--shadow-md);
         }
 
@@ -210,20 +211,20 @@
         }
 
         .header-text {
-            color: var(--primary-color);
+            color: var(--white);
             font-size: 1.125rem;
             font-weight: 500;
         }
 
         .username-box {
-            background: linear-gradient(135deg, var(--white) 0%, rgba(212, 237, 218, 1) 100%);
+            background: linear-gradient(135deg, var(--white) 0%, rgba(147, 112, 219, 1) 100%);
             color: var(--text-color);
             padding: 0.5rem 1.2rem;
             border-radius: 20px;
             font-size: 0.9rem;
             font-weight: 600;
             box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(106, 13, 173, 0.5);
+            border: 1px solid rgba(128, 0, 128, 0.5);
             min-width: 100px;
             text-align: center;
             line-height: 1.5;
@@ -233,7 +234,7 @@
             position: absolute;
             top: 100%;
             right: 0;
-            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(212, 237, 218, 0.95) 100%);
+            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(75, 0, 130, 0.95) 100%);
             backdrop-filter: blur(15px);
             border-radius: 12px;
             box-shadow: var(--shadow-md);
@@ -246,7 +247,7 @@
             transition: all 0.3s ease;
             pointer-events: none;
             z-index: 10;
-            border: 1px solid rgba(106, 13, 173, 0.25);
+            border: 1px solid rgba(221, 160, 221, 0.25);
         }
 
         .notification-panel.active {
@@ -256,7 +257,7 @@
         }
 
         .notification-panel h3 {
-            color: var(--primary-color);
+            color: var(--white);
             font-size: 1.125rem;
             font-weight: 600;
             margin-bottom: 1rem;
@@ -270,7 +271,7 @@
 
         .notification-panel li {
             padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(230, 245, 230, 0.6);
+            border-bottom: 1px solid rgba(147, 112, 219, 0.6);
             transition: all 0.3s ease;
         }
 
@@ -279,14 +280,14 @@
         }
 
         .notification-panel li:hover {
-            background: rgba(230, 245, 230, 0.6);
+            background: rgba(147, 112, 219, 0.6);
             padding-left: 0.5rem;
             border-radius: 6px;
         }
 
         .bell-button,
         .profile-button {
-            color: var(--primary-color);
+            color: var(--white);
             font-size: 1.5rem;
             background: none;
             border: none;
@@ -299,11 +300,11 @@
         .bell-button:hover,
         .profile-button:hover {
             transform: scale(1.2);
-            background: rgba(106, 13, 173, 0.25);
+            background: rgba(128, 0, 128, 0.25);
         }
 
         .title {
-            color: var(--primary-color);
+            color: var(--white);
             font-size: 2.5rem;
             font-weight: 600;
             text-align: center;
@@ -311,7 +312,7 @@
         }
 
         .card-container {
-            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(212, 237, 218, 0.9) 100%);
+            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(75, 0, 130, 0.9) 100%);
             backdrop-filter: blur(15px);
             padding: 2.5rem;
             border-radius: 16px;
@@ -320,31 +321,31 @@
             max-width: 800px;
             margin: 0 auto;
             box-shadow: var(--shadow-md);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(221, 160, 221, 0.4);
         }
 
         .card-container:hover {
             transform: translateY(-8px);
             box-shadow: var(--shadow-lg);
-            background: linear-gradient(135deg, rgba(230, 245, 230, 0.98) 0%, rgba(212, 237, 218, 0.95) 100%);
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.98) 0%, rgba(75, 0, 130, 0.95) 100%);
         }
 
         .card-container h2 {
-            color: var(--primary-color);
+            color: var(--white);
             font-size: 1.875rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
         }
 
         .quote {
-            color: var(--text-color);
+            color: var(--white);
             font-style: italic;
             border-left: 4px solid var(--primary-color);
             padding-left: 1.5rem;
             font-size: 1.125rem;
             padding-top: 1rem;
             padding-bottom: 1rem;
-            background: rgba(106, 13, 173, 0.1);
+            background: rgba(128, 0, 128, 0.2);
             border-radius: 0 8px 8px 0;
         }
 
@@ -361,7 +362,7 @@
         .menu-toggle {
             display: none;
             font-size: 1.5rem;
-            color: var(--primary-color);
+            color: var(--white);
             background: var(--light-bg);
             border: none;
             cursor: pointer;
@@ -382,7 +383,7 @@
         .ripple {
             position: absolute;
             border-radius: 50%;
-            background: rgba(106, 13, 173, 0.4);
+            background: rgba(128, 0, 128, 0.4);
             transform: scale(0);
             animation: ripple 0.6s linear;
             pointer-events: none;
