@@ -184,13 +184,11 @@
         }
 
         .form-group label {
-            position: absolute;
-            top: 0.8rem;
-            left: 0.8rem;
-            color: var(--text-color);
-            transition: 0.3s;
-            pointer-events: none;
+            display: block;
+            color: var(--primary-color);
             font-size: var(--font-md);
+            font-weight: 400;
+            margin-bottom: var(--space-xs);
         }
 
         .form-group input {
@@ -204,15 +202,6 @@
             outline: none;
         }
 
-        .form-group input:focus ~ label,
-        .form-group input:valid ~ label {
-            top: -0.5rem;
-            font-size: var(--font-sm);
-            color: var(--primary-color);
-            background: var(--white);
-            padding: 0 5px;
-        }
-
         .form-group input:focus {
             box-shadow: 0 0 8px rgba(106, 13, 173, 0.3);
             transform: scale(1.02);
@@ -221,7 +210,7 @@
         .toggle-password {
             position: absolute;
             right: 10px;
-            top: 60%;
+            top: 65%;
             transform: translateY(-50%);
             cursor: pointer;
             width: 24px;
@@ -546,12 +535,12 @@
         <form method="POST" action="{% url 'parent_login' %}">
             {% csrf_token %}
             <div class="form-group">
-                <input type="text" id="username" name="username" required>
-                <label for="username">Username*</label>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter Admission Number" required>
             </div>
             <div class="form-group">
-                <input type="password" id="password" name="password" required>
-                <label for="password">Password*</label>
+                <label for="password">Phone Number</label>
+                <input type="number" id="password" name="password" placeholder="Enter the Phone Number" maxlength="10" min="0" oninput="restrictToNumbers(this)" required>
                 <svg class="toggle-password" onclick="togglePassword('password')" viewBox="0 0 24 24">
                     <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                 </svg>
@@ -561,14 +550,23 @@
         </form>
     </div>
     <script>
+        function restrictToNumbers(input) {
+            // Remove any non-digit characters
+            input.value = input.value.replace(/[^0-9]/g, '');
+            // Ensure the length does not exceed 10 digits
+            if (input.value.length > 10) {
+                input.value = input.value.slice(0, 10);
+            }
+        }
+
         function togglePassword(fieldId) {
             const passwordInput = document.getElementById(fieldId);
-            const toggleButton = passwordInput.nextElementSibling.nextElementSibling;
-            if (passwordInput.type === 'password') {
+            const toggleButton = passwordInput.nextElementSibling;
+            if (passwordInput.type === 'number') {
                 passwordInput.type = 'text';
                 toggleButton.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-4.01.68l2.02 2.02c.57-.23 1.18-.36 1.83-.36zm-6.36 1.47l2.43 2.43.02.02c-.54.38-1.03.86-1.39 1.42l-2.92-2.92C2.27 10.68 1.08 12.31.35 14.17c1.73 4.39 6 7.5 11 7.5 1.4 0 2.74-.25 4.01-.68l-2.02-2.02c-.57.23-1.18.36-1.83.36-2.76 0-5-2.24-5-5 0-.65.13-1.26.36-1.83l-2.43-2.43z"/>';
             } else {
-                passwordInput.type = 'password';
+                passwordInput.type = 'number';
                 toggleButton.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
             }
         }

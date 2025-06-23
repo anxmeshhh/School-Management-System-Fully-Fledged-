@@ -4720,24 +4720,30 @@ from django.db import connection
 
 def parent_login(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        admission_number = request.POST.get('username')  # Form field for admission_number
+        contact = request.POST.get('password')          # Form field for contact
 
         # Validate inputs
-        if not all([username, password]):
-            return render(request, 'users/parent_login.html', {'error': 'All fields are required'})
+        if not all([admission_number, contact]):
+            return render(request, 'users/parent_login.html', {'error': 'Admission number and contact number are required'})
 
-        # Authenticate user by comparing plain text password
+        # Authenticate user by matching admission_number and contact
         with connection.cursor() as cursor:
-            cursor.execute("SELECT id, password FROM users WHERE username = %s", [username])
+            cursor.execute("""
+                SELECT u.id, sp3.contact
+                FROM users u
+                JOIN student_page1 sp1 ON u.id = sp1.user_id
+                JOIN student_page3 sp3 ON u.id = sp3.user_id
+                WHERE sp1.admission_number = %s
+            """, [admission_number])
             result = cursor.fetchone()
-            if result and result[1] == password:
+            if result and result[1] and result[1] == contact:
                 # Set session for authenticated user
                 request.session['user_id'] = result[0]
                 messages.success(request, 'Logged in successfully!')
                 return redirect('parent_dashboard')
             else:
-                return render(request, 'users/parent_login.html', {'error': 'Invalid username or password'})
+                return render(request, 'users/parent_login.html', {'error': 'Invalid admission number or contact number'})
 
     return render(request, 'users/parent_login.html')
 
