@@ -4082,39 +4082,72 @@ from django.db.utils import IntegrityError, DatabaseError
 from django.contrib import messages
 from django.shortcuts import redirect, render
 
-from django.db import connection, transaction
-from django.db.utils import IntegrityError
+from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.db import connection, transaction
 from django.urls import reverse
+from django.db.utils import IntegrityError
 
 def teacher_signup(request):
-    """Final robust teacher signup with raw SQL"""
+    """Final robust teacher signup with raw SQL, allowing custom Teacher ID"""
     if request.method != 'POST':
         return render(request, 'users/teacher_signup.html', {'form_cleared': request.GET.get('clear')})
 
     # Sanitize and validate inputs
+    teacher_id = request.POST.get('id', '').strip()
     name = request.POST.get('name', '').strip()
     email = request.POST.get('email', '').lower().strip()
     subject = request.POST.get('subject', '').strip()
     password = request.POST.get('password', '').strip()
+    class_teacher_of = request.POST.get('class_teacher_of', '').strip() or None
 
     # Clear existing messages
     storage = messages.get_messages(request)
     storage.used = True
 
-    if not all([name, email, subject, password]):
-        messages.error(request, 'All fields are required')
+    # Validate required fields
+    if not all([teacher_id, name, email, subject, password]):
+        messages.error(request, 'Teacher ID, Name, Email, Subject, and Password are required')
         return redirect(reverse('teacher_signup') + '?clear=1')
 
-    if len(name) > 100 or len(email) > 100 or len(subject) > 50 or len(password) > 255:
-        messages.error(request, 'Input exceeds maximum length')
+    # Validate input lengths based on table schema
+    if len(name) > 100:
+        messages.error(request, 'Name exceeds maximum length of 100 characters')
+        return redirect(reverse('teacher_signup') + '?clear=1')
+    if len(email) > 100:
+        messages.error(request, 'Email exceeds maximum length of 100 characters')
+        return redirect(reverse('teacher_signup') + '?clear=1')
+    if len(subject) > 50:
+        messages.error(request, 'Subject exceeds maximum length of 50 characters')
+        return redirect(reverse('teacher_signup') + '?clear=1')
+    if class_teacher_of and len(class_teacher_of) > 20:
+        messages.error(request, 'Class Teacher Of exceeds maximum length of 20 characters')
+        return redirect(reverse('teacher_signup') + '?clear=1')
+    if len(password) > 255:
+        messages.error(request, 'Password exceeds maximum length of 255 characters')
+        return redirect(reverse('teacher_signup') + '?clear=1')
+
+    # Validate teacher_id is numeric and positive
+    if not teacher_id.isdigit() or int(teacher_id) <= 0:
+        messages.error(request, 'Teacher ID must be a positive number')
+        return redirect(reverse('teacher_signup') + '?clear=1')
+
+    # Validate password is numeric and max 10 digits
+    if not password.isdigit() or len(password) > 10:
+        messages.error(request, 'Password must be numeric and up to 10 digits')
         return redirect(reverse('teacher_signup') + '?clear=1')
 
     try:
         with transaction.atomic():
             with connection.cursor() as cursor:
-                # Check BOTH tables for existing email
+                # Check for existing teacher_id in teachers table
+                cursor.execute("SELECT id FROM teachers WHERE id = %s", [teacher_id])
+                if cursor.fetchone():
+                    print(f"Duplicate teacher ID detected: {teacher_id}")  # Debug
+                    messages.error(request, f'Teacher ID "{teacher_id}" already exists')
+                    return redirect(reverse('teacher_signup') + '?clear=1')
+
+                # Check for existing email in both tables
                 cursor.execute("""
                     SELECT 'teachers' as source FROM teachers WHERE email = %s
                     UNION ALL
@@ -4128,13 +4161,12 @@ def teacher_signup(request):
                     messages.error(request, f'Email "{email}" already exists in our system')
                     return redirect(reverse('teacher_signup') + '?clear=1')
 
-                # Insert into teachers
+                # Insert into teachers with explicit id
                 cursor.execute(
-                    """INSERT INTO teachers (name, email, subject, password)
-                    VALUES (%s, %s, %s, %s)""",
-                    [name, email, subject, password]
+                    """INSERT INTO teachers (id, name, email, subject, class_teacher_of, password)
+                    VALUES (%s, %s, %s, %s, %s, %s)""",
+                    [teacher_id, name, email, subject, class_teacher_of, password]
                 )
-                teacher_id = cursor.lastrowid
 
                 # Generate unique username (fit varchar(50))
                 base_username = name.lower().replace(' ', '_')[:40]  # Reserve space for _id
@@ -4153,7 +4185,7 @@ def teacher_signup(request):
 
     except IntegrityError as e:
         print(f"IntegrityError: {str(e)}")  # Debug
-        messages.error(request, f'Email "{email}" already exists in our system')
+        messages.error(request, f'Teacher ID "{teacher_id}" or Email "{email}" already exists in our system')
         return redirect(reverse('teacher_signup') + '?clear=1')
     except Exception as e:
         print(f"Exception: {str(e)}")  # Debug
@@ -4168,22 +4200,32 @@ from mysql.connector import Error
 
 def teacher_login(request):
     """
-    Handles teacher login via POST request, checking plain text password.
+    Handles teacher login via POST request, checking Teacher ID and plain text password.
     """
     if request.method != 'POST':
         return render(request, 'users/teacher_login.html')
 
-    email = request.POST.get('email')
+    teacher_id = request.POST.get('id')
     password = request.POST.get('password')
 
     # Validation
-    if not all([email, password]):
-        messages.error(request, 'Email and password are required.')
+    if not all([teacher_id, password]):
+        messages.error(request, 'Teacher ID and password are required.')
+        return redirect('teacher_login')
+
+    # Validate teacher_id is numeric and positive
+    if not teacher_id.isdigit() or int(teacher_id) <= 0:
+        messages.error(request, 'Teacher ID must be a positive number.')
+        return redirect('teacher_login')
+
+    # Validate password is numeric and max 10 digits
+    if not password.isdigit() or len(password) > 10:
+        messages.error(request, 'Password must be numeric and up to 10 digits.')
         return redirect('teacher_login')
 
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT id, name, password FROM teachers WHERE email = %s", [email])
+            cursor.execute("SELECT id, name, password FROM teachers WHERE id = %s", [teacher_id])
             result = cursor.fetchone()
             if result and result[2] == password:
                 request.session['teacher_id'] = result[0]
@@ -4191,7 +4233,7 @@ def teacher_login(request):
                 messages.success(request, 'Login successful!')
                 return redirect('teacher_dashboard')
             else:
-                messages.error(request, 'Invalid email or password.')
+                messages.error(request, 'Invalid Teacher ID or password.')
                 return redirect('teacher_login')
     except Error as e:
         messages.error(request, f'Error during login: {e}')
