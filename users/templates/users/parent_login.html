@@ -71,33 +71,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url("{% static 'users/images/bg_image.png' %}?v=3") no-repeat center center fixed;
+            background: url("{% static 'users/images/studentbg.jpg' %}?v=3") no-repeat center center fixed;
             background-size: cover;
-            opacity: 0.5;
-            mix-blend-mode: overlay;
+            opacity: 0.3;
             z-index: 1;
-        }
-
-        body::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            z-index: 1;
-        }
-
-        .background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(106, 13, 173, 0.3), rgba(177, 156, 217, 0.3));
-            z-index: 1;
-            animation: fadeIn 2s ease-in-out;
+            animation: subtlePulse 12s ease-in-out infinite;
         }
 
         body > * {
@@ -316,6 +294,12 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
+        @keyframes subtlePulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.15; }
+            100% { opacity: 0.3; }
+        }
+
         @media (max-width: 992px) {
             .container {
                 max-width: 360px;
@@ -517,7 +501,6 @@
     </style>
 </head>
 <body>
-    <div class="background"></div>
     <div class="logo">
         <img src="{% static 'users/images/violetlogo.png' %}" alt="Logo">
     </div>

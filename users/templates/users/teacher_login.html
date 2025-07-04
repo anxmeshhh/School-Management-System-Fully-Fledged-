@@ -16,7 +16,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #fff0f5 0%, #fce4ec 100%),
+            background: linear-gradient(135deg, #fff0f5 0%, #fce4ec 50%),
                 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(219,112,147,0.1)"/></svg>') repeat;
             background-size: 200%, 20px 20px;
             min-height: 100vh;
@@ -36,34 +36,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url("{% static 'users/images/bg_image.png' %}?v=3") no-repeat center center fixed;
-            opacity: 0.5;
-            mix-blend-mode: overlay;
-            z-index: 1;
+            background: url("{% static 'users/images/teacher.jpg' %}?v=3") no-repeat center center fixed;
             background-size: cover;
-            background-position: center;
-        }
-
-        body::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            background: linear-gradient(to top, rgba(219, 112, 147, 0.4) 0%, transparent 100%);
+            opacity: 0.3;
             z-index: 1;
-        }
-
-        .background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(219, 112, 147, 0.3), rgba(255, 182, 193, 0.3));
-            z-index: 1;
-            animation: fadeIn 2s ease-in-out;
+            animation: subtlePulse 12s ease-in-out infinite;
         }
 
         body > * {
@@ -257,6 +234,12 @@
             0% { transform: scale(0.3); opacity: 0; }
             50% { transform: scale(1.2); opacity: 0.8; }
             100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes subtlePulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.15; }
+            100% { opacity: 0.3; }
         }
 
         @media (max-width: 768px) {

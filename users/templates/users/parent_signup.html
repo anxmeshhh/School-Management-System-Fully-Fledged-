@@ -28,18 +28,18 @@
             --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
             --shadow-lg: 0 4px 15px rgba(106, 13, 173, 0.2);
             --space-xs: 5px;
-            --space-sm: 10px;
-            --space-md: 15px;
-            --space-lg: 20px;
-            --space-xl: 30px;
+            --space-sm: 8px;
+            --space-md: 12px;
+            --space-lg: 16px;
+            --space-xl: 24px;
             --font-xs: 12px;
             --font-sm: 14px;
             --font-md: 16px;
             --font-lg: 18px;
-            --font-xl: 24px;
+            --font-xl: 22px;
             --radius-sm: 5px;
-            --radius-md: 10px;
-            --radius-lg: 20px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
             --radius-full: 50%;
         }
 
@@ -58,7 +58,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: var(--space-md);
             position: relative;
             overflow-x: hidden;
             touch-action: pan-y;
@@ -71,33 +71,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url("{% static 'users/images/bg_image.png' %}?v=3") no-repeat center center fixed;
+            background: url("{% static 'users/images/studentbg.jpg' %}?v=3") no-repeat center center fixed;
             background-size: cover;
-            opacity: 0.5;
-            mix-blend-mode: overlay;
+            opacity: 0.3;
             z-index: 1;
-        }
-
-        body::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            z-index: 1;
-        }
-
-        .background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(106, 13, 173, 0.3), rgba(177, 156, 217, 0.3));
-            z-index: 1;
-            animation: fadeIn 2s ease-in-out;
+            animation: subtlePulse 12s ease-in-out infinite;
         }
 
         body > * {
@@ -107,11 +85,11 @@
 
         .logo {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
+            top: var(--space-md);
+            left: var(--space-md);
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius-full);
             overflow: hidden;
             z-index: 3;
             transition: transform 0.6s ease-in-out;
@@ -130,20 +108,21 @@
 
         .welcome-header {
             position: absolute;
-            top: 20px;
+            top: var(--space-md);
             text-align: center;
             color: var(--primary-color);
-            font-size: 1.8rem;
+            font-size: var(--font-xl);
             font-weight: 600;
             letter-spacing: 1px;
             width: 100%;
             z-index: 3;
             animation: slideInDown 1.2s ease-in-out;
+            padding: 0 var(--space-sm);
         }
 
         .welcome-header span {
             display: block;
-            font-size: 1.2rem;
+            font-size: var(--font-md);
             font-weight: normal;
             color: #170d0d;
         }
@@ -151,13 +130,13 @@
         .container {
             background: var(--light-bg);
             backdrop-filter: blur(8px);
-            padding: 2rem;
-            border-radius: 12px;
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
             box-shadow: var(--shadow-md);
             border: 1px solid rgba(255, 255, 255, 0.4);
             width: 100%;
             max-width: 400px;
-            margin-top: 120px;
+            margin-top: 100px;
             z-index: 3;
             animation: slideInRight 1.2s ease-in-out;
             transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
@@ -171,14 +150,14 @@
         h2 {
             color: var(--primary-color);
             text-align: center;
-            margin-bottom: 2rem;
-            font-size: 1.8rem;
+            margin-bottom: var(--space-lg);
+            font-size: var(--font-xl);
             font-weight: 600;
             animation: fadeIn 1.5s ease-in-out;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--space-md);
             position: relative;
             animation: fadeInUp 1s ease-in-out;
         }
@@ -193,10 +172,10 @@
 
         .form-group input {
             width: 100%;
-            padding: 0.8rem 40px 0.8rem 0.8rem;
+            padding: var(--space-sm) var(--space-md);
             border: 2px solid transparent;
             background: linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--border-color), var(--primary-color)) border-box;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             font-size: var(--font-md);
             transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
             outline: none;
@@ -209,15 +188,15 @@
 
         button {
             width: 100%;
-            padding: 1rem;
+            padding: var(--space-sm);
             background: var(--primary-color);
             border: none;
-            border-radius: 25px;
+            border-radius: var(--radius-lg);
             color: var(--white);
             font-size: var(--font-md);
             font-weight: 600;
             cursor: pointer;
-            margin-bottom: 10px;
+            margin-bottom: var(--space-sm);
             transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
         }
 
@@ -242,8 +221,8 @@
 
         .notification-box {
             text-align: center;
-            margin-bottom: 15px;
-            font-size: 14px;
+            margin-bottom: var(--space-md);
+            font-size: var(--font-sm);
             padding: var(--space-sm) var(--space-md);
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-md);
@@ -288,60 +267,71 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
+        @keyframes subtlePulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.15; }
+            100% { opacity: 0.3; }
+        }
+
         @media (max-width: 992px) {
             .container {
                 max-width: 360px;
-                margin-top: 110px;
+                margin-top: 90px;
             }
 
             .welcome-header {
-                font-size: 1.6rem;
+                font-size: var(--font-lg);
             }
 
             .welcome-header span {
-                font-size: 1.1rem;
+                font-size: var(--font-sm);
             }
         }
 
         @media (max-width: 768px) {
             .welcome-header {
-                font-size: 1.4rem;
-                padding: 0 10px;
+                font-size: var(--font-lg);
+                padding: 0 var(--space-sm);
             }
 
             .welcome-header span {
-                font-size: 1rem;
+                font-size: var(--font-sm);
             }
 
             .logo {
                 width: 60px;
                 height: 60px;
-                top: 15px;
-                left: 15px;
+                top: var(--space-sm);
+                left: var(--space-sm);
             }
 
             .container {
-                padding: 1.5rem;
+                padding: var(--space-md);
                 max-width: 90%;
-                margin-top: 100px;
+                margin-top: 80px;
             }
 
             h2 {
-                font-size: 1.5rem;
+                font-size: var(--font-lg);
             }
 
             .form-group label {
-                font-size: 0.9rem;
+                font-size: var(--font-sm);
             }
 
             .form-group input {
-                padding: 0.7rem 40px 0.7rem 0.7rem;
-                font-size: 0.9rem;
+                padding: var(--space-xs) var(--space-sm);
+                font-size: var(--font-sm);
             }
 
             button {
-                padding: 0.8rem;
-                font-size: 0.9rem;
+                padding: var(--space-xs);
+                font-size: var(--font-sm);
+            }
+
+            .notification-box {
+                font-size: var(--font-xs);
+                padding: var(--space-xs) var(--space-sm);
             }
         }
 
@@ -349,57 +339,57 @@
             .logo {
                 width: 50px;
                 height: 50px;
-                top: 10px;
-                left: 10px;
+                top: var(--space-xs);
+                left: var(--space-xs);
             }
 
             .welcome-header {
-                top: 70px;
-                font-size: 1.2rem;
+                top: 60px;
+                font-size: var(--font-md);
             }
 
             .welcome-header span {
-                font-size: 0.9rem;
+                font-size: var(--font-xs);
             }
 
             .container {
                 max-width: 300px;
-                padding: 1.2rem;
-                margin-top: 90px;
+                padding: var(--space-sm);
+                margin-top: 70px;
             }
 
             h2 {
-                font-size: 1.3rem;
+                font-size: var(--font-md);
             }
 
             .form-group input {
-                font-size: 0.85rem;
-                padding: 0.6rem 40px 0.6rem 0.6rem;
+                font-size: var(--font-xs);
+                padding: var(--space-xs);
             }
 
             button {
-                font-size: 0.85rem;
-                padding: 0.7rem;
+                font-size: var(--font-xs);
+                padding: var(--space-xs);
             }
 
             .notification-box {
-                font-size: var(--font-sm);
-                padding: var(--space-xs) var(--space-sm);
+                font-size: var(--font-xs);
+                padding: var(--space-xs);
             }
         }
 
         @media (max-width: 320px) {
             .container {
                 max-width: 280px;
-                margin-top: 80px;
+                margin-top: 60px;
             }
 
             .welcome-header {
-                font-size: 1rem;
+                font-size: var(--font-sm);
             }
 
             .welcome-header span {
-                font-size: 0.8rem;
+                font-size: 10px;
             }
 
             .logo {
@@ -410,24 +400,24 @@
 
         @media (max-height: 500px) and (orientation: landscape) {
             .container {
-                margin-top: 80px;
-                padding: 1rem;
+                margin-top: 60px;
+                padding: var(--space-sm);
             }
 
             .logo {
                 width: 50px;
                 height: 50px;
-                top: 10px;
-                left: 10px;
+                top: var(--space-xs);
+                left: var(--space-xs);
             }
 
             .welcome-header {
                 top: 10px;
-                font-size: 1.2rem;
+                font-size: var(--font-md);
             }
 
             .welcome-header span {
-                font-size: 0.9rem;
+                font-size: var(--font-xs);
             }
         }
 
@@ -460,15 +450,14 @@
 
         @supports (padding: max(0px)) {
             .container {
-                padding-left: max(15px, env(safe-area-inset-left));
-                padding-right: max(15px, env(safe-area-inset-right));
-                padding-bottom: max(15px, env(safe-area-inset-bottom));
+                padding-left: max(var(--space-md), env(safe-area-inset-left));
+                padding-right: max(var(--space-md), env(safe-area-inset-right));
+                padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
             }
         }
     </style>
 </head>
 <body>
-    <div class="background"></div>
     <div class="logo">
         <img src="{% static 'users/images/violetlogo.png' %}" alt="Logo">
     </div>
