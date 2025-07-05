@@ -7,20 +7,20 @@
 }
 
 :root {
-  --primary-color: #6b21a8; /* Deep purple */
-  --secondary-color: #a855f7; /* Lighter purple */
-  --accent-color: #d8b4fe; /* Soft purple accent */
-  --light-color: #f5f3ff; /* Light purple background */
+  --primary-color: #006b3e; /* Deep green */
+  --secondary-color: #008b4f; /* Lighter green */
+  --accent-color: #d4edda; /* Soft green accent */
+  --light-color: #e6f5ee; /* Light green background */
   --dark-color: #1f2937; /* Retained dark color for contrast */
-  --success-color: #a855f7; /* Matches secondary purple for success */
+  --success-color: #008b4f; /* Matches secondary green for success */
   --danger-color: #ef4444; /* Retained red for errors */
-  --border-color: #ede9fe; /* Light purple border */
+  --border-color: #d4edda; /* Light green border */
   --shadow-color: rgba(0, 0, 0, 0.1);
   --transition-speed: 0.3s;
 }
 
 body {
-  background: linear-gradient(135deg, #f5f3ff 30%, #e9d5ff 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%23a855f7" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
+  background: linear-gradient(135deg, #e6f5ee 30%, #d4edda 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%23008b4f" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
   background-size: cover, 30px 30px;
   animation: backgroundFade 10s ease-in-out infinite alternate;
   color: #4b5563;
@@ -28,7 +28,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 80px 20px 40px 20px;
+  validators: 80px 20px 40px 20px;
 }
 
 @keyframes backgroundFade {
@@ -264,7 +264,7 @@ body {
 }
 
 .photo-btn:hover {
-  background-color: #581c87; /* Darker purple for hover */
+  background-color: #00562f; /* Darker green for hover */
 }
 
 .upload-btn {
@@ -273,7 +273,7 @@ body {
 }
 
 .upload-btn:hover {
-  background-color: #9333ea; /* Slightly darker purple for hover */
+  background-color: #006b3e; /* Slightly darker green for hover */
 }
 
 .upload-btn i {
@@ -335,7 +335,7 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--secondary-color);
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2); /* Purple focus shadow */
+  box-shadow: 0 0 0 3px rgba(0, 139, 79, 0.2); /* Green focus shadow */
 }
 
 textarea {
@@ -430,7 +430,7 @@ select {
 }
 
 .nav-btn:hover:not(:disabled) {
-  background-color: #581c87; /* Darker purple for hover */
+  background-color: #00562f; /* Darker green for hover */
   transform: translateY(-2px);
   box-shadow: 0 4px 8px var(--shadow-color);
 }
@@ -445,7 +445,7 @@ select {
 }
 
 .submit-btn:hover {
-  background-color: #9333ea; /* Darker purple for hover */
+  background-color: #006b3e; /* Darker green for hover */
 }
 
 /* Animations and Effects */
@@ -461,7 +461,7 @@ input:focus, select:focus, textarea:focus {
 
 .focused {
   border-color: var(--primary-color);
-  box-shadow: 0 0 5px rgba(107, 33, 168, 0.5); /* Purple shadow */
+  box-shadow: 0 0 5px rgba(0, 107, 62, 0.5); /* Green shadow */
 }
 
 /* Responsive Design */

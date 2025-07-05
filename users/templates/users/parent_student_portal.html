@@ -8,392 +8,393 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f3ff 30%, #e9d5ff 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%23a855f7" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
-            background-size: cover, 30px 30px;
-            animation: backgroundFade 10s ease-in-out infinite alternate;
-            min-height: 100vh;
-            padding: 80px 20px 40px 20px;
-        }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #e6f5ee 30%, #d4edda 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%23008b4f" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
+  background-size: cover, 30px 30px;
+  animation: backgroundFade 10s ease-in-out infinite alternate;
+  min-height: 100vh;
+  padding: 80px 20px 40px 20px;
+}
 
-        @keyframes backgroundFade {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
+@keyframes backgroundFade {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
 
-        .main-content {
-            background: #ffffff;
-            border: 2px solid #a855f7; /* Secondary purple */
-            border-radius: 16px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-        }
+.main-content {
+  background: #ffffff;
+  border: 2px solid #008b4f; /* Secondary green */
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
 
-        .header {
-            background: linear-gradient(90deg, #6b21a8, #a855f7); /* Primary to secondary purple */
-            color: #ffffff;
-            padding: 1rem 2rem;
-            border-bottom: 4px solid #d8b4fe; /* Accent purple */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+.header {
+  background: linear-gradient(90deg, #006b3e, #008b4f); /* Primary to secondary green */
+  color: #ffffff;
+  padding: 1rem 2rem;
+  border-bottom: 4px solid #d4edda; /* Accent green */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-        .header .logo-button {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
+.header .logo-button {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            flex-grow: 1;
-        }
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  flex-grow: 1;
+}
 
-        .logo-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease;
-        }
+.logo-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
 
-        .logo-img:hover {
-            transform: rotate(5deg) scale(1.05);
-        }
+.logo-img:hover {
+  transform: rotate(5deg) scale(1.05);
+}
 
-        .back-btn {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            background: #a855f7; /* Secondary purple */
-            color: #ffffff;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
+.back-btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #008b4f; /* Secondary green */
+  color: #ffffff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
 
-        .back-btn:hover {
-            background: #6b21a8; /* Primary purple */
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+.back-btn:hover {
+  background: #006b3e; /* Primary green */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
-        .welcome-section {
-            background: #ede9fe; /* Light purple */
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 2px solid #a855f7; /* Secondary purple */
-            margin-bottom: 2rem;
-            text-align: center;
-        }
+.welcome-section {
+  background: #d4edda; /* Light green */
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid #008b4f; /* Secondary green */
+  margin-bottom: 2rem;
+  text-align: center;
+}
 
-        .welcome-section h2 {
-            color: #6b21a8; /* Primary purple */
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
+.welcome-section h2 {
+  color: #006b3e; /* Primary green */
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
 
-        .welcome-section p {
-            color: #4b5563;
-            font-size: 1rem;
-        }
+.welcome-section p {
+  color: #4b5563;
+  font-size: 1rem;
+}
 
-        .form-container {
-            background: #f5f3ff; /* Light purple */
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 2px solid #a855f7; /* Secondary purple */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+.form-container {
+  background: #e6f5ee; /* Light green */
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid #008b4f; /* Secondary green */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-        .form-container h2 {
-            color: #6b21a8; /* Primary purple */
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
+.form-container h2 {
+  color: #006b3e; /* Primary green */
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
 
-        .form-container label {
-            color: #6b21a8; /* Primary purple */
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
+.form-container label {
+  color: #006b3e; /* Primary green */
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+}
 
-        .form-container input[type="date"] {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border: 2px solid #a855f7; /* Secondary purple */
-            background: #f5f3ff; /* Light purple */
-            font-size: 1rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
+.form-container input[type="date"] {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 2px solid #008b4f; /* Secondary green */
+  background: #e6f5ee; /* Light green */
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-        .form-container input[type="date"]:focus {
-            border-color: #6b21a8; /* Primary purple */
-            box-shadow: 0 0 8px rgba(107, 33, 168, 0.3); /* Purple shadow */
-            outline: none;
-        }
+.form-container input[type="date"]:focus {
+  border-color: #006b3e; /* Primary green */
+  box-shadow: 0 0 8px rgba(0, 107, 62, 0.3); /* Green shadow */
+  outline: none;
+}
 
-        .form-container button {
-            background: #a855f7; /* Secondary purple */
-            color: #ffffff;
-            padding: 0.75rem 2rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
+.form-container button {
+  background: #008b4f; /* Secondary green */
+  color: #ffffff;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
 
-        .form-container button:hover {
-            background: #6b21a8; /* Primary purple */
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+.form-container button:hover {
+  background: #006b3e; /* Primary green */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
-        .attendance-table {
-            max-height: 450px;
-            overflow-y: auto;
-            overflow-x: auto;
-            border-radius: 12px;
-            border: 2px solid #a855f7; /* Secondary purple */
-            background: #f5f3ff; /* Light purple */
-            display: block;
-        }
+.attendance-table {
+  max-height: 450px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 2px solid #008b4f; /* Secondary green */
+  background: #e6f5ee; /* Light green */
+  display: block;
+}
 
-        table {
-            width: 100%;
-            min-width: 600px;
-            border-collapse: collapse;
-            background: #ffffff;
-        }
+table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  background: #ffffff;
+}
 
-        th, td {
-            border: 1px solid #a855f7; /* Secondary purple */
-            padding: 0.75rem;
-            text-align: left;
-            font-size: 0.9rem;
-        }
+th, td {
+  border: 1px solid #008b4f; /* Secondary green */
+  padding: 0.75rem;
+  text-align: left;
+  font-size: 0.9rem;
+}
 
-        th {
-            background: #e9d5ff; /* Light purple */
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            font-weight: 700;
-            color: #6b21a8; /* Primary purple */
-        }
+th {
+  background: #d4edda; /* Light green */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-weight: 700;
+  color: #006b3e; /* Primary green */
+}
 
-        td {
-            color: #1f2937;
-        }
+td {
+  color: #1f2937;
+}
 
-        .highlight {
-            background: #ede9fe; /* Light purple */
-        }
+.highlight {
+  background: #d4edda; /* Light green */
+}
 
-        .status-present { color: #6b21a8; font-weight: 600; } /* Primary purple */
-        .status-absent { color: #b91c1c; font-weight: 600; } /* Retained red */
-        .status-leave { color: #ca8a04; font-weight: 600; } /* Retained yellow */
+.status-present { color: #006b3e; font-weight: 600; } /* Primary green */
+.status-absent { color: #b91c1c; font-weight: 600; } /* Retained red */
+.status-leave { color: #ca8a04; font-weight: 600; } /* Retained yellow */
 
-        .leave-request-button {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: #a855f7; /* Secondary purple */
-            color: #ffffff;
-            padding: 1rem 1.5rem;
-            border-radius: 50px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-        }
+.leave-request-button {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: #008b4f; /* Secondary green */
+  color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
 
-        .leave-request-button:hover {
-            background: #6b21a8; /* Primary purple */
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
+.leave-request-button:hover {
+  background: #006b3e; /* Primary green */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
 
-        .alert-message {
-            margin-bottom: 1.5rem;
-        }
+.alert-message {
+  margin-bottom: 1.5rem;
+}
 
-        .alert-message .error {
-            background: #fef2f2;
-            color: #b91c1c;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #ef4444;
-        }
+.alert-message .error {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border-left: 4px solid #ef4444;
+}
 
-        .alert-message .success {
-            background: #ede9fe; /* Light purple */
-            color: #6b21a8; /* Primary purple */
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #a855f7; /* Secondary purple */
-        }
+.alert-message .success {
+  background: #d4edda; /* Light green */
+  color: #006b3e; /* Primary green */
+  padding: 0.75rem;
+  border-radius: 8px;
+  border-left: 4px solid #008b4f; /* Secondary green */
+}
 
-        @media (max-width: 768px) {
-            body {
-                padding: 70px 10px 20px 10px;
-            }
+@media (max-width: 768px) {
+  body {
+    padding: 70px 10px 20px 10px;
+  }
 
-            .header {
-                padding: 0.8rem 1rem;
-            }
+  .header {
+    padding: 0.8rem 1rem;
+  }
 
-            .header h1 {
-                font-size: 1.5rem;
-            }
+  .header h1 {
+    font-size: 1.5rem;
+  }
 
-            .main-content {
-                padding: 1.5rem;
-            }
+  .main-content {
+    padding: 1.5rem;
+  }
 
-            .welcome-section {
-                padding: 1.2rem;
-            }
+  .welcome-section {
+    padding: 1.2rem;
+  }
 
-            .form-container {
-                padding: 1.2rem;
-            }
+  .form-container {
+    padding: 1.2rem;
+  }
 
-            .form-container h2 {
-                font-size: 1.25rem;
-            }
+  .form-container h2 {
+    font-size: 1.25rem;
+  }
 
-            .form-container label {
-                font-size: 0.9rem;
-            }
+  .form-container label {
+    font-size: 0.9rem;
+  }
 
-            .form-container input[type="date"],
-            .form-container button {
-                font-size: 0.9rem;
-                padding: 0.6rem;
-            }
+  .form-container input[type="date"],
+  .form-container button {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
 
-            .attendance-table {
-                max-height: 350px;
-            }
+  .attendance-table {
+    max-height: 350px;
+  }
 
-            th, td {
-                font-size: 0.85rem;
-                padding: 0.6rem;
-            }
+  th, td {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
 
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
+  .back-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
 
-            .logo-img {
-                width: 40px;
-                height: 40px;
-            }
+  .logo-img {
+    width: 40px;
+    height: 40px;
+  }
 
-            .leave-request-button {
-                padding: 0.75rem 1.25rem;
-                font-size: 0.9rem;
-            }
-        }
+  .leave-request-button {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
 
-        @media (max-width: 480px) {
-            body {
-                padding: 60px 5px 15px 5px;
-            }
+@media (max-width: 480px) {
+  body {
+    padding: 60px 5px 15px 5px;
+  }
 
-            .header {
-                padding: 0.6rem 0.8rem;
-            }
+  .header {
+    padding: 0.6rem 0.8rem;
+  }
 
-            .header h1 {
-                font-size: 1.25rem;
-            }
+  .header h1 {
+    font-size: 1.25rem;
+  }
 
-            .main-content {
-                padding: 1rem;
-                border-radius: 8px;
-            }
+  .main-content {
+    padding: 1rem;
+    border-radius: 8px;
+  }
 
-            .welcome-section {
-                padding: 1rem;
-            }
+  .welcome-section {
+    padding: 1rem;
+  }
 
-            .welcome-section h2 {
-                font-size: 1.25rem;
-            }
+  .welcome-section h2 {
+    font-size: 1.25rem;
+  }
 
-            .form-container {
-                padding: 1rem;
-            }
+  .form-container {
+    padding: 1rem;
+  }
 
-            .form-container h2 {
-                font-size: 1.1rem;
-            }
+  .form-container h2 {
+    font-size: 1.1rem;
+  }
 
-            .form-container label {
-                font-size: 0.85rem;
-            }
+  .form-container label {
+    font-size: 0.85rem;
+  }
 
-            .form-container button {
-                padding: 0.5rem;
-                font-size: 0.85rem;
-            }
+  .form-container button {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
 
-            th, td {
-                font-size: 0.75rem;
-                padding: 0.5rem;
-            }
+  th, td {
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
 
-            .back-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-            }
+  .back-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
 
-            .logo-img {
-                width: 35px;
-                height: 35px;
-            }
+  .logo-img {
+    width: 35px;
+    height: 35px;
+  }
 
-            .leave-request-button {
-                padding: 0.75rem 1rem;
-                font-size: 0.85rem;
-            }
-        }
+  .leave-request-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+}
     </style>
 </head>
 <body>
@@ -403,7 +404,7 @@
         </a>
         <h1><i class="fas fa-user-graduate icon"></i> Student Portal</h1>
         <div class="logo-button">
-            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+            <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
         </div>
     </div>
 

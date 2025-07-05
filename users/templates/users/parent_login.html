@@ -8,501 +8,521 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-
-        :root {
-            --primary-color: #6a0dad;
-            --primary-hover: #7b1fa2;
-            --white: #ffffff;
-            --light-bg: rgba(255, 255, 255, 0.95);
-            --border-color: #ddd;
-            --text-color: #666;
-            --error-color: #dc3545;
-            --success-color: #28a745;
-            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
-            --shadow-lg: 0 4px 15px rgba(106, 13, 173, 0.2);
-            --space-xs: 5px;
-            --space-sm: 10px;
-            --space-md: 15px;
-            --space-lg: 20px;
-            --space-xl: 30px;
-            --font-xs: 12px;
-            --font-sm: 14px;
-            --font-md: 16px;
-            --font-lg: 18px;
-            --font-xl: 24px;
-            --radius-sm: 5px;
-            --radius-md: 10px;
-            --radius-lg: 20px;
-            --radius-full: 50%;
-        }
-
-        html {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
-        }
-
-        body {
-            background: linear-gradient(135deg, #e6f5ee 0%, #d4edda 100%),
-                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(106,13,173,0.1)"/></svg>') repeat;
-            background-size: 200%, 20px 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-            touch-action: pan-y;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url("{% static 'users/images/studentbg.jpg' %}?v=3") no-repeat center center fixed;
-            background-size: cover;
-            opacity: 0.3;
-            z-index: 1;
-            animation: subtlePulse 12s ease-in-out infinite;
-        }
-
-        body > * {
-            position: relative;
-            z-index: 2;
-        }
-
-        .logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            overflow: hidden;
-            z-index: 3;
-            transition: transform 0.6s ease-in-out;
-        }
-
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            animation: bounceIn 1.2s ease-out;
-        }
-
-        .logo:hover {
-            transform: scale(1.15) rotate(5deg);
-        }
-
-        .welcome-header {
-            position: absolute;
-            top: 20px;
-            text-align: center;
-            color: var(--primary-color);
-            font-size: 1.8rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            width: 100%;
-            z-index: 3;
-            animation: slideInDown 1.2s ease-in-out;
-        }
-
-        .welcome-header span {
-            display: block;
-            font-size: 1.2rem;
-            font-weight: normal;
-            color: #170d0d;
-        }
-
-        .container {
-            background: var(--light-bg);
-            backdrop-filter: blur(8px);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            width: 100%;
-            max-width: 400px;
-            margin-top: 120px;
-            z-index: 3;
-            animation: slideInRight 1.2s ease-in-out;
-            transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-        }
-
-        .container:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        h2 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 1.8rem;
-            font-weight: 600;
-            animation: fadeIn 1.5s ease-in-out;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-            animation: fadeInUp 1s ease-in-out;
-        }
-
-        .form-group label {
-            display: block;
-            color: var(--primary-color);
-            font-size: var(--font-md);
-            font-weight: 400;
-            margin-bottom: var(--space-xs);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.8rem 40px 0.8rem 0.8rem;
-            border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--border-color), var(--primary-color)) border-box;
-            border-radius: 8px;
-            font-size: var(--font-md);
-            transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
-            outline: none;
-        }
-
-        .form-group input:focus {
-            box-shadow: 0 0 8px rgba(106, 13, 173, 0.3);
-            transform: scale(1.02);
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 65%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            width: 24px;
-            height: 24px;
-            fill: var(--primary-color);
-            transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
-        }
-
-        .toggle-password:hover {
-            fill: var(--primary-hover);
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        button {
-            width: 100%;
-            padding: 1rem;
-            background: var(--primary-color);
-            border: none;
-            border-radius: 25px;
-            color: var(--white);
-            font-size: var(--font-md);
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 10px;
-            transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-        }
-
-        button:hover {
-            background: var(--primary-hover);
-            transform: scale(1.08);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .signup-btn {
-            width: 100%;
-            padding: 1rem;
-            background: var(--white);
-            border: 1px solid var(--primary-color);
-            border-radius: 25px;
-            color: var(--primary-color);
-            font-size: var(--font-md);
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            display: block;
-            margin-bottom: 10px;
-            transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-        }
-
-        .signup-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: scale(1.08);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .notification-box {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 14px;
-            padding: var(--space-sm) var(--space-md);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-md);
-            opacity: 0.95;
-        }
-
-        .notification-box.success {
-            background-color: #d4edda;
-            color: #155724;
-            border-left: 5px solid var(--success-color);
-        }
-
-        .notification-box.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-left: 5px solid var(--error-color);
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideInDown {
-            0% { transform: translateY(-50px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes slideInRight {
-            0% { transform: translateX(50px); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes subtlePulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.15; }
-            100% { opacity: 0.3; }
-        }
-
-        @media (max-width: 992px) {
-            .container {
-                max-width: 360px;
-                margin-top: 110px;
-            }
-
-            .welcome-header {
-                font-size: 1.6rem;
-            }
-
-            .welcome-header span {
-                font-size: 1.1rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .welcome-header {
-                font-size: 1.4rem;
-                padding: 0 10px;
-            }
-
-            .welcome-header span {
-                font-size: 1rem;
-            }
-
-            .logo {
-                width: 60px;
-                height: 60px;
-                top: 15px;
-                left: 15px;
-            }
-
-            .container {
-                padding: 1.5rem;
-                max-width: 90%;
-                margin-top: 100px;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            .form-group label {
-                font-size: 0.9rem;
-            }
-
-            .form-group input {
-                padding: 0.7rem 40px 0.7rem 0.7rem;
-                font-size: 0.9rem;
-            }
-
-            button, .signup-btn {
-                padding: 0.8rem;
-                font-size: 0.9rem;
-            }
-
-            .toggle-password {
-                width: 22px;
-                height: 22px;
-            }
-
-            .notification-box {
-                font-size: var(--font-sm);
-                padding: var(--space-xs) var(--space-sm);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .logo {
-                width: 50px;
-                height: 50px;
-                top: 10px;
-                left: 10px;
-            }
-
-            .welcome-header {
-                top: 70px;
-                font-size: 1.2rem;
-            }
-
-            .welcome-header span {
-                font-size: 0.9rem;
-            }
-
-            .container {
-                max-width: 300px;
-                padding: 1.2rem;
-                margin-top: 90px;
-            }
-
-            h2 {
-                font-size: 1.3rem;
-            }
-
-            .form-group input {
-                font-size: 0.85rem;
-                padding: 0.6rem 40px 0.6rem 0.6rem;
-            }
-
-            button, .signup-btn {
-                font-size: 0.85rem;
-                padding: 0.7rem;
-            }
-
-            .toggle-password {
-                width: 20px;
-                height: 20px;
-                right: 8px;
-            }
-
-            .notification-box {
-                font-size: var(--font-sm);
-                padding: var(--space-xs) var(--space-sm);
-            }
-        }
-
-        @media (max-width: 320px) {
-            .container {
-                max-width: 280px;
-                margin-top: 80px;
-            }
-
-            .welcome-header {
-                font-size: 1rem;
-            }
-
-            .welcome-header span {
-                font-size: 0.8rem;
-            }
-
-            .logo {
-                width: 45px;
-                height: 45px;
-            }
-        }
-
-        @media (max-height: 500px) and (orientation: landscape) {
-            .container {
-                margin-top: 80px;
-                padding: 1rem;
-            }
-
-            .logo {
-                width: 50px;
-                height: 50px;
-                top: 10px;
-                left: 10px;
-            }
-
-            .welcome-header {
-                top: 10px;
-                font-size: 1.2rem;
-            }
-
-            .welcome-header span {
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (hover: none) {
-            .container:hover {
-                transform: none;
-                box-shadow: var(--shadow-md);
-            }
-
-            button:hover, .signup-btn:hover {
-                transform: none;
-                box-shadow: none;
-            }
-
-            button:active, .signup-btn:active {
-                transform: scale(0.98);
-            }
-
-            .toggle-password:hover {
-                transform: translateY(-50%);
-                fill: var(--primary-color);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
-            }
-
-            html {
-                scroll-behavior: auto;
-            }
-        }
-
-        @supports (padding: max(0px)) {
-            .container {
-                padding-left: max(15px, env(safe-area-inset-left));
-                padding-right: max(15px, env(safe-area-inset-right));
-                padding-bottom: max(15px, env(safe-area-inset-bottom));
-            }
-        }
+        /* Importing Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+/* CSS Variables */
+:root {
+    --primary-color: #006b3e; /* Primary green */
+    --primary-hover: #004f2d; /* Darker green */
+    --white: #ffffff;
+    --light-bg: rgba(255, 255, 255, 0.95);
+    --border-color: #ddd;
+    --text-color: #666;
+    --error-color: #dc3545;
+    --success-color: #28a745;
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 4px 15px rgba(0, 107, 62, 0.2); /* Green shadow */
+    --space-xs: 5px;
+    --space-sm: 10px;
+    --space-md: 15px;
+    --space-lg: 20px;
+    --space-xl: 30px;
+    --font-xs: 12px;
+    --font-sm: 14px;
+    --font-md: 16px;
+    --font-lg: 18px;
+    --font-xl: 24px;
+    --radius-sm: 5px;
+    --radius-md: 8px;
+    --radius-lg: 20px;
+    --radius-full: 50%;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+}
+
+/* Body Styling */
+body {
+    background: linear-gradient(135deg, #e6f5ee 0%, #d4edda 100%),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(0,139,79,0.1)"/></svg>') repeat;
+    background-size: 200%, 20px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+    touch-action: pan-y;
+}
+
+/* Background Overlay */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("{% static 'users/images/studentbg.jpg' %}?v=3") no-repeat center center fixed;
+    background-size: cover;
+    opacity: 0.3;
+    z-index: 1;
+    animation: subtlePulse 12s ease-in-out infinite;
+}
+
+/* Ensure content is above background */
+body > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Logo Styling */
+.logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    z-index: 3;
+    transition: transform 0.6s ease-in-out;
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: bounceIn 1.2s ease-out;
+}
+
+.logo:hover {
+    transform: scale(1.15) rotate(5deg);
+}
+
+/* Welcome Header */
+.welcome-header {
+    position: absolute;
+    top: 20px;
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    width: 100%;
+    z-index: 3;
+    animation: slideInDown 1.2s ease-in-out;
+}
+
+.welcome-header span {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: normal;
+    color: #170d0d;
+}
+
+/* Container Styling */
+.container {
+    background: var(--light-bg);
+    backdrop-filter: blur(8px);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    width: 100%;
+    max-width: 400px;
+    margin-top: 120px;
+    z-index: 3;
+    animation: slideInRight 1.2s ease-in-out;
+    transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+}
+
+.container:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Heading Styling */
+h2 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Form Group Styling */
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+    animation: fadeInUp 1s ease-in-out;
+}
+
+.form-group label {
+    display: block;
+    color: var(--primary-color);
+    font-size: var(--font-md);
+    font-weight: 400;
+    margin-bottom: var(--space-xs);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem 40px 0.8rem 0.8rem;
+    border: 2px solid transparent;
+    background: linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--border-color), var(--primary-color)) border-box;
+    border-radius: 8px;
+    font-size: var(--font-md);
+    transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
+    outline: none;
+}
+
+.form-group input:focus {
+    box-shadow: 0 0 8px rgba(0, 107, 62, 0.3); /* Green shadow */
+    transform: scale(1.02);
+}
+
+/* Toggle Password Icon */
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 65%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    fill: var(--primary-color);
+    transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.toggle-password:hover {
+    fill: var(--primary-hover);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Button Styling */
+button {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 25px;
+    color: var(--white);
+    font-size: var(--font-md);
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+}
+
+button:hover {
+    background: var(--primary-hover);
+    transform: scale(1.08);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Signup Button Styling */
+.signup-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--white);
+    border: 1px solid var(--primary-color);
+    border-radius: 25px;
+    color: var(--primary-color);
+    font-size: var(--font-md);
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 10px;
+    transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+}
+
+.signup-btn:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    transform: scale(1.08);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Notification Box Styling */
+.notification-box {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 14px;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    opacity: 0.95;
+}
+
+.notification-box.success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 5px solid var(--success-color);
+}
+
+.notification-box.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 5px solid var(--error-color);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+    0% { transform: translateY(-50px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+    0% { transform: translateX(50px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes subtlePulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.15; }
+    100% { opacity: 0.3; }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .container {
+        max-width: 360px;
+        margin-top: 110px;
+    }
+
+    .welcome-header {
+        font-size: 1.6rem;
+    }
+
+    .welcome-header span {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .welcome-header {
+        font-size: 1.4rem;
+        padding: 0 10px;
+    }
+
+    .welcome-header span {
+        font-size: 1rem;
+    }
+
+    .logo {
+        width: 60px;
+        height: 60px;
+        top: 15px;
+        left: 15px;
+    }
+
+    .container {
+        padding: 1.5rem;
+        max-width: 90%;
+        margin-top: 100px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .form-group input {
+        padding: 0.7rem 40px 0.7rem 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    button, .signup-btn {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .toggle-password {
+        width: 22px;
+        height: 22px;
+    }
+
+    .notification-box {
+        font-size: var(--font-sm);
+        padding: var(--space-xs) var(--space-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        width: 50px;
+        height: 50px;
+        top: 10px;
+        left: 10px;
+    }
+
+    .welcome-header {
+        top: 70px;
+        font-size: 1.2rem;
+    }
+
+    .welcome-header span {
+        font-size: 0.9rem;
+    }
+
+    .container {
+        max-width: 300px;
+        padding: 1.2rem;
+        margin-top: 90px;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+
+    .form-group input {
+        font-size: 0.85rem;
+        padding: 0.6rem 40px 0.6rem 0.6rem;
+    }
+
+    button, .signup-btn {
+        font-size: 0.85rem;
+        padding: 0.7rem;
+    }
+
+    .toggle-password {
+        width: 20px;
+        height: 20px;
+        right: 8px;
+    }
+
+    .notification-box {
+        font-size: var(--font-sm);
+        padding: var(--space-xs) var(--space-sm);
+    }
+}
+
+@media (max-width: 320px) {
+    .container {
+        max-width: 280px;
+        margin-top: 80px;
+    }
+
+    .welcome-header {
+        font-size: 1rem;
+    }
+
+    .welcome-header span {
+        font-size: 0.8rem;
+    }
+
+    .logo {
+        width: 45px;
+        height: 45px;
+    }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .container {
+        margin-top: 80px;
+        padding: 1rem;
+    }
+
+    .logo {
+        width: 50px;
+        height: 50px;
+        top: 10px;
+        left: 10px;
+    }
+
+    .welcome-header {
+        top: 10px;
+        font-size: 1.2rem;
+    }
+
+    .welcome-header span {
+        font-size: 0.9rem;
+    }
+}
+
+@media (hover: none) {
+    .container:hover {
+        transform: none;
+        box-shadow: var(--shadow-md);
+    }
+
+    button:hover, .signup-btn:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    button:active, .signup-btn:active {
+        transform: scale(0.98);
+    }
+
+    .toggle-password:hover {
+        transform: translateY(-50%);
+        fill: var(--primary-color);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+@supports (padding: max(0px)) {
+    .container {
+        padding-left: max(15px, env(safe-area-inset-left));
+        padding-right: max(15px, env(safe-area-inset-right));
+        padding-bottom: max(15px, env(safe-area-inset-bottom));
+    }
+}
     </style>
 </head>
 <body>
     <div class="logo">
-        <img src="{% static 'users/images/violetlogo.png' %}" alt="Logo">
+        <img src="{% static 'users/images/greenlogo.png' %}" alt="Logo">
     </div>
     <div class="welcome-header">
         Welcome to Manavargal School Management System

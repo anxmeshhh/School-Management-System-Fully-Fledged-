@@ -1,3 +1,4 @@
+/* Animations */
 @keyframes gradient {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -9,6 +10,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -17,8 +19,8 @@
 }
 
 body {
-    
-    background-size: cover;
+    background: linear-gradient(135deg, #e6f5ee 30%, #d4edda 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%23008b4f" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
+    background-size: cover, 30px 30px;
     animation: gradient 15s ease infinite;
     display: flex;
     flex-direction: column;
@@ -38,7 +40,7 @@ body {
     height: 150px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #23a6d5;
+    border: 3px solid #008b4f; /* Secondary green */
     padding: 5px;
     background: white;
     transition: transform 0.3s ease;
@@ -63,7 +65,7 @@ body {
 }
 
 .page-header h3 {
-    color: #d8e14d;
+    color: #4caf50; /* Light green */
     font-size: 16px;
     font-weight: normal;
     margin-top: 0;
@@ -96,12 +98,12 @@ body {
 
 .parent-login {
     text-align: center;
-    color: #23a6d5;
+    color: #006b3e; /* Primary green */
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 30px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #23d5ab;
+    border-bottom: 2px solid #008b4f; /* Secondary green */
 }
 
 .input-group {
@@ -119,14 +121,14 @@ input {
 
 input:focus {
     outline: none;
-    border-color: #23a6d5;
-    box-shadow: 0 0 15px rgba(35, 166, 213, 0.3);
+    border-color: #006b3e; /* Primary green */
+    box-shadow: 0 0 15px rgba(0, 107, 62, 0.3); /* Green shadow */
 }
 
 .login-btn {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(45deg, #23a6d5, #23d5ab);
+    background: linear-gradient(45deg, #006b3e, #008b4f); /* Primary to secondary green */
     border: none;
     border-radius: 10px;
     color: white;
@@ -137,7 +139,7 @@ input:focus {
 }
 
 .login-btn:hover {
-    background: linear-gradient(45deg, #1f95bf, #1fb893);
+    background: linear-gradient(45deg, #004f2d, #006b3e); /* Darker green shades */
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
@@ -148,7 +150,7 @@ input:focus {
 }
 
 .scan-btn {
-    background: linear-gradient(45deg, #23a6d5, #23d5ab);
+    background: linear-gradient(45deg, #006b3e, #008b4f); /* Primary to secondary green */
     color: white;
     border: none;
     border-radius: 10px;
@@ -161,7 +163,7 @@ input:focus {
 }
 
 .scan-btn:hover {
-    background: linear-gradient(45deg, #1f95bf, #1fb893);
+    background: linear-gradient(45deg, #004f2d, #006b3e); /* Darker green shades */
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
