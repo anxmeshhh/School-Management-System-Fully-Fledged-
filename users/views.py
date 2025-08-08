@@ -11,7 +11,7 @@ def get_db_connection():
     return pymysql.connect(
         host="localhost",  # Host
         user="root",  # Username
-        password="theanimesh2005",  # Password
+        password="Deepu@1234",  # Password
         database="school_db",  # Database name
         port=3306  # Port
     )

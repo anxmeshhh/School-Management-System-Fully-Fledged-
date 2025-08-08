@@ -44,24 +44,22 @@
         }
 
         html {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
+            scroll-behavior: auto;
+            overflow: hidden;
         }
 
         body {
             background: linear-gradient(135deg, #e6f5ee 0%, #d4edda 100%),
                 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(0,107,62,0.1)"/></svg>') repeat;
             background-size: 200%, 20px 20px;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 10px;
             position: relative;
-            overflow-x: hidden;
-            touch-action: pan-y;
+            overflow: hidden;
         }
 
         body::before {
@@ -73,9 +71,10 @@
             height: 100%;
             background: url("{% static 'users/images/studentbg.jpg' %}?v=3") no-repeat center center fixed;
             background-size: cover;
-            opacity: 0.3;
+            opacity: 0.1;
             z-index: 1;
             animation: subtlePulse 12s ease-in-out infinite;
+            filter: brightness(1.1);
         }
 
         body > * {
@@ -93,7 +92,7 @@
             overflow: hidden;
             z-index: 3;
             transition: transform 0.6s ease-in-out;
-        }
+}
 
         .logo img {
             width: 100%;
@@ -108,10 +107,10 @@
 
         .welcome-header {
             position: absolute;
-            top: 20px;
+            top: 10px;
             text-align: center;
             color: var(--primary-color);
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 600;
             letter-spacing: 1px;
             width: 100%;
@@ -121,7 +120,7 @@
 
         .welcome-header span {
             display: block;
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             font-weight: normal;
             color: #170d0d;
         }
@@ -129,13 +128,13 @@
         .container {
             background: var(--light-bg);
             backdrop-filter: blur(8px);
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 12px;
             box-shadow: var(--shadow-md);
             border: 1px solid rgba(255, 255, 255, 0.4);
             width: 100%;
-            max-width: 400px;
-            margin-top: 120px;
+            max-width: 360px;
+            margin-top: 100px;
             z-index: 3;
             animation: slideInRight 1.2s ease-in-out;
             transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
@@ -149,35 +148,35 @@
         h2 {
             color: var(--primary-color);
             text-align: center;
-            margin-bottom: 2rem;
-            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
             font-weight: 600;
             animation: fadeIn 1.5s ease-in-out;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             position: relative;
             animation: fadeInUp 1s ease-in-out;
         }
 
         .form-group label {
             position: absolute;
-            top: 0.8rem;
-            left: 0.8rem;
+            top: 0.6rem;
+            left: 0.6rem;
             color: var(--text-color);
             transition: 0.3s;
             pointer-events: none;
-            font-size: var(--font-md);
+            font-size: var(--font-sm);
         }
 
         .form-group input {
             width: 100%;
-            padding: 0.8rem 40px 0.8rem 0.8rem;
+            padding: 0.6rem 40px 0.6rem 0.6rem;
             border: 2px solid transparent;
             background: linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--border-color), var(--primary-color)) border-box;
             border-radius: 8px;
-            font-size: var(--font-md);
+            font-size: var(--font-sm);
             transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
             outline: none;
         }
@@ -185,7 +184,7 @@
         .form-group input:focus ~ label,
         .form-group input:valid ~ label {
             top: -0.5rem;
-            font-size: var(--font-sm);
+            font-size: var(--font-xs);
             color: var(--primary-color);
             background: var(--white);
             padding: 0 5px;
@@ -198,12 +197,12 @@
 
         .toggle-password {
             position: absolute;
-            right: 10px;
-            top: 60%;
+            right: 8px;
+            top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             fill: var(--primary-color);
             transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
         }
@@ -215,15 +214,15 @@
 
         button {
             width: 100%;
-            padding: 1rem;
+            padding: 0.8rem;
             background: var(--primary-color);
             border: none;
             border-radius: 25px;
             color: var(--white);
-            font-size: var(--font-md);
+            font-size: var(--font-sm);
             font-weight: 600;
             cursor: pointer;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
         }
 
@@ -248,12 +247,12 @@
 
         .notification-box {
             position: fixed;
-            top: var(--space-md);
-            right: var(--space-md);
+            top: var(--space-sm);
+            right: var(--space-sm);
             z-index: 1000;
-            padding: var(--space-sm) var(--space-md);
+            padding: var(--space-xs) var(--space-sm);
             border-radius: var(--radius-md);
-            font-size: var(--font-md);
+            font-size: var(--font-sm);
             font-weight: 600;
             box-shadow: var(--shadow-md);
             opacity: 0.95;
@@ -308,63 +307,63 @@
 
         @media (max-width: 992px) {
             .container {
-                max-width: 360px;
-                margin-top: 110px;
+                max-width: 340px;
+                margin-top: 90px;
             }
 
             .welcome-header {
-                font-size: 1.6rem;
+                font-size: 1.2rem;
             }
 
             .welcome-header span {
-                font-size: 1.1rem;
+                font-size: 0.8rem;
             }
         }
 
         @media (max-width: 768px) {
             .welcome-header {
-                font-size: 1.4rem;
+                font-size: 1.1rem;
                 padding: 0 10px;
             }
 
             .welcome-header span {
-                font-size: 1rem;
+                font-size: 0.7rem;
             }
 
             .logo {
                 width: 60px;
                 height: 60px;
-                top: 15px;
-                left: 15px;
+                top: 10px;
+                left: 10px;
             }
 
             .container {
-                padding: 1.5rem;
+                padding: 1.2rem;
                 max-width: 90%;
-                margin-top: 100px;
+                margin-top: 80px;
             }
 
             h2 {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
             }
 
             .form-group label {
-                font-size: 0.9rem;
+                font-size: 0.8rem;
             }
 
             .form-group input {
-                padding: 0.7rem 40px 0.7rem 0.7rem;
-                font-size: 0.9rem;
+                padding: 0.5rem 40px 0.5rem 0.5rem;
+                font-size: 0.8rem;
             }
 
             button {
-                padding: 0.8rem;
-                font-size: 0.9rem;
+                padding: 0.7rem;
+                font-size: 0.8rem;
             }
 
             .toggle-password {
-                width: 22px;
-                height: 22px;
+                width: 18px;
+                height: 18px;
             }
         }
 
@@ -372,91 +371,91 @@
             .logo {
                 width: 50px;
                 height: 50px;
-                top: 10px;
-                left: 10px;
+                top: 8px;
+                left: 8px;
             }
 
             .welcome-header {
-                top: 70px;
-                font-size: 1.2rem;
+                top: 60px;
+                font-size: 1rem;
             }
 
             .welcome-header span {
-                font-size: 0.9rem;
+                font-size: 0.6rem;
             }
 
             .container {
-                max-width: 300px;
-                padding: 1.2rem;
-                margin-top: 90px;
+                max-width: 280px;
+                padding: 1rem;
+                margin-top: 70px;
             }
 
             h2 {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
 
             .form-group input {
-                font-size: 0.85rem;
-                padding: 0.6rem 40px 0.6rem 0.6rem;
+                font-size: 0.75rem;
+                padding: 0.5rem 40px 0.5rem 0.5rem;
             }
 
             button {
-                font-size: 0.85rem;
-                padding: 0.7rem;
+                font-size: 0.75rem;
+                padding: 0.6rem;
             }
 
             .toggle-password {
-                width: 20px;
-                height: 20px;
-                right: 8px;
+                width: 16px;
+                height: 16px;
+                right: 6px;
             }
 
             .notification-box {
-                font-size: var(--font-sm);
+                font-size: var(--font-xs);
                 padding: var(--space-xs) var(--space-sm);
             }
         }
 
         @media (max-width: 320px) {
             .container {
-                max-width: 280px;
-                margin-top: 80px;
+                max-width: 260px;
+                margin-top: 60px;
             }
 
             .welcome-header {
-                font-size: 1rem;
+                font-size: 0.9rem;
             }
 
             .welcome-header span {
-                font-size: 0.8rem;
+                font-size: 0.5rem;
             }
 
             .logo {
-                width: 45px;
-                height: 45px;
+                width: 40px;
+                height: 40px;
             }
         }
 
         @media (max-height: 500px) and (orientation: landscape) {
             .container {
-                margin-top: 80px;
-                padding: 1rem;
+                margin-top: 60px;
+                padding: 0.8rem;
             }
 
             .logo {
-                width: 50px;
-                height: 50px;
-                top: 10px;
-                left: 10px;
+                width: 40px;
+                height: 40px;
+                top: 8px;
+                left: 8px;
             }
 
             .welcome-header {
-                top: 10px;
-                font-size: 1.2rem;
+                top: 8px;
+                font-size: 1rem;
             }
 
             .welcome-header span {
-                font-size: 0.9rem;
+                font-size: 0.6rem;
             }
         }
 
@@ -486,22 +485,18 @@
                 transition: none !important;
                 animation: none !important;
             }
-
-            html {
-                scroll-behavior: auto;
-            }
         }
 
         @supports (padding: max(0px)) {
             .container {
-                padding-left: max(15px, env(safe-area-inset-left));
-                padding-right: max(15px, env(safe-area-inset-right));
-                padding-bottom: max(15px, env(safe-area-inset-bottom));
+                padding-left: max(10px, env(safe-area-inset-left));
+                padding-right: max(10px, env(safe-area-inset-right));
+                padding-bottom: max(10px, env(safe-area-inset-bottom));
             }
 
             .notification-box {
-                top: max(10px, env(safe-area-inset-top));
-                right: max(10px, env(safe-area-inset-right));
+                top: max(8px, env(safe-area-inset-top));
+                right: max(8px, env(safe-area-inset-right));
             }
         }
     </style>
@@ -547,7 +542,10 @@
                 </svg>
             </div>
             <button type="submit">Sign Up</button>
-            <button type="button" class="login-btn" onclick="window.location.href='{% url 'login' %}'">Already have an account? Login</button>
+            <a href="{% url 'login' %}">
+    <button type="button" class="login-btn">Already have an account? Login</button>
+</a>
+
         </form>
     </div>
     <script>

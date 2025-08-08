@@ -38,9 +38,10 @@
       height: 100%;
       background: url("{% static 'users/images/admin.jpg' %}?v=3") no-repeat center center fixed;
       background-size: cover;
-      opacity: 0.3; /* Low opacity for a faded, subtle look */
+      opacity: 0.1; /* Low opacity for a faded, subtle look */
       z-index: 1;
       animation: subtlePulse 12s ease-in-out infinite; /* Slower pulse for smoother effect */
+      filter: brightness(1.5);
     }
 
     /* Ensure all content stays above the faded background */
@@ -51,14 +52,15 @@
 
     .logo {
       position: absolute;
-      top: 20px;
-      left: 20px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      overflow: hidden;
-      z-index: 3;
-      transition: transform 0.6s ease-in-out;
+            top: 20px;
+            left: 20px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            z-index: 3;
+            transition: transform 0.6s ease-in-out;
+
     }
 
     .logo img {
