@@ -4,201 +4,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View and Edit Class</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Manavargal School Management System - View and Edit Class</title>
     <style>
-        /* Custom animation for container fade-in with scale */
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .fade-in-scale {
-            animation: fadeInScale 0.5s ease-out forwards;
-        }
-        /* Staggered slide-in for rows */
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .slide-in {
-            animation: slideIn 0.5s ease-out forwards;
-        }
-        /* Pulse effect for buttons on hover */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        .btn-pulse:hover {
-            animation: pulse 0.5s infinite;
-        }
-        /* Lift effect for input on focus */
-        @keyframes lift {
-            0% { transform: translateY(0); box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
-            100% { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(59, 130, 246, 0.7); }
-        }
-        .input-lift:focus {
-            animation: lift 0.3s forwards;
-        }
-        /* Background overlay for professionalism */
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
-            z-index: -1;
-        }
-        /* Glassmorphism effect for container */
-        .glass-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        /* Custom font for title */
-        .title-font {
+
+        body {
             font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 100%),
+                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
+            background-size: 200%, 20px 20px;
+            min-height: 100vh;
+            padding: 80px 20px 40px 20px;
+            position: relative;
+            overflow-x: hidden;
         }
-        /* Message styling */
-        .message {
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 6px;
+
+        .header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+            flex-wrap: wrap;
+            position: fixed;
+            top: 0;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
         }
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        /* Logo animation */
-        @keyframes logoPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        .logo-pulse:hover {
-            animation: logoPulse 0.6s ease-in-out;
-        }
-        /* Card styling for class items */
-        .class-card {
-            background: #ffffff;
-            border: 1px solid #bfdbfe;
-            border-radius: 8px;
-            padding: 12px;
-            box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .class-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
-        }
-        /* Header animations */
+
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .header-animate {
-            animation: fadeInDown 0.8s ease-out;
+
+        .welcome-header {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease, transform 0.3s ease;
+            flex-grow: 1;
+            margin: 0;
+        }
+
+        .welcome-header:hover {
+            color: #e3f2fd;
+            transform: scale(1.02);
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(90deg, #1565c0, #1976d2);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+
+        .logo-container {
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            width: 100%;
+            max-width: 800px;
+            margin: 100px auto 20px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            color: #2563eb;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .messages p {
+            text-align: center;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #dc2626;
+            background: rgba(255, 75, 75, 0.1);
+            padding: 0.6rem;
+            border-radius: 6px;
+        }
+
+        .add-class-form {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #dbeafe;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2563eb;
+            font-size: 0.9rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.7rem;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #93c5fd, #2563eb) border-box;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .add-class-form button {
+            width: 100%;
+            padding: 0.8rem;
+            background: #2563eb;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .add-class-form button:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .class-card {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .class-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .class-input {
+            width: 100%;
+            padding: 0.7rem;
+            border: 2px solid #dbeafe;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            background: #f8fafc;
+            margin-bottom: 1rem;
+        }
+
+        .class-actions {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .update-class-btn, .delete-class-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .update-class-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .update-class-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .delete-class-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .delete-class-btn:hover {
+            background: #b91c1c;
+        }
+
+        .no-classes {
+            text-align: center;
+            color: #374151;
+            padding: 2rem;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+                align-items: center;
+                justify-content: space-between;
+                left: 10px;
+                right: 10px;
+            }
+
+            .welcome-header {
+                font-size: 1.8rem;
+                margin: 0;
+                flex-grow: 1;
+                text-align: center;
+            }
+
+            .back-button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .logo {
+                width: 40px;
+                height: 40px;
+            }
+
+            .container {
+                margin-top: 90px;
+                padding: 1.5rem;
+            }
+
+            .class-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .add-class-form {
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.6rem 0.8rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
+                left: 5px;
+                right: 5px;
+            }
+
+            .welcome-header {
+                font-size: 1.4rem;
+            }
+
+            .back-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .logo {
+                width: 35px;
+                height: 35px;
+            }
+
+            .container {
+                padding: 1rem;
+                margin-top: 80px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .class-card {
+                padding: 0.75rem;
+            }
+
+            .class-input {
+                font-size: 0.9rem;
+                padding: 0.5rem;
+            }
+
+            .class-actions a {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center relative pt-24 sm:pt-28">
-    <!-- Header -->
-    <div class="fixed top-0 left-5 right-5 z-50 flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-800 to-blue-500 rounded-2xl shadow-lg header-animate">
-        <a href="{% url 'admin_page' %}" class="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-blue-500 transform hover:scale-105 transition-all duration-300 flex items-center gap-2">
-            <i class="fas fa-arrow-left"></i> Back
-        </a>
-        <h1 class="text-white text-2xl sm:text-4xl font-bold text-center uppercase tracking-wide flex-grow transition-all duration-300 hover:text-blue-100 hover:scale-102 title-font">
-            MANAVARGAL SCHOOL MANAGEMENT SYSTEM
-        </h1>
-        <div class="flex items-center">
-            <a href="{% url 'admin_page' %}" class="logo-pulse">
-                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo" class="w-12 h-12 rounded-full object-cover">
-            </a>
+<body>
+    <div class="header">
+        <a href="{% url 'admin_page' %}" class="back-button">Back</a>
+        <h1 class="welcome-header">View and Edit Class</h1>
+        <div class="logo-container">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo" class="logo">
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="glass-container rounded-lg shadow-2xl p-6 sm:p-8 w-full max-w-2xl fade-in-scale">
-        <!-- Subheader -->
-        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 title-font flex items-center gap-2">
-                <i class="fas fa-chalkboard text-blue-600"></i> View and Edit Class
-            </h2>
-        </div>
-
-        <!-- Add New Item Button -->
-        <div class="mb-6">
-            <button class="bg-teal-500 text-white px-6 py-3 rounded-full btn-pulse hover:bg-teal-600 title-font w-full sm:w-auto flex items-center justify-center gap-2"
-                    onclick="window.location.href='{% url 'add_class' %}'">
-                <i class="fas fa-plus"></i> Add New Class
-            </button>
-        </div>
-
-        <!-- Messages -->
+    <div class="container">
         {% if messages %}
-        <div class="space-y-3 mb-6">
-            {% for message in messages %}
-            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
-                {% if message.tags == 'success' %}
-                    <i class="fas fa-check-circle text-green-600"></i>
-                {% elif message.tags == 'error' %}
-                    <i class="fas fa-exclamation-circle text-red-600"></i>
-                {% endif %}
-                {{ message }}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
         {% endif %}
 
-        <!-- Class List -->
-        <div class="space-y-4">
+        <h2>View and Edit Class</h2>
+
+        <div class="add-class-form">
+            <form method="POST" action="{% url 'add_class' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="class_name">Class Name</label>
+                    <input type="text" id="class_name" name="class_name" required>
+                </div>
+                <button type="submit">Add New Class</button>
+            </form>
+        </div>
+
+        <div class="class-grid">
             {% for class in classes %}
-            <div class="class-card slide-in" style="animation-delay: {{ forloop.counter|divisibleby:10|add:0.1 }}s;">
-                <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    <input type="text" value="{{ class.class_name }}"
-                           class="w-full p-3 border border-gray-300 rounded-lg input-lift bg-gray-50 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                           readonly />
-                    <div class="flex space-x-3">
-                        <button class="bg-blue-500 text-white px-4 py-2 rounded-lg btn-pulse hover:bg-blue-600 flex items-center gap-2"
-                                onclick="window.location.href='{% url 'update_class' class.id %}'">
-                            <i class="fas fa-edit"></i> Update
-                        </button>
-                        <button class="text-red-500 hover:text-red-600 btn-pulse flex items-center gap-2"
-                                onclick="if(confirm('Are you sure you want to delete {{ class.class_name|escapejs }}?')) window.location.href='{% url 'delete_class' class.id %}'">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
+                <div class="class-card">
+                    <input type="text" value="{{ class.class_name }}" class="class-input" readonly>
+                    <div class="class-actions">
+                        <a href="{% url 'update_class' class.id %}" class="update-class-btn">Update</a>
+                        <a href="{% url 'delete_class' class.id %}" class="delete-class-btn" onclick="return confirm('Are you sure you want to delete {{ class.class_name|escapejs }}?')">Delete</a>
                     </div>
                 </div>
-            </div>
             {% empty %}
-            <div class="text-center py-6 text-gray-600 bg-white rounded-lg shadow-sm">
-                <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
-                <p>No classes found.</p>
-            </div>
+                <p class="no-classes">No classes found.</p>
             {% endfor %}
         </div>
     </div>
-
-    <script>
-        // Add animation delays dynamically for each class item
-        document.addEventListener('DOMContentLoaded', function() {
-            const items = document.querySelectorAll('.slide-in');
-            items.forEach((item, index) => {
-                item.style.animationDelay = `${0.1 + (index * 0.1)}s`;
-            });
-        });
-    </script>
 </body>
 </html>

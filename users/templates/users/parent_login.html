@@ -241,7 +241,7 @@ button:hover {
 }
 
 /* Signup Button Styling */
-.signup-btn {
+.signup-btn, .forgot-btn {
     width: 100%;
     padding: 1rem;
     background: var(--white);
@@ -256,9 +256,10 @@ button:hover {
     display: block;
     margin-bottom: 10px;
     transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+    border: none;
 }
 
-.signup-btn:hover {
+.signup-btn:hover, .forgot-btn:hover {
     background: var(--primary-color);
     color: var(--white);
     transform: scale(1.08);
@@ -267,13 +268,20 @@ button:hover {
 
 /* Notification Box Styling */
 .notification-box {
-    text-align: center;
-    margin-bottom: 15px;
-    font-size: 14px;
+    position: fixed;
+    top: var(--space-md);
+    right: var(--space-md);
+    z-index: 1000;
     padding: var(--space-sm) var(--space-md);
     border-radius: var(--radius-md);
+    font-size: var(--font-md);
+    font-weight: 600;
     box-shadow: var(--shadow-md);
     opacity: 0.95;
+    transition: opacity 0.3s ease-in-out;
+    max-width: 90%;
+    display: none;
+    text-align: center;
 }
 
 .notification-box.success {
@@ -286,6 +294,86 @@ button:hover {
     background-color: #f8d7da;
     color: #721c24;
     border-left: 5px solid var(--error-color);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content {
+    background: var(--light-bg);
+    backdrop-filter: blur(8px);
+    margin: 10% auto;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    animation: slideInDown 0.3s ease-in-out;
+}
+
+.close {
+    color: var(--text-color);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: var(--primary-color);
+}
+
+.modal h3 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.password-mismatch, .username-exists {
+    color: var(--error-color);
+    font-size: var(--font-sm);
+    margin-top: 5px;
+    display: none;
+}
+
+.modal-notification {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-weight: 600;
+    display: none;
+}
+
+.modal-notification.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid var(--success-color);
+}
+
+.modal-notification.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid var(--error-color);
 }
 
 /* Animations */
@@ -373,7 +461,7 @@ button:hover {
         font-size: 0.9rem;
     }
 
-    button, .signup-btn {
+    button, .signup-btn, .forgot-btn {
         padding: 0.8rem;
         font-size: 0.9rem;
     }
@@ -386,6 +474,11 @@ button:hover {
     .notification-box {
         font-size: var(--font-sm);
         padding: var(--space-xs) var(--space-sm);
+    }
+
+    .modal-content {
+        margin: 5% auto;
+        padding: 1.5rem;
     }
 }
 
@@ -421,7 +514,7 @@ button:hover {
         padding: 0.6rem 40px 0.6rem 0.6rem;
     }
 
-    button, .signup-btn {
+    button, .signup-btn, .forgot-btn {
         font-size: 0.85rem;
         padding: 0.7rem;
     }
@@ -435,6 +528,17 @@ button:hover {
     .notification-box {
         font-size: var(--font-sm);
         padding: var(--space-xs) var(--space-sm);
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 1rem;
+    }
+
+    .close {
+        font-size: 24px;
+        right: 10px;
+        top: 5px;
     }
 }
 
@@ -479,6 +583,10 @@ button:hover {
     .welcome-header span {
         font-size: 0.9rem;
     }
+
+    .modal-content {
+        margin: 2% auto;
+    }
 }
 
 @media (hover: none) {
@@ -487,12 +595,12 @@ button:hover {
         box-shadow: var(--shadow-md);
     }
 
-    button:hover, .signup-btn:hover {
+    button:hover, .signup-btn:hover, .forgot-btn:hover {
         transform: none;
         box-shadow: none;
     }
 
-    button:active, .signup-btn:active {
+    button:active, .signup-btn:active, .forgot-btn:active {
         transform: scale(0.98);
     }
 
@@ -532,12 +640,13 @@ button:hover {
     </div>
     <div class="container">
         <h2>Parent Login</h2>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="notification-box {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-        <form method="POST" action="{% url 'parent_login' %}">
+        <div id="successMessage" class="notification-box success">
+            ✅ Login Successful! Redirecting...
+        </div>
+        <div id="errorMessage" class="notification-box error">
+            ❌ Invalid credentials! Try again.
+        </div>
+        <form id="loginForm" method="POST" data-url="{% url 'parent_login' %}">
             {% csrf_token %}
             <div class="form-group">
                 <label for="username">Username</label>
@@ -545,36 +654,196 @@ button:hover {
             </div>
             <div class="form-group">
                 <label for="password">Phone Number</label>
-                <input type="number" id="password" name="password" placeholder="Enter the Phone Number" maxlength="10" min="0" oninput="restrictToNumbers(this)" required>
+                <input type="password" id="password" name="password" placeholder="Enter the Phone Number" required>
                 <svg class="toggle-password" onclick="togglePassword('password')" viewBox="0 0 24 24">
                     <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                 </svg>
             </div>
             <button type="submit">Login</button>
             <a href="{% url 'parent_signup' %}" class="signup-btn">New User? Signup</a>
+            <button type="button" class="forgot-btn" onclick="openChangePasswordModal()">Change Credentials</button>
         </form>
     </div>
-    <script>
-        function restrictToNumbers(input) {
-            // Remove any non-digit characters
-            input.value = input.value.replace(/[^0-9]/g, '');
-            // Ensure the length does not exceed 10 digits
-            if (input.value.length > 10) {
-                input.value = input.value.slice(0, 10);
-            }
-        }
 
+    <!-- Change Credentials Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeChangePasswordModal()">&times;</span>
+            <h3>Change Your Credentials</h3>
+            <div id="modalSuccessMessage" class="modal-notification success">
+                ✅ Credentials changed successfully! Please login with your new credentials.
+            </div>
+            <div id="modalErrorMessage" class="modal-notification error">
+                ❌ Error changing credentials. Please try again.
+            </div>
+            <form id="changePasswordForm" method="POST" data-url="{% url 'parent_change_credentials' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="currentUsername">Current Admission Number</label>
+                    <input type="text" id="currentUsername" name="current_username" placeholder="Enter Current Admission Number" required>
+                </div>
+                <div class="form-group">
+                    <label for="newUsername">New Admission Number</label>
+                    <input type="text" id="newUsername" name="new_username" placeholder="Enter New Admission Number" required>
+                    <div id="usernameExists" class="username-exists">Admission Number already exists!</div>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Phone Number</label>
+                    <input type="password" id="newPassword" name="new_password" placeholder="Enter New Phone Number" required>
+                    <svg class="toggle-password" onclick="togglePassword('newPassword')" viewBox="0 0 24 24">
+                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                    </svg>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Phone Number</label>
+                    <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm New Phone Number" required>
+                    <svg class="toggle-password" onclick="togglePassword('confirmPassword')" viewBox="0 0 24 24">
+                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                    </svg>
+                    <div id="passwordMismatch" class="password-mismatch">Phone numbers do not match!</div>
+                </div>
+                <button type="submit">Change Credentials</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
         function togglePassword(fieldId) {
             const passwordInput = document.getElementById(fieldId);
             const toggleButton = passwordInput.nextElementSibling;
-            if (passwordInput.type === 'number') {
+            if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 toggleButton.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-4.01.68l2.02 2.02c.57-.23 1.18-.36 1.83-.36zm-6.36 1.47l2.43 2.43.02.02c-.54.38-1.03.86-1.39 1.42l-2.92-2.92C2.27 10.68 1.08 12.31.35 14.17c1.73 4.39 6 7.5 11 7.5 1.4 0 2.74-.25 4.01-.68l-2.02-2.02c-.57.23-1.18.36-1.83.36-2.76 0-5-2.24-5-5 0-.65.13-1.26.36-1.83l-2.43-2.43z"/>';
             } else {
-                passwordInput.type = 'number';
+                passwordInput.type = 'password';
                 toggleButton.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
             }
         }
+
+        function openChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'block';
+            document.getElementById('changePasswordForm').reset();
+            document.getElementById('passwordMismatch').style.display = 'none';
+            document.getElementById('usernameExists').style.display = 'none';
+            document.getElementById('modalSuccessMessage').style.display = 'none';
+            document.getElementById('modalErrorMessage').style.display = 'none';
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+        }
+
+        // Close modal if clicked outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('changePasswordModal');
+            if (event.target == modal) {
+                closeChangePasswordModal();
+            }
+        }
+
+        // Confirm phone validation
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = this.value;
+            const mismatch = document.getElementById('passwordMismatch');
+            if (newPass !== confirmPass) {
+                mismatch.style.display = 'block';
+            } else {
+                mismatch.style.display = 'none';
+            }
+        });
+
+        // Username availability check (basic client-side, but server-side is primary)
+        document.getElementById('newUsername').addEventListener('blur', function() {
+            const newUsername = this.value;
+            if (newUsername) {
+                // You can add an AJAX call here to check availability if needed
+                // For now, just clear the message
+                document.getElementById('usernameExists').style.display = 'none';
+            }
+        });
+
+        document.getElementById("changePasswordForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const currentUsername = document.getElementById("currentUsername").value.trim();
+            const newUsername = document.getElementById("newUsername").value.trim();
+            const newPass = document.getElementById("newPassword").value.trim();
+            const confirmPass = document.getElementById("confirmPassword").value.trim();
+            if (newPass !== confirmPass) {
+                document.getElementById("passwordMismatch").style.display = "block";
+                return;
+            }
+            if (!currentUsername || !newUsername || !newPass) {
+                document.getElementById("modalErrorMessage").style.display = "block";
+                document.getElementById("modalErrorMessage").textContent = "All fields are required.";
+                return;
+            }
+            const csrfToken = document.querySelector("#changePasswordForm [name=csrfmiddlewaretoken]").value;
+            const formData = new URLSearchParams();
+            formData.append("current_username", currentUsername);
+            formData.append("new_username", newUsername);
+            formData.append("new_password", newPass);
+            formData.append("confirm_password", confirmPass);
+            const response = await fetch(this.dataset.url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken
+                },
+                body: formData
+            });
+            const result = await response.text();
+            if (result.trim() === "Success") {
+                document.getElementById("modalSuccessMessage").style.display = "block";
+                document.getElementById("modalErrorMessage").style.display = "none";
+                setTimeout(() => {
+                    closeChangePasswordModal();
+                    // Clear login form
+                    document.getElementById("username").value = "";
+                    document.getElementById("password").value = "";
+                }, 2000);
+            } else {
+                document.getElementById("modalErrorMessage").style.display = "block";
+                document.getElementById("modalSuccessMessage").style.display = "none";
+                if (result.trim().includes("exists")) {
+                    document.getElementById("usernameExists").style.display = "block";
+                }
+            }
+        });
+
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            if (!username || !password) {
+                document.getElementById("errorMessage").style.display = "block";
+                document.getElementById("errorMessage").textContent = "Username and phone number cannot be empty.";
+                return;
+            }
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+            const formData = new URLSearchParams();
+            formData.append("username", username);
+            formData.append("password", password);
+            const response = await fetch(this.dataset.url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken
+                },
+                body: formData
+            });
+            const result = await response.text();
+            if (result.trim() === "Success") {
+                document.getElementById("successMessage").style.display = "block";
+                document.getElementById("errorMessage").style.display = "none";
+                setTimeout(() => {
+                    window.location.href = "/parent_dashboard/";
+                }, 2000);
+            } else {
+                document.getElementById("errorMessage").style.display = "block";
+                document.getElementById("successMessage").style.display = "none";
+            }
+        });
     </script>
 </body>
 </html>

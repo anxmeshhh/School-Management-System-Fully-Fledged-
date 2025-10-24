@@ -6,335 +6,451 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Student Circulars</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Reset and Base Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
-body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #e6f5ee 30%, #d4edda 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%23008b4f" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
-  background-size: cover, 30px 30px;
-  animation: backgroundFade 10s ease-in-out infinite alternate;
-  min-height: 100vh;
-  padding: 80px 20px 40px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-@keyframes backgroundFade {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
-}
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--text-color);
+            padding: 80px 20px 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-.header {
-  background: linear-gradient(90deg, #006b3e, #008b4f); /* Primary to secondary green */
-  color: #ffffff;
-  padding: 1rem 2rem;
-  border-bottom: 4px solid #d4edda; /* Accent green */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
 
-.header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  text-align: center;
-  flex-grow: 1;
-}
+        :root {
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #d1e7dd;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-.back-btn {
-  padding: 0.8rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  background: #008b4f; /* Secondary green */
-  color: #ffffff;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+        }
 
-.back-btn:hover {
-  background: #006b3e; /* Primary green */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+        .header {
+            background: var(--white);
+            color: var(--text-color);
+            padding: 1.5rem 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
 
-.logo-img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease;
-}
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            flex-grow: 1;
+            color: var(--primary-color);
+        }
 
-.logo-img:hover {
-  transform: rotate(5deg) scale(1.05);
-}
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-.container {
-  max-width: 1000px;
-  width: 100%;
-  margin: 0 auto;
-}
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
-.student-info {
-  text-align: center;
-  color: #4b5563;
-  font-size: 1.2rem;
-  margin-bottom: 1.5rem;
-}
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
 
-.filter-form {
-  background: #ffffff;
-  border: 2px solid #008b4f; /* Secondary green */
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-  max-width: 500px;
-  width: 100%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+        .logo-img:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
 
-.filter-form:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+        }
 
-.filter-form label {
-  display: block;
-  color: #006b3e; /* Primary green */
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-}
+        .student-info {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
 
-.filter-form select {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border: 2px solid #008b4f; /* Secondary green */
-  background: #e6f5ee; /* Light green */
-  font-size: 1rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
+        .filter-form {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            width: 100%;
+            transition: var(--transition);
+        }
 
-.filter-form select:focus {
-  border-color: #006b3e; /* Primary green */
-  box-shadow: 0 0 8px rgba(0, 107, 62, 0.3); /* Green shadow */
-  outline: none;
-}
+        .filter-form:hover {
+            box-shadow: var(--shadow-md);
+        }
 
-.filter-form button {
-  width: 100%;
-  padding: 0.75rem;
-  background: #008b4f; /* Secondary green */
-  border: none;
-  border-radius: 8px;
-  color: #ffffff;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
+        .filter-form label {
+            display: block;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
 
-.filter-form button:hover {
-  background: #006b3e; /* Primary green */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+        .filter-form select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
 
-.error-message {
-  background: #fef2f2;
-  color: #b91c1c;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border-left: 4px solid #ef4444;
-  margin-bottom: 1.5rem;
-  max-width: 500px;
-  width: 100%;
-  text-align: center;
-}
+        .filter-form select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
+        }
 
-.circular-container {
-  max-width: 900px;
-  width: 100%;
-}
+        .filter-form button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
 
-.circular {
-  background: #ffffff;
-  border: 2px solid #008b4f; /* Secondary green */
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1.5rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+        .filter-form button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
-.circular:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
+        .error-message {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            margin-bottom: 1.5rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
 
-.circular h3 {
-  color: #006b3e; /* Primary green */
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
+        .circular-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            width: 100%;
+        }
 
-.circular small {
-  color: #4b5563;
-  font-size: 0.875rem;
-  font-weight: 400;
-  display: block;
-  margin-bottom: 0.5rem;
-}
+        .circular {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            overflow: visible;
+        }
 
-.circular img {
-  max-width: 100%;
-  border-radius: 8px;
-  margin-top: 1rem;
-  transition: transform 0.3s ease;
-}
+        .circular:hover {
+            box-shadow: var(--shadow-md);
+        }
 
-.circular img:hover {
-  transform: scale(1.03);
-}
+        .circular-type {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+            align-self: flex-start;
+        }
 
-.no-circulars {
-  font-size: 1rem;
-  color: #4b5563;
-  text-align: center;
-  margin-top: 1.5rem;
-}
+        .circular h3 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
 
-@media (max-width: 768px) {
-  body {
-    padding: 70px 10px 20px 10px;
-  }
+        .circular small {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            font-weight: 400;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
 
-  .header {
-    padding: 0.8rem 1rem;
-  }
+        .circular img {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 1rem;
+            flex-grow: 1;
+            transition: var(--transition);
+            overflow: visible;
+        }
 
-  .header h1 {
-    font-size: 1.5rem;
-  }
+        .circular img:hover {
+            transform: scale(1.03);
+        }
 
-  .filter-form,
-  .circular {
-    padding: 1.2rem;
-  }
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1rem;
+            background: var(--primary-color);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
 
-  .filter-form label,
-  .filter-form select,
-  .filter-form button {
-    font-size: 0.9rem;
-  }
+        .download-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
-  .circular h3 {
-    font-size: 1.25rem;
-  }
+        .no-circulars {
+            font-size: 1rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 1.5rem;
+            grid-column: 1 / -1;
+        }
 
-  .circular small {
-    font-size: 0.8rem;
-  }
+        .icon {
+            margin-right: 0.5rem;
+        }
 
-  .no-circulars {
-    font-size: 0.9rem;
-  }
+        @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
 
-  .student-info {
-    font-size: 1rem;
-  }
+            .header {
+                padding: 1rem;
+            }
 
-  .back-btn {
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
-  }
+            .header h1 {
+                font-size: 1.5rem;
+            }
 
-  .logo-img {
-    width: 40px;
-    height: 40px;
-  }
-}
+            .filter-form,
+            .circular {
+                padding: 1.2rem;
+            }
 
-@media (max-width: 480px) {
-  body {
-    padding: 60px 5px 15px 5px;
-  }
+            .filter-form label,
+            .filter-form select,
+            .filter-form button {
+                font-size: 0.9rem;
+            }
 
-  .header {
-    padding: 0.6rem 0.8rem;
-  }
+            .circular h3 {
+                font-size: 1.25rem;
+            }
 
-  .header h1 {
-    font-size: 1.25rem;
-  }
+            .circular small {
+                font-size: 0.8rem;
+            }
 
-  .filter-form,
-  .circular {
-    padding: 1rem;
-  }
+            .no-circulars {
+                font-size: 0.9rem;
+            }
 
-  .filter-form label,
-  .filter-form select,
-  .filter-form button {
-    font-size: 0.85rem;
-  }
+            .student-info {
+                font-size: 1rem;
+            }
 
-  .circular h3 {
-    font-size: 1.1rem;
-  }
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
 
-  .circular small {
-    font-size: 0.75rem;
-  }
+            .logo-img {
+                width: 40px;
+                height: 40px;
+            }
 
-  .no-circulars {
-    font-size: 0.85rem;
-  }
+            .circular-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
 
-  .student-info {
-    font-size: 0.9rem;
-  }
+            .circular-type {
+                font-size: 0.75rem;
+                padding: 0.2rem 0.5rem;
+            }
+        }
 
-  .back-btn {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.8rem;
-  }
+        @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
 
-  .logo-img {
-    width: 35px;
-    height: 35px;
-  }
-}
-</style>
+            .header {
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .filter-form,
+            .circular {
+                padding: 1rem;
+            }
+
+            .filter-form label,
+            .filter-form select,
+            .filter-form button {
+                font-size: 0.85rem;
+            }
+
+            .circular h3 {
+                font-size: 1.1rem;
+            }
+
+            .circular small {
+                font-size: 0.75rem;
+            }
+
+            .no-circulars {
+                font-size: 0.85rem;
+            }
+
+            .student-info {
+                font-size: 0.9rem;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .logo-img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .download-btn {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .circular-type {
+                font-size: 0.7rem;
+                padding: 0.15rem 0.4rem;
+            }
+        }
+
+        @media (hover: none) {
+            .filter-form:hover, .circular:hover, .filter-form button:hover, .logo-img:hover, .back-btn:hover, .download-btn:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="header">
         <a href="{% url 'parent_dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left icon"></i> Back
+            <i class="fas fa-arrow-left"></i> Back
         </a>
-        <h1><i class="fas fa-file-alt icon"></i> School Circulars</h1>
+        <h1><i class="fas fa-file-alt"></i> School Circulars</h1>
         <a href="{% url 'parent_dashboard' %}">
             <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
         </a>
@@ -353,21 +469,31 @@ body {
 
         <form class="filter-form" method="post">
             {% csrf_token %}
-            <label for="filter_type"><i class="fas fa-filter icon"></i> Filter Circulars</label>
+            <label for="filter_type"><i class="fas fa-filter"></i> Filter Circulars</label>
             <select id="filter_type" name="filter_type" required>
                 <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Circulars</option>
                 <option value="specific" {% if filter_type == 'specific' %}selected{% endif %}>Class/Section Only</option>
             </select>
-            <button type="submit"><i class="fas fa-check icon"></i> Apply Filter</button>
+            <button type="submit"><i class="fas fa-check"></i> Apply Filter</button>
         </form>
 
         <div class="circular-container">
             {% for circular in circulars %}
                 <div class="circular">
+                    <div class="circular-type">
+                        {% if 'school' in circular.target|lower or circular.target == 'All' %}
+                            School Circular
+                        {% else %}
+                            Class Circular
+                        {% endif %}
+                    </div>
                     <h3>{{ circular.title }}</h3>
                     <small>Posted on: {{ circular.date }}</small>
                     <small>Target: {{ circular.target }}</small>
                     <img src="{{ circular.image_url }}" alt="Circular Image">
+                    <a href="{{ circular.image_url }}" download="{{ circular.title|slugify }}.jpg" class="download-btn">
+                        <i class="fas fa-download"></i> Download Circular
+                    </a>
                 </div>
             {% empty %}
                 <p class="no-circulars">

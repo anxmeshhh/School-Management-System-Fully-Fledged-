@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Leave Requests</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -16,16 +17,38 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f3ff 30%, #e9d5ff 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%23a855f7" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
-            background-size: cover, 30px 30px;
-            animation: backgroundFade 10s ease-in-out infinite alternate;
+            font-weight: 400;
+            background: var(--white);
             min-height: 100vh;
+            color: var(--text-color);
             padding: 80px 20px 40px 20px;
         }
 
-        @keyframes backgroundFade {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        :root {
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #d1e7dd;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
         }
 
         .container {
@@ -34,11 +57,11 @@
         }
 
         .header {
-            background: linear-gradient(90deg, #6b21a8, #a855f7); /* Primary to secondary purple */
-            color: #ffffff;
-            padding: 1rem 2rem;
-            border-bottom: 4px solid #d8b4fe; /* Accent purple */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: var(--white);
+            color: var(--text-color);
+            padding: 1.5rem 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
             left: 0;
@@ -47,6 +70,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
 
         .header .logo-button {
@@ -60,6 +84,7 @@
             font-weight: 700;
             text-align: center;
             flex-grow: 1;
+            color: var(--primary-color);
         }
 
         .logo-img {
@@ -67,22 +92,46 @@
             height: 50px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
         }
 
         .logo-img:hover {
-            transform: rotate(5deg) scale(1.05);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .main-content {
-            background: #ffffff;
-            border: 2px solid #a855f7; /* Secondary purple */
-            border-radius: 16px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
             padding: 2rem;
-            margin-top: 1rem;
+            margin-top: 80px;
         }
 
         .alert-message {
@@ -91,37 +140,36 @@
 
         .alert-message .error {
             background: #fef2f2;
-            color: #b91c1c;
+            color: #dc3545;
             padding: 0.75rem;
             border-radius: 8px;
-            border-left: 4px solid #ef4444;
+            border-left: 4px solid #dc3545;
         }
 
         .alert-message .success {
-            background: #ede9fe; /* Light purple */
-            color: #6b21a8; /* Primary purple */
+            background: #f0f9f4;
+            color: var(--primary-color);
             padding: 0.75rem;
             border-radius: 8px;
-            border-left: 4px solid #a855f7; /* Secondary purple */
+            border-left: 4px solid var(--primary-color);
         }
 
         .section {
-            background: #f5f3ff; /* Light purple */
+            background: var(--light-bg);
             padding: 1.5rem;
-            border-radius: 12px;
-            border: 2px solid #a855f7; /* Secondary purple */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
             margin-bottom: 2rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: var(--transition);
         }
 
         .section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-md);
         }
 
         h2 {
-            color: #6b21a8; /* Primary purple */
+            color: var(--primary-color);
             font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
@@ -133,7 +181,7 @@
 
         .form-group label {
             display: block;
-            color: #6b21a8; /* Primary purple */
+            color: var(--text-color);
             font-size: 1rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
@@ -146,10 +194,10 @@
             width: 100%;
             padding: 0.75rem;
             border-radius: 8px;
-            border: 2px solid #a855f7; /* Secondary purple */
-            background: #f5f3ff; /* Light purple */
+            border: 1px solid var(--border-color);
+            background: var(--white);
             font-size: 1rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: var(--transition);
         }
 
         .form-group textarea {
@@ -160,8 +208,8 @@
         .form-group input[type="date"]:focus,
         .form-group select:focus,
         .form-group textarea:focus {
-            border-color: #6b21a8; /* Primary purple */
-            box-shadow: 0 0 8px rgba(107, 33, 168, 0.3); /* Purple shadow */
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
             outline: none;
         }
 
@@ -172,7 +220,7 @@
         }
 
         .date-range span {
-            color: #1f2937;
+            color: var(--text-color);
             font-size: 1rem;
         }
 
@@ -191,12 +239,12 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: #1f2937;
+            color: var(--text-color);
             font-size: 1rem;
         }
 
         .radio-label input[type="radio"] {
-            accent-color: #a855f7; /* Secondary purple */
+            accent-color: var(--primary-color);
             width: 1.2rem;
             height: 1.2rem;
         }
@@ -214,20 +262,20 @@
         .submit-btn {
             width: 100%;
             padding: 0.75rem;
-            background: #a855f7; /* Secondary purple */
+            background: var(--primary-color);
             border: none;
             border-radius: 8px;
-            color: #ffffff;
+            color: var(--white);
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
 
         .submit-btn:hover {
-            background: #6b21a8; /* Primary purple */
+            background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-md);
         }
 
         .table-container {
@@ -238,77 +286,55 @@
             width: 100%;
             min-width: 600px;
             border-collapse: collapse;
-            border: 2px solid #a855f7; /* Secondary purple */
-            background: #f5f3ff; /* Light purple */
+            border: 1px solid var(--border-color);
+            background: var(--white);
         }
 
         .attendance-table th,
         .attendance-table td {
             padding: 0.75rem;
             text-align: left;
-            border: 1px solid #a855f7; /* Secondary purple */
+            border: 1px solid var(--border-color);
             font-size: 0.9rem;
         }
 
         .attendance-table th {
-            background: #e9d5ff; /* Light purple */
-            color: #6b21a8; /* Primary purple */
-            font-weight: 700;
+            background: var(--light-bg);
+            color: var(--primary-color);
+            font-weight: 600;
             position: sticky;
             top: 0;
             z-index: 10;
         }
 
         .attendance-table td {
-            color: #1f2937;
+            color: var(--text-color);
         }
 
         .attendance-table tr:nth-child(even) {
-            background: #ede9fe; /* Light purple */
+            background: var(--light-bg);
         }
 
-        .status-approved { color: #6b21a8; font-weight: 600; } /* Primary purple */
-        .status-pending { color: #ca8a04; font-weight: 600; } /* Retained yellow */
-        .status-rejected { color: #b91c1c; font-weight: 600; } /* Retained red */
+        .status-approved { color: var(--primary-color); font-weight: 600; }
+        .status-pending { color: #ffc107; font-weight: 600; }
+        .status-rejected { color: #dc3545; font-weight: 600; }
 
         .download-btn {
             padding: 0.5rem 1rem;
-            background: #a855f7; /* Secondary purple */
+            background: var(--primary-color);
             border: none;
             border-radius: 8px;
-            color: #ffffff;
+            color: var(--white);
             font-size: 0.9rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
 
         .download-btn:hover {
-            background: #6b21a8; /* Primary purple */
+            background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .nav-to-attendance-btn {
-            display: inline-block;
-            background: #a855f7; /* Secondary purple */
-            color: #ffffff;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .nav-to-attendance-btn:hover {
-            background: #6b21a8; /* Primary purple */
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .icon {
-            margin-right: 0.5rem;
+            box-shadow: var(--shadow-md);
         }
 
         @media (max-width: 768px) {
@@ -317,7 +343,7 @@
             }
 
             .header {
-                padding: 0.8rem 1rem;
+                padding: 1rem;
             }
 
             .header h1 {
@@ -326,6 +352,7 @@
 
             .main-content {
                 padding: 1.5rem;
+                margin-top: 70px;
             }
 
             .section {
@@ -387,14 +414,14 @@
                 padding: 0.4rem 0.8rem;
             }
 
-            .nav-to-attendance-btn {
-                font-size: 0.9rem;
-                padding: 0.6rem 1.2rem;
-            }
-
             .logo-img {
                 width: 40px;
                 height: 40px;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
             }
         }
 
@@ -404,7 +431,9 @@
             }
 
             .header {
-                padding: 0.6rem 0.8rem;
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
             }
 
             .header h1 {
@@ -413,6 +442,8 @@
 
             .main-content {
                 padding: 1rem;
+                margin-top: 100px;
+                border-radius: 8px;
             }
 
             .section {
@@ -459,25 +490,45 @@
                 padding: 0.3rem 0.6rem;
             }
 
-            .nav-to-attendance-btn {
-                font-size: 0.85rem;
-                padding: 0.5rem 1rem;
-            }
-
             .logo-img {
                 width: 35px;
                 height: 35px;
             }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
         }
-</style>
+
+        @media (hover: none) {
+            .section:hover, .submit-btn:hover, .download-btn:hover, .logo-img:hover, .back-btn:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="header">
+        <a href="{% url 'parent_student_portal' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Attendance
+        </a>
+        <h1><i class="fas fa-envelope"></i> Leave Requests</h1>
         <div class="logo-button">
             <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
         </div>
-        <h1><i class="fas fa-envelope icon"></i> Leave Requests</h1>
-        <div></div> <!-- Empty div for spacing -->
     </div>
 
     <div class="container">
@@ -486,7 +537,7 @@
             <div class="alert-message">
                 {% for message in messages %}
                 <div class="{{ message.tags }}">
-                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
                     {{ message }}
                 </div>
                 {% endfor %}
@@ -494,19 +545,19 @@
             {% endif %}
 
             <div class="section">
-                <h2><i class="fas fa-paper-plane icon"></i> Submit Leave Request</h2>
+                <h2><i class="fas fa-paper-plane"></i> Submit Leave Request</h2>
                 <form method="POST" action="{% url 'student_leave' %}">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="student_name"><i class="fas fa-user icon"></i> Student Name</label>
+                        <label for="student_name"><i class="fas fa-user"></i> Student Name</label>
                         <input type="text" id="student_name" name="student_name" required>
                     </div>
                     <div class="form-group">
-                        <label for="reg_number"><i class="fas fa-id-card icon"></i> Registration Number</label>
+                        <label for="reg_number"><i class="fas fa-id-card"></i> Registration Number</label>
                         <input type="text" id="reg_number" name="reg_number" required>
                     </div>
                     <div class="form-group">
-                        <label for="class"><i class="fas fa-school icon"></i> Select Class</label>
+                        <label for="class"><i class="fas fa-school"></i> Select Class</label>
                         <select id="class" name="class" required>
                             <option value="">Select Class</option>
                             <option value="1">Class 1</option>
@@ -524,11 +575,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="leave_reason"><i class="fas fa-comment icon"></i> Leave Reason</label>
+                        <label for="leave_reason"><i class="fas fa-comment"></i> Leave Reason</label>
                         <textarea id="leave_reason" name="leave_reason" rows="4" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="leave-dates"><i class="fas fa-calendar icon"></i> Leave Dates</label>
+                        <label for="leave-dates"><i class="fas fa-calendar"></i> Leave Dates</label>
                         <div class="date-range">
                             <input type="date" id="leave_start_date" name="leave_start_date" required>
                             <span>to</span>
@@ -536,7 +587,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-clock icon"></i> Leave Duration</label>
+                        <label><i class="fas fa-clock"></i> Leave Duration</label>
                         <div class="leave-duration">
                             <label class="radio-label">
                                 <input type="radio" name="leave_duration" value="full" checked>
@@ -560,12 +611,12 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="submit-btn"><i class="fas fa-paper-plane icon"></i> Submit Leave Request</button>
+                    <button type="submit" class="submit-btn"><i class="fas fa-paper-plane"></i> Submit Leave Request</button>
                 </form>
             </div>
 
             <div class="section">
-                <h2><i class="fas fa-list icon"></i> Your Leave Requests</h2>
+                <h2><i class="fas fa-list"></i> Your Leave Requests</h2>
                 <div class="table-container">
                     <table class="attendance-table">
                         <thead>
@@ -596,7 +647,7 @@
                                     <form method="POST" action="{% url 'download_leave_pdf' %}">
                                         {% csrf_token %}
                                         <input type="hidden" name="leave_id" value="{{ request.0 }}">
-                                        <button type="submit" class="download-btn"><i class="fas fa-download icon"></i> Download PDF</button>
+                                        <button type="submit" class="download-btn"><i class="fas fa-download"></i> Download PDF</button>
                                     </form>
                                 </td>
                             </tr>
@@ -609,12 +660,6 @@
                     </table>
                 </div>
             </div>
-
-            <div class="nav-to-attendance">
-                <a href="{% url 'parent_student_portal' %}" class="nav-to-attendance-btn">
-                    <i class="fas fa-arrow-left icon"></i> Go to Attendance
-                </a>
-            </div>
         </div>
     </div>
 
@@ -624,7 +669,7 @@
             if (table) {
                 table.addEventListener('mouseover', function(e) {
                     if (e.target.tagName === 'TD') {
-                        e.target.parentNode.style.backgroundColor = '#d4f4e2';
+                        e.target.parentNode.style.backgroundColor = '#f0f9f4';
                     }
                 });
                 table.addEventListener('mouseout', function(e) {
@@ -632,7 +677,7 @@
                         const row = e.target.parentNode;
                         const rows = Array.from(table.querySelectorAll('tbody tr'));
                         const index = rows.indexOf(row);
-                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#e6f3ec';
+                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f8f9fa';
                     }
                 });
             }

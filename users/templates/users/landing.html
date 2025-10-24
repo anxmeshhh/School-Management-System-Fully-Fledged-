@@ -1,0 +1,1070 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Information at Ease</title>
+    <link rel="stylesheet" href="{% static 'users/landing.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <meta name="theme-color" content="#10b981">
+    <link rel="icon" type="image/svg+xml" href="/placeholder.svg?height=32&width=32">
+</head>
+<body>
+    <!-- Advanced Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-container">
+            <div class="loading-logo-wrapper">
+                <div class="loading-logo">
+                    <div class="logo-ring"></div>
+                    <div class="logo-ring"></div>
+                    <div class="logo-ring"></div>
+                    <img src="{% static 'users/images/verrgroup.png' %}" alt="Manavargal SMS Logo" class="logo-center">
+                </div>
+                <div class="loading-text">
+                    <span class="loading-title">Manavargal</span>
+                    <span class="loading-subtitle">School Management System</span>
+                </div>
+            </div>
+            <div class="loading-progress-container">
+                <div class="loading-progress-bar">
+                    <div class="loading-progress-fill"></div>
+                    <div class="loading-progress-glow"></div>
+                </div>
+                <div class="loading-percentage">0%</div>
+            </div>
+            <div class="loading-status">Initializing System...</div>
+        </div>
+        <div class="loading-background">
+            <div class="loading-particles"></div>
+            <div class="loading-waves"></div>
+            <div class="loading-grid"></div>
+        </div>
+    </div>
+
+    <!-- Advanced Cursor System -->
+    <div class="cursor-system">
+        <div class="cursor-dot" id="cursor-dot"></div>
+        <div class="cursor-outline" id="cursor-outline"></div>
+        <div class="cursor-trail" id="cursor-trail"></div>
+    </div>
+
+    <!-- Page Transition Overlay -->
+    <div class="page-transition" id="page-transition">
+        <div class="transition-layer"></div>
+        <div class="transition-layer"></div>
+        <div class="transition-layer"></div>
+    </div>
+
+    <!-- Enhanced Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-background">
+            <div class="nav-blur"></div>
+            <div class="nav-gradient"></div>
+        </div>
+        <div class="nav-container">
+            <div class="nav-logo" data-aos="fade-right">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/verrgroup.png' %}" alt="Manavargal SMS Logo" class="logo">
+                    <div class="logo-glow"></div>
+                </div>
+                <div class="nav-brand">
+                    <span class="nav-title">Manavargal</span>
+                    <span class="nav-subtitle">SMS</span>
+                </div>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <div class="nav-menu-background"></div>
+                <a href="#home" class="nav-link" data-text="Home">
+                    <span class="nav-link-text">Home</span>
+                    <span class="nav-link-bg"></span>
+                </a>
+                <a href="#features" class="nav-link" data-text="Features">
+                    <span class="nav-link-text">Features</span>
+                    <span class="nav-link-bg"></span>
+                </a>
+                <a href="#portals" class="nav-link" data-text="Portals">
+                    <span class="nav-link-text">Portals</span>
+                    <span class="nav-link-bg"></span>
+                </a>
+                <a href="#about" class="nav-link" data-text="About">
+                    <span class="nav-link-text">About</span>
+                    <span class="nav-link-bg"></span>
+                </a>
+                <a href="#contact" class="nav-link" data-text="Contact">
+                    <span class="nav-link-text">Contact</span>
+                    <span class="nav-link-bg"></span>
+                </a>
+                <div class="nav-indicator"></div>
+            </div>
+            
+            <div class="nav-actions" data-aos="fade-left">
+                <button class="btn btn-ghost">
+                    <span class="btn-text">Demo</span>
+                    <span class="btn-icon"><i class="fas fa-play"></i></span>
+                    <div class="btn-particles"></div>
+                </button>
+                <button class="btn btn-primary">
+                    <span class="btn-text">Get Started</span>
+                    <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                    <div class="btn-shine"></div>
+                </button>
+            </div>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <div class="hamburger">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Ultra Enhanced Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="hero-gradient-1"></div>
+            <div class="hero-gradient-2"></div>
+            <div class="hero-pattern"></div>
+            <div class="hero-particles" id="hero-particles"></div>
+            <div class="hero-waves"></div>
+            <div class="hero-grid"></div>
+        </div>
+        
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-badge" data-aos="fade-up" data-aos-delay="100">
+                        <div class="badge-icon">
+                            <i class="fas fa-star"></i>
+                            <div class="icon-sparkle"></div>
+                        </div>
+                        <span class="badge-text">Trusted and Secured By VERRGROUP</span>
+                        <div class="badge-glow"></div>
+                    </div>
+                    
+                    <h1 class="hero-title" data-aos="fade-up" data-aos-delay="200">
+                        <div class="title-line">
+                            <span class="title-word" data-word="Transform">Transform</span>
+                            <span class="title-word" data-word="Your">Your</span>
+                        </div>
+                        <div class="title-line">
+                            <span class="title-word highlight" data-word="School">School</span>
+                            <span class="title-word" data-word="Management">Management</span>
+                        </div>
+                        <div class="title-decoration">
+                            <div class="decoration-line"></div>
+                            <div class="decoration-dot"></div>
+                        </div>
+                    </h1>
+                    
+                    <div class="hero-tagline" data-aos="fade-up" data-aos-delay="300">
+                        <div class="tagline-container">
+                            <span class="tagline-text">Information at Ease</span>
+                            <div class="tagline-effects">
+                                <div class="tagline-underline"></div>
+                                <div class="tagline-glow"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="hero-description" data-aos="fade-up" data-aos-delay="400">
+                        Experience the future of educational administration with our comprehensive platform. 
+                        Streamline every aspect of school management from attendance tracking to fee collection, 
+                        all powered by cutting-edge technology and intuitive design.
+                    </p>
+                    
+                    <div class="hero-stats" data-aos="fade-up" data-aos-delay="500">
+                        <div class="stat-item">
+                            <div class="stat-container">
+                                <div class="stat-number" data-count="500">0</div>
+                                <div class="stat-plus">+</div>
+                            </div>
+                            <div class="stat-label">Schools</div>
+                            <div class="stat-glow"></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-container">
+                                <div class="stat-number" data-count="50000">0</div>
+                                <div class="stat-plus">+</div>
+                            </div>
+                            <div class="stat-label">Students</div>
+                            <div class="stat-glow"></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-container">
+                                <div class="stat-number" data-count="99">0</div>
+                                <div class="stat-plus">%</div>
+                            </div>
+                            <div class="stat-label">Satisfaction</div>
+                            <div class="stat-glow"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-buttons" data-aos="fade-up" data-aos-delay="600">
+                        <button class="btn btn-primary btn-hero" onclick="scrollToSection('portals')">
+                            <span class="btn-text">Access Portal</span>
+                            <span class="btn-icon"><i class="fas fa-rocket"></i></span>
+                            <div class="btn-ripple"></div>
+                            <div class="btn-glow"></div>
+                        </button>
+                        <button class="btn btn-secondary btn-hero" onclick="scrollToSection('features')">
+                            <span class="btn-text">Watch Demo</span>
+                            <span class="btn-icon"><i class="fas fa-play"></i></span>
+                            <div class="btn-ripple"></div>
+                        </button>
+                    </div>
+                    
+                    
+                </div>
+                
+                <div class="hero-visual" data-aos="fade-left" data-aos-delay="800">
+                    <div class="visual-container">
+                        <div class="dashboard-3d">
+                            <div class="dashboard-frame">
+                                <div class="frame-header">
+                                    <div class="frame-controls">
+                                        <span class="control red"></span>
+                                        <span class="control yellow"></span>
+                                        <span class="control green"></span>
+                                    </div>
+                                    <div class="frame-title">Manavargal Dashboard</div>
+                                    <div class="frame-actions">
+                                        <i class="fas fa-expand"></i>
+                                    </div>
+                                </div>
+                                <div class="frame-content">
+                                    <div class="dashboard-main">
+                                        <img src="/placeholder.svg?height=500&width=700" alt="Dashboard Preview" class="dashboard-img">
+                                        <div class="dashboard-overlay">
+                                            <div class="overlay-grid">
+                                                <div class="grid-item analytics">
+                                                    <div class="item-icon"><i class="fas fa-chart-line"></i></div>
+                                                    <div class="item-content">
+                                                        <div class="item-title">Analytics</div>
+                                                        <div class="item-value">Real-time</div>
+                                                    </div>
+                                                    <div class="item-chart">
+                                                        <div class="chart-bar" style="height: 60%"></div>
+                                                        <div class="chart-bar" style="height: 80%"></div>
+                                                        <div class="chart-bar" style="height: 40%"></div>
+                                                        <div class="chart-bar" style="height: 90%"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="grid-item attendance">
+                                                    <div class="item-icon"><i class="fas fa-users"></i></div>
+                                                    <div class="item-content">
+                                                        <div class="item-title">Attendance</div>
+                                                        <div class="item-value">94.5%</div>
+                                                    </div>
+                                                    <div class="item-progress">
+                                                        <div class="progress-bar" style="width: 94.5%"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="grid-item fees">
+                                                    <div class="item-icon"><i class="fas fa-money-bill-wave"></i></div>
+                                                    <div class="item-content">
+                                                        <div class="item-title">Fees Collected</div>
+                                                        <div class="item-value">₹2.4M</div>
+                                                    </div>
+                                                    <div class="item-trend">
+                                                        <i class="fas fa-arrow-up"></i>
+                                                        <span>+12%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-glow"></div>
+                        </div>
+                        
+                        <div class="floating-elements">
+                            <div class="floating-card card-1">
+                                <div class="card-icon"><i class="fas fa-graduation-cap"></i></div>
+                                <div class="card-content">
+                                    <div class="card-title">Students</div>
+                                    <div class="card-value">1,247</div>
+                                </div>
+                                <div class="card-glow"></div>
+                            </div>
+                            <div class="floating-card card-2">
+                                <div class="card-icon"><i class="fas fa-bell"></i></div>
+                                <div class="card-content">
+                                    <div class="card-title">Notifications</div>
+                                    <div class="card-value">12</div>
+                                </div>
+                                <div class="card-glow"></div>
+                            </div>
+                            <div class="floating-card card-3">
+                                <div class="card-icon"><i class="fas fa-calendar"></i></div>
+                                <div class="card-content">
+                                    <div class="card-title">Events</div>
+                                    <div class="card-value">5</div>
+                                </div>
+                                <div class="card-glow"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="geometric-shapes">
+                            <div class="shape shape-1"></div>
+                            <div class="shape shape-2"></div>
+                            <div class="shape shape-3"></div>
+                            <div class="shape shape-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-scroll-indicator" data-aos="fade-up" data-aos-delay="1000">
+            <div class="scroll-container">
+                <div class="scroll-text">Discover More</div>
+                <div class="scroll-arrow">
+                    <div class="arrow-line"></div>
+                    <div class="arrow-head"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advanced Features Overview -->
+    <section class="features-overview">
+        <div class="section-background">
+            <div class="bg-pattern"></div>
+            <div class="bg-gradient"></div>
+        </div>
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-highlight" data-aos="fade-up" data-aos-delay="100">
+                    <div class="highlight-container">
+                        <div class="highlight-icon">
+                            <i class="fas fa-shield-alt"></i>
+                            <div class="icon-orbit"></div>
+                        </div>
+                        <h3 class="highlight-title">Enterprise Security</h3>
+                        <p class="highlight-description">Bank-grade encryption with 99.9% uptime SLA</p>
+                        <div class="highlight-glow"></div>
+                    </div>
+                </div>
+                <div class="feature-highlight" data-aos="fade-up" data-aos-delay="200">
+                    <div class="highlight-container">
+                        <div class="highlight-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                            <div class="icon-orbit"></div>
+                        </div>
+                        <h3 class="highlight-title">Mobile First Design</h3>
+                        <p class="highlight-description">Responsive across all devices and platforms</p>
+                        <div class="highlight-glow"></div>
+                    </div>
+                </div>
+                <div class="feature-highlight" data-aos="fade-up" data-aos-delay="300">
+                    <div class="highlight-container">
+                        <div class="highlight-icon">
+                            <i class="fas fa-bolt"></i>
+                            <div class="icon-orbit"></div>
+                        </div>
+                        <h3 class="highlight-title">Lightning Fast</h3>
+                        <p class="highlight-description">Real-time updates with instant synchronization</p>
+                        <div class="highlight-glow"></div>
+                    </div>
+                </div>
+                <div class="feature-highlight" data-aos="fade-up" data-aos-delay="400">
+                    <div class="highlight-container">
+                        <div class="highlight-icon">
+                            <i class="fas fa-headset"></i>
+                            <div class="icon-orbit"></div>
+                        </div>
+                        <h3 class="highlight-title">24/7 Expert Support</h3>
+                        <p class="highlight-description">Round-the-clock assistance and training</p>
+                        <div class="highlight-glow"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ultra Enhanced Portal Section -->
+    <section id="portals" class="portals-section">
+        <div class="section-background">
+            <div class="bg-mesh"></div>
+            <div class="bg-particles"></div>
+            <div class="bg-waves"></div>
+        </div>
+        
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">
+                    <span class="badge-text">Access Portals</span>
+                    <div class="badge-shine"></div>
+                </div>
+                <h2 class="section-title">
+                    <span class="title-main">Choose Your</span>
+                    <span class="title-highlight">Dashboard Experience</span>
+                </h2>
+                <p class="section-subtitle">
+                    Tailored interfaces designed for every role in your educational ecosystem, 
+                    powered by intelligent automation and intuitive design.
+                </p>
+            </div>
+            
+            <div class="portals-grid">
+                <div class="portal-card student-portal" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-background">
+                        <div class="card-gradient"></div>
+                        <div class="card-pattern"></div>
+                        <div class="card-glow"></div>
+                    </div>
+                    
+                    <div class="card-header">
+                        <div class="portal-icon">
+                            <i class="fas fa-user-graduate"></i>
+                            <div class="icon-bg"></div>
+                            <div class="icon-pulse"></div>
+                        </div>
+                        <div class="portal-badge">For Students</div>
+                    </div>
+                    
+                    <div class="card-content">
+                        <h3 class="portal-title">Student Portal</h3>
+                        <p class="portal-description">
+                            Personalized learning dashboard with real-time progress tracking, 
+                            interactive assignments, and seamless communication tools.
+                        </p>
+                        
+                        <div class="portal-features">
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-tasks"></i></div>
+                                <span>Interactive Assignments</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                                <span>Progress Analytics</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-calendar-alt"></i></div>
+                                <span>Smart Timetable</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-download"></i></div>
+                                <span>Resource Library</span>
+                            </div>
+                        </div>
+                        
+                        <div class="portal-stats">
+                            <div class="stat">
+                                <div class="stat-value">98%</div>
+                                <div class="stat-label">Engagement</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">24/7</div>
+                                <div class="stat-label">Access</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button class="portal-btn">
+                            <span class="btn-text">Student Login</span>
+                            <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                            <div class="btn-glow"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="portal-card teacher-portal" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-background">
+                        <div class="card-gradient"></div>
+                        <div class="card-pattern"></div>
+                        <div class="card-glow"></div>
+                    </div>
+                    
+                    <div class="card-header">
+                        <div class="portal-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <div class="icon-bg"></div>
+                            <div class="icon-pulse"></div>
+                        </div>
+                        <div class="portal-badge">For Teachers</div>
+                    </div>
+                    
+                    <div class="card-content">
+                        <h3 class="portal-title">Teacher Portal</h3>
+                        <p class="portal-description">
+                            Comprehensive classroom management with AI-powered insights, 
+                            automated grading, and enhanced student engagement tools.
+                        </p>
+                        
+                        <div class="portal-features">
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-robot"></i></div>
+                                <span>AI-Powered Grading</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-users"></i></div>
+                                <span>Class Management</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-share-alt"></i></div>
+                                <span>Resource Sharing</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                                <span>Parent Communication</span>
+                            </div>
+                        </div>
+                        
+                        <div class="portal-stats">
+                            <div class="stat">
+                                <div class="stat-value">75%</div>
+                                <div class="stat-label">Time Saved</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">AI</div>
+                                <div class="stat-label">Powered</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button class="portal-btn">
+                            <span class="btn-text">Teacher Login</span>
+                            <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                            <div class="btn-glow"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="portal-card parent-portal" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-background">
+                        <div class="card-gradient"></div>
+                        <div class="card-pattern"></div>
+                        <div class="card-glow"></div>
+                    </div>
+                    
+                    <div class="card-header">
+                        <div class="portal-icon">
+                            <i class="fas fa-heart"></i>
+                            <div class="icon-bg"></div>
+                            <div class="icon-pulse"></div>
+                        </div>
+                        <div class="portal-badge">For Parents</div>
+                    </div>
+                    
+                    <div class="card-content">
+                        <h3 class="portal-title">Parent Portal</h3>
+                        <p class="portal-description">
+                            Stay connected with your child's educational journey through 
+                            real-time insights, secure messaging, and comprehensive progress tracking.
+                        </p>
+                        
+                        <div class="portal-features">
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-eye"></i></div>
+                                <span>Real-time Monitoring</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-credit-card"></i></div>
+                                <span>Online Payments</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-bell"></i></div>
+                                <span>Smart Notifications</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-calendar-check"></i></div>
+                                <span>Event Calendar</span>
+                            </div>
+                        </div>
+                        
+                        <div class="portal-stats">
+                            <div class="stat">
+                                <div class="stat-value">100%</div>
+                                <div class="stat-label">Transparency</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">Instant</div>
+                                <div class="stat-label">Updates</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button class="portal-btn">
+                            <span class="btn-text">Parent Login</span>
+                            <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                            <div class="btn-glow"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="portal-card admin-portal" data-aos="fade-up" data-aos-delay="400">
+                    <div class="card-background">
+                        <div class="card-gradient"></div>
+                        <div class="card-pattern"></div>
+                        <div class="card-glow"></div>
+                    </div>
+                    
+                    <div class="card-header">
+                        <div class="portal-icon">
+                            <i class="fas fa-crown"></i>
+                            <div class="icon-bg"></div>
+                            <div class="icon-pulse"></div>
+                        </div>
+                        <div class="portal-badge">For Administrators</div>
+                    </div>
+                    
+                    <div class="card-content">
+                        <h3 class="portal-title">Admin Portal</h3>
+                        <p class="portal-description">
+                            Complete institutional oversight with advanced analytics, 
+                            predictive insights, and comprehensive system management capabilities.
+                        </p>
+                        
+                        <div class="portal-features">
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                                <span>Predictive Analytics</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-cogs"></i></div>
+                                <span>System Control</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                                <span>Security Management</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+                                <span>Advanced Reports</span>
+                            </div>
+                        </div>
+                        
+                        <div class="portal-stats">
+                            <div class="stat">
+                                <div class="stat-value">360°</div>
+                                <div class="stat-label">Overview</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">Smart</div>
+                                <div class="stat-label">Insights</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button class="portal-btn">
+                            <span class="btn-text">Admin Login</span>
+                            <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                            <div class="btn-glow"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advanced Features Showcase -->
+    <section id="features" class="features-section">
+        <div class="section-background">
+            <div class="bg-gradient"></div>
+            <div class="bg-mesh"></div>
+        </div>
+        
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">
+                    <span class="badge-text">Core Features</span>
+                    <div class="badge-shine"></div>
+                </div>
+                <h2 class="section-title">
+                    <span class="title-main">Comprehensive School</span>
+                    <span class="title-highlight">Management Suite</span>
+                </h2>
+                <p class="section-subtitle">
+                    Everything you need to run your educational institution efficiently, 
+                    powered by artificial intelligence and modern technology.
+                </p>
+            </div>
+            
+            <div class="features-showcase">
+                <div class="features-navigation" data-aos="fade-right">
+                    <div class="nav-item active" data-category="management">
+                        <div class="nav-icon">
+                            <i class="fas fa-cogs"></i>
+                            <div class="icon-glow"></div>
+                        </div>
+                        <div class="nav-content">
+                            <div class="nav-title">Management</div>
+                            <div class="nav-subtitle">Core Operations</div>
+                        </div>
+                        <div class="nav-indicator"></div>
+                    </div>
+                    <div class="nav-item" data-category="academic">
+                        <div class="nav-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                            <div class="icon-glow"></div>
+                        </div>
+                        <div class="nav-content">
+                            <div class="nav-title">Academic</div>
+                            <div class="nav-subtitle">Learning Tools</div>
+                        </div>
+                        <div class="nav-indicator"></div>
+                    </div>
+                    <div class="nav-item" data-category="communication">
+                        <div class="nav-icon">
+                            <i class="fas fa-comments"></i>
+                            <div class="icon-glow"></div>
+                        </div>
+                        <div class="nav-content">
+                            <div class="nav-title">Communication</div>
+                            <div class="nav-subtitle">Stay Connected</div>
+                        </div>
+                        <div class="nav-indicator"></div>
+                    </div>
+                    <div class="nav-item" data-category="analytics">
+                        <div class="nav-icon">
+                            <i class="fas fa-chart-bar"></i>
+                            <div class="icon-glow"></div>
+                        </div>
+                        <div class="nav-content">
+                            <div class="nav-title">Analytics</div>
+                            <div class="nav-subtitle">Data Insights</div>
+                        </div>
+                        <div class="nav-indicator"></div>
+                    </div>
+                </div>
+
+                <div class="features-content" data-aos="fade-left">
+                    <div class="feature-category active" id="management">
+                        <div class="category-header">
+                            <h3 class="category-title">Management Features</h3>
+                            <p class="category-description">Streamline your administrative processes</p>
+                        </div>
+                        <div class="features-grid">
+                            <div class="feature-card">
+                                <div class="card-background">
+                                    <div class="card-glow"></div>
+                                </div>
+                                <div class="feature-icon">
+                                    <i class="fas fa-database"></i>
+                                    <div class="icon-orbit"></div>
+                                </div>
+                                <div class="feature-content">
+                                    <h4 class="feature-title">Master Data Management</h4>
+                                    <p class="feature-description">
+                                        Centralized database with advanced security, automated backups, 
+                                        and intelligent data validation systems.
+                                    </p>
+                                    <div class="feature-tags">
+                                        <span class="tag">Secure</span>
+                                        <span class="tag">Scalable</span>
+                                        <span class="tag">Automated</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="card-background">
+                                    <div class="card-glow"></div>
+                                </div>
+                                <div class="feature-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <div class="icon-orbit"></div>
+                                </div>
+                                <div class="feature-content">
+                                    <h4 class="feature-title">Smart Attendance System</h4>
+                                    <p class="feature-description">
+                                        AI-powered attendance tracking with biometric integration, 
+                                        automated notifications, and predictive analytics.
+                                    </p>
+                                    <div class="feature-tags">
+                                        <span class="tag">AI-Powered</span>
+                                        <span class="tag">Real-time</span>
+                                        <span class="tag">Biometric</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="card-background">
+                                    <div class="card-glow"></div>
+                                </div>
+                                <div class="feature-icon">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    <div class="icon-orbit"></div>
+                                </div>
+                                <div class="feature-content">
+                                    <h4 class="feature-title">Advanced Fee Management</h4>
+                                    <p class="feature-description">
+                                        Multi-gateway payment processing, automated reminders, 
+                                        installment plans, and comprehensive financial reporting.
+                                    </p>
+                                    <div class="feature-tags">
+                                        <span class="tag">Multi-Gateway</span>
+                                        <span class="tag">Automated</span>
+                                        <span class="tag">Flexible</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="card-background">
+                                    <div class="card-glow"></div>
+                                </div>
+                                <div class="feature-icon">
+                                    <i class="fas fa-user-tie"></i>
+                                    <div class="icon-orbit"></div>
+                                </div>
+                                <div class="feature-content">
+                                    <h4 class="feature-title">Faculty Management Suite</h4>
+                                    <p class="feature-description">
+                                        Complete HR management with performance tracking, 
+                                        professional development, and automated scheduling.
+                                    </p>
+                                    <div class="feature-tags">
+                                        <span class="tag">Comprehensive</span>
+                                        <span class="tag">Performance</span>
+                                        <span class="tag">Automated</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-category" id="academic">
+                        <div class="category-header">
+                            <h3 class="category-title">Academic Features</h3>
+                            <p class="category-description">Enhance learning experiences</p>
+                        </div>
+                        <div class="features-grid">
+                            <div class="feature-card">
+                                <div class="card-background">
+                                    <div class="card-glow"></div>
+                                </div>
+                                <div class="feature-icon">
+                                    <i class="fas fa-book-open"></i>
+                                    <div class="icon-orbit"></div>
+                                </div>
+                                <div class="feature-content">
+                                    <h4 class="feature-title">Digital Learning Platform</h4>
+                                    <p class="feature-description">
+                                        Interactive lessons, multimedia content, and personalized 
+                                        learning paths for enhanced student engagement.
+                                    </p>
+                                    <div class="feature-tags">
+                                        <span class="tag">Interactive</span>
+                                        <span class="tag">Multimedia</span>
+                                        <span class="tag">Personalized</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-category" id="communication">
+                        <div class="category-header">
+                            <h3 class="category-title">Communication Features</h3>
+                            <p class="category-description">Connect your community</p>
+                        </div>
+                        <div class="features-grid">
+                            <div class="feature-card">
+                                <div class="card-background">
+                                    <div class="card-glow"></div>
+                                </div>
+                                <div class="feature-icon">
+                                    <i class="fas fa-envelope"></i>
+                                    <div class="icon-orbit"></div>
+                                </div>
+                                <div class="feature-content">
+                                    <h4 class="feature-title">Smart Messaging System</h4>
+                                    <p class="feature-description">
+                                        Automated notifications, group messaging, and real-time 
+                                        communication between all stakeholders.
+                                    </p>
+                                    <div class="feature-tags">
+                                        <span class="tag">Automated</span>
+                                        <span class="tag">Real-time</span>
+                                        <span class="tag">Multi-channel</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-category" id="analytics">
+                        <div class="category-header">
+                            <h3 class="category-title">Analytics Features</h3>
+                            <p class="category-description">Data-driven insights</p>
+                        </div>
+                        <div class="features-grid">
+                            <div class="feature-card">
+                                <div class="card-background">
+                                    <div class="card-glow"></div>
+                                </div>
+                                <div class="feature-icon">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <div class="icon-orbit"></div>
+                                </div>
+                                <div class="feature-content">
+                                    <h4 class="feature-title">Advanced Analytics Dashboard</h4>
+                                    <p class="feature-description">
+                                        Comprehensive reporting with predictive insights, 
+                                        performance metrics, and actionable recommendations.
+                                    </p>
+                                    <div class="feature-tags">
+                                        <span class="tag">Predictive</span>
+                                        <span class="tag">Comprehensive</span>
+                                        <span class="tag">Actionable</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ultra Enhanced Footer -->
+    <footer class="footer">
+        <div class="footer-background">
+            <div class="footer-gradient"></div>
+            <div class="footer-pattern"></div>
+            <div class="footer-glow"></div>
+        </div>
+        
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-main">
+                    <div class="footer-brand" data-aos="fade-up">
+                        <div class="brand-logo">
+                            <div class="logo-container">
+                                <img src="{% static 'users/images/verrgroup.png' %}" alt="Manavargal SMS Logo" class="logo">
+                                <div class="logo-glow"></div>
+                            </div>
+                            <div class="brand-text">
+                                <span class="brand-name">Manavargal</span>
+                                <span class="brand-tagline">School Management System</span>
+                            </div>
+                        </div>
+                        
+                        <p class="footer-description">
+                            Empowering educational institutions with innovative technology solutions 
+                            for better learning outcomes, operational efficiency, and community building.
+                        </p>
+                        
+                        <div class="social-links">
+                            <a href="#" class="social-link">
+                                <i class="fab fa-facebook-f"></i>
+                                <div class="link-glow"></div>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-twitter"></i>
+                                <div class="link-glow"></div>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-linkedin-in"></i>
+                                <div class="link-glow"></div>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-instagram"></i>
+                                <div class="link-glow"></div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <div class="footer-section" data-aos="fade-up" data-aos-delay="100">
+                            <h4 class="footer-heading">Product</h4>
+                            <ul class="footer-list">
+                                <li><a href="#features">Features</a></li>
+                                <li><a href="#portals">Access Portals</a></li>
+                                <li><a href="#">Pricing</a></li>
+                                <li><a href="#">API Documentation</a></li>
+                                <li><a href="#">Integrations</a></li>
+                                <li><a href="#">Security</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="footer-section" data-aos="fade-up" data-aos-delay="200">
+                            <h4 class="footer-heading">Support</h4>
+                            <ul class="footer-list">
+                                <li><a href="#">Help Center</a></li>
+                                <li><a href="#">Training Resources</a></li>
+                                <li><a href="#">System Status</a></li>
+                                <li><a href="#">Contact Support</a></li>
+                                <li><a href="#">Community Forum</a></li>
+                                <li><a href="#">Video Tutorials</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="footer-section" data-aos="fade-up" data-aos-delay="300">
+                            <h4 class="footer-heading">Company</h4>
+                            <ul class="footer-list">
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">Careers</a></li>
+                                <li><a href="#">Press Kit</a></li>
+                                <li><a href="#">Blog</a></li>
+                                <li><a href="#">Partners</a></li>
+                                <li><a href="#">Investors</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="footer-section" data-aos="fade-up" data-aos-delay="400">
+                            <h4 class="footer-heading">Contact</h4>
+                            <div class="contact-info">
+                                <div class="contact-item">
+                                    <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                                    <div class="contact-details">
+                                        <span class="contact-label">Email</span>
+                                        <span class="contact-value">info@manavargalsms.com</span>
+                                    </div>
+                                </div>
+                                <div class="contact-item">
+                                    <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                                    <div class="contact-details">
+                                        <span class="contact-label">Phone</span>
+                                        <span class="contact-value">+91 98944 27757</span>
+                                    </div>
+                                </div>
+                                <div class="contact-item">
+                                    <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                    <div class="contact-details">
+                                        <span class="contact-label">Address</span>
+                                        <span class="contact-value">Chennai , Tamil Nadu</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <div class="footer-bottom-content">
+                        <div class="copyright">
+                            <p>&copy; 2025 Manavargal School Management System. All rights reserved.</p>
+                        </div>
+                        <div class="footer-bottom-links">
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms of Service</a>
+                            <a href="#">Cookie Policy</a>
+                            <a href="#">GDPR Compliance</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{% static 'users/landing.js' %}"></script>
+</body>
+</html>

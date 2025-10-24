@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Info</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Manavargal School Management System - Student Info</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -14,88 +15,161 @@
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #e6f0fa 0%, #d6e4ff 50%, #e6f0fa 100%);
-            background-size: 200%;
-            animation: gradient 20s ease infinite;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 100%),
+                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
+            background-size: 200%, 20px 20px;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding: 1.5rem;
+            padding: 80px 20px 40px 20px;
             position: relative;
             overflow-x: hidden;
-        }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        header {
-            position: fixed;
-            top: 0;
-            right: 0;
-            padding: 1rem;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-        }
-
-        .logo {
-            height: 50px;
-            border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            border: 2px solid transparent;
-            border-image: linear-gradient(45deg, rgba(59, 130, 246, 0.5), rgba(255, 255, 255, 0.3)) 1;
-            box-shadow: 0 8px 24px rgba(30, 58, 138, 0.15);
-            padding: 2rem;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 1200px;
-            margin-top: 5rem;
-            animation: fadeIn 0.5s ease-out;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: #ffffff;
-            border-radius: 12px;
+            padding: 1rem 2rem;
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
+            border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+            flex-wrap: wrap;
+            position: fixed;
+            top: 0;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-header {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease, transform 0.3s ease;
+            flex-grow: 1;
+            margin: 0;
+        }
+
+        .welcome-header:hover {
+            color: #e3f2fd;
+            transform: scale(1.02);
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(90deg, #1565c0, #1976d2);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+
+        .logo-container {
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            width: 100%;
+            max-width: 1200px;
+            margin: 100px auto 20px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            color: #2563eb;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .messages p {
+            text-align: center;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #dc2626;
+            background: rgba(255, 75, 75, 0.1);
+            padding: 0.6rem;
+            border-radius: 6px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
             flex-wrap: wrap;
             gap: 1rem;
         }
 
-        .header h1 {
-            font-size: 1.75rem;
+        .header-section h1 {
+            color: #2563eb;
+            font-size: 1.8rem;
             font-weight: 600;
-            color: #1e40af;
             margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            animation: slideInLeft 0.5s ease-out;
         }
 
         .header-buttons {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
+            gap: 1rem;
+        }
+
+        .add-student-btn, .back-dashboard-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-student-btn:hover, .back-dashboard-btn:hover {
+            background: linear-gradient(90deg, #1565c0, #1976d2);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
         }
 
         .filters {
@@ -103,532 +177,446 @@
             flex-wrap: wrap;
             gap: 1rem;
             margin-bottom: 2rem;
-            padding: 1.5rem;
             background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            animation: fadeInUp 0.6s ease-out;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        select, button, .add-btn, .back-btn {
-            padding: 0.75rem 1.25rem;
+        .form-group {
+            margin-bottom: 1rem;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2563eb;
+            font-size: 0.9rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 0.7rem;
             border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #d6e4ff, #e6f0fa) border-box;
+            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #93c5fd, #2563eb) border-box;
             border-radius: 8px;
             font-size: 0.9rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            width: auto;
-            min-width: 120px;
+            transition: box-shadow 0.3s ease;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%232563eb"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
         }
 
-        select:focus, button:focus, .add-btn:focus, .back-btn:focus {
+        .form-group select:focus {
             outline: none;
-            border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #3b82f6, #2563eb) border-box;
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
         }
 
-        button, .add-btn, .back-btn, .update-btn, .delete-btn {
-            color: white;
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            background: #2563eb;
             border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
         }
 
-        button {
-            background: linear-gradient(90deg, #3b82f6, #60a5fa);
-        }
-
-        button:hover {
-            background: linear-gradient(90deg, #2563eb, #3b82f6);
+        .filter-btn:hover {
+            background: #1d4ed8;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
-        .add-btn {
-            background: linear-gradient(90deg, #10b981, #34d399);
+        .reset-btn {
+            padding: 0.8rem 1.5rem;
+            background: #6b7280;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .add-btn:hover {
-            background: linear-gradient(90deg, #059669, #10b981);
+        .reset-btn:hover {
+            background: #4b5563;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        .back-btn {
-            background: linear-gradient(90deg, #6b7280, #9ca3af);
-            text-decoration: none;
-        }
-
-        .back-btn:hover {
-            background: linear-gradient(90deg, #4b5563, #6b7280);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
         }
 
         .total-students {
-            font-size: 1rem;
-            color: #1e40af;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-weight: 500;
-            padding: 1rem;
             background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            flex-wrap: wrap;
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .total-students span {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .total-students .separator {
-            color: #93c5fd;
-            font-weight: 300;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2563eb;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .class-group {
             margin-bottom: 2rem;
-            border: 2px solid #bfdbfe;
-            border-radius: 16px;
-            padding: 1.5rem;
             background: #ffffff;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: fadeInUp 0.7s ease-out;
-        }
-
-        .class-group:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
         .class-header {
-            font-size: 1.5rem;
+            background: linear-gradient(90deg, #e0f2fe, #b3e5fc);
+            padding: 1rem 1.5rem;
+            color: #1565c0;
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 1.25rem;
-            color: #1e40af;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            animation: slideInLeft 0.6s ease-out;
+            gap: 0.5rem;
         }
 
         .class-stats {
             display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 0.5rem;
+            justify-content: space-around;
+            padding: 0.75rem 1.5rem;
+            background: #f8fafc;
+            color: #374151;
             font-size: 0.9rem;
-            color: #4b5563;
         }
 
-        .class-stats span {
+        .class-stats > div {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-        }
-
-        .class-stats .separator {
-            color: #93c5fd;
-            font-weight: 300;
+            gap: 0.25rem;
         }
 
         .student-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Reduced min width for more cards per row */
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
         }
 
         .student-card {
-            background: #f8fbff;
-            border: 2px solid #bfdbfe;
-            border-radius: 12px;
-            padding: 1rem; /* Reduced padding for smaller box */
-            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem; /* Reduced gap for compactness */
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.3s ease;
         }
 
         .student-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 16px rgba(30, 58, 138, 0.15);
+            transform: translateY(-5px);
         }
 
-        /* Updated styles for profile picture */
-        .student-profile-pic {
-            width: 100px; /* Increased size for larger circular image */
-            height: 100px;
+        .student-card img {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
+            margin-bottom: 0.5rem;
             object-fit: cover;
-            border: 3px solid #bfdbfe; /* Slightly thicker border for prominence */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 0.75rem;
         }
 
-        .student-info-header {
-            display: flex;
-            flex-direction: column; /* Stack image and name vertically for better fit in smaller card */
-            align-items: center;
-            gap: 0.5rem;
+        .student-card h3 {
+            color: #2563eb;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
         }
 
-        .student-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem; /* Reduced gap for compactness */
-        }
-
-        .student-info strong {
-            font-size: 1rem; /* Slightly smaller font for name */
-            color: #1e40af;
-            text-align: center;
-        }
-
-        .student-info div {
-            font-size: 0.85rem; /* Slightly smaller font for details */
-            color: #4b5563;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .student-card p {
+            color: #374151;
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
         }
 
         .student-actions {
             display: flex;
-            justify-content: center; /* Center buttons in smaller card */
-            gap: 0.5rem; /* Reduced gap for compactness */
-            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
         }
 
         .update-btn, .delete-btn {
-            padding: 0.5rem 1rem; /* Reduced padding for smaller buttons */
-            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem; /* Smaller font for buttons */
-            font-weight: 500;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: background 0.3s ease;
         }
 
         .update-btn {
-            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            background: #2563eb;
+            color: white;
         }
 
         .update-btn:hover {
-            background: linear-gradient(90deg, #2563eb, #3b82f6);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            background: #1d4ed8;
         }
 
         .delete-btn {
-            background: linear-gradient(90deg, #ef4444, #f87171);
+            background: #dc2626;
+            color: white;
         }
 
         .delete-btn:hover {
-            background: linear-gradient(90deg, #dc2626, #ef4444);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            background: #b91c1c;
         }
 
         .no-students {
-            font-size: 1rem;
-            color: #1e40af;
             text-align: center;
-            padding: 1.5rem;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideInLeft {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        /* Responsive Design */
-        @media (min-width: 1024px) {
-            .student-grid {
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Further reduced min width for more cards */
-            }
+            color: #374151;
+            padding: 2rem;
+            font-size: 1rem;
         }
 
         @media (max-width: 768px) {
-            body {
-                padding: 1rem;
+            .header {
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+                align-items: center;
+                justify-content: space-between;
+                left: 10px;
+                right: 10px;
+            }
+
+            .welcome-header {
+                font-size: 1.8rem;
+                margin: 0;
+                flex-grow: 1;
+                text-align: center;
+            }
+
+            .back-button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .logo {
+                width: 40px;
+                height: 40px;
             }
 
             .container {
+                margin-top: 90px;
                 padding: 1.5rem;
-                margin-top: 4rem;
             }
 
-            .header {
+            .header-section {
                 flex-direction: column;
-                align-items: flex-start;
-                padding: 1rem;
+                align-items: center;
+                text-align: center;
             }
 
-            .header h1 {
+            .header-section h1 {
                 font-size: 1.5rem;
+            }
+
+            .header-buttons {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.75rem;
             }
 
             .filters {
                 flex-direction: column;
-                align-items: stretch;
+                gap: 0.75rem;
+            }
+
+            .form-group {
+                min-width: auto;
+            }
+
+            .student-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1rem;
                 padding: 1rem;
-            }
-
-            select, button, .add-btn, .back-btn, .update-btn, .delete-btn {
-                width: 100%;
-                padding: 0.75rem;
-                font-size: 0.85rem;
-            }
-
-            .class-group {
-                padding: 1rem;
-            }
-
-            .class-header {
-                font-size: 1.25rem;
             }
 
             .class-stats {
                 flex-direction: column;
-                align-items: flex-start;
                 gap: 0.5rem;
-            }
-
-            .student-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjusted for smaller screens */
-            }
-
-            .student-card {
-                padding: 0.75rem;
-            }
-
-            .student-info strong {
-                font-size: 0.95rem;
-            }
-
-            .student-info div {
-                font-size: 0.8rem;
+                align-items: center;
             }
 
             .total-students {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-                padding: 1rem;
-            }
-
-            .logo {
-                height: 40px;
-            }
-
-            .student-profile-pic {
-                width: 80px; /* Slightly smaller for smaller screens */
-                height: 80px;
+                font-size: 1rem;
             }
         }
 
         @media (max-width: 480px) {
-            .container {
-                padding: 1rem;
-                margin-top: 3.5rem;
-            }
-
             .header {
-                gap: 0.75rem;
+                padding: 0.6rem 0.8rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
+                left: 5px;
+                right: 5px;
             }
 
-            .header h1 {
-                font-size: 1.25rem;
+            .welcome-header {
+                font-size: 1.4rem;
             }
 
-            .filters {
-                gap: 0.75rem;
-            }
-
-            select, button, .add-btn, .back-btn, .update-btn, .delete-btn {
-                padding: 0.6rem;
+            .back-button {
+                padding: 0.6rem 1rem;
                 font-size: 0.8rem;
-            }
-
-            .class-group {
-                padding: 0.75rem;
-            }
-
-            .class-header {
-                font-size: 1.1rem;
-            }
-
-            .class-stats {
-                font-size: 0.8rem;
-            }
-
-            .student-card {
-                padding: 0.5rem;
-            }
-
-            .student-info strong {
-                font-size: 0.9rem;
-            }
-
-            .student-info div {
-                font-size: 0.75rem;
-            }
-
-            .total-students {
-                font-size: 0.9rem;
-                padding: 0.75rem;
-            }
-
-            .no-students {
-                font-size: 0.9rem;
-                padding: 1rem;
             }
 
             .logo {
+                width: 35px;
                 height: 35px;
             }
 
-            .student-profile-pic {
-                width: 60px; /* Further reduced for very small screens */
+            .container {
+                padding: 1rem;
+                margin-top: 80px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .student-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .student-card {
+                padding: 1rem;
+            }
+
+            .student-card img {
+                width: 60px;
                 height: 60px;
             }
 
-            .update-btn, .delete-btn {
-                padding: 0.4rem 0.8rem;
+            .student-card h3 {
+                font-size: 0.9rem;
+            }
+
+            .student-card p {
                 font-size: 0.75rem;
+            }
+
+            .student-actions a {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.7rem;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <a href="{% url 'admin_page' %}">
-            <img src="{% static 'users/images/greenlogo.png' %}" alt="MSMS Logo" class="logo">
-        </a>
-    </header>
+    <div class="header">
+        <a href="{% url 'admin_page' %}" class="back-button">Back</a>
+        <h1 class="welcome-header">Student Info</h1>
+        <div class="logo-container">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo" class="logo">
+        </div>
+    </div>
 
     <div class="container">
         {% if messages %}
-            {% for message in messages %}
-                <div class="message {{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
         {% endif %}
-        <div class="header">
-            <h1><i class="fas fa-book-open"></i> Student Information</h1>
+
+        <div class="header-section">
+            <h1>Student Information</h1>
             <div class="header-buttons">
-                <a href="{% url 'add_student' %}" class="add-btn"><i class="fas fa-plus"></i> Add New Student</a>
-                <a href="{% url 'admin_page' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+                <a href="{% url 'add_student' %}" class="add-student-btn">Add New Student</a>
+                <a href="{% url 'admin_page' %}" class="back-dashboard-btn">Back to Dashboard</a>
             </div>
         </div>
-        <!-- Rest of your template remains unchanged -->
-        <div class="filters">
-            <form method="get">
-                <select name="class" aria-label="Select Class">
+
+        <form method="get" class="filters">
+            <div class="form-group">
+                <label for="class">Class</label>
+                <select name="class" id="class">
                     <option value="All">All Classes</option>
                     {% for class in class_options %}
                         <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
                     {% endfor %}
                 </select>
-                <select name="section" aria-label="Select Section">
+            </div>
+            <div class="form-group">
+                <label for="section">Section</label>
+                <select name="section" id="section">
                     <option value="All">All Sections</option>
                     {% for section in section_options %}
                         <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section }}</option>
                     {% endfor %}
                 </select>
-                <select name="gender" aria-label="Select Gender">
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender">
                     <option value="All">All Genders</option>
                     <option value="Male" {% if selected_gender == 'Male' %}selected{% endif %}>Male</option>
                     <option value="Female" {% if selected_gender == 'Female' %}selected{% endif %}>Female</option>
                 </select>
-                <button type="submit"><i class="fas fa-filter"></i> Filter</button>
-                <a href="{% url 'student_info' %}" class="add-btn"><i class="fas fa-sync-alt"></i> Reset Filters</a>
-            </form>
-        </div>
+            </div>
+            <button type="submit" class="filter-btn">Filter</button>
+            <a href="{% url 'student_info' %}" class="reset-btn">Reset</a>
+        </form>
 
         <div class="total-students">
-            <span><i class="fas fa-users"></i> Total Students: {{ total_students }}</span>
-            <span class="separator">|</span>
+            Total Students: {{ total_students }}
         </div>
 
         {% for class_section, group in class_section_groups.items %}
         <div class="class-group">
             <div class="class-header">
-                <i class="fas fa-chalkboard"></i> Class {{ class_section }}
+                Class {{ class_section }}
             </div>
             <div class="class-stats">
-                <span><i class="fas fa-user"></i> Total: {{ group.count }}</span>
-                <span class="separator">|</span>
-                <span><i class="fas fa-male"></i> Male: {{ group.male_count }}</span>
-                <span class="separator">|</span>
-                <span><i class="fas fa-female"></i> Female: {{ group.female_count }}</span>
+                <div>Total: {{ group.count }}</div>
+                <div>Male: {{ group.male_count }}</div>
+                <div>Female: {{ group.female_count }}</div>
             </div>
             <div class="student-grid">
                 {% for student in group.students %}
                 <div class="student-card">
-                    <div class="student-info-header">
-                        {% if student.image_path %}
-                            <img src="/media/{{ student.image_path }}" alt="{{ student.name }}'s Profile Picture" class="student-profile-pic">
-                        {% else %}
-                            <img src="{% static 'users/images/default_profile.jpg' %}" alt="Default Profile Picture" class="student-profile-pic">
-                        {% endif %}
-                        <div class="student-info">
-                            <strong><i class="fas fa-user-circle"></i> {{ student.name }}</strong>
-                        </div>
-                    </div>
-                    <div class="student-info">
-                        <div><i class="fas fa-venus-mars"></i> Gender: {{ student.gender }}</div>
-                        <div><i class="fas fa-ticket-alt"></i> Admission No: {{ student.admission_number }}</div>
-                        <div><i class="fas fa-list-ol"></i> Roll No: {{ student.roll_number }}</div>
-                    </div>
+                    {% if student.image_path %}
+                        <img src="/media/{{ student.image_path }}" alt="{{ student.name }}" onerror="this.src='{% static 'users/images/adminlogo.jpg' %}'">
+                    {% else %}
+                        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Default">
+                    {% endif %}
+                    <h3>{{ student.name }}</h3>
+                    <p>Gender: {{ student.gender }}</p>
+                    <p>Admission No: {{ student.admission_number }}</p>
+                    <p>Roll No: {{ student.roll_number }}</p>
                     <div class="student-actions">
-                        <a href="{% url 'update_student' student.admission_number %}" class="update-btn">
-                            <i class="fas fa-edit"></i> Update
-                        </a>
-                        <a href="{% url 'delete_student' student.admission_number %}" 
-                           class="delete-btn" 
-                           onclick="return confirm('Are you sure you want to delete {{ student.name|escapejs }}?')">
-                            <i class="fas fa-trash"></i> Delete
-                        </a>
+                        <a href="{% url 'update_student' student.admission_number %}" class="update-btn">Edit</a>
+                        <a href="{% url 'delete_student' student.admission_number %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete {{ student.name|escapejs }}?')">Delete</a>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
         {% empty %}
-        <p class="no-students"><i class="fas fa-exclamation-circle"></i> No students found matching your criteria.</p>
+        <p class="no-students">No students found.</p>
         {% endfor %}
     </div>
 </body>

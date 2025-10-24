@@ -21,6 +21,7 @@
             display: flex;
             position: relative;
             overflow-x: hidden;
+            touch-action: manipulation;
         }
 
         body::before {
@@ -89,6 +90,7 @@
             align-items: center;
             gap: 1rem;
             border-bottom: 2px solid rgba(37, 99, 235, 0.2);
+            min-height: 44px;
         }
 
         .logo-container {
@@ -138,6 +140,7 @@
             transition: all 0.3s ease;
             font-size: 1.125rem;
             border-left: 4px solid transparent;
+            min-height: 44px;
         }
 
         .sidebar-nav a:hover {
@@ -147,10 +150,11 @@
         }
 
         .sidebar-nav a img {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             margin-right: 1rem;
             transition: transform 0.3s ease;
+            flex-shrink: 0;
         }
 
         .sidebar-nav a:hover img {
@@ -230,6 +234,12 @@
             min-width: 100px;
             text-align: center;
             line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .username-box:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
 
         .notification-panel {
@@ -275,6 +285,7 @@
             padding: 0.75rem 0;
             border-bottom: 1px solid rgba(147, 197, 253, 0.6);
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .notification-panel li:last-child {
@@ -298,12 +309,20 @@
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             padding: 0.5rem;
             border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            min-height: 44px;
+            min-width: 44px;
         }
 
         .bell-button:hover,
         .profile-button:hover {
-            transform: scale(1.2);
+            transform: scale(1.1);
             background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .title {
@@ -373,6 +392,7 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.4);
+            min-height: 120px;
         }
 
         .card:hover {
@@ -382,10 +402,11 @@
         }
 
         .card img {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             margin-bottom: 1rem;
             transition: transform 0.3s ease;
+            flex-shrink: 0;
         }
 
         .card:hover img {
@@ -415,13 +436,27 @@
             background: rgba(255, 255, 255, 0.25);
             border: none;
             cursor: pointer;
-            position: absolute;
-            top: 1.5rem;
+            position: fixed;
+            top: 1rem;
             left: 1rem;
             z-index: 30;
-            padding: 0.5rem;
+            padding: 0.75rem;
             border-radius: 8px;
             backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            min-height: 48px;
+            min-width: 48px;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .welcome-section {
@@ -457,15 +492,33 @@
             .card-container h2 {
                 font-size: 1.75rem;
             }
+
+            .sidebar-nav a img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .card img {
+                width: 70px;
+                height: 70px;
+            }
+
+            .sidebar-nav a {
+                min-height: 48px;
+            }
+
+            .card {
+                min-height: 130px;
+            }
         }
 
         @media (max-width: 768px) {
             .menu-toggle {
-                display: block;
+                display: flex;
             }
 
             .sidebar {
-                width: 250px;
+                width: 280px;
                 transform: translateX(-100%);
             }
 
@@ -476,6 +529,7 @@
             .main-content {
                 margin-left: 0;
                 padding: 1rem;
+                padding-top: 4rem;
             }
 
             .title {
@@ -503,6 +557,44 @@
                 width: 100%;
                 right: 0;
             }
+
+            .sidebar-nav a img {
+                width: 26px;
+                height: 26px;
+            }
+
+            .card img {
+                width: 65px;
+                height: 65px;
+            }
+
+            .header {
+                flex-wrap: wrap;
+                gap: 1rem;
+                padding: 1.25rem;
+            }
+
+            .header-right {
+                gap: 1rem;
+            }
+
+            .bell-button,
+            .profile-button {
+                width: 44px;
+                height: 44px;
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .sidebar-nav a {
+                min-height: 48px;
+                padding: 1.25rem 1.75rem;
+            }
+
+            .card {
+                min-height: 140px;
+                padding: 1.75rem;
+            }
         }
 
         @media (max-width: 640px) {
@@ -526,6 +618,7 @@
             .main-content {
                 margin-left: 0;
                 padding: 1rem;
+                padding-top: 4rem;
             }
 
             .card-container {
@@ -555,6 +648,7 @@
             .header-right {
                 justify-content: center;
                 gap: 1rem;
+                width: 100%;
             }
 
             .username-box {
@@ -570,7 +664,8 @@
 
             .sidebar-nav a {
                 font-size: 1rem;
-                padding: 0.8rem 1.5rem;
+                padding: 1.5rem 1.5rem;
+                min-height: 52px;
             }
 
             .sidebar-nav a img {
@@ -583,8 +678,30 @@
             }
 
             .card img {
-                width: 50px;
-                height: 50px;
+                width: 55px;
+                height: 55px;
+            }
+
+            .menu-toggle {
+                top: 1rem;
+                left: 1rem;
+                width: 48px;
+                height: 48px;
+                min-height: 48px;
+                min-width: 48px;
+            }
+
+            .bell-button,
+            .profile-button {
+                width: 48px;
+                height: 48px;
+                min-height: 48px;
+                min-width: 48px;
+            }
+
+            .card {
+                min-height: 150px;
+                padding: 2rem;
             }
         }
     </style>
@@ -716,10 +833,7 @@
                                     <span>Manage Users</span>
                                 </div>
                             </a>
-                            <div class="card">
-                                <img src="https://img.icons8.com/color/70/000000/edit--v1.png" alt="Edit History">
-                                <span>Edit History</span>
-                            </div>
+                            
                             <a href="{% url 'qr_scan' %}" class="master-data-link" style="text-decoration: none; color: inherit;">
                                 <div class="card">
                                     <img src="https://img.icons8.com/ios-filled/50/000000/qr-code.png" alt="Scan QR">
@@ -776,7 +890,8 @@
             const bell = document.getElementById('notificationBell');
             const panel = document.getElementById('notificationPanel');
 
-            bell.addEventListener('click', () => {
+            bell.addEventListener('click', (e) => {
+                e.stopPropagation();
                 panel.classList.toggle('active');
             });
 
@@ -789,7 +904,8 @@
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
 
-            menuToggle.addEventListener('click', () => {
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
                 sidebar.classList.toggle('active');
             });
 
@@ -808,12 +924,18 @@
                 e.preventDefault();
                 welcomeSection.style.display = 'none';
                 masterDataSection.classList.add('active');
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                }
             });
 
             homeLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 welcomeSection.style.display = 'block';
                 masterDataSection.classList.remove('active');
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                }
             });
 
             // Close sidebar on master data link click (mobile only)

@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Portal</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Admin Portal</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
@@ -16,72 +16,75 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #bae6fd 0%, #60a5fa 50%, #bae6fd 100%);
-            background-size: 200%;
-            animation: gradient 20s ease infinite;
+            background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 100%),
+                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
+            background-size: 200%, 20px 20px;
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 80px 20px 40px 20px;
             position: relative;
-        }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        #app {
-            max-width: 1200px;
-            margin: 0 auto;
-            animation: fadeIn 0.8s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            overflow-x: hidden;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
             padding: 1rem 2rem;
-            background: linear-gradient(90deg, #1e40af, #60a5fa);
+            background: linear-gradient(90deg, #1565c0, #42a5f5);
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+            flex-wrap: wrap;
+            position: fixed;
+            top: 0;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
         }
 
-        h1 {
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-header {
             color: white;
             font-size: 2.5rem;
             font-weight: 700;
             text-align: center;
             letter-spacing: 1px;
             text-transform: uppercase;
-            transition: color 0.3s ease;
+            transition: color 0.3s ease, transform 0.3s ease;
+            flex-grow: 1;
+            margin: 0;
         }
 
-        h1:hover {
-            color: #e6f0fa;
+        .welcome-header:hover {
+            color: #e3f2fd;
+            transform: scale(1.02);
         }
 
-        .back-btn {
+        .back-button {
             padding: 0.8rem 1.5rem;
             border: none;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            background: linear-gradient(90deg, #6b7280, #9ca3af);
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
             color: white;
+            text-decoration: none;
             transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
         }
 
-        .back-btn:hover {
-            background: linear-gradient(90deg, #4b5563, #6b7280);
+        .back-button:hover {
+            background: linear-gradient(90deg, #1565c0, #1976d2);
             transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+
+        .logo-container {
+            z-index: 1000;
         }
 
         .logo {
@@ -91,6 +94,41 @@
             object-fit: cover;
         }
 
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            width: 100%;
+            max-width: 1200px;
+            margin: 100px auto 20px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            color: #2563eb;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .messages p {
+            text-align: center;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #dc2626;
+            background: rgba(255, 75, 75, 0.1);
+            padding: 0.6rem;
+            border-radius: 6px;
+        }
+
         .main-content {
             display: flex;
             flex-direction: column;
@@ -98,61 +136,38 @@
         }
 
         .section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
+            background: #ffffff;
             padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(96, 165, 250, 0.4);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-
-        .section:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
-        }
-
-        h2 {
-            color: #1e40af;
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
-        }
-
-        h2:hover {
-            color: #60a5fa;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .leave-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
         }
 
         .leave-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: #ffffff;
             border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e6f0fa;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease;
         }
 
         .leave-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15);
         }
 
         .leave-card p {
             margin-bottom: 0.8rem;
             font-size: 1rem;
-            color: #333;
+            color: #374151;
         }
 
         .leave-card p strong {
-            color: #1e40af;
+            color: #2563eb;
             font-weight: 600;
         }
 
@@ -170,60 +185,67 @@
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            transition: background 0.3s ease, transform 0.2s ease;
         }
 
         .submit-btn {
-            background: linear-gradient(90deg, #1e40af, #60a5fa);
+            background: #2563eb;
             color: white;
         }
 
         .submit-btn:hover {
-            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+            background: #1d4ed8;
+            transform: translateY(-2px);
         }
 
         .remove-btn {
-            background: linear-gradient(90deg, #dc2626, #ef4444);
+            background: #dc2626;
             color: white;
         }
 
         .remove-btn:hover {
-            background: linear-gradient(90deg, #b91c1c, #dc2626);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+            background: #b91c1c;
+            transform: translateY(-2px);
         }
 
         .no-requests {
             text-align: center;
+            color: #374151;
+            padding: 2rem;
             font-size: 1rem;
-            color: #333;
-            padding: 1rem;
         }
 
         .flash-success {
-            background-color: #e0f2fe;
-            color: #1e40af;
+            background: #d4edda;
+            color: #155724;
             padding: 1rem;
             margin-bottom: 1rem;
             border-radius: 8px;
-            border-left: 4px solid #60a5fa;
+            border-left: 4px solid #28a745;
             text-align: center;
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
             .header {
-                flex-direction: column;
-                gap: 1rem;
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+                align-items: center;
+                justify-content: space-between;
+                left: 10px;
+                right: 10px;
+            }
+
+            .welcome-header {
+                font-size: 1.8rem;
+                margin: 0;
+                flex-grow: 1;
+                text-align: center;
+            }
+
+            .back-button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
             }
 
             .logo {
@@ -231,22 +253,53 @@
                 height: 40px;
             }
 
+            .container {
+                margin-top: 90px;
+                padding: 1.5rem;
+            }
+
             .leave-cards {
                 grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.6rem;
-            }
-
-            h2 {
-                font-size: 1.3rem;
+                gap: 1rem;
             }
 
             .section {
                 padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.6rem 0.8rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
+                left: 5px;
+                right: 5px;
+            }
+
+            .welcome-header {
+                font-size: 1.4rem;
+            }
+
+            .back-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .logo {
+                width: 35px;
+                height: 35px;
+            }
+
+            .container {
+                padding: 1rem;
+                margin-top: 80px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
             }
 
             .leave-card {
@@ -264,20 +317,21 @@
 <body>
     <div id="app">
         <div class="header">
-            <button class="back-btn" onclick="window.location.href='{% url 'admin_page' %}'">Back</button>
-            <h1>Admin Portal</h1>
-            <a href="{% url 'admin_page' %}">
+            <a href="{% url 'admin_page' %}" class="back-button">Back</a>
+            <h1 class="welcome-header">Admin Portal</h1>
+            <div class="logo-container">
                 <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo" class="logo">
-            </a>
+            </div>
         </div>
+
         {% if messages %}
-        {% for message in messages %}
-        <div class="flash-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
+            {% for message in messages %}
+                <div class="flash-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
         {% endif %}
 
         <!-- Leave Requests Section -->
-        <div class="main-content">
+        <div class="container">
             <div class="section">
                 <h2>Leave Requests</h2>
                 <div class="leave-cards">

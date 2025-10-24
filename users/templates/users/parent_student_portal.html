@@ -6,403 +6,509 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Student Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Reset and Base Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
-body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #e6f5ee 30%, #d4edda 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Cg fill="%23008b4f" fill-opacity="0.1"%3E%3Cpath d="M15 3a12 12 0 100 24 12 12 0 000-24zm0 20a8 8 0 110-16 8 8 0 010 16z"/%3E%3C/g%3E%3C/svg%3E');
-  background-size: cover, 30px 30px;
-  animation: backgroundFade 10s ease-in-out infinite alternate;
-  min-height: 100vh;
-  padding: 80px 20px 40px 20px;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-@keyframes backgroundFade {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
-}
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--text-color);
+            padding: 80px 20px 40px 20px;
+        }
 
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-}
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
 
-.main-content {
-  background: #ffffff;
-  border: 2px solid #008b4f; /* Secondary green */
-  border-radius: 16px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-}
+        :root {
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #d1e7dd;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-.header {
-  background: linear-gradient(90deg, #006b3e, #008b4f); /* Primary to secondary green */
-  color: #ffffff;
-  padding: 1rem 2rem;
-  border-bottom: 4px solid #d4edda; /* Accent green */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+        }
 
-.header .logo-button {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
 
-.header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  text-align: center;
-  flex-grow: 1;
-}
+        .header {
+            background: var(--white);
+            color: var(--text-color);
+            padding: 1.5rem 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
 
-.logo-img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease;
-}
+        .header .logo-button {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-.logo-img:hover {
-  transform: rotate(5deg) scale(1.05);
-}
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            flex-grow: 1;
+            color: var(--primary-color);
+        }
 
-.back-btn {
-  padding: 0.8rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  background: #008b4f; /* Secondary green */
-  color: #ffffff;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
 
-.back-btn:hover {
-  background: #006b3e; /* Primary green */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+        .logo-img:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
 
-.welcome-section {
-  background: #d4edda; /* Light green */
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 2px solid #008b4f; /* Secondary green */
-  margin-bottom: 2rem;
-  text-align: center;
-}
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-.welcome-section h2 {
-  color: #006b3e; /* Primary green */
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
-.welcome-section p {
-  color: #4b5563;
-  font-size: 1rem;
-}
+        .main-content {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 2rem;
+            margin-top: 80px;
+        }
 
-.form-container {
-  background: #e6f5ee; /* Light green */
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 2px solid #008b4f; /* Secondary green */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+        .welcome-section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            text-align: center;
+            transition: var(--transition);
+        }
 
-.form-container h2 {
-  color: #006b3e; /* Primary green */
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
+        .welcome-section:hover {
+            box-shadow: var(--shadow-sm);
+        }
 
-.form-container label {
-  color: #006b3e; /* Primary green */
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  display: block;
-}
+        .welcome-section h2 {
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
 
-.form-container input[type="date"] {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border: 2px solid #008b4f; /* Secondary green */
-  background: #e6f5ee; /* Light green */
-  font-size: 1rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
+        .welcome-section p {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
 
-.form-container input[type="date"]:focus {
-  border-color: #006b3e; /* Primary green */
-  box-shadow: 0 0 8px rgba(0, 107, 62, 0.3); /* Green shadow */
-  outline: none;
-}
+        .form-container {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
 
-.form-container button {
-  background: #008b4f; /* Secondary green */
-  color: #ffffff;
-  padding: 0.75rem 2rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
+        .form-container:hover {
+            box-shadow: var(--shadow-md);
+        }
 
-.form-container button:hover {
-  background: #006b3e; /* Primary green */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+        .form-container h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
 
-.attendance-table {
-  max-height: 450px;
-  overflow-y: auto;
-  overflow-x: auto;
-  border-radius: 12px;
-  border: 2px solid #008b4f; /* Secondary green */
-  background: #e6f5ee; /* Light green */
-  display: block;
-}
+        .form-container label {
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
 
-table {
-  width: 100%;
-  min-width: 600px;
-  border-collapse: collapse;
-  background: #ffffff;
-}
+        .form-container input[type="date"] {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
 
-th, td {
-  border: 1px solid #008b4f; /* Secondary green */
-  padding: 0.75rem;
-  text-align: left;
-  font-size: 0.9rem;
-}
+        .form-container input[type="date"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
+        }
 
-th {
-  background: #d4edda; /* Light green */
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  font-weight: 700;
-  color: #006b3e; /* Primary green */
-}
+        .form-container button {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+        }
 
-td {
-  color: #1f2937;
-}
+        .form-container button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
-.highlight {
-  background: #d4edda; /* Light green */
-}
+        .attendance-table {
+            max-height: 450px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            display: block;
+            box-shadow: var(--shadow-sm);
+        }
 
-.status-present { color: #006b3e; font-weight: 600; } /* Primary green */
-.status-absent { color: #b91c1c; font-weight: 600; } /* Retained red */
-.status-leave { color: #ca8a04; font-weight: 600; } /* Retained yellow */
+        table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            background: var(--white);
+        }
 
-.leave-request-button {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  background: #008b4f; /* Secondary green */
-  color: #ffffff;
-  padding: 1rem 1.5rem;
-  border-radius: 50px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  font-weight: 600;
-}
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.9rem;
+        }
 
-.leave-request-button:hover {
-  background: #006b3e; /* Primary green */
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-}
+        th {
+            background: var(--light-bg);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
 
-.alert-message {
-  margin-bottom: 1.5rem;
-}
+        td {
+            color: var(--text-color);
+        }
 
-.alert-message .error {
-  background: #fef2f2;
-  color: #b91c1c;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border-left: 4px solid #ef4444;
-}
+        .highlight {
+            background: var(--light-bg);
+        }
 
-.alert-message .success {
-  background: #d4edda; /* Light green */
-  color: #006b3e; /* Primary green */
-  padding: 0.75rem;
-  border-radius: 8px;
-  border-left: 4px solid #008b4f; /* Secondary green */
-}
+        .status-present { color: var(--primary-color); font-weight: 600; }
+        .status-absent { color: #dc3545; font-weight: 600; }
+        .status-leave { color: #ffc107; font-weight: 600; }
 
-@media (max-width: 768px) {
-  body {
-    padding: 70px 10px 20px 10px;
-  }
+        .leave-request-button {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+        }
 
-  .header {
-    padding: 0.8rem 1rem;
-  }
+        .leave-request-button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
 
-  .header h1 {
-    font-size: 1.5rem;
-  }
+        .alert-message {
+            margin-bottom: 1.5rem;
+        }
 
-  .main-content {
-    padding: 1.5rem;
-  }
+        .alert-message .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
 
-  .welcome-section {
-    padding: 1.2rem;
-  }
+        .alert-message .success {
+            background: #f0f9f4;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
 
-  .form-container {
-    padding: 1.2rem;
-  }
+        .flex {
+            display: flex;
+        }
 
-  .form-container h2 {
-    font-size: 1.25rem;
-  }
+        .flex-col {
+            flex-direction: column;
+        }
 
-  .form-container label {
-    font-size: 0.9rem;
-  }
+        .sm\:flex-row {
+            flex-direction: row;
+        }
 
-  .form-container input[type="date"],
-  .form-container button {
-    font-size: 0.9rem;
-    padding: 0.6rem;
-  }
+        .gap-4 {
+            gap: 1rem;
+        }
 
-  .attendance-table {
-    max-height: 350px;
-  }
+        .items-stretch {
+            align-items: stretch;
+        }
 
-  th, td {
-    font-size: 0.85rem;
-    padding: 0.6rem;
-  }
+        .sm\:items-end {
+            align-items: flex-end;
+        }
 
-  .back-btn {
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
-  }
+        .flex-1 {
+            flex: 1;
+        }
 
-  .logo-img {
-    width: 40px;
-    height: 40px;
-  }
+        @media (min-width: 640px) {
+            .sm\:flex-row {
+                flex-direction: row;
+            }
 
-  .leave-request-button {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9rem;
-  }
-}
+            .sm\:items-end {
+                align-items: flex-end;
+            }
+        }
 
-@media (max-width: 480px) {
-  body {
-    padding: 60px 5px 15px 5px;
-  }
+        @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
 
-  .header {
-    padding: 0.6rem 0.8rem;
-  }
+            .header {
+                padding: 1rem;
+            }
 
-  .header h1 {
-    font-size: 1.25rem;
-  }
+            .header h1 {
+                font-size: 1.5rem;
+            }
 
-  .main-content {
-    padding: 1rem;
-    border-radius: 8px;
-  }
+            .main-content {
+                padding: 1.5rem;
+                margin-top: 70px;
+            }
 
-  .welcome-section {
-    padding: 1rem;
-  }
+            .welcome-section {
+                padding: 1.2rem;
+            }
 
-  .welcome-section h2 {
-    font-size: 1.25rem;
-  }
+            .form-container {
+                padding: 1.2rem;
+            }
 
-  .form-container {
-    padding: 1rem;
-  }
+            .form-container h2 {
+                font-size: 1.25rem;
+            }
 
-  .form-container h2 {
-    font-size: 1.1rem;
-  }
+            .form-container label {
+                font-size: 0.9rem;
+            }
 
-  .form-container label {
-    font-size: 0.85rem;
-  }
+            .form-container input[type="date"],
+            .form-container button {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+            }
 
-  .form-container button {
-    padding: 0.5rem;
-    font-size: 0.85rem;
-  }
+            .attendance-table {
+                max-height: 350px;
+            }
 
-  th, td {
-    font-size: 0.75rem;
-    padding: 0.5rem;
-  }
+            th, td {
+                font-size: 0.85rem;
+                padding: 0.6rem;
+            }
 
-  .back-btn {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.8rem;
-  }
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
 
-  .logo-img {
-    width: 35px;
-    height: 35px;
-  }
+            .logo-img {
+                width: 40px;
+                height: 40px;
+            }
 
-  .leave-request-button {
-    padding: 0.75rem 1rem;
-    font-size: 0.85rem;
-  }
-}
+            .leave-request-button {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
+            .header {
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+                margin-top: 100px;
+                border-radius: 8px;
+            }
+
+            .welcome-section {
+                padding: 1rem;
+            }
+
+            .welcome-section h2 {
+                font-size: 1.25rem;
+            }
+
+            .form-container {
+                padding: 1rem;
+            }
+
+            .form-container h2 {
+                font-size: 1.1rem;
+            }
+
+            .form-container label {
+                font-size: 0.85rem;
+            }
+
+            .form-container button {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                font-size: 0.75rem;
+                padding: 0.5rem;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .logo-img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .leave-request-button {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+
+        @media (hover: none) {
+            .main-content:hover, .welcome-section:hover, .form-container:hover, .leave-request-button:hover, .back-btn:hover, .logo-img:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <a href="{% url 'parent_dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left icon"></i> Back to Dashboard
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
-        <h1><i class="fas fa-user-graduate icon"></i> Student Portal</h1>
+        <h1><i class="fas fa-user-graduate"></i> Student Portal</h1>
         <div class="logo-button">
             <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
         </div>
@@ -411,7 +517,7 @@ td {
     <div class="container">
         <div class="main-content">
             <div class="welcome-section">
-                <h2><i class="fas fa-user-graduate icon"></i> Welcome, Student!</h2>
+                <h2><i class="fas fa-user-graduate"></i> Welcome, Student!</h2>
                 <p>Access your attendance and stay updated with your academic journey.</p>
             </div>
 
@@ -419,7 +525,7 @@ td {
                 <div class="alert-message">
                     {% for message in messages %}
                         <div class="{{ message.tags }}">
-                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
                             {{ message }}
                         </div>
                     {% endfor %}
@@ -430,14 +536,14 @@ td {
                 <form id="dateSelectForm" action="{% url 'student_portal' %}" method="get" class="mb-6">
                     <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
                         <div class="flex-1">
-                            <label for="date"><i class="fas fa-calendar icon"></i> Select Date</label>
+                            <label for="date"><i class="fas fa-calendar"></i> Select Date</label>
                             <input type="date" name="date" id="date" value="{{ selected_date }}">
                         </div>
-                        <button type="submit"><i class="fas fa-search icon"></i> View Attendance</button>
+                        <button type="submit"><i class="fas fa-search"></i> View Attendance</button>
                     </div>
                 </form>
 
-                <h2><i class="fas fa-calendar-check icon"></i> Your Attendance History</h2>
+                <h2><i class="fas fa-calendar-check"></i> Your Attendance History</h2>
                 {% if attendance_records %}
                     <div class="attendance-table">
                         <table>
@@ -471,7 +577,7 @@ td {
     </div>
 
     <a href="{% url 'parent_student_leave' %}" class="leave-request-button">
-        <i class="fas fa-envelope icon"></i> Request Leave
+        <i class="fas fa-envelope"></i> Request Leave
     </a>
 
     <script>
@@ -480,7 +586,7 @@ td {
             if (table) {
                 table.addEventListener('mouseover', function(e) {
                     if (e.target.tagName === 'TD') {
-                        e.target.parentNode.style.backgroundColor = '#d4f4e2';
+                        e.target.parentNode.style.backgroundColor = '#f0f9f4';
                     }
                 });
                 table.addEventListener('mouseout', function(e) {
@@ -488,7 +594,7 @@ td {
                         const row = e.target.parentNode;
                         const rows = Array.from(table.querySelectorAll('tbody tr'));
                         const index = rows.indexOf(row);
-                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#e6f3ec';
+                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f8f9fa';
                     }
                 });
             }

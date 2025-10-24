@@ -11,7 +11,7 @@ def get_db_connection():
     return pymysql.connect(
         host="localhost",  # Host
         user="root",  # Username
-        password="Deepu@1234",  # Password
+        password="theanimesh2005",  # Password
         database="school_db",  # Database name
         port=3306  # Port
     )
@@ -20,36 +20,45 @@ def get_db_connection():
 
 
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
-import pymysql
+from django.shortcuts import render
+from django.db import connection
 
 def signup_view(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-        password = request.POST["password"]
-        confirm_password = request.POST["confirm_password"]
+        # Trim all inputs to prevent whitespace issues
+        username = request.POST.get("username", "").strip()
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "").strip()
+        confirm_password = request.POST.get("confirm_password", "").strip()
+
+        # Validate required fields
+        if not all([username, email, password, confirm_password]):
+            return HttpResponse("All fields are required.")
 
         # Check if passwords match
         if password != confirm_password:
             return HttpResponse("Passwords do not match!")
 
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
+            with connection.cursor() as cursor:
+                # Check for existing user/email
+                cursor.execute("SELECT id FROM users WHERE username = %s OR email = %s", (username, email))
+                if cursor.fetchone():
+                    return HttpResponse("Username or email already exists!")
 
-            # Insert user into database
-            query = "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)"
-            cursor.execute(query, (username, email, password))
-            conn.commit()
+                # Insert user into database
+                query = "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)"
+                cursor.execute(query, (username, email, password))
+                connection.commit()
 
-            cursor.close()
-            conn.close()
+                return HttpResponse("Success")
 
-            return HttpResponse("Success")
-
-        except pymysql.MySQLError as e:
-            return HttpResponse(f"Database error: {e}")
+        except Exception as e:
+            connection.rollback()  # Rollback on error
+            error_msg = "Database error occurred. Please try again."
+            if "Duplicate" in str(e) or "unique" in str(e).lower():
+                error_msg = "Username or email already exists!"
+            return HttpResponse(error_msg)
 
     return render(request, "users/index.html")
 
@@ -58,27 +67,95 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import connection
 
+from django.db import connection
+from django.http import HttpResponse
+from django.shortcuts import render
+
 def login_view(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        username = request.POST.get("username", "").strip()  # Trim user input
+        password = request.POST.get("password", "").strip()  # Trim user input
 
-        # Check user credentials in MySQL
+        # Optional: Temp debug logs (remove after fixing)
+        print(f"DEBUG: Input - Username: '{repr(username)}' (len: {len(username)})")
+        print(f"DEBUG: Input - Password: '{repr(password)}' (len: {len(password)})")
+
+        # Check user credentials in MySQL with TRIM for exact match
         with connection.cursor() as cursor:
-            cursor.execute("SELECT id, username FROM users WHERE username = %s AND password = %s", (username, password))
+            # Optional: Temp debug - find similar users (remove after)
+            cursor.execute(
+                "SELECT id, username, LENGTH(username) FROM users WHERE TRIM(username) LIKE %s", 
+                (f"%{username}%",)
+            )
+            similar_users = cursor.fetchall()
+            if similar_users:
+                print("DEBUG: Similar users found:")
+                for u in similar_users:
+                    print(f"  ID: {u[0]}, Username: '{repr(u[1])}' (len: {u[2]})")
+
+            # Exact match query with TRIM
+            cursor.execute(
+                "SELECT id, username FROM users WHERE TRIM(username) = %s AND TRIM(password) = %s", 
+                (username, password)
+            )
             user = cursor.fetchone()
 
         if user:
-            request.session["user_id"] = user[0]  # Store user ID in session
-            request.session["username"] = user[1]  # Store username in session
+            # Store trimmed username in session
+            clean_username = user[1].strip()
+            request.session["user_id"] = user[0]
+            request.session["username"] = clean_username
             
-            # Send success message with the username
-            return HttpResponse("Success") 
+            # Optional: Temp success log (remove after)
+            print(f"DEBUG: SUCCESS for '{clean_username}'")
+            
+            return HttpResponse("Success")
 
+        # Optional: Temp failure log (remove after)
+        print("DEBUG: No exact match found")
+        
         # If credentials are invalid, send error message
-        return HttpResponse("Invalid credentials!")  
+        return HttpResponse("Invalid credentials!")
 
     return render(request, "users/login.html")
+
+
+def change_password_view(request):
+    if request.method == "POST":
+        current_username = request.POST.get("current_username")
+        new_username = request.POST.get("new_username")
+        new_password = request.POST.get("new_password")
+        confirm_password = request.POST.get("confirm_password")
+
+        if new_password != confirm_password:
+            return HttpResponse("Passwords do not match!")
+
+        # Check if current user exists
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id FROM users WHERE username = %s", (current_username,))
+            user = cursor.fetchone()
+
+            if not user:
+                return HttpResponse("User not found!")
+
+            # Check if new username already exists (if different from current)
+            if new_username != current_username:
+                cursor.execute("SELECT id FROM users WHERE username = %s", (new_username,))
+                existing_user = cursor.fetchone()
+                if existing_user:
+                    return HttpResponse("Username already exists!")
+
+            # Update username and/or password
+            if new_username != current_username:
+                cursor.execute("UPDATE users SET username = %s, password = %s WHERE username = %s", (new_username, new_password, current_username))
+            else:
+                cursor.execute("UPDATE users SET password = %s WHERE username = %s", (new_password, current_username))
+            connection.commit()
+
+        return HttpResponse("Success")
+
+    # For GET requests, redirect to login or handle appropriately
+    return redirect('login')
 
 
  
@@ -687,10 +764,8 @@ import os
 from django.conf import settings
 
 def bulk_id_card(request):
-    if "user_id" not in request.session:
-        return redirect("/login/")
-
-    user_id = request.session["user_id"]
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
 
     if request.method == 'POST':
         student_class = request.POST.get('class')
@@ -860,41 +935,142 @@ def bulk_id_card(request):
     return render(request, "users/bulk_id_card.html")
 
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.http import HttpResponse
+from django.db import connection
+
 def admin_login(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        email = request.POST.get("email", "").strip()  # Trim user input
+        password = request.POST.get("password", "").strip()  # Trim user input
 
+        # Optional: Temp debug logs (remove after fixing)
+        print(f"DEBUG: Input - Email: '{repr(email)}' (len: {len(email)})")
+        print(f"DEBUG: Input - Password: '{repr(password)}' (len: {len(password)})")
+
+        # Check user credentials in MySQL with TRIM for exact match
         with connection.cursor() as cursor:
-            cursor.execute("SELECT id, full_name, email, password FROM admins WHERE email = %s", [email])
+            # Optional: Temp debug - find similar admins (remove after)
+            cursor.execute(
+                "SELECT id, full_name, email, LENGTH(email) FROM admins WHERE TRIM(email) LIKE %s", 
+                (f"%{email}%",)
+            )
+            similar_admins = cursor.fetchall()
+            if similar_admins:
+                print("DEBUG: Similar admins found:")
+                for a in similar_admins:
+                    print(f"  ID: {a[0]}, Name: '{a[1]}', Email: '{repr(a[2])}' (len: {a[3]})")
+
+            # Exact match query with TRIM
+            cursor.execute(
+                "SELECT id, full_name, email, password FROM admins WHERE TRIM(email) = %s AND TRIM(password) = %s", 
+                (email, password)
+            )
             admin = cursor.fetchone()
 
-        if admin and admin[3] == password:
+        if admin:
+            # Store trimmed values in session
+            clean_name = admin[1].strip()
+            clean_email = admin[2].strip()
             request.session['admin_id'] = admin[0]
-            request.session['admin_name'] = admin[1]
+            request.session['admin_name'] = clean_name
+            request.session['admin_email'] = clean_email  # Optional: Store email too
+            
+            # Optional: Temp success log (remove after)
+            print(f"DEBUG: SUCCESS for '{clean_name}' ({clean_email})")
+            
             messages.success(request, 'Login successful!')
             return redirect('admin_page')  # Replace with your dashboard URL
-        else:
-            messages.error(request, 'Invalid email or password.')
+
+        # Optional: Temp failure log (remove after)
+        print("DEBUG: No exact match found")
+        
+        messages.error(request, 'Invalid email or password.')
 
     return render(request, 'users/admin_login.html')
 
+def admin_change_credentials(request):
+    if request.method == 'POST':
+        current_email = request.POST.get('current_email')
+        new_email = request.POST.get('new_email')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if new_password != confirm_password:
+            return HttpResponse("Error: Passwords do not match")
+
+        with connection.cursor() as cursor:
+            # Check if current email exists
+            cursor.execute("SELECT id FROM admins WHERE email = %s", [current_email])
+            admin = cursor.fetchone()
+            if not admin:
+                return HttpResponse("Error: Current email not found")
+
+            # Check if new email already exists (unless it's the same as current)
+            if new_email != current_email:
+                cursor.execute("SELECT id FROM admins WHERE email = %s", [new_email])
+                existing = cursor.fetchone()
+                if existing:
+                    return HttpResponse("Error: New email already exists")
+
+            # Update the admin record
+            cursor.execute(
+                "UPDATE admins SET email = %s, password = %s WHERE email = %s",
+                [new_email, new_password, current_email]
+            )
+            # Commit the transaction (assuming autocommit is off; adjust if needed)
+            connection.commit()
+
+        return HttpResponse("Success")
+    else:
+        return HttpResponse("Error: Invalid request method")
+
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.db import connection
+from django.contrib import messages
+
 def admin_signup(request):
     if request.method == 'POST':
-        full_name = request.POST.get('name')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        # Trim all inputs to prevent whitespace issues
+        full_name = request.POST.get("name", "").strip()
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "").strip()
+
+        # Validate required fields
+        if not all([full_name, email, password]):
+            messages.error(request, "All fields are required.")
+            return render(request, 'users/admin_signup.html')
+
+        # Basic validation (add more as needed, e.g., email format)
+        if len(password) < 6:
+            messages.error(request, "Password must be at least 6 characters.")
+            return render(request, 'users/admin_signup.html')
 
         try:
             with connection.cursor() as cursor:
-                cursor.execute(
-                    "INSERT INTO admins (full_name, email, password) VALUES (%s, %s, %s)",
-                    [full_name, email, password]
-                )
+                # Check for existing email
+                cursor.execute("SELECT id FROM admins WHERE email = %s", (email,))
+                if cursor.fetchone():
+                    messages.error(request, "Email already exists!")
+                    return render(request, 'users/admin_signup.html')
+
+                # Insert admin into database
+                query = "INSERT INTO admins (full_name, email, password) VALUES (%s, %s, %s)"
+                cursor.execute(query, (full_name, email, password))
+                connection.commit()
+
             messages.success(request, 'Signup successful! Please login.')
             return redirect('admin_login')
+
         except Exception as e:
-            messages.error(request, 'Error: Email already exists or invalid data.')
+            connection.rollback()  # Rollback on error
+            error_msg = "Database error occurred. Please try again."
+            if "Duplicate" in str(e) or "unique" in str(e).lower():
+                error_msg = "Email already exists!"
+            messages.error(request, error_msg)
+            return render(request, 'users/admin_signup.html')
 
     return render(request, 'users/admin_signup.html')
 
@@ -2844,9 +3020,12 @@ def update_student(request, admission_number):
 
     return render(request, 'users/add_update_student.html', context)
 
+import os
+import re
+from django.conf import settings
 from django.db import connection, transaction
-from django.shortcuts import redirect
 from django.contrib import messages
+from django.shortcuts import redirect
 from django.db import IntegrityError
 
 def delete_student(request, admission_number):
@@ -2871,12 +3050,26 @@ def delete_student(request, admission_number):
 
                 user_id, student_name = student_info
 
+                # Get profile picture path for file deletion
+                cursor.execute("SELECT image_path FROM profile_pics WHERE user_id = %s", [user_id])
+                profile_pic = cursor.fetchone()
+                if profile_pic:
+                    image_path = profile_pic[0]
+                    # Assuming image_path is relative to MEDIA_ROOT; adjust if absolute
+                    full_image_path = os.path.join(settings.MEDIA_ROOT, image_path)
+                    if os.path.exists(full_image_path):
+                        os.remove(full_image_path)
+
                 # Delete from all child tables referencing student_page1.user_id
                 cursor.execute("DELETE FROM admin_attendance WHERE student_id = %s", [user_id])
                 cursor.execute("DELETE FROM attendance WHERE student_id = %s", [user_id])
                 cursor.execute("DELETE FROM school_marks WHERE student_id = %s", [user_id])
                 cursor.execute("DELETE FROM student_page2 WHERE user_id = %s", [user_id])
                 cursor.execute("DELETE FROM student_page4 WHERE user_id = %s", [user_id])
+                cursor.execute("DELETE FROM profile_pics WHERE user_id = %s", [user_id])
+                cursor.execute("DELETE FROM homework WHERE user_id = %s", [user_id])
+                cursor.execute("DELETE FROM leave_requests WHERE requested_by = %s", [user_id])
+                cursor.execute("DELETE FROM student_leave_requests WHERE user_id = %s", [user_id])
                 
                 # Delete from student_page1
                 cursor.execute("DELETE FROM student_page1 WHERE admission_number = %s", [admission_number])
@@ -2888,7 +3081,13 @@ def delete_student(request, admission_number):
     except IntegrityError as e:
         error_code, error_message = e.args
         if error_code == 1451:
-            messages.error(request, f'Cannot delete student {student_name} due to related records in an unknown table. Contact the administrator.')
+            # Parse the error message to extract the table name
+            table_match = re.search(r"constraint fails \(`[^`]*\.`([^`]+)`", error_message)
+            if table_match:
+                table_name = table_match.group(1)
+                messages.error(request, f'Cannot delete student {student_name} due to related records in table `{table_name}`. Please delete or update records in this table first.')
+            else:
+                messages.error(request, f'Cannot delete student {student_name} due to related records in an unknown table. Contact the administrator. Full error: {error_message}')
         else:
             messages.error(request, f'Error deleting student: {str(e)}')
     except Exception as e:
@@ -3610,9 +3809,9 @@ def bulk_upload(request):
                     return redirect('bulk_upload')
 
                 try:
-                    df['admission_number'] = df['admission_number'].astype(int)
-                except (ValueError, TypeError):
-                    messages.error(request, 'Invalid data in admission_number column. All values must be integers.')
+                    df['admission_number'] = df['admission_number'].astype(str).str.strip()
+                except Exception as e:
+                    messages.error(request, f'Invalid data in admission_number column: {e}')
                     fs.delete(filename)
                     return redirect('bulk_upload')
 
@@ -3699,11 +3898,13 @@ def bulk_upload(request):
                     return redirect('bulk_upload')
 
                 try:
-                    df['admission_number'] = df['admission_number'].astype(int)
-                except (ValueError, TypeError):
-                    messages.error(request, 'Invalid data in admission_number column. All values must be integers.')
+                    # Convert all admission numbers to strings and strip extra spaces
+                    df['admission_number'] = df['admission_number'].astype(str).str.strip()
+                except Exception as e:
+                    messages.error(request, f'Invalid data in admission_number column: {e}')
                     fs.delete(filename)
                     return redirect('bulk_upload')
+
 
                 if df['admission_number'].duplicated().any():
                     messages.error(request, 'The admission_number column contains duplicate values.')
@@ -3879,10 +4080,6 @@ def bulk_upload(request):
 
 
 
-
-
-
-
 # users/views.py
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -3901,7 +4098,7 @@ def manage_teachers(request):
         with connection.cursor() as cursor:
             # Join teachers and profile_pics_teachers to get profile pictures
             cursor.execute("""
-                SELECT t.id, t.name, t.email, t.subject, t.class_teacher_of, t.password, p.profile_pic_url
+                SELECT t.id, t.name, t.email, t.subject, t.class_teacher_of, t.created_at, t.password, p.profile_pic_url
                 FROM teachers t
                 LEFT JOIN profile_pics_teachers p ON t.id = p.teacher_id
             """)
@@ -3912,8 +4109,9 @@ def manage_teachers(request):
                     'email': row[2],
                     'subject': row[3],
                     'class_teacher_of': row[4] if row[4] else 'Not Assigned',
-                    'password': row[5],
-                    'profile_pic_url': f"{settings.MEDIA_URL}{row[6]}" if row[6] else f"{settings.MEDIA_URL}pfpicsteacher/default.jpg"
+                    'created_at': row[5],
+                    'password': row[6],
+                    'profile_pic_url': f"{settings.MEDIA_URL}{row[7]}" if row[7] else f"{settings.MEDIA_URL}pfpicsteacher/default.jpg"
                 } for row in cursor.fetchall()
             ]
         return render(request, 'users/manage_teachers.html', {'teachers': teachers})
@@ -4088,12 +4286,18 @@ from django.db import connection, transaction
 from django.urls import reverse
 from django.db.utils import IntegrityError
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import connection, transaction
+from django.urls import reverse
+from django.db import IntegrityError
+
 def teacher_signup(request):
     """Final robust teacher signup with raw SQL, allowing custom Teacher ID"""
     if request.method != 'POST':
         return render(request, 'users/teacher_signup.html', {'form_cleared': request.GET.get('clear')})
 
-    # Sanitize and validate inputs
+    # Sanitize and validate inputs with trimming
     teacher_id = request.POST.get('id', '').strip()
     name = request.POST.get('name', '').strip()
     email = request.POST.get('email', '').lower().strip()
@@ -4101,16 +4305,23 @@ def teacher_signup(request):
     password = request.POST.get('password', '').strip()
     class_teacher_of = request.POST.get('class_teacher_of', '').strip() or None
 
+    # Optional: Temp debug logs (remove after fixing)
+    print(f"DEBUG: Input - Teacher ID: '{repr(teacher_id)}' (len: {len(teacher_id)})")
+    print(f"DEBUG: Input - Name: '{repr(name)}' (len: {len(name)})")
+    print(f"DEBUG: Input - Email: '{repr(email)}' (len: {len(email)})")
+    print(f"DEBUG: Input - Subject: '{repr(subject)}' (len: {len(subject)})")
+    print(f"DEBUG: Input - Password: '{repr(password)}' (len: {len(password)})")
+
     # Clear existing messages
     storage = messages.get_messages(request)
     storage.used = True
 
-    # Validate required fields
+    # Validate required fields after trimming
     if not all([teacher_id, name, email, subject, password]):
         messages.error(request, 'Teacher ID, Name, Email, Subject, and Password are required')
         return redirect(reverse('teacher_signup') + '?clear=1')
 
-    # Validate input lengths based on table schema
+    # Validate input lengths based on table schema (after trimming)
     if len(name) > 100:
         messages.error(request, 'Name exceeds maximum length of 100 characters')
         return redirect(reverse('teacher_signup') + '?clear=1')
@@ -4132,7 +4343,7 @@ def teacher_signup(request):
         messages.error(request, 'Teacher ID must be a positive number')
         return redirect(reverse('teacher_signup') + '?clear=1')
 
-    # Validate password is numeric and max 10 digits
+    # Validate password is numeric and max 10 digits (after trimming)
     if not password.isdigit() or len(password) > 10:
         messages.error(request, 'Password must be numeric and up to 10 digits')
         return redirect(reverse('teacher_signup') + '?clear=1')
@@ -4143,21 +4354,21 @@ def teacher_signup(request):
                 # Check for existing teacher_id in teachers table
                 cursor.execute("SELECT id FROM teachers WHERE id = %s", [teacher_id])
                 if cursor.fetchone():
-                    print(f"Duplicate teacher ID detected: {teacher_id}")  # Debug
+                    print(f"DEBUG: Duplicate teacher ID detected: {teacher_id}")  # Debug
                     messages.error(request, f'Teacher ID "{teacher_id}" already exists')
                     return redirect(reverse('teacher_signup') + '?clear=1')
 
-                # Check for existing email in both tables
+                # Check for existing email in both tables with TRIM
                 cursor.execute("""
-                    SELECT 'teachers' as source FROM teachers WHERE email = %s
+                    SELECT 'teachers' as source FROM teachers WHERE TRIM(email) = %s
                     UNION ALL
-                    SELECT 'admin' as source FROM admin_manage_users WHERE email = %s
+                    SELECT 'admin' as source FROM admin_manage_users WHERE TRIM(email) = %s
                     LIMIT 1
                 """, [email, email])
                 
                 existing = cursor.fetchone()
                 if existing:
-                    print(f"Duplicate email detected: {email} in {existing[0]}")  # Debug
+                    print(f"DEBUG: Duplicate email detected: {email} in {existing[0]}")  # Debug
                     messages.error(request, f'Email "{email}" already exists in our system')
                     return redirect(reverse('teacher_signup') + '?clear=1')
 
@@ -4168,7 +4379,7 @@ def teacher_signup(request):
                     [teacher_id, name, email, subject, class_teacher_of, password]
                 )
 
-                # Generate unique username (fit varchar(50))
+                # Generate unique username (fit varchar(50)) using trimmed name
                 base_username = name.lower().replace(' ', '_')[:40]  # Reserve space for _id
                 username = f"{base_username}_{teacher_id}"[:50]
 
@@ -4180,64 +4391,112 @@ def teacher_signup(request):
                     [name, email, username, password, 'Teacher']
                 )
 
+                # Optional: Temp success log (remove after)
+                print(f"DEBUG: SUCCESS for Teacher ID '{teacher_id}' ({name}, {email})")
+
         messages.success(request, 'Registration successful! Please login.')
         return redirect('teacher_login')
 
     except IntegrityError as e:
-        print(f"IntegrityError: {str(e)}")  # Debug
+        print(f"DEBUG: IntegrityError: {str(e)}")  # Debug
         messages.error(request, f'Teacher ID "{teacher_id}" or Email "{email}" already exists in our system')
         return redirect(reverse('teacher_signup') + '?clear=1')
     except Exception as e:
-        print(f"Exception: {str(e)}")  # Debug
+        print(f"DEBUG: Exception: {str(e)}")  # Debug
         messages.error(request, 'System error during registration')
         return redirect(reverse('teacher_signup') + '?clear=1')
 
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
 from django.db import connection
-from mysql.connector import Error
+from django.http import HttpResponse
+from django.shortcuts import render
 
 def teacher_login(request):
-    """
-    Handles teacher login via POST request, checking Teacher ID and plain text password.
-    """
-    if request.method != 'POST':
-        return render(request, 'users/teacher_login.html')
+    if request.method == "POST":
+        teacher_id = request.POST.get("id", "").strip()  # Trim user input
+        password = request.POST.get("password", "").strip()  # Trim user input
 
-    teacher_id = request.POST.get('id')
-    password = request.POST.get('password')
+        # Optional: Temp debug logs (remove after fixing)
+        print(f"DEBUG: Input - Teacher ID: '{repr(teacher_id)}' (len: {len(teacher_id)})")
+        print(f"DEBUG: Input - Password: '{repr(password)}' (len: {len(password)})")
 
-    # Validation
-    if not all([teacher_id, password]):
-        messages.error(request, 'Teacher ID and password are required.')
-        return redirect('teacher_login')
-
-    # Validate teacher_id is numeric and positive
-    if not teacher_id.isdigit() or int(teacher_id) <= 0:
-        messages.error(request, 'Teacher ID must be a positive number.')
-        return redirect('teacher_login')
-
-    # Validate password is numeric and max 10 digits
-    if not password.isdigit() or len(password) > 10:
-        messages.error(request, 'Password must be numeric and up to 10 digits.')
-        return redirect('teacher_login')
-
-    try:
+        # Check user credentials in MySQL with TRIM for exact match
         with connection.cursor() as cursor:
-            cursor.execute("SELECT id, name, password FROM teachers WHERE id = %s", [teacher_id])
-            result = cursor.fetchone()
-            if result and result[2] == password:
-                request.session['teacher_id'] = result[0]
-                request.session['username'] = result[1]  # Store teacher's name as username
-                messages.success(request, 'Login successful!')
-                return redirect('teacher_dashboard')
+            # Optional: Temp debug - find similar teachers (remove after)
+            cursor.execute(
+                "SELECT id, name, LENGTH(id), LENGTH(password) FROM teachers WHERE id LIKE %s OR TRIM(password) LIKE %s", 
+                (f"%{teacher_id}%", f"%{password}%")
+            )
+            similar_teachers = cursor.fetchall()
+            if similar_teachers:
+                print("DEBUG: Similar teachers found:")
+                for t in similar_teachers:
+                    print(f"  ID: {t[0]}, Name: '{t[1]}', ID len: {t[2]}, Pass len: {t[3]}")
+
+            # Exact match query with TRIM (id likely numeric, but safe)
+            cursor.execute(
+                "SELECT id, name, password FROM teachers WHERE id = %s AND TRIM(password) = %s", 
+                (teacher_id, password)
+            )
+            user = cursor.fetchone()
+
+        if user:
+            # Store trimmed values in session
+            clean_name = user[1].strip()
+            request.session["teacher_id"] = user[0]
+            request.session["username"] = clean_name
+            
+            # Optional: Temp success log (remove after)
+            print(f"DEBUG: SUCCESS for Teacher '{clean_name}' (ID: {user[0]})")
+            
+            return HttpResponse("Success")
+
+        # Optional: Temp failure log (remove after)
+        print("DEBUG: No exact match found")
+        
+        # If credentials are invalid, send error message
+        return HttpResponse("Invalid credentials!")  
+
+    return render(request, "users/teacher_login.html")
+
+
+def teacher_change_credentials(request):
+    if request.method == "POST":
+        current_id = request.POST.get("current_id")
+        new_id = request.POST.get("new_id")
+        new_password = request.POST.get("new_password")
+        confirm_password = request.POST.get("confirm_password")
+
+        if new_password != confirm_password:
+            return HttpResponse("Passwords do not match!")
+
+        # Check if current teacher exists
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id FROM teachers WHERE id = %s", (current_id,))
+            teacher = cursor.fetchone()
+
+            if not teacher:
+                return HttpResponse("Teacher not found!")
+
+            # Check if new ID already exists (if different from current)
+            if new_id != current_id:
+                cursor.execute("SELECT id FROM teachers WHERE id = %s", (new_id,))
+                existing_teacher = cursor.fetchone()
+                if existing_teacher:
+                    return HttpResponse("Teacher ID already exists!")
+
+            # Update ID and/or password
+            if new_id != current_id:
+                # Note: Updating primary key directly; assume no foreign keys or handle accordingly
+                cursor.execute("UPDATE teachers SET id = %s, password = %s WHERE id = %s", (new_id, new_password, current_id))
             else:
-                messages.error(request, 'Invalid Teacher ID or password.')
-                return redirect('teacher_login')
-    except Error as e:
-        messages.error(request, f'Error during login: {e}')
-        return redirect('teacher_login')
+                cursor.execute("UPDATE teachers SET password = %s WHERE id = %s", (new_password, current_id))
+            connection.commit()
+
+        return HttpResponse("Success")
+
+    # For GET requests, redirect to teacher login
+    return redirect('teacher_login')
 
 def teacher_dashboard(request):
     username = request.session.get('username')
@@ -4806,33 +5065,97 @@ from django.contrib import messages
 from django.db import connection
 
 def parent_login(request):
-    if request.method == 'POST':
-        admission_number = request.POST.get('username')  # Form field for admission_number
-        contact = request.POST.get('password')          # Form field for contact
+    if request.method == "POST":
+        admission_number = request.POST.get("username")
+        contact = request.POST.get("password")
 
-        # Validate inputs
-        if not all([admission_number, contact]):
-            return render(request, 'users/parent_login.html', {'error': 'Admission number and contact number are required'})
-
-        # Authenticate user by matching admission_number and contact
+        # Check user credentials in MySQL
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT u.id, sp3.contact
+                SELECT u.id, sp1.admission_number
                 FROM users u
                 JOIN student_page1 sp1 ON u.id = sp1.user_id
                 JOIN student_page3 sp3 ON u.id = sp3.user_id
-                WHERE sp1.admission_number = %s
-            """, [admission_number])
-            result = cursor.fetchone()
-            if result and result[1] and result[1] == contact:
-                # Set session for authenticated user
-                request.session['user_id'] = result[0]
-                messages.success(request, 'Logged in successfully!')
-                return redirect('parent_dashboard')
-            else:
-                return render(request, 'users/parent_login.html', {'error': 'Invalid admission number or contact number'})
+                WHERE sp1.admission_number = %s AND sp3.contact = %s
+            """, (admission_number, contact))
+            user = cursor.fetchone()
 
-    return render(request, 'users/parent_login.html')
+        if user:
+            request.session["user_id"] = user[0]  # Store user ID in session
+            request.session["username"] = user[1]  # Store admission number in session
+            
+            return HttpResponse("Success") 
+
+        # If credentials are invalid, send error message
+        return HttpResponse("Invalid credentials!")  
+
+    return render(request, "users/parent_login.html")
+
+
+def parent_change_credentials(request):
+    if request.method == "POST":
+        current_admission = request.POST.get("current_username")
+        new_admission = request.POST.get("new_username")
+        new_contact = request.POST.get("new_password")
+        confirm_contact = request.POST.get("confirm_password")
+
+        if new_contact != confirm_contact:
+            return HttpResponse("Phone numbers do not match!")
+
+        # Check if current user exists
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT u.id 
+                FROM users u
+                JOIN student_page1 sp1 ON u.id = sp1.user_id
+                WHERE sp1.admission_number = %s
+            """, (current_admission,))
+            user = cursor.fetchone()
+
+            if not user:
+                return HttpResponse("User not found!")
+
+            # Check if new admission number already exists (if different from current)
+            if new_admission != current_admission:
+                cursor.execute("""
+                    SELECT id 
+                    FROM student_page1 
+                    WHERE admission_number = %s
+                """, (new_admission,))
+                existing = cursor.fetchone()
+                if existing:
+                    return HttpResponse("Admission number already exists!")
+
+            # Update admission number and/or contact
+            if new_admission != current_admission:
+                cursor.execute("""
+                    UPDATE student_page1 
+                    SET admission_number = %s 
+                    WHERE user_id = %s
+                """, (new_admission, user[0]))
+                cursor.execute("""
+                    UPDATE student_page3 
+                    SET contact = %s 
+                    WHERE user_id = %s
+                """, (new_contact, user[0]))
+                # Optionally update users.username if it's used elsewhere
+                cursor.execute("""
+                    UPDATE users 
+                    SET username = %s 
+                    WHERE id = %s
+                """, (new_admission, user[0]))
+            else:
+                cursor.execute("""
+                    UPDATE student_page3 
+                    SET contact = %s 
+                    WHERE user_id = %s
+                """, (new_contact, user[0]))
+            connection.commit()
+
+        return HttpResponse("Success")
+
+    # For GET requests, redirect to parent login
+    return redirect('parent_login')
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -7610,3 +7933,8 @@ def download_student_pdf(request):
         
     except Exception as e:
         return JsonResponse({"error": f"Error generating PDF: {str(e)}"}, status=500)
+
+
+
+def landing_view(request):
+    return render(request, 'users/landing.html')

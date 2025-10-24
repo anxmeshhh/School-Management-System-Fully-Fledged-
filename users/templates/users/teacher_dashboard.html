@@ -5,48 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Teacher Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #FF6B6B, #FF9A9E, #FFD1DC);
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #fce4ec 100%);
+            background-size: 200%;
+            animation: gradient 20s ease infinite;
             min-height: 100vh;
-            display: flex;
+            padding: 0;
             position: relative;
             overflow-x: hidden;
         }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.2)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(255, 154, 158, 0.25) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 40%, rgba(255, 209, 220, 0.2) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .container {
@@ -61,48 +44,48 @@
         .sidebar {
             width: 300px;
             height: 100vh;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 245, 245, 0.95) 100%);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             color: #333;
             overflow-y: auto;
             scroll-behavior: smooth;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
             position: fixed;
             top: 0;
             left: 0;
             z-index: 20;
             transition: transform 0.3s ease;
-            border-right: 1px solid rgba(255, 107, 107, 0.3);
+            border-right: 1px solid rgba(244, 114, 182, 0.4);
         }
 
         .sidebar-header {
             padding: 1.5rem 2rem 2rem;
-            background: linear-gradient(135deg, rgba(255, 245, 245, 0.95) 0%, rgba(255, 230, 230, 0.9) 100%);
+            background: linear-gradient(135deg, rgba(255, 241, 247, 0.95) 0%, rgba(255, 230, 240, 0.9) 100%);
             text-align: center;
             font-size: 1.5rem;
-            font-weight: 600;
-            color: #D6333C;
+            font-weight: 700;
+            color: #be185d;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 1rem;
-            border-bottom: 2px solid rgba(214, 51, 60, 0.2);
+            border-bottom: 2px solid rgba(190, 24, 93, 0.2);
         }
 
         .logo-container {
             width: 120px;
             height: 96px;
-            background: linear-gradient(135deg, rgba(255, 230, 230, 0.9) 0%, rgba(255, 245, 245, 0.8) 100%);
+            background: linear-gradient(135deg, rgba(255, 241, 247, 0.9) 0%, rgba(255, 230, 240, 0.8) 100%);
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(214, 51, 60, 0.25);
-            border: 2px solid rgba(214, 51, 60, 0.2);
+            box-shadow: 0 4px 15px rgba(190, 24, 93, 0.25);
+            border: 2px solid rgba(190, 24, 93, 0.2);
         }
 
         .logo-container img {
@@ -114,7 +97,7 @@
 
         .logo-container:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(214, 51, 60, 0.35);
+            box-shadow: 0 6px 20px rgba(190, 24, 93, 0.35);
         }
 
         .logo-container:hover img {
@@ -122,7 +105,7 @@
         }
 
         .sidebar-header:hover {
-            background: linear-gradient(135deg, rgba(255, 230, 230, 1) 0%, rgba(255, 245, 245, 1) 100%);
+            background: linear-gradient(135deg, rgba(255, 230, 240, 1) 0%, rgba(255, 241, 247, 1) 100%);
         }
 
         .sidebar-nav {
@@ -137,13 +120,15 @@
             text-decoration: none;
             transition: all 0.3s ease;
             font-size: 1.125rem;
+            font-weight: 500;
             border-left: 4px solid transparent;
         }
 
         .sidebar-nav a:hover {
-            background: linear-gradient(90deg, rgba(255, 245, 245, 0.8) 0%, rgba(255, 230, 230, 0.6) 100%);
+            background: linear-gradient(90deg, rgba(255, 241, 247, 0.8) 0%, rgba(255, 230, 240, 0.6) 100%);
             transform: translateX(5px);
-            border-left: 4px solid #D6333C;
+            border-left: 4px solid #be185d;
+            color: #be185d;
         }
 
         .sidebar-nav a img {
@@ -155,26 +140,6 @@
 
         .sidebar-nav a:hover img {
             transform: rotate(10deg) scale(1.1);
-        }
-
-        .sidebar-nav a .emoji {
-            margin-left: 0.75rem;
-            font-size: 1.5rem;
-            transition: transform 0.3s ease;
-        }
-
-        .sidebar-nav a:hover .emoji {
-            transform: scale(1.2) rotate(15deg);
-        }
-
-        .sidebar-nav a .emoji:active {
-            animation: bounce 0.5s ease;
-        }
-
-        @keyframes bounce {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.5); }
-            100% { transform: scale(1); }
         }
 
         .main-content {
@@ -191,12 +156,12 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 245, 245, 0.2) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 241, 247, 0.2) 100%);
             backdrop-filter: blur(15px);
             border-radius: 12px;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(244, 114, 182, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .header-left {
@@ -212,34 +177,40 @@
         }
 
         .header-text {
-            color: #FFFFFF;
+            color: #be185d;
             font-size: 1.125rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .username-box {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 240, 240, 1) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 241, 247, 1) 100%);
             color: #333;
             padding: 0.5rem 1.2rem;
             border-radius: 20px;
             font-size: 0.9rem;
             font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(214, 51, 60, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(190, 24, 93, 0.5);
             min-width: 100px;
             text-align: center;
             line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .username-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(190, 24, 93, 0.2);
         }
 
         .notification-panel {
             position: absolute;
             top: 100%;
             right: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 240, 240, 0.95) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 241, 247, 0.95) 100%);
             backdrop-filter: blur(15px);
             border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
             width: 320px;
             max-height: 400px;
@@ -249,7 +220,7 @@
             transition: all 0.3s ease;
             pointer-events: none;
             z-index: 10;
-            border: 1px solid rgba(214, 51, 60, 0.25);
+            border: 1px solid rgba(190, 24, 93, 0.25);
         }
 
         .notification-panel.active {
@@ -259,21 +230,21 @@
         }
 
         .notification-panel h3 {
-            color: #D6333C;
+            color: #be185d;
             font-size: 1.125rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 1rem;
         }
 
         .notification-panel ul {
             list-style: none;
-            color: #4B5563;
+            color: #555;
             font-size: 0.875rem;
         }
 
         .notification-panel li {
             padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(255, 230, 230, 0.6);
+            border-bottom: 1px solid rgba(255, 230, 240, 0.6);
             transition: all 0.3s ease;
         }
 
@@ -282,20 +253,20 @@
         }
 
         .notification-panel li:hover {
-            background: rgba(255, 240, 240, 0.6);
+            background: rgba(255, 241, 247, 0.6);
             padding-left: 0.5rem;
             border-radius: 6px;
         }
 
         .bell-button,
         .profile-button {
-            color: #FFFFFF;
+            color: #be185d;
             font-size: 1.5rem;
             background: none;
             border: none;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 0.5rem;
             border-radius: 50%;
         }
@@ -303,20 +274,21 @@
         .bell-button:hover,
         .profile-button:hover {
             transform: scale(1.2);
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(190, 24, 93, 0.1);
         }
 
         .title {
-            color: #FFFFFF;
+            color: #be185d;
             font-size: 2.5rem;
-            font-weight: 600;
+            font-weight: 700;
             text-align: center;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 1rem;
+            letter-spacing: 0.5px;
         }
 
         .card-container {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 240, 0.9) 100%);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(15px);
             padding: 2.5rem;
             border-radius: 16px;
@@ -324,32 +296,33 @@
             transition: all 0.3s ease;
             max-width: 800px;
             margin: 0 auto;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(244, 114, 182, 0.4);
         }
 
         .card-container:hover {
             transform: translateY(-8px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
-            background: linear-gradient(135deg, rgba(255, 240, 240, 0.98) 0%, rgba(255, 230, 230, 0.95) 100%);
+            box-shadow: 0 16px 40px rgba(190, 24, 93, 0.15);
+            background: linear-gradient(135deg, rgba(255, 241, 247, 0.98) 0%, rgba(255, 230, 240, 0.95) 100%);
         }
 
         .card-container h2 {
-            color: #D6333C;
+            color: #be185d;
             font-size: 1.875rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
         }
 
         .quote {
-            color: #333;
+            color: #555;
             font-style: italic;
-            border-left: 4px solid #D6333C;
+            border-left: 4px solid #be185d;
             padding-left: 1.5rem;
             font-size: 1.125rem;
             padding-top: 1rem;
             padding-bottom: 1rem;
-            background: rgba(214, 51, 60, 0.1);
+            background: rgba(190, 24, 93, 0.1);
             border-radius: 0 8px 8px 0;
         }
 
@@ -366,7 +339,7 @@
         .menu-toggle {
             display: none;
             font-size: 1.5rem;
-            color: #FFFFFF;
+            color: #be185d;
             background: rgba(255, 255, 255, 0.25);
             border: none;
             cursor: pointer;
@@ -377,8 +350,15 @@
             padding: 0.5rem;
             border-radius: 8px;
             backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
 
+        .menu-toggle:hover {
+            background: rgba(190, 24, 93, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* Mobile Responsiveness */
         @media (max-width: 1024px) {
             .sidebar {
                 width: 250px;
@@ -446,9 +426,20 @@
                 width: 100%;
                 right: 0;
             }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .header-right {
+                justify-content: center;
+                gap: 1rem;
+            }
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 480px) {
             .container {
                 flex-direction: column;
             }
@@ -468,7 +459,7 @@
 
             .main-content {
                 margin-left: 0;
-                padding: 1rem;
+                padding: 0.75rem;
             }
 
             .card-container {
@@ -490,20 +481,18 @@
             }
 
             .header {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem;
+                padding: 0.75rem;
+                gap: 0.75rem;
             }
 
-            .header-right {
-                justify-content: center;
-                gap: 1rem;
+            .header-text {
+                font-size: 0.9rem;
             }
 
             .username-box {
-                font-size: 0.85rem;
-                padding: 0.4rem 1rem;
-                min-width: 80px;
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+                min-width: 70px;
             }
 
             .logo-container {
@@ -512,13 +501,28 @@
             }
 
             .sidebar-nav a {
-                font-size: 1rem;
-                padding: 0.8rem 1.5rem;
+                font-size: 0.95rem;
+                padding: 0.75rem 1.25rem;
             }
 
             .sidebar-nav a img {
-                width: 24px;
-                height: 24px;
+                width: 22px;
+                height: 22px;
+            }
+
+            .notification-panel {
+                width: 95%;
+                padding: 1rem;
+                right: 2.5%;
+            }
+
+            .notification-panel h3 {
+                font-size: 1rem;
+            }
+
+            .notification-panel li {
+                font-size: 0.8rem;
+                padding: 0.5rem 0;
             }
         }
     </style>
@@ -526,7 +530,9 @@
 <body>
     <div class="container">
         <!-- Mobile Menu Toggle -->
-        <button class="menu-toggle" id="menuToggle">☰</button>
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
 
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
@@ -580,19 +586,23 @@
                     <span class="header-text">Manavargal School Management System, Teacher Dashboard v1.0</span>
                 </div>
                 <div class="header-right">
-                    <button class="bell-button" id="notificationBell">🔔</button>
+                    <button class="bell-button" id="notificationBell">
+                        <i class="fas fa-bell"></i>
+                    </button>
                     <div id="notificationPanel" class="notification-panel">
                         <h3>Notifications</h3>
                         <ul>
-                            <li>New circular: School Event - 10:00 PM, May 24, 2025</li>
-                            <li>Homework submission deadline - 8:00 PM, May 24, 2025</li>
-                            <li>Leave request approved - 3:00 PM, May 24, 2025</li>
-                            <li>New study material uploaded - 1:00 PM, May 24, 2025</li>
+                            <li>New circular: School Event - 10:00 PM, October 24, 2025</li>
+                            <li>Homework submission deadline - 8:00 PM, October 24, 2025</li>
+                            <li>Leave request approved - 3:00 PM, October 24, 2025</li>
+                            <li>New study material uploaded - 1:00 PM, October 24, 2025</li>
                         </ul>
                     </div>
                     <span class="header-text">Welcome</span>
                     <span class="username-box">{{ username }}</span>
-                    <button class="profile-button">👤</button>
+                    <button class="profile-button">
+                        <i class="fas fa-user"></i>
+                    </button>
                 </div>
             </header>
 

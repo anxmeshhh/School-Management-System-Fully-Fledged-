@@ -5,8 +5,10 @@ from django.conf.urls.static import static
 from django.urls import path
 from users.views import profile_view, login_view  # Import views directly
 urlpatterns = [
-    path('', views.signup_view, name='signup'),  
-    path('student/', views.login_view, name='login'),  
+    path('', views.landing_view, name='landing'),
+    path('student_signup/', views.signup_view, name='signup'),  
+    path('student/', views.login_view, name='login'), 
+    path('change-password/', views.change_password_view, name='change_password'), 
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('profile/', views.profile_view, name='profile_view'), 
     
@@ -14,6 +16,7 @@ urlpatterns = [
     
     
     path('parent/', views.parent_login, name='parent_login'),
+    path('parent/change-credentials/', views.parent_change_credentials, name='parent_change_credentials'),
     path('parent_signup/', views.parent_signup, name='parent_signup'),
     path('parent_dashboard/', views.parent_dashboard, name='parent_dashboard'),
     path('mark_entry/', views.mark_entry, name='mark_entry'),
@@ -45,6 +48,7 @@ urlpatterns = [
     path('bulk-id-card/', views.bulk_id_card, name='bulk_id_card'), 
     path('admin-dashboard/', views.admin_page, name='admin_dashboard'),
     path('admin/', views.admin_login, name='admin_login'),
+    path('admin/change-credentials/', views.admin_change_credentials, name='admin_change_credentials'),  # New URL for changing admin credentials (POST handler, returns text response like "Success")
     path('admin_signup/', views.admin_signup, name='admin_signup'),
     path('admin_page/', views.admin_page, name='admin_page'),
     path('admin_portal/', views.admin_accept_portal, name='admin_accept_portal'),
@@ -104,7 +108,8 @@ urlpatterns = [
     
     path('teacher_signup/', views.teacher_signup, name='teacher_signup'),
     path('teacher/', views.teacher_login, name='teacher_login'),
-    path('teacher-dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
+    path('teacher/change-credentials/', views.teacher_change_credentials, name='teacher_change_credentials'),
+    path('teacher_dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
 
    
     path('teacher_portal/', views.teacher_portal, name='teacher_portal'),
