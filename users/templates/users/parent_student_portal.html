@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Student Portal</title>
+    <title>Manavargal School Management System - Student Attendance Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
@@ -59,7 +59,7 @@
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 1.5rem 2rem;
+            padding: 0.5rem 1rem;
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
@@ -79,20 +79,34 @@
             gap: 1rem;
         }
 
+        .header-center {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0.25rem;
+        }
+
         .header h1 {
             font-size: 2rem;
             font-weight: 700;
-            text-align: center;
-            flex-grow: 1;
             color: var(--primary-color);
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            color: var(--text-light);
+            margin: 0;
         }
 
         .logo-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
             object-fit: cover;
-            border: 1px solid var(--border-color);
+            border: none;
             box-shadow: var(--shadow-sm);
             transition: var(--transition);
         }
@@ -363,6 +377,10 @@
                 font-size: 1.5rem;
             }
 
+            .header-subtitle {
+                font-size: 0.9rem;
+            }
+
             .main-content {
                 padding: 1.5rem;
                 margin-top: 70px;
@@ -405,8 +423,8 @@
             }
 
             .logo-img {
-                width: 40px;
-                height: 40px;
+                width: 60px;
+                height: 60px;
             }
 
             .leave-request-button {
@@ -428,6 +446,10 @@
 
             .header h1 {
                 font-size: 1.25rem;
+            }
+
+            .header-subtitle {
+                font-size: 0.85rem;
             }
 
             .main-content {
@@ -472,8 +494,8 @@
             }
 
             .logo-img {
-                width: 35px;
-                height: 35px;
+                width: 50px;
+                height: 50px;
             }
 
             .leave-request-button {
@@ -506,9 +528,12 @@
 <body>
     <div class="header">
         <a href="{% url 'parent_dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
+            <i class="fas fa-arrow-left"></i> Back to Main Dashboard
         </a>
-        <h1><i class="fas fa-user-graduate"></i> Student Portal</h1>
+        <div class="header-center">
+            <h1><i class="fas fa-user-graduate"></i> Welcome, Student!</h1>
+            <p class="header-subtitle">Access your attendance and stay updated with your academic journey.</p>
+        </div>
         <div class="logo-button">
             <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
         </div>
@@ -516,11 +541,7 @@
 
     <div class="container">
         <div class="main-content">
-            <div class="welcome-section">
-                <h2><i class="fas fa-user-graduate"></i> Welcome, Student!</h2>
-                <p>Access your attendance and stay updated with your academic journey.</p>
-            </div>
-
+           
             {% if messages %}
                 <div class="alert-message">
                     {% for message in messages %}
@@ -533,15 +554,15 @@
             {% endif %}
 
             <div class="form-container">
-                <form id="dateSelectForm" action="{% url 'student_portal' %}" method="get" class="mb-6">
-                    <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
-                        <div class="flex-1">
-                            <label for="date"><i class="fas fa-calendar"></i> Select Date</label>
-                            <input type="date" name="date" id="date" value="{{ selected_date }}">
-                        </div>
-                        <button type="submit"><i class="fas fa-search"></i> View Attendance</button>
-                    </div>
-                </form>
+                <form id="dateSelectForm" action="{% url 'parent_student_portal' %}" method="get" class="mb-6">
+    <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
+        <div class="flex-1">
+            <label for="date"><i class="fas fa-calendar"></i> Select Date</label>
+            <input type="date" name="date" id="date" value="{{ selected_date }}">
+        </div>
+        <button type="submit"><i class="fas fa-search"></i> View Attendance</button>
+    </div>
+</form>
 
                 <h2><i class="fas fa-calendar-check"></i> Your Attendance History</h2>
                 {% if attendance_records %}

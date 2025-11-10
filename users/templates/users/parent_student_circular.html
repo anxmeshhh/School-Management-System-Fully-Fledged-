@@ -57,7 +57,7 @@
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 1.5rem 2rem;
+            padding: 0.5rem 1rem;
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
@@ -103,11 +103,11 @@
         }
 
         .logo-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
             object-fit: cover;
-            border: 1px solid var(--border-color);
+            border: none;
             box-shadow: var(--shadow-sm);
             transition: var(--transition);
         }
@@ -207,6 +207,35 @@
             gap: 1.5rem;
             max-width: 1000px;
             width: 100%;
+            position: relative;
+        }
+
+        .circular-container::before {
+            content: '\f077';
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            color: var(--primary-color);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            z-index: 5;
+            opacity: 0.7;
+        }
+
+        .circular-container::after {
+            content: '\f078';
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            color: var(--primary-color);
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            z-index: 5;
+            opacity: 0.7;
         }
 
         .circular {
@@ -302,6 +331,37 @@
             margin-right: 0.5rem;
         }
 
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .scroll-top-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .scroll-top-btn.show {
+            display: flex;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 70px 10px 20px 10px;
@@ -313,6 +373,11 @@
 
             .header h1 {
                 font-size: 1.5rem;
+            }
+
+            .logo-img {
+                width: 60px;
+                height: 60px;
             }
 
             .filter-form,
@@ -347,11 +412,6 @@
                 font-size: 0.9rem;
             }
 
-            .logo-img {
-                width: 40px;
-                height: 40px;
-            }
-
             .circular-container {
                 grid-template-columns: 1fr;
                 gap: 1rem;
@@ -360,6 +420,15 @@
             .circular-type {
                 font-size: 0.75rem;
                 padding: 0.2rem 0.5rem;
+            }
+
+            .scroll-top-btn {
+                bottom: 1rem;
+                right: 1rem;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+                padding: 0.9rem;
             }
         }
 
@@ -376,6 +445,11 @@
 
             .header h1 {
                 font-size: 1.25rem;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
             }
 
             .filter-form,
@@ -410,11 +484,6 @@
                 font-size: 0.8rem;
             }
 
-            .logo-img {
-                width: 35px;
-                height: 35px;
-            }
-
             .download-btn {
                 padding: 0.6rem 0.8rem;
                 font-size: 0.9rem;
@@ -424,10 +493,19 @@
                 font-size: 0.7rem;
                 padding: 0.15rem 0.4rem;
             }
+
+            .scroll-top-btn {
+                bottom: 0.75rem;
+                right: 0.75rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                padding: 0.8rem;
+            }
         }
 
         @media (hover: none) {
-            .filter-form:hover, .circular:hover, .filter-form button:hover, .logo-img:hover, .back-btn:hover, .download-btn:hover {
+            .filter-form:hover, .circular:hover, .filter-form button:hover, .logo-img:hover, .back-btn:hover, .download-btn:hover, .scroll-top-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -448,7 +526,7 @@
 <body>
     <div class="header">
         <a href="{% url 'parent_dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back
+            <i class="fas fa-arrow-left"></i> Back to Main Dashboard
         </a>
         <h1><i class="fas fa-file-alt"></i> School Circulars</h1>
         <a href="{% url 'parent_dashboard' %}">
@@ -505,5 +583,25 @@
             {% endfor %}
         </div>
     </div>
+
+    <button class="scroll-top-btn" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        window.onscroll = function() {
+            const btn = document.querySelector('.scroll-top-btn');
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        };
+
+        function scrollToTop() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
 </body>
 </html>

@@ -59,7 +59,7 @@
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 1.5rem 2rem;
+            padding: 0.5rem 1rem;
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
@@ -73,33 +73,12 @@
             border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
 
-        .header .logo-button {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
         .header h1 {
             font-size: 2rem;
             font-weight: 700;
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
-        }
-
-        .logo-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-        }
-
-        .logo-img:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
         }
 
         .back-btn {
@@ -122,6 +101,21 @@
             background: var(--primary-color);
             color: var(--white);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
 
@@ -415,8 +409,8 @@
             }
 
             .logo-img {
-                width: 40px;
-                height: 40px;
+                width: 60px;
+                height: 60px;
             }
 
             .back-btn {
@@ -491,8 +485,8 @@
             }
 
             .logo-img {
-                width: 35px;
-                height: 35px;
+                width: 50px;
+                height: 50px;
             }
 
             .back-btn {
@@ -526,9 +520,9 @@
             <i class="fas fa-arrow-left"></i> Back to Attendance
         </a>
         <h1><i class="fas fa-envelope"></i> Leave Requests</h1>
-        <div class="logo-button">
+        <a href="{% url 'parent_student_portal' %}">
             <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
-        </div>
+        </a>
     </div>
 
     <div class="container">
@@ -546,7 +540,7 @@
 
             <div class="section">
                 <h2><i class="fas fa-paper-plane"></i> Submit Leave Request</h2>
-                <form method="POST" action="{% url 'student_leave' %}">
+                <form method="POST" action="{% url 'parent_student_leave' %}">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="student_name"><i class="fas fa-user"></i> Student Name</label>

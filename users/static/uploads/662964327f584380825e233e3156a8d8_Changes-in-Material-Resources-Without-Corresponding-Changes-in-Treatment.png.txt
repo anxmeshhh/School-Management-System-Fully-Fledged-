@@ -1,0 +1,4 @@
+CLASS CIRCULAR TESTING
+specific
+12
+a
