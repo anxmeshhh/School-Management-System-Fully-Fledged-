@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Parent Login</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
+     
+   @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
 
         /* Importing Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
@@ -79,9 +80,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: url("{% static 'users/images/studentbg.jpg' %}?v=3") no-repeat center center fixed;
-    background-size: cover;
-    opacity: 0.1;
+    background: transparent;
     z-index: 1;
     animation: subtlePulse 12s ease-in-out infinite;
     filter: brightness(1.1);
@@ -97,13 +96,16 @@ body > * {
 .logo {
     position: absolute;
             top: 20px;
-            left: 20px;
-            width: 150px;
-            height: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             overflow: hidden;
             z-index: 3;
             transition: transform 0.6s ease-in-out;
+            border: 4px solid var(--primary-color);
+            box-shadow: var(--shadow-lg);
 
 }
 
@@ -115,16 +117,16 @@ body > * {
 }
 
 .logo:hover {
-    transform: scale(1.15) rotate(5deg);
+    transform: translateX(-50%) scale(1.05);
 }
 
 /* Welcome Header */
 .welcome-header {
     position: absolute;
-    top: 20px;
+    top: 240px;
     text-align: center;
     color: var(--primary-color);
-    font-size: 1.8rem;
+    font-size: 2.5rem;
     font-weight: 600;
     letter-spacing: 1px;
     width: 100%;
@@ -141,15 +143,14 @@ body > * {
 
 /* Container Styling */
 .container {
-    background: var(--light-bg);
-    backdrop-filter: blur(8px);
+    background: var(--white);
     padding: 2rem;
     border-radius: 12px;
     box-shadow: var(--shadow-md);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 2px solid var(--primary-color);
     width: 100%;
     max-width: 400px;
-    margin-top: 120px;
+    margin-top: 320px;
     z-index: 3;
     animation: slideInRight 1.2s ease-in-out;
     transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
@@ -188,8 +189,8 @@ h2 {
 .form-group input {
     width: 100%;
     padding: 0.8rem 40px 0.8rem 0.8rem;
-    border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--border-color), var(--primary-color)) border-box;
+    border: 2px solid var(--border-color);
+    background: var(--white);
     border-radius: 8px;
     font-size: var(--font-md);
     transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
@@ -197,6 +198,7 @@ h2 {
 }
 
 .form-group input:focus {
+    border-color: var(--primary-color);
     box-shadow: 0 0 8px rgba(0, 107, 62, 0.3); /* Green shadow */
     transform: scale(1.02);
 }
@@ -224,7 +226,7 @@ button {
     width: 100%;
     padding: 1rem;
     background: var(--primary-color);
-    border: none;
+    border: 2px solid var(--primary-color);
     border-radius: 25px;
     color: var(--white);
     font-size: var(--font-md);
@@ -236,6 +238,7 @@ button {
 
 button:hover {
     background: var(--primary-hover);
+    border-color: var(--primary-hover);
     transform: scale(1.08);
     box-shadow: var(--shadow-lg);
 }
@@ -245,7 +248,7 @@ button:hover {
     width: 100%;
     padding: 1rem;
     background: var(--white);
-    border: 1px solid var(--primary-color);
+    border: 2px solid var(--primary-color);
     border-radius: 25px;
     color: var(--primary-color);
     font-size: var(--font-md);
@@ -256,7 +259,6 @@ button:hover {
     display: block;
     margin-bottom: 10px;
     transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-    border: none;
 }
 
 .signup-btn:hover, .forgot-btn:hover {
@@ -282,98 +284,21 @@ button:hover {
     max-width: 90%;
     display: none;
     text-align: center;
+    border: 2px solid transparent;
 }
 
 .notification-box.success {
     background-color: #d4edda;
     color: #155724;
     border-left: 5px solid var(--success-color);
+    border-right: 2px solid var(--success-color);
 }
 
 .notification-box.error {
     background-color: #f8d7da;
     color: #721c24;
     border-left: 5px solid var(--error-color);
-}
-
-/* Modal Styles */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1001;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-.modal-content {
-    background: var(--light-bg);
-    backdrop-filter: blur(8px);
-    margin: 10% auto;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-    animation: slideInDown 0.3s ease-in-out;
-}
-
-.close {
-    color: var(--text-color);
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    transition: color 0.3s ease;
-}
-
-.close:hover {
-    color: var(--primary-color);
-}
-
-.modal h3 {
-    color: var(--primary-color);
-    text-align: center;
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-.password-mismatch, .username-exists {
-    color: var(--error-color);
-    font-size: var(--font-sm);
-    margin-top: 5px;
-    display: none;
-}
-
-.modal-notification {
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    border-radius: var(--radius-sm);
-    text-align: center;
-    font-weight: 600;
-    display: none;
-}
-
-.modal-notification.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid var(--success-color);
-}
-
-.modal-notification.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid var(--error-color);
+    border-right: 2px solid var(--error-color);
 }
 
 /* Animations */
@@ -413,22 +338,29 @@ button:hover {
 @media (max-width: 992px) {
     .container {
         max-width: 360px;
-        margin-top: 110px;
+        margin-top: 300px;
     }
 
     .welcome-header {
-        font-size: 1.6rem;
+        font-size: 2rem;
+        top: 220px;
     }
 
     .welcome-header span {
         font-size: 1.1rem;
     }
+
+    .logo {
+        width: 180px;
+        height: 180px;
+    }
 }
 
 @media (max-width: 768px) {
     .welcome-header {
-        font-size: 1.4rem;
+        font-size: 1.8rem;
         padding: 0 10px;
+        top: 200px;
     }
 
     .welcome-header span {
@@ -436,16 +368,15 @@ button:hover {
     }
 
     .logo {
-        width: 60px;
-        height: 60px;
+        width: 120px;
+        height: 120px;
         top: 15px;
-        left: 15px;
     }
 
     .container {
         padding: 1.5rem;
         max-width: 90%;
-        margin-top: 100px;
+        margin-top: 260px;
     }
 
     h2 {
@@ -475,24 +406,18 @@ button:hover {
         font-size: var(--font-sm);
         padding: var(--space-xs) var(--space-sm);
     }
-
-    .modal-content {
-        margin: 5% auto;
-        padding: 1.5rem;
-    }
 }
 
 @media (max-width: 480px) {
     .logo {
-        width: 50px;
-        height: 50px;
+        width: 100px;
+        height: 100px;
         top: 10px;
-        left: 10px;
     }
 
     .welcome-header {
-        top: 70px;
-        font-size: 1.2rem;
+        top: 130px;
+        font-size: 1.6rem;
     }
 
     .welcome-header span {
@@ -502,7 +427,7 @@ button:hover {
     .container {
         max-width: 300px;
         padding: 1.2rem;
-        margin-top: 90px;
+        margin-top: 190px;
     }
 
     h2 {
@@ -529,27 +454,17 @@ button:hover {
         font-size: var(--font-sm);
         padding: var(--space-xs) var(--space-sm);
     }
-
-    .modal-content {
-        width: 95%;
-        padding: 1rem;
-    }
-
-    .close {
-        font-size: 24px;
-        right: 10px;
-        top: 5px;
-    }
 }
 
 @media (max-width: 320px) {
     .container {
         max-width: 280px;
-        margin-top: 80px;
+        margin-top: 170px;
     }
 
     .welcome-header {
-        font-size: 1rem;
+        font-size: 1.4rem;
+        top: 120px;
     }
 
     .welcome-header span {
@@ -557,35 +472,30 @@ button:hover {
     }
 
     .logo {
-        width: 45px;
-        height: 45px;
+        width: 90px;
+        height: 90px;
     }
 }
 
 @media (max-height: 500px) and (orientation: landscape) {
     .container {
-        margin-top: 80px;
+        margin-top: 200px;
         padding: 1rem;
     }
 
     .logo {
-        width: 50px;
-        height: 50px;
+        width: 100px;
+        height: 100px;
         top: 10px;
-        left: 10px;
     }
 
     .welcome-header {
-        top: 10px;
-        font-size: 1.2rem;
+        top: 130px;
+        font-size: 1.6rem;
     }
 
     .welcome-header span {
         font-size: 0.9rem;
-    }
-
-    .modal-content {
-        margin: 2% auto;
     }
 }
 
@@ -649,62 +559,18 @@ button:hover {
         <form id="loginForm" method="POST" data-url="{% url 'parent_login' %}">
             {% csrf_token %}
             <div class="form-group">
-                <label for="username">Username</label>
+                <label for="username">Username (Admission Number)</label>
                 <input type="text" id="username" name="username" placeholder="Enter Admission Number" required>
             </div>
             <div class="form-group">
-                <label for="password">Phone Number</label>
-                <input type="password" id="password" name="password" placeholder="Enter the Phone Number" required>
+                <label for="password">Password (Primary Mobile Number)</label>
+                <input type="password" id="password" name="password" placeholder="Enter Password" required>
                 <svg class="toggle-password" onclick="togglePassword('password')" viewBox="0 0 24 24">
                     <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                 </svg>
             </div>
             <button type="submit">Login</button>
-            <a href="{% url 'parent_signup' %}" class="signup-btn">New User? Signup</a>
-            <button type="button" class="forgot-btn" onclick="openChangePasswordModal()">Change Credentials</button>
         </form>
-    </div>
-
-    <!-- Change Credentials Modal -->
-    <div id="changePasswordModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeChangePasswordModal()">&times;</span>
-            <h3>Change Your Credentials</h3>
-            <div id="modalSuccessMessage" class="modal-notification success">
-                ✅ Credentials changed successfully! Please login with your new credentials.
-            </div>
-            <div id="modalErrorMessage" class="modal-notification error">
-                ❌ Error changing credentials. Please try again.
-            </div>
-            <form id="changePasswordForm" method="POST" data-url="{% url 'parent_change_credentials' %}">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="currentUsername">Current Admission Number</label>
-                    <input type="text" id="currentUsername" name="current_username" placeholder="Enter Current Admission Number" required>
-                </div>
-                <div class="form-group">
-                    <label for="newUsername">New Admission Number</label>
-                    <input type="text" id="newUsername" name="new_username" placeholder="Enter New Admission Number" required>
-                    <div id="usernameExists" class="username-exists">Admission Number already exists!</div>
-                </div>
-                <div class="form-group">
-                    <label for="newPassword">New Phone Number</label>
-                    <input type="password" id="newPassword" name="new_password" placeholder="Enter New Phone Number" required>
-                    <svg class="toggle-password" onclick="togglePassword('newPassword')" viewBox="0 0 24 24">
-                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                    </svg>
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm New Phone Number</label>
-                    <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm New Phone Number" required>
-                    <svg class="toggle-password" onclick="togglePassword('confirmPassword')" viewBox="0 0 24 24">
-                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                    </svg>
-                    <div id="passwordMismatch" class="password-mismatch">Phone numbers do not match!</div>
-                </div>
-                <button type="submit">Change Credentials</button>
-            </form>
-        </div>
     </div>
 
     <script>
@@ -720,104 +586,13 @@ button:hover {
             }
         }
 
-        function openChangePasswordModal() {
-            document.getElementById('changePasswordModal').style.display = 'block';
-            document.getElementById('changePasswordForm').reset();
-            document.getElementById('passwordMismatch').style.display = 'none';
-            document.getElementById('usernameExists').style.display = 'none';
-            document.getElementById('modalSuccessMessage').style.display = 'none';
-            document.getElementById('modalErrorMessage').style.display = 'none';
-        }
-
-        function closeChangePasswordModal() {
-            document.getElementById('changePasswordModal').style.display = 'none';
-        }
-
-        // Close modal if clicked outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('changePasswordModal');
-            if (event.target == modal) {
-                closeChangePasswordModal();
-            }
-        }
-
-        // Confirm phone validation
-        document.getElementById('confirmPassword').addEventListener('input', function() {
-            const newPass = document.getElementById('newPassword').value;
-            const confirmPass = this.value;
-            const mismatch = document.getElementById('passwordMismatch');
-            if (newPass !== confirmPass) {
-                mismatch.style.display = 'block';
-            } else {
-                mismatch.style.display = 'none';
-            }
-        });
-
-        // Username availability check (basic client-side, but server-side is primary)
-        document.getElementById('newUsername').addEventListener('blur', function() {
-            const newUsername = this.value;
-            if (newUsername) {
-                // You can add an AJAX call here to check availability if needed
-                // For now, just clear the message
-                document.getElementById('usernameExists').style.display = 'none';
-            }
-        });
-
-        document.getElementById("changePasswordForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
-            const currentUsername = document.getElementById("currentUsername").value.trim();
-            const newUsername = document.getElementById("newUsername").value.trim();
-            const newPass = document.getElementById("newPassword").value.trim();
-            const confirmPass = document.getElementById("confirmPassword").value.trim();
-            if (newPass !== confirmPass) {
-                document.getElementById("passwordMismatch").style.display = "block";
-                return;
-            }
-            if (!currentUsername || !newUsername || !newPass) {
-                document.getElementById("modalErrorMessage").style.display = "block";
-                document.getElementById("modalErrorMessage").textContent = "All fields are required.";
-                return;
-            }
-            const csrfToken = document.querySelector("#changePasswordForm [name=csrfmiddlewaretoken]").value;
-            const formData = new URLSearchParams();
-            formData.append("current_username", currentUsername);
-            formData.append("new_username", newUsername);
-            formData.append("new_password", newPass);
-            formData.append("confirm_password", confirmPass);
-            const response = await fetch(this.dataset.url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "X-CSRFToken": csrfToken
-                },
-                body: formData
-            });
-            const result = await response.text();
-            if (result.trim() === "Success") {
-                document.getElementById("modalSuccessMessage").style.display = "block";
-                document.getElementById("modalErrorMessage").style.display = "none";
-                setTimeout(() => {
-                    closeChangePasswordModal();
-                    // Clear login form
-                    document.getElementById("username").value = "";
-                    document.getElementById("password").value = "";
-                }, 2000);
-            } else {
-                document.getElementById("modalErrorMessage").style.display = "block";
-                document.getElementById("modalSuccessMessage").style.display = "none";
-                if (result.trim().includes("exists")) {
-                    document.getElementById("usernameExists").style.display = "block";
-                }
-            }
-        });
-
         document.getElementById("loginForm").addEventListener("submit", async function(event) {
             event.preventDefault();
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value.trim();
             if (!username || !password) {
                 document.getElementById("errorMessage").style.display = "block";
-                document.getElementById("errorMessage").textContent = "Username and phone number cannot be empty.";
+                document.getElementById("errorMessage").textContent = "Username and password cannot be empty.";
                 return;
             }
             const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;

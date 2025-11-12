@@ -2,611 +2,581 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manavargal School Management System - Register Student</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="{% static 'users/parent_profile.css' %}?v=4" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Profile - Manavargal School Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--text-color);
+            padding: 80px 20px 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        :root {
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #d1e7dd;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: var(--white);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            flex-grow: 1;
+            color: var(--primary-color);
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 0;
+        }
+
+        .profile-header h2 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-pic-container {
+            text-align: center;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .profile-pic-container:hover {
+            transform: translateY(-2px);
+        }
+
+        .profile-pic, .preview-pic {
+            width: min(200px, 25vw);
+            height: min(200px, 25vw);
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            display: block;
+            margin: 0 auto;
+        }
+
+        .profile-pic:hover, .preview-pic:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .preview-pic {
+            display: none;
+        }
+
+        .profile-details {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .profile-details:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .profile-details h3 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0;
+            text-align: center;
+        }
+
+        .profile-details .details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .profile-details p {
+            margin-bottom: 0;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .profile-details strong {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .upload-form {
+            margin-top: 1.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .upload-form label {
+            display: block;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+
+        .upload-form input[type="file"] {
+            width: 100%;
+            max-width: 300px;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 1rem;
+            margin-bottom: 0;
+            transition: var(--transition);
+            align-self: center;
+        }
+
+        .upload-form input[type="file"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
+        }
+
+        .upload-form button {
+            width: 100%;
+            max-width: 200px;
+            padding: 0.75rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            align-self: center;
+        }
+
+        .upload-form button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .scroll-top-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .scroll-top-btn.show {
+            display: flex;
+        }
+
+        .icon {
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                gap: 1.25rem;
+                padding: 0 10px;
+            }
+
+            .profile-details {
+                padding: 1.75rem;
+                gap: 0.875rem;
+            }
+
+            .profile-details .details-list {
+                gap: 0.625rem;
+            }
+
+            .profile-details p {
+                font-size: 1rem;
+            }
+
+            .profile-header h2 {
+                font-size: 2.25rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .logo-img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .profile-header h2 {
+                font-size: 2rem;
+            }
+
+            .profile-pic, .preview-pic {
+                width: min(150px, 30vw);
+                height: min(150px, 30vw);
+            }
+
+            .profile-details {
+                padding: 1.5rem;
+                gap: 0.75rem;
+            }
+
+            .profile-details h3 {
+                font-size: 1.25rem;
+            }
+
+            .profile-details .details-list {
+                gap: 0.5rem;
+            }
+
+            .profile-details p {
+                font-size: 0.95rem;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .upload-form {
+                gap: 0.5rem;
+            }
+
+            .upload-form input[type="file"] {
+                max-width: 100%;
+            }
+
+            .upload-form button {
+                max-width: 180px;
+                font-size: 0.95rem;
+            }
+
+            .scroll-top-btn {
+                bottom: 1rem;
+                right: 1rem;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+                padding: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
+            .header {
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .profile-header h2 {
+                font-size: 1.75rem;
+            }
+
+            .profile-pic, .preview-pic {
+                width: min(120px, 35vw);
+                height: min(120px, 35vw);
+            }
+
+            .profile-details {
+                padding: 1rem;
+                gap: 0.625rem;
+            }
+
+            .profile-details h3 {
+                font-size: 1.125rem;
+            }
+
+            .profile-details .details-list {
+                gap: 0.375rem;
+            }
+
+            .profile-details p {
+                font-size: 0.9rem;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .upload-form {
+                gap: 0.375rem;
+                margin-top: 1rem;
+            }
+
+            .upload-form input[type="file"] {
+                padding: 0.625rem;
+                font-size: 0.9rem;
+                max-width: 100%;
+            }
+
+            .upload-form button {
+                max-width: 160px;
+                padding: 0.625rem;
+                font-size: 0.9rem;
+            }
+
+            .scroll-top-btn {
+                bottom: 0.75rem;
+                right: 0.75rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                padding: 0.8rem;
+            }
+        }
+
+        @media (hover: none) {
+            .profile-details:hover, .profile-pic-container:hover, .profile-pic:hover, .preview-pic:hover, .upload-form button:hover, .logo-img:hover, .back-btn:hover, .scroll-top-btn:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="header">
-    <a href="{% url 'parent_dashboard' %}" class="back-btn">
-      <i class="fas fa-arrow-left icon"></i> Back
-    </a>
-    <h1><i class="fas fa-user-plus icon"></i> Register New Student</h1>
-    <a href="{% url 'dashboard' %}">
-      <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
-    </a>
-  </div>
-
-  <div class="container">
-    <!-- Multi-step form container -->
-    <div class="form-container">
-      <!-- Progress indicator -->
-      <div class="progress-container">
-        <div class="step active" data-page="1">
-          <div class="step-number">1</div>
-          <div class="step-text">Registration</div>
-        </div>
-        <div class="step" data-page="2">
-          <div class="step-number">2</div>
-          <div class="step-text">Personal</div>
-        </div>
-        <div class="step" data-page="3">
-          <div class="step-number">3</div>
-          <div class="step-text">Communication</div>
-        </div>
-        <div class="step" data-page="4">
-          <div class="step-number">4</div>
-          <div class="step-text">Parents & Medical</div>
-        </div>
-      </div>
-
-      <form id="student-form" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-pages">
-          <!-- Page 1: Registration Details -->
-          <div class="page active" id="page1">
-            <div class="page-header">
-              <h2><i class="fas fa-plus icon"></i> Add New Student</h2>
-            </div>
-
-            <div class="form-content">
-              <div class="form-layout">
-                <div class="photo-section">
-                  <button type="button" class="photo-btn" onclick="document.getElementById('profile-picture-input').click()">
-                    <i class="fas fa-camera icon"></i> Add Photo
-                  </button>
-                  <div class="photo-placeholder">
-                    <img id="profile-picture-img" 
-                         src="{% if profile_picture %}{{ profile_picture }}{% else %}{% static 'users/images/default_profile.jpg' %}{% endif %}" 
-                         alt="Student placeholder">
-                  </div>
-                  <input type="file" id="profile-picture-input" name="profile_picture" accept="image/png,image/jpeg,image/jpg" style="display: none;">
-                  <button type="button" class="upload-btn">
-                    <i class="fas fa-upload icon"></i> Upload Picture
-                  </button>
-                  <div id="profile-picture-error" class="error-message"></div>
-
-                  <!-- Success/error message display -->
-                  {% if messages %}
-                    <div class="alert-message">
-                      {% for message in messages %}
-                        <div class="{{ message.tags }}">
-                          <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
-                          {{ message }}
-                        </div>
-                      {% endfor %}
-                    </div>
-                  {% endif %}
-                </div>
-
-                <div class="form-fields">
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="name">Name <span class="required">*</span></label>
-                      <input type="text" id="name" name="name" value="{{ student_data.0|default_if_none:'' }}" required>
-                    </div>
-                    <div class="form-group">
-                      <label for="admission-number">Admission Number <span class="required">*</span></label>
-                      <input type="text" id="admission-number" name="admission_number" value="{{ student_data.1|default_if_none:'' }}" required>
-                    </div>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="class">Class <span class="required">*</span></label>
-                      <div class="select-wrapper">
-                        <select id="class" name="class" required>
-                          <option value="" disabled selected>Select Class</option>
-                          <option value="1" {% if student_data.2 == "1" %}selected{% endif %}>Class 1</option>
-                          <option value="2" {% if student_data.2 == "2" %}selected{% endif %}>Class 2</option>
-                          <option value="3" {% if student_data.2 == "3" %}selected{% endif %}>Class 3</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="section">Section</label>
-                      <div class="select-wrapper">
-                        <select id="section" name="section">
-                          <option value="" disabled selected>Select Section</option>
-                          <option value="A" {% if student_data.3 == "A" %}selected{% endif %}>Section A</option>
-                          <option value="B" {% if student_data.3 == "B" %}selected{% endif %}>Section B</option>
-                          <option value="C" {% if student_data.3 == "C" %}selected{% endif %}>Section C</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="roll-number">Roll Number</label>
-                      <input type="text" id="roll-number" name="roll_number" value="{{ student_data.4|default_if_none:'' }}">
-                    </div>
-                    <div class="form-group">
-                      <label for="emis">EMIS</label>
-                      <input type="text" id="emis" name="emis" value="{{ student_data.5|default_if_none:'' }}">
-                    </div>
-                  </div>
-                </div>
-
-                <div class="sidebar">
-                  <div class="sidebar-text">Registration Details</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-navigation">
-              <button type="button" class="nav-btn prev-btn">
-                <a href="{% url 'dashboard' %}" style="text-decoration: none; color: inherit;"><i class="fas fa-arrow-left icon"></i> Return to Dashboard</a>
-              </button>
-              <button type="submit" class="nav-btn save-btn">
-                <i class="fas fa-save icon"></i> Save
-              </button>
-              <button type="button" class="nav-btn next-btn" data-next="2">
-                <i class="fas fa-arrow-right icon"></i> Next
-              </button>
-            </div>
-          </div>
-
-          <!-- Page 2: Personal Details -->
-          <div class="page" id="page2">
-            <div class="page-header">
-              <h2><i class="fas fa-user icon"></i> Personal Details</h2>
-            </div>
-
-            <div class="form-content">
-              <div class="form-layout">
-                <div class="form-fields wide-fields">
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="gender">Gender</label>
-                      <div class="select-wrapper">
-                        <select id="gender" name="gender">
-                          <option value="" disabled selected>Select Gender</option>
-                          <option value="male" {% if student_data.6 == "male" %}selected{% endif %}>Male</option>
-                          <option value="female" {% if student_data.6 == "female" %}selected{% endif %}>Female</option>
-                          <option value="other" {% if student_data.6 == "other" %}selected{% endif %}>Other</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="community">Community</label>
-                      <div class="select-wrapper">
-                        <select id="community" name="community">
-                          <option value="" disabled selected>Select Community</option>
-                          <option value="bc" {% if student_data.7 == "bc" %}selected{% endif %}>BC</option>
-                          <option value="mbc" {% if student_data.7 == "mbc" %}selected{% endif %}>MBC</option>
-                          <option value="sc" {% if student_data.7 == "sc" %}selected{% endif %}>SC</option>
-                          <option value="st" {% if student_data.7 == "st" %}selected{% endif %}>ST</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="tamil-name">Tamil Name</label>
-                      <input type="text" id="tamil-name" name="tamil_name" value="{{ student_data.8|default_if_none:'' }}">
-                    </div>
-                    <div class="form-group">
-                      <label for="dob">Date of Birth</label>
-                      <input type="date" id="dob" name="dob" value="{{ student_data.9|default_if_none:'' }}">
-                    </div>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="nationality">Nationality</label>
-                      <input type="text" id="nationality" name="nationality" value="{{ student_data.10|default_if_none:'' }}">
-                    </div>
-                    <div class="form-group">
-                      <label for="blood-group">Blood Group</label>
-                      <input type="text" id="blood-group" name="blood_group" value="{{ student_data.11|default_if_none:'' }}">
-                    </div>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="mother-tongue">Mother Tongue</label>
-                      <input type="text" id="mother-tongue" name="mother_tongue" value="{{ student_data.12|default_if_none:'' }}">
-                    </div>
-                    <div class="form-group">
-                      <label for="caste">Caste</label>
-                      <input type="text" id="caste" name="caste" value="{{ student_data.13|default_if_none:'' }}">
-                    </div>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="religion">Religion</label>
-                      <input type="text" id="religion" name="religion" value="{{ student_data.14|default_if_none:'' }}">
-                    </div>
-                    <div class="form-group">
-                      <label for="place-of-birth">Place of Birth - City / State</label>
-                      <input type="text" id="place-of-birth" name="place_of_birth" value="{{ student_data.15|default_if_none:'' }}">
-                    </div>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="aadhaar">Aadhaar Number</label>
-                      <input type="text" id="aadhaar" name="aadhaar" value="{{ student_data.16|default_if_none:'' }}">
-                    </div>
-                    <div class="form-group">
-                      <label for="disability">Disability</label>
-                      <input type="text" id="disability" name="disability" value="{{ student_data.17|default_if_none:'' }}">
-                    </div>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="id-mark1">Personal Identification Mark 1</label>
-                      <input type="text" id="id-mark1" name="id_mark1" value="{{ student_data.18|default_if_none:'' }}">
-                    </div>
-                    <div class="form-group">
-                      <label for="id-mark2">Personal Identification Mark 2</label>
-                      <input type="text" id="id-mark2" name="id_mark2" value="{{ student_data.19|default_if_none:'' }}">
-                    </div>
-                  </div>
-                </div>
-
-                <div class="sidebar">
-                  <div class="sidebar-text">Personal Details</div>
-                </div>
-
-                <div class="class-details">
-                  <h3>Class Details</h3>
-                  <div class="form-group">
-                    <label for="current-class">Current Class <span class="required">*</span></label>
-                    <div class="select-wrapper">
-                      <select id="current-class" name="current_class" required>
-                        <option value="" disabled selected>Select Class</option>
-                        <option value="1" {% if student_data.20 == "1" %}selected{% endif %}>Class 1</option>
-                        <option value="2" {% if student_data.20 == "2" %}selected{% endif %}>Class 2</option>
-                        <option value="3" {% if student_data.20 == "3" %}selected{% endif %}>Class 3</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="admission-class">Admission Class</label>
-                    <input type="text" id="admission-class" name="admission_class" value="{{ student_data.21|default_if_none:'' }}">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="admission-year">Admission Year</label>
-                    <input type="text" id="admission-year" name="admission_year" value="{{ student_data.22|default_if_none:'' }}">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="admission-date">Admission Date</label>
-                    <input type="date" id="admission-date" name="admission_date" value="{{ student_data.23|default_if_none:'' }}">
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-navigation">
-              <button type="button" class="nav-btn prev-btn" data-prev="1">
-                <i class="fas fa-arrow-left icon"></i> Previous
-              </button>
-              <button type="button" class="nav-btn next-btn" data-next="3">
-                <i class="fas fa-arrow-right icon"></i> Next
-              </button>
-            </div>
-          </div>
-
-          <!-- Page 3: Communication Details -->
-          <div class="page" id="page3" data-user-id="{{ user.id }}">
-            <div class="page-header">
-              <h2><i class="fas fa-envelope icon"></i> Communication Details</h2>
-            </div>
-
-            <div class="form-content">
-              <div class="form-layout">
-                <div class="form-fields wide-fields">
-                  <div class="contact-section">
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="email">Email ID</label>
-                        <input type="email" id="email" name="email" value="{{ student_data.24|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group address-group">
-                        <label for="address">Address</label>
-                        <textarea id="address" name="address" rows="4">{{ student_data.25|default_if_none:'' }}</textarea>
-                      </div>
-                    </div>
-
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="contact">Contact Number (WhatsApp)</label>
-                        <input type="tel" id="contact" name="contact" value="{{ student_data.26|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="alt_contact">Alternate Contact Number</label>
-                        <input type="tel" id="alt_contact" name="alt_contact" value="{{ student_data.27|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="country">Country</label>
-                        <input type="text" id="country" name="country" value="{{ student_data.28|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="state">State</label>
-                        <input type="text" id="state" name="state" value="{{ student_data.29|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="city">City</label>
-                        <input type="text" id="city" name="city" value="{{ student_data.30|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="pincode">Pin Code</label>
-                        <input type="text" id="pincode" name="pincode" value="{{ student_data.31|default_if_none:'' }}">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="sidebar">
-                  <div class="sidebar-text">Communication Details</div>
-                </div>
-
-                <div class="generic-details">
-                  <h3>Generic Details</h3>
-                  <div class="form-group">
-                    <label for="status">Status</label>
-                    <input type="text" id="status" name="status" value="{{ student_data.32|default_if_none:'' }}">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="house">House</label>
-                    <input type="text" id="house" name="house" value="{{ student_data.33|default_if_none:'' }}">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="teacher_ward">Teacher Ward</label>
-                    <div class="select-wrapper">
-                      <select id="teacher_ward" name="teacher_ward">
-                        <option value="" disabled selected>Select</option>
-                        <option value="yes" {% if student_data.34 == "yes" %}selected{% endif %}>Yes</option>
-                        <option value="no" {% if student_data.34 == "no" %}selected{% endif %}>No</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="rte">RTE</label>
-                    <div class="select-wrapper">
-                      <select id="rte" name="rte">
-                        <option value="" disabled selected>Select</option>
-                        <option value="yes" {% if student_data.35 == "yes" %}selected{% endif %}>Yes</option>
-                        <option value="no" {% if student_data.35 == "no" %}selected{% endif %}>No</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="sports_quota">Sports Quota</label>
-                    <div class="select-wrapper">
-                      <select id="sports_quota" name="sports_quota">
-                        <option value="" disabled selected>Select</option>
-                        <option value="yes" {% if student_data.36 == "yes" %}selected{% endif %}>Yes</option>
-                        <option value="no" {% if student_data.36 == "no" %}selected{% endif %}>No</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="prev_school">Previous School Studied</label>
-                    <input type="text" id="prev_school" name="prev_school" value="{{ student_data.37|default_if_none:'' }}">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="prev_board">Previous School Board</label>
-                    <input type="text" id="prev_board" name="prev_board" value="{{ student_data.38|default_if_none:'' }}">
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-navigation">
-              <button type="button" class="nav-btn prev-btn" data-prev="2">
-                <i class="fas fa-arrow-left icon"></i> Previous
-              </button>
-              <button type="button" class="nav-btn next-btn" data-next="4">
-                <i class="fas fa-arrow-right icon"></i> Next
-              </button>
-            </div>
-          </div>
-
-          <!-- Page 4: Parents Details and Medical Info -->
-          <div class="page" id="page4" data-user-id="{{ user.id }}">
-            <div class="page-header">
-              <h2><i class="fas fa-users icon"></i> Parents & Medical Info</h2>
-            </div>
-
-            <div class="form-content">
-              <div class="form-layout">
-                <div class="form-fields wide-fields">
-                  <div class="parents-section">
-                    <!-- Parent Details -->
-                    <h3><i class="fas fa-user-friends icon"></i> Parent Details</h3>
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="father_name">Father Name</label>
-                        <input type="text" id="father_name" name="father_name" value="{{ student_data.39|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="father_name_tamil">Father Name (Tamil)</label>
-                        <input type="text" id="father_name_tamil" name="father_name_tamil" value="{{ student_data.40|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="mother_name">Mother Name</label>
-                        <input type="text" id="mother_name" name="mother_name" value="{{ student_data.41|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="mother_name_tamil">Mother Name (Tamil)</label>
-                        <input type="text" id="mother_name_tamil" name="mother_name_tamil" value="{{ student_data.42|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="father_contact">Father Contact Number</label>
-                        <input type="tel" id="father_contact" name="father_contact" value="{{ student_data.43|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="mother_contact">Mother Contact Number</label>
-                        <input type="tel" id="mother_contact" name="mother_contact" value="{{ student_data.44|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="father_email">Father Email</label>
-                        <input type="email" id="father_email" name="father_email" value="{{ student_data.45|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="mother_email">Mother Email</label>
-                        <input type="email" id="mother_email" name="mother_email" value="{{ student_data.46|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <!-- Qualification & Occupation -->
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="father_qualification">Father Qualification</label>
-                        <input type="text" id="father_qualification" name="father_qualification" value="{{ student_data.47|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="mother_qualification">Mother Qualification</label>
-                        <input type="text" id="mother_qualification" name="mother_qualification" value="{{ student_data.48|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="father_occupation">Father Occupation</label>
-                        <input type="text" id="father_occupation" name="father_occupation" value="{{ student_data.49|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="mother_occupation">Mother Occupation</label>
-                        <input type="text" id="mother_occupation" name="mother_occupation" value="{{ student_data.50|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <!-- Income -->
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="father_income">Father Income (Annual)</label>
-                        <input type="text" id="father_income" name="father_income" value="{{ student_data.51|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="mother_income">Mother Income (Annual)</label>
-                        <input type="text" id="mother_income" name="mother_income" value="{{ student_data.52|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <!-- Guardian Details -->
-                    <h3><i class="fas fa-user-shield icon"></i> Guardian Details</h3>
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="guardian_name">Guardian Name</label>
-                        <input type="text" id="guardian_name" name="guardian_name" value="{{ student_data.53|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="guardian_contact">Guardian Contact</label>
-                        <input type="tel" id="guardian_contact" name="guardian_contact" value="{{ student_data.54|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="guardian_email">Guardian Email</label>
-                        <input type="email" id="guardian_email" name="guardian_email" value="{{ student_data.55|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="child_living">Child Living With</label>
-                        <input type="text" id="child_living" name="child_living" value="{{ student_data.56|default_if_none:'' }}">
-                      </div>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="rights_on_child">Rights On Child</label>
-                      <input type="text" id="rights_on_child" name="rights_on_child" value="{{ student_data.57|default_if_none:'' }}">
-                    </div>
-                  </div>
-                </div>
-
-                <div class="sidebar">
-                  <div class="sidebar-text">Parents Details</div>
-                </div>
-
-                <!-- Medical Info -->
-                <div class="medical-info">
-                  <h3><i class="fas fa-medkit icon"></i> Medical Information</h3>
-                  <div class="form-group">
-                    <label for="med_blood_group">Blood Group</label>
-                    <input type="text" id="med_blood_group" name="med_blood_group" value="{{ student_data.58|default_if_none:'' }}">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="diseases">Diseases (If Any)</label>
-                    <input type="text" id="diseases" name="diseases" value="{{ student_data.59|default_if_none:'' }}">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="allergies">Allergies (If Any)</label>
-                    <input type="text" id="allergies" name="allergies" value="{{ student_data.60|default_if_none:'' }}">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="medicines">Regular Medicines</label>
-                    <input type="text" id="medicines" name="medicines" value="{{ student_data.61|default_if_none:'' }}">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="hospital">Regular Hospital</label>
-                    <input type="text" id="hospital" name="hospital" value="{{ student_data.62|default_if_none:'' }}">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="doctor">Regular Doctor</label>
-                    <input type="text" id="doctor" name="doctor" value="{{ student_data.63|default_if_none:'' }}">
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-navigation">
-              <button type="button" class="nav-btn prev-btn" data-prev="3">
-                <i class="fas fa-arrow-left icon"></i> Previous
-              </button>
-              <button type="submit" class="nav-btn submit-btn">
-                <i class="fas fa-check icon"></i> Submit
-              </button>
-              <a href="{% url 'qr_page' %}" class="nav-btn submit-btn">
-                <i class="fas fa-qrcode icon"></i> QR Image
-              </a>
-            </div>
-          </div>
-        </div>
-      </form>
+    <div class="header">
+        <a href="{% url 'parent_dashboard' %}" class="back-btn">
+            <i class="fas fa-arrow-left icon"></i> Back to Main Dashboard
+        </a>
+        <h1><i class="fas fa-user icon"></i> Child Profile</h1>
+        <a href="{% url 'parent_dashboard' %}">
+            <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
+        </a>
     </div>
-  </div>
 
-  <script src="{% static 'users/profile.js' %}"></script>
+    <div class="container">
+        <div class="profile-header">
+            <h2>Profile Details</h2>
+        </div>
+
+        <div class="profile-pic-container">
+            <img src="{{ profile_picture|default:'/static/users/images/default-profile.png' }}" alt="Profile Picture" class="profile-pic" id="current-pic">
+            <img src="" alt="Preview" class="preview-pic" id="preview-pic">
+        </div>
+
+        <div class="profile-details">
+            <h3>{{ student.name|default:"N/A" }}</h3>
+            <div class="details-list">
+                <p><strong>Admission Number:</strong> {{ student.admission_number|default:"N/A" }}</p>
+                <p><strong>Class:</strong> {{ student.class|default:"N/A" }} - {{ student.section|default:"N/A" }}</p>
+                <p><strong>Roll Number:</strong> {{ student.roll_number|default:"N/A" }}</p>
+                <p><strong>Email:</strong> {{ student.email|default:"N/A" }}</p>
+                <p><strong>Contact Number:</strong> {{ student.contact|default:"N/A" }}</p>
+                <p><strong>Date of Birth:</strong> {{ student.dob|default:"N/A" }}</p>
+                <p><strong>Gender:</strong> {{ student.gender|default:"N/A" }}</p>
+                <p><strong>Address:</strong> {{ student.address|default:"N/A" }}</p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="upload-form">
+                {% csrf_token %}
+                <label for="profile_picture"><i class="fas fa-camera icon"></i> Update Profile Picture</label>
+                <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
+                <button type="submit"><i class="fas fa-upload icon"></i> Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <button class="scroll-top-btn" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        // JavaScript for image preview
+        document.getElementById('profile_picture').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('preview-pic');
+            const current = document.getElementById('current-pic');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    current.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+                current.style.display = 'block';
+            }
+        });
+
+        window.onscroll = function() {
+            const btn = document.querySelector('.scroll-top-btn');
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        };
+
+        function scrollToTop() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
 </body>
 </html>

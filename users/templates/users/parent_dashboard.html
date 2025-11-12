@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System V 1.0</title>
+    <title>Manavargal School Management System V 1.0</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
@@ -27,10 +27,10 @@
             --primary-color: #00a676;
             --primary-hover: #00b88d;
             --sidebar-bg: #f0f9f4; /* Slight green tint for sidebar to align with theme */
-            --sidebar-border: #d1e7dd; /* Lighter green border for sidebar */
+            --sidebar-border: #a8d5c2; /* Darker green border for sidebar */
             --white: #ffffff;
             --light-bg: #f8f9fa;
-            --border-color: #e9ecef;
+            --border-color: #ced4da; /* Darker gray border */
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -78,7 +78,7 @@
             left: 0;
             z-index: 20;
             transition: var(--transition);
-            border-right: 1px solid var(--sidebar-border); /* Updated to subtle green border */
+            border-right: 2px solid var(--sidebar-border); /* Increased border thickness */
         }
 
         .sidebar-header {
@@ -94,7 +94,7 @@
             flex-direction: column;
             align-items: center;
             gap: 1rem;
-            border-bottom: 1px solid var(--sidebar-border); /* Updated border to match */
+            border-bottom: 2px solid var(--sidebar-border); /* Increased border thickness */
         }
 
         .logo-container {
@@ -108,7 +108,7 @@
             overflow: hidden;
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
-            border: 1px solid var(--sidebar-border); /* Updated border to match theme */
+            border: 2px solid var(--sidebar-border); /* Increased border thickness */
         }
 
         .logo-container img {
@@ -185,7 +185,7 @@
             background: var(--white);
             border-radius: var(--border-radius);
             position: relative;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color); /* Increased border thickness */
             box-shadow: var(--shadow-sm);
         }
 
@@ -203,7 +203,7 @@
 
         .header-text {
             color: var(--text-color);
-            font-size: 0.95rem;
+            font-size: 1.2rem; /* Increased font size */
             font-weight: 500;
         }
 
@@ -237,7 +237,7 @@
             transition: var(--transition);
             pointer-events: none;
             z-index: 10;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color); /* Increased border thickness */
             margin-top: 0.5rem;
         }
 
@@ -317,7 +317,7 @@
             max-width: 800px;
             margin: 0 auto;
             box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color); /* Increased border thickness */
             position: relative;
             overflow: hidden;
         }
@@ -469,7 +469,7 @@
             }
 
             .header-text {
-                font-size: 0.875rem;
+                font-size: 1rem; /* Increased font size for mobile */
             }
 
             .logo-container {
@@ -623,6 +623,10 @@
                 Manavargal SMS
             </div>
             <nav class="sidebar-nav">
+                <a href="{% url 'parent_profile_view' %}" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    Profile View
+                </a>
                 
                 <a href="{% url 'parent_student_portal' %}" class="nav-item">
                     <span class="nav-icon">📅</span>
@@ -648,6 +652,7 @@
                     <span class="nav-icon">📈</span>
                     Progress Card
                 </a>
+                
                 <a href="{% url 'fees' %}" class="nav-item">
                     <span class="nav-icon">💰</span>
                     Fees Panel
@@ -660,7 +665,7 @@
             <!-- Header Section -->
             <header class="header">
                 <div class="header-left">
-                    <span class="header-text">Manavargal School Management System V 1.0</span>
+                    <span class="header-text">Manavargal School Management System V 1.0</span>
                 </div>
                 <div class="header-right">
                     <button class="bell-button" id="notificationBell">🔔</button>

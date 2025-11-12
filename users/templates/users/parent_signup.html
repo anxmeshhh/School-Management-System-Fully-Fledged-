@@ -30,24 +30,24 @@
             --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
             --shadow-lg: 0 4px 15px rgba(0, 107, 62, 0.2); /* Green shadow */
             --space-xs: 5px;
-            --space-sm: 8px;
-            --space-md: 12px;
-            --space-lg: 16px;
-            --space-xl: 24px;
+            --space-sm: 10px;
+            --space-md: 15px;
+            --space-lg: 20px;
+            --space-xl: 30px;
             --font-xs: 12px;
             --font-sm: 14px;
             --font-md: 16px;
             --font-lg: 18px;
-            --font-xl: 22px;
+            --font-xl: 24px;
             --radius-sm: 5px;
             --radius-md: 8px;
-            --radius-lg: 16px;
+            --radius-lg: 20px;
             --radius-full: 50%;
         }
 
         /* No Scrolling */
         html {
-            scroll-behavior: auto;
+            height: 100%;
             overflow: hidden;
         }
 
@@ -61,9 +61,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: var(--space-sm);
+            padding: 20px;
             position: relative;
             overflow: hidden;
+            touch-action: none;
         }
 
         /* Background Overlay */
@@ -74,9 +75,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url("{% static 'users/images/studentbg.jpg' %}?v=3") no-repeat center center fixed;
-            background-size: cover;
-            opacity: 0.1;
+            background: transparent;
             z-index: 1;
             animation: subtlePulse 12s ease-in-out infinite;
             filter: brightness(1.1);
@@ -92,14 +91,17 @@
         .logo {
             position: absolute;
             top: 20px;
-            left: 20px;
-            width: 150px;
-            height: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             overflow: hidden;
             z-index: 3;
             transition: transform 0.6s ease-in-out;
-        }
+            border: 4px solid var(--primary-color);
+            box-shadow: var(--shadow-lg);
+        }
 
         .logo img {
             width: 100%;
@@ -109,45 +111,45 @@
         }
 
         .logo:hover {
-            transform: scale(1.15) rotate(5deg);
+            transform: translateX(-50%) scale(1.05);
         }
 
         /* Welcome Header */
         .welcome-header {
             position: absolute;
-            top: 10px;
+            top: 240px;
             text-align: center;
             color: var(--primary-color);
-            font-size: 1.4rem;
+            font-size: 1.8rem;
             font-weight: 600;
             letter-spacing: 1px;
             width: 100%;
             z-index: 3;
             animation: slideInDown 1.2s ease-in-out;
-            padding: 0 var(--space-sm);
         }
 
         .welcome-header span {
             display: block;
-            font-size: 0.9rem;
+            font-size: 1.2rem;
             font-weight: normal;
             color: #170d0d;
         }
 
         /* Container Styling */
         .container {
-            background: var(--light-bg);
-            backdrop-filter: blur(8px);
-            padding: var(--space-md);
-            border-radius: var(--radius-md);
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
             box-shadow: var(--shadow-md);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 2px solid var(--primary-color);
             width: 100%;
-            max-width: 360px;
-            margin-top: 90px;
+            max-width: 400px;
+            margin-top: 320px;
             z-index: 3;
             animation: slideInRight 1.2s ease-in-out;
             transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+            max-height: calc(100vh - 340px);
+            overflow-y: auto;
         }
 
         .container:hover {
@@ -159,15 +161,15 @@
         h2 {
             color: var(--primary-color);
             text-align: center;
-            margin-bottom: var(--space-md);
-            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
             font-weight: 600;
             animation: fadeIn 1.5s ease-in-out;
         }
 
         /* Form Group Styling */
         .form-group {
-            margin-bottom: var(--space-sm);
+            margin-bottom: 1.5rem;
             position: relative;
             animation: fadeInUp 1s ease-in-out;
         }
@@ -175,23 +177,24 @@
         .form-group label {
             display: block;
             color: var(--primary-color);
-            font-size: var(--font-sm);
+            font-size: var(--font-md);
             font-weight: 400;
             margin-bottom: var(--space-xs);
         }
 
         .form-group input {
             width: 100%;
-            padding: var(--space-xs) var(--space-sm);
-            border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--border-color), var(--primary-color)) border-box;
-            border-radius: var(--radius-sm);
-            font-size: var(--font-sm);
+            padding: 0.8rem 0.8rem;
+            border: 2px solid var(--border-color);
+            background: var(--white);
+            border-radius: 8px;
+            font-size: var(--font-md);
             transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
             outline: none;
         }
 
         .form-group input:focus {
+            border-color: var(--primary-color);
             box-shadow: 0 0 8px rgba(0, 107, 62, 0.3); /* Green shadow */
             transform: scale(1.02);
         }
@@ -199,20 +202,21 @@
         /* Button Styling */
         button {
             width: 100%;
-            padding: var(--space-xs);
+            padding: 1rem;
             background: var(--primary-color);
-            border: none;
-            border-radius: var(--radius-lg);
+            border: 2px solid var(--primary-color);
+            border-radius: 25px;
             color: var(--white);
-            font-size: var(--font-sm);
+            font-size: var(--font-md);
             font-weight: 600;
             cursor: pointer;
-            margin-bottom: var(--space-xs);
+            margin-bottom: 10px;
             transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
         }
 
         button:hover {
             background: var(--primary-hover);
+            border-color: var(--primary-hover);
             transform: scale(1.08);
             box-shadow: var(--shadow-lg);
         }
@@ -220,7 +224,7 @@
         /* Login Button Styling */
         .login-btn {
             background: var(--white);
-            border: 1px solid var(--primary-color);
+            border: 2px solid var(--primary-color);
             color: var(--primary-color);
         }
 
@@ -233,25 +237,35 @@
 
         /* Notification Box Styling */
         .notification-box {
-            text-align: center;
-            margin-bottom: var(--space-sm);
-            font-size: var(--font-xs);
-            padding: var(--space-xs) var(--space-sm);
+            position: fixed;
+            top: var(--space-md);
+            right: var(--space-md);
+            z-index: 1000;
+            padding: var(--space-sm) var(--space-md);
             border-radius: var(--radius-md);
+            font-size: var(--font-md);
+            font-weight: 600;
             box-shadow: var(--shadow-md);
             opacity: 0.95;
+            transition: opacity 0.3s ease-in-out;
+            max-width: 90%;
+            display: none;
+            text-align: center;
+            border: 2px solid transparent;
         }
 
         .notification-box.success {
             background-color: #d4edda;
             color: #155724;
             border-left: 5px solid var(--success-color);
+            border-right: 2px solid var(--success-color);
         }
 
         .notification-box.error {
             background-color: #f8d7da;
             color: #721c24;
             border-left: 5px solid var(--error-color);
+            border-right: 2px solid var(--error-color);
         }
 
         /* Animations */
@@ -290,149 +304,154 @@
         /* Responsive Design */
         @media (max-width: 992px) {
             .container {
-                max-width: 340px;
-                margin-top: 80px;
+                max-width: 360px;
+                margin-top: 300px;
             }
 
             .welcome-header {
-                font-size: 1.2rem;
+                font-size: 1.6rem;
+                top: 220px;
             }
 
             .welcome-header span {
-                font-size: 0.8rem;
+                font-size: 1.1rem;
+            }
+
+            .logo {
+                width: 180px;
+                height: 180px;
             }
         }
 
         @media (max-width: 768px) {
             .welcome-header {
-                font-size: 1.1rem;
-                padding: 0 var(--space-sm);
+                font-size: 1.4rem;
+                padding: 0 10px;
+                top: 200px;
             }
 
             .welcome-header span {
-                font-size: 0.7rem;
+                font-size: 1rem;
             }
 
             .logo {
-                width: 60px;
-                height: 60px;
-                top: var(--space-sm);
-                left: var(--space-sm);
+                width: 120px;
+                height: 120px;
+                top: 15px;
             }
 
             .container {
-                padding: var(--space-sm);
+                padding: 1.5rem;
                 max-width: 90%;
-                margin-top: 70px;
+                margin-top: 260px;
             }
 
             h2 {
-                font-size: 1.3rem;
+                font-size: 1.5rem;
             }
 
             .form-group label {
-                font-size: 0.8rem;
+                font-size: 0.9rem;
             }
 
             .form-group input {
-                padding: var(--space-xs) var(--space-sm);
-                font-size: 0.8rem;
+                padding: 0.7rem 0.7rem;
+                font-size: 0.9rem;
             }
 
             button {
-                padding: var(--space-xs);
-                font-size: 0.8rem;
+                padding: 0.8rem;
+                font-size: 0.9rem;
             }
 
             .notification-box {
-                font-size: var(--font-xs);
+                font-size: var(--font-sm);
                 padding: var(--space-xs) var(--space-sm);
             }
         }
 
         @media (max-width: 480px) {
             .logo {
-                width: 50px;
-                height: 50px;
-                top: 8px;
-                left: 8px;
+                width: 100px;
+                height: 100px;
+                top: 10px;
             }
 
             .welcome-header {
-                top: 60px;
-                font-size: 1rem;
-            }
-
-            .welcome-header span {
-                font-size: 0.6rem;
-            }
-
-            .container {
-                max-width: 280px;
-                padding: var(--space-xs);
-                margin-top: 60px;
-            }
-
-            h2 {
+                top: 130px;
                 font-size: 1.2rem;
             }
 
+            .welcome-header span {
+                font-size: 0.9rem;
+            }
+
+            .container {
+                max-width: 300px;
+                padding: 1.2rem;
+                margin-top: 190px;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
             .form-group input {
-                font-size: 0.75rem;
-                padding: var(--space-xs);
+                font-size: 0.85rem;
+                padding: 0.6rem 0.6rem;
             }
 
             button {
-                font-size: 0.75rem;
-                padding: var(--space-xs);
+                font-size: 0.85rem;
+                padding: 0.7rem;
             }
 
             .notification-box {
-                font-size: var(--font-xs);
-                padding: var(--space-xs);
+                font-size: var(--font-sm);
+                padding: var(--space-xs) var(--space-sm);
             }
         }
 
         @media (max-width: 320px) {
             .container {
-                max-width: 260px;
-                margin-top: 50px;
+                max-width: 280px;
+                margin-top: 170px;
             }
 
             .welcome-header {
-                font-size: 0.9rem;
+                font-size: 1rem;
+                top: 120px;
             }
 
             .welcome-header span {
-                font-size: 0.5rem;
+                font-size: 0.8rem;
             }
 
             .logo {
-                width: 40px;
-                height: 40px;
+                width: 90px;
+                height: 90px;
             }
         }
 
         @media (max-height: 500px) and (orientation: landscape) {
             .container {
-                margin-top: 50px;
-                padding: var(--space-xs);
+                margin-top: 200px;
+                padding: 1rem;
             }
 
             .logo {
-                width: 40px;
-                height: 40px;
-                top: 8px;
-                left: 8px;
+                width: 100px;
+                height: 100px;
+                top: 10px;
             }
 
             .welcome-header {
-                top: 8px;
-                font-size: 1rem;
+                top: 130px;
+                font-size: 1.2rem;
             }
 
             .welcome-header span {
-                font-size: 0.6rem;
+                font-size: 0.9rem;
             }
         }
 
@@ -457,13 +476,17 @@
                 transition: none !important;
                 animation: none !important;
             }
+
+            html {
+                scroll-behavior: auto;
+            }
         }
 
         @supports (padding: max(0px)) {
             .container {
-                padding-left: max(var(--space-sm), env(safe-area-inset-left));
-                padding-right: max(var(--space-sm), env(safe-area-inset-right));
-                padding-bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+                padding-left: max(15px, env(safe-area-inset-left));
+                padding-right: max(15px, env(safe-area-inset-right));
+                padding-bottom: max(15px, env(safe-area-inset-bottom));
             }
         }
     </style>
@@ -478,11 +501,6 @@
     </div>
     <div class="container">
         <h2>Parent Signup</h2>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="notification-box {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
         <form method="POST" action="{% url 'parent_signup' %}">
             {% csrf_token %}
             <div class="form-group">
@@ -513,6 +531,20 @@
             <button type="button" class="login-btn" onclick="window.location.href='{% url 'parent_login' %}'">Already have an account? Login</button>
         </form>
     </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div id="signup-{{ forloop.counter }}" class="notification-box {{ message.tags }}">{{ message }}</div>
+            <script>
+                document.getElementById('signup-{{ forloop.counter }}').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('signup-{{ forloop.counter }}').style.opacity = '0';
+                    setTimeout(() => document.getElementById('signup-{{ forloop.counter }}').remove(), 300);
+                }, 5000);
+            </script>
+        {% endfor %}
+    {% endif %}
+
     <script>
         function restrictToNumbers(input) {
             input.value = input.value.replace(/[^0-9]/g, '');
