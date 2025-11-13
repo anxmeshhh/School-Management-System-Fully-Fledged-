@@ -530,12 +530,12 @@
         <form id="loginForm" method="POST" data-url="{% url 'teacher_login' %}">
             {% csrf_token %}
             <div class="form-group">
-                <label for="teacher_id">Teacher ID</label>
+                <label for="teacher_id"> Username (Teacher ID)</label>
                 <input type="number" id="teacher_id" name="id" min="1" required oninput="restrictToNumbers(this)">
                 <svg class="toggle-password" style="display: none;"></svg>
             </div>
             <div class="form-group">
-                <label for="password">Password (Numeric, Max 10 digits)</label>
+                <label for="password">Password (Registered Mobile Number)</label>
                 <input type="password" id="password" name="password" maxlength="10" oninput="restrictToNumbers(this)" required>
                 <svg class="toggle-password" onclick="togglePassword('password')" viewBox="0 0 24 24">
                     <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
