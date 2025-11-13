@@ -4,446 +4,644 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Circular Upload</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Manavargal School Management System - Teacher Circulars</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Roboto', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #fce4ec 100%);
-            background-size: 200%;
-            animation: gradient 20s ease infinite;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
             min-height: 100vh;
-            padding: 0;
+            color: var(--text-color);
+            padding: 120px 20px 40px 20px;
         }
 
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        :root {
+            --primary-color: #be185d;
+            --primary-hover: #ec4899;
+            --sidebar-bg: #fdf2f8;
+            --sidebar-border: #f8d7e5;
+            --white: #ffffff;
+            --light-bg: #fff1f7;
+            --border-color: #f8d7e5;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: linear-gradient(90deg, #be185d, #f472b6);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            position: sticky;
+            background: var(--white);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
             top: 0;
-            z-index: 1000;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
 
         .header h1 {
-            color: white;
             font-size: 2rem;
             font-weight: 700;
             text-align: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-        }
-
-        .header h1:hover {
-            color: #fef2f2;
+            flex-grow: 1;
+            color: var(--primary-color);
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: none;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            background: linear-gradient(90deg, #6b7280, #9ca3af);
-            color: white;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
             text-decoration: none;
+            transition: var(--transition);
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
         }
 
         .back-btn:hover {
-            background: linear-gradient(90deg, #4b5563, #6b7280);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
-        .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+        .logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
             object-fit: cover;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
         }
 
         .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 1.5rem;
-            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
-        .main-content {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(244, 114, 182, 0.4);
-            padding: 2rem;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-
-        .main-content:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(236, 72, 153, 0.15);
-        }
-
-        .form-header {
-            color: #be185d;
-            font-size: 1.8rem;
-            font-weight: 600;
+        .messages {
             margin-bottom: 1.5rem;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
-        }
-
-        .form-header:hover {
-            color: #f472b6;
-        }
-
-        .upload-form {
-            background-color: #fff1f7;
-            padding: 20px;
-            border-radius: 8px;
-            border: 2px solid #f48fb1;
-            margin-bottom: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            color: #be185d;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-group input[type="text"],
-        .form-group select,
-        .form-group input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #f48fb1;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input[type="text"]:focus,
-        .form-group select:focus {
-            border-color: #be185d;
-            outline: none;
-        }
-
-        .upload-btn {
-            background: #be185d;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.3s ease;
-            width: 100%;
-        }
-
-        .upload-btn:hover {
-            background: #880e4f;
-            transform: translateY(-2px);
-        }
-
-        .circular-card {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(244, 114, 182, 0.4);
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .circular-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(190, 24, 93, 0.15);
-        }
-
-        .circular-card h3 {
-            color: #be185d;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.3px;
-        }
-
-        .circular-card h3:hover {
-            color: #f472b6;
-        }
-
-        .circular-card p {
-            color: #555;
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .circular-card p strong {
-            color: #be185d;
-            font-weight: 500;
-        }
-
-        .circular-image {
-            max-width: 100%;
-            margin-top: 1rem;
-            border-radius: 10px;
-            display: block;
-            transition: transform 0.4s ease, opacity 0.4s ease;
-        }
-
-        .circular-image:hover {
-            transform: scale(1.03);
-            opacity: 0.9;
-        }
-
-        .no-circulars {
-            text-align: center;
-            color: #be185d;
-            font-size: 1.1rem;
-            padding: 2rem;
         }
 
         .messages .success {
-            background: #f8bbd0;
-            color: #be185d;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 1rem;
+            background: #fdf2f8;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
         .messages .error {
-            background: #ffcdd2;
-            color: #d32f2f;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 1rem;
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 1024px) {
-            .container {
+        .upload-form {
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .upload-form:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-form label {
+            display: block;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-form input[type="text"],
+        .upload-form select,
+        .upload-form input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .upload-form input[type="text"]:focus,
+        .upload-form select:focus,
+        .upload-form input[type="file"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(190, 24, 93, 0.1);
+            outline: none;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .upload-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-header {
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .circular-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .circular {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .circular:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .circular-type {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+            align-self: flex-start;
+        }
+
+        .circular h3 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .circular small {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            font-weight: 400;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .circular img {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 1rem;
+            flex-grow: 1;
+            transition: var(--transition);
+        }
+
+        .circular img:hover {
+            transform: scale(1.03);
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            background: var(--primary-color);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+        }
+
+        .download-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .no-circulars {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            padding: 2rem;
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            grid-column: 1 / -1;
+        }
+
+        .icon {
+            margin-right: 0.5rem;
+        }
+
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .scroll-top-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .scroll-top-btn.show {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 100px 10px 20px 10px;
+            }
+
+            .header {
                 padding: 1rem;
             }
 
-            .main-content {
-                padding: 1.5rem;
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .logo-img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .upload-form {
+                padding: 1.2rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .upload-form label,
+            .upload-form input[type="text"],
+            .upload-form select,
+            .upload-form input[type="file"],
+            .upload-btn {
+                font-size: 0.9rem;
             }
 
             .form-header {
                 font-size: 1.5rem;
+                margin-bottom: 1.25rem;
             }
-        }
 
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 0.8rem;
-                padding: 0.8rem;
+            .circular-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
             }
-            .header h1 {
-                font-size: 1.5rem;
-                line-height: 1.2;
+
+            .circular {
+                padding: 1.2rem;
             }
+
+            .circular h3 {
+                font-size: 1.25rem;
+            }
+
+            .circular small {
+                font-size: 0.8rem;
+            }
+
+            .no-circulars {
+                font-size: 0.9rem;
+                padding: 1.5rem;
+            }
+
             .back-btn {
-                padding: 0.6rem 1.2rem;
+                padding: 0.6rem 1rem;
                 font-size: 0.9rem;
-                width: fit-content;
             }
-            .logo {
-                width: 40px;
-                height: 40px;
+
+            .circular-type {
+                font-size: 0.75rem;
+                padding: 0.2rem 0.5rem;
             }
-            .container {
-                padding: 0.75rem;
-                margin: 10px auto;
-            }
-            .main-content {
-                margin-top: 0;
-                padding: 1rem;
-            }
-            .upload-form {
-                padding: 1rem;
-            }
-            .circular-card {
-                padding: 1rem;
-            }
-            .circular-card h3 {
-                font-size: 1.3rem;
-            }
-            .circular-card p {
-                font-size: 0.9rem;
+
+            .scroll-top-btn {
+                bottom: 1rem;
+                right: 1rem;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+                padding: 0.9rem;
             }
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 80px 5px 15px 5px;
+            }
+
             .header {
-                padding: 0.6rem;
-                gap: 0.5rem;
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
             }
+
             .header h1 {
-                font-size: 1.2rem;
+                font-size: 1.25rem;
             }
-            .back-btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.8rem;
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
             }
-            .logo {
-                width: 35px;
-                height: 35px;
+
+            .upload-form {
+                padding: 1rem;
+                margin-bottom: 1.25rem;
             }
-            .container {
-                padding: 0 5px;
-                margin: 5px auto;
+
+            .form-group {
+                margin-bottom: 1.25rem;
             }
-            .form-header {
-                font-size: 1.3rem;
-            }
+
+            .upload-form label,
             .upload-form input[type="text"],
             .upload-form select,
-            .upload-form input[type="file"] {
-                padding: 0.5rem;
-                font-size: 0.9rem;
-            }
+            .upload-form input[type="file"],
             .upload-btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
-            }
-            .circular-card {
-                padding: 0.75rem;
-            }
-            .circular-card h3 {
-                font-size: 1.2rem;
-            }
-            .circular-card p {
                 font-size: 0.85rem;
+            }
+
+            .form-header {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+
+            .circular-container {
+                gap: 0.75rem;
+            }
+
+            .circular {
+                padding: 1rem;
+            }
+
+            .circular h3 {
+                font-size: 1.1rem;
+            }
+
+            .circular small {
+                font-size: 0.75rem;
+            }
+
+            .no-circulars {
+                font-size: 0.85rem;
+                padding: 1.25rem;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .download-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .circular-type {
+                font-size: 0.7rem;
+                padding: 0.15rem 0.4rem;
+            }
+
+            .scroll-top-btn {
+                bottom: 0.75rem;
+                right: 0.75rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                padding: 0.8rem;
+            }
+        }
+
+        @media (hover: none) {
+            .upload-form:hover, .circular:hover, .upload-btn:hover, .logo-img:hover, .back-btn:hover, .download-btn:hover, .scroll-top-btn:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
             }
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <div class="header">
-            <a href="{% url 'teacher_dashboard' %}" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back
-            </a>
-            <h1>📢 Teacher Circular Upload</h1>
-            <a href="{% url 'teacher_dashboard' %}">
-                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal SMS Logo" class="logo">
-            </a>
-        </div>
+    <div class="header">
+        <a href="{% url 'teacher_dashboard' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Main Dashboard
+        </a>
+        <h1><i class="fas fa-file-alt"></i> Teacher Circulars</h1>
+        <a href="{% url 'teacher_dashboard' %}">
+            <img src="{% static 'users/images/pinklogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+        </a>
+    </div>
 
-        <div class="container">
-            <div class="main-content">
-                <div class="messages">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">
-                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-
-                <h2 class="form-header">
-                    <i class="fas fa-upload icon"></i> Upload New Circular
-                </h2>
-                <div class="upload-form">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="title">
-                                <i class="fas fa-heading icon"></i> Title
-                            </label>
-                            <input type="text" id="title" name="title" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="class">
-                                <i class="fas fa-chalkboard icon"></i> Class
-                            </label>
-                            <select id="class" name="class" required>
-                                <option value="" disabled selected>Select Class</option>
-                                {% for class in classes %}
-                                    <option value="{{ class }}">{{ class }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="section">
-                                <i class="fas fa-layer-group icon"></i> Section
-                            </label>
-                            <select id="section" name="section" required>
-                                <option value="" disabled selected>Select Section</option>
-                                {% for section in sections %}
-                                    <option value="{{ section }}">{{ section }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="image">
-                                <i class="fas fa-image icon"></i> Upload Image
-                            </label>
-                            <input type="file" id="image" name="image" accept="image/*" required>
-                        </div>
-                        <button type="submit" class="upload-btn">
-                            <i class="fas fa-cloud-upload-alt icon"></i> Upload Circular
-                        </button>
-                    </form>
-                </div>
-
-                <h2 class="form-header">
-                    <i class="fas fa-list icon"></i> Uploaded Circulars
-                </h2>
-
-                {% for circular in circulars %}
-                    <div class="circular-card">
-                        <h3>{{ circular.title }}</h3>
-                        <p><strong><i class="fas fa-calendar icon"></i> Posted on:</strong> {{ circular.date }}</p>
-                        <p><strong><i class="fas fa-users icon"></i> Target:</strong> {{ circular.target }}</p>
-                        <img src="{{ circular.image_url }}" alt="Circular Image" class="circular-image">
-                    </div>
-                {% empty %}
-                    <div class="no-circulars">
-                        <i class="fas fa-inbox"></i> No circulars available right now. Please check back later.
+    <div class="container">
+        <div class="messages">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                        {{ message }}
                     </div>
                 {% endfor %}
-            </div>
+            {% endif %}
+        </div>
+
+        <div class="upload-form">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="title">
+                        <i class="fas fa-heading icon"></i> Title
+                    </label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="class">
+                        <i class="fas fa-chalkboard icon"></i> Class
+                    </label>
+                    <select id="class" name="class" required>
+                        <option value="" disabled selected>Select Class</option>
+                        {% for class in classes %}
+                            <option value="{{ class }}">{{ class }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="section">
+                        <i class="fas fa-layer-group icon"></i> Section
+                    </label>
+                    <select id="section" name="section" required>
+                        <option value="" disabled selected>Select Section</option>
+                        {% for section in sections %}
+                            <option value="{{ section }}">{{ section }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="image">
+                        <i class="fas fa-image icon"></i> Upload Image
+                    </label>
+                    <input type="file" id="image" name="image" accept="image/*" required>
+                </div>
+                <button type="submit" class="upload-btn">
+                    <i class="fas fa-cloud-upload-alt icon"></i> Upload Circular
+                </button>
+            </form>
+        </div>
+
+        <h2 class="form-header">
+            <i class="fas fa-list"></i> Uploaded Circulars
+        </h2>
+
+        <div class="circular-container">
+            {% for circular in circulars %}
+                <div class="circular">
+                    <div class="circular-type">Uploaded Circular</div>
+                    <h3>{{ circular.title }}</h3>
+                    <small>Posted on: {{ circular.date }}</small>
+                    <small>Target: {{ circular.target }}</small>
+                    <img src="{{ circular.image_url }}" alt="Circular Image">
+                    <a href="{{ circular.image_url }}" download="{{ circular.title|slugify }}.jpg" class="download-btn">
+                        <i class="fas fa-download icon"></i> Download Circular
+                    </a>
+                </div>
+            {% empty %}
+                <p class="no-circulars">
+                    <i class="fas fa-inbox"></i> No circulars available right now. Please check back later.
+                </p>
+            {% endfor %}
         </div>
     </div>
+
+    <button class="scroll-top-btn" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        window.onscroll = function() {
+            const btn = document.querySelector('.scroll-top-btn');
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        };
+
+        function scrollToTop() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
 </body>
 </html>

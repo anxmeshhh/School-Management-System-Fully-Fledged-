@@ -5,450 +5,583 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Attendance Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Roboto', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #fce4ec 100%);
-            background-size: 200%;
-            animation: gradient 20s ease infinite;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
             min-height: 100vh;
-            padding: 0;
+            color: var(--text-color);
+            padding: 80px 20px 40px 20px;
         }
 
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        :root {
+            --primary-color: #be185d;
+            --primary-hover: #ec4899;
+            --sidebar-bg: #fdf2f8;
+            --sidebar-border: #f8d7e5;
+            --white: #ffffff;
+            --light-bg: #fff1f7;
+            --border-color: #f8d7e5;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: linear-gradient(90deg, #be185d, #f472b6);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            position: sticky;
+            background: var(--white);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
             top: 0;
-            z-index: 1000;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
 
         .header h1 {
-            color: white;
             font-size: 2rem;
             font-weight: 700;
             text-align: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-        }
-
-        .header h1:hover {
-            color: #fef2f2;
+            flex-grow: 1;
+            color: var(--primary-color);
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: none;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            background: linear-gradient(90deg, #6b7280, #9ca3af);
-            color: white;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .back-btn:hover {
-            background: linear-gradient(90deg, #4b5563, #6b7280);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
-        .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+        .logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
             object-fit: cover;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 1.5rem;
-            width: 100%;
+        .logo-img:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
         }
 
         .main-content {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(244, 114, 182, 0.4);
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
             padding: 2rem;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            margin-top: 80px;
         }
 
-        .main-content:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(236, 72, 153, 0.15);
+        .alert-message {
+            margin-bottom: 1.5rem;
         }
 
-        .form-header {
-            color: #be185d;
-            font-size: 1.8rem;
+        .alert-message .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-message .success {
+            background: #fdf2f8;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
         }
 
-        .form-header:hover {
-            color: #f472b6;
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="date"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(190, 24, 93, 0.1);
+            outline: none;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: end;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .load-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            align-self: flex-end;
+        }
+
+        .load-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .table-container {
+            overflow-x: auto;
         }
 
         .attendance-table {
-            max-height: 500px;
-            overflow-y: auto;
-            border-radius: 8px;
-            border: 2px solid #f48fb1;
-        }
-
-        table {
             width: 100%;
+            min-width: 600px;
             border-collapse: collapse;
-            background-color: white;
+            border: 1px solid var(--border-color);
+            background: var(--white);
         }
 
-        th, td {
-            border: 1px solid #f48fb1;
-            padding: 12px;
+        .attendance-table th,
+        .attendance-table td {
+            padding: 0.75rem;
             text-align: left;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
         }
 
-        th {
-            background-color: #f8bbd0;
+        .attendance-table th {
+            background: var(--light-bg);
+            color: var(--primary-color);
+            font-weight: 600;
             position: sticky;
             top: 0;
             z-index: 10;
-            font-weight: 600;
-            color: #be185d;
         }
 
-        td {
-            color: #333;
+        .attendance-table td {
+            color: var(--text-color);
         }
 
-        tr:hover {
-            background-color: #fff1f7;
-        }
-
-        .error {
-            color: #be185d;
-        }
-
-        .highlight {
-            background-color: #fff1f7;
-        }
-
-        .form-container {
-            background-color: #fff1f7;
-            padding: 20px;
-            border-radius: 8px;
-            border: 2px solid #f48fb1;
-        }
-
-        .button {
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        }
-
-        .button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
-        }
-
-        .icon {
-            margin-right: 8px;
+        .attendance-table tr:nth-child(even) {
+            background: var(--light-bg);
         }
 
         .attendance-btn {
-            padding: 8px 16px;
+            padding: 0.5rem 1rem;
+            border: none;
             border-radius: 5px;
-            font-size: 0.95rem;
-            margin: 0 4px;
-            touch-action: manipulation;
+            color: var(--white);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            margin: 0 0.25rem;
+            min-width: 70px;
         }
 
-        .present { background: linear-gradient(90deg, #16a34a, #22c55e); color: white; }
-        .absent { background: linear-gradient(90deg, #be185d, #f472b6); color: white; }
-        .leave { background: linear-gradient(90deg, #eab308, #facc15); color: white; }
-        .selected { border: 2px solid #be185d; box-shadow: 0 0 5px rgba(190, 24, 93, 0.5); }
+        .attendance-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .present {
+            background: #16a34a;
+        }
+
+        .present:hover {
+            background: #22c55e;
+        }
+
+        .absent {
+            background: var(--primary-color);
+        }
+
+        .absent:hover {
+            background: var(--primary-hover);
+        }
+
+        .leave {
+            background: #eab308;
+        }
+
+        .leave:hover {
+            background: #facc15;
+            color: #000;
+        }
+
+        .selected {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 5px rgba(190, 24, 93, 0.5);
+        }
 
         .no-sections {
-            color: #be185d;
+            color: var(--primary-color);
             font-size: 0.9rem;
             margin-top: 0.5rem;
         }
 
-        .messages .success {
-            background: #f8bbd0;
-            color: #be185d;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-        }
+        @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
 
-        .messages .error {
-            background: #ffcdd2;
-            color: #d32f2f;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 1024px) {
-            .container {
+            .header {
                 padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
             }
 
             .main-content {
                 padding: 1.5rem;
+                margin-top: 70px;
             }
 
-            .form-header {
+            .section {
+                padding: 1.2rem;
+            }
+
+            h2 {
                 font-size: 1.5rem;
             }
 
-            .attendance-btn {
-                padding: 6px 12px;
+            .form-group label {
                 font-size: 0.9rem;
             }
-        }
 
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 0.8rem;
-                padding: 0.8rem;
-            }
-            .header h1 {
-                font-size: 1.5rem;
-                line-height: 1.2;
-            }
-            .back-btn {
-                padding: 0.6rem 1.2rem;
+            .form-group input[type="text"],
+            .form-group input[type="date"],
+            .form-group select,
+            .form-group textarea {
                 font-size: 0.9rem;
-                width: fit-content;
+                padding: 0.6rem;
             }
-            .logo {
-                width: 40px;
-                height: 40px;
-            }
-            .container {
-                padding: 0.75rem;
-                margin: 10px auto;
-            }
-            .main-content {
-                margin-top: 0;
-                padding: 1rem;
-            }
-            .form-container {
-                padding: 1rem;
-            }
-            .flex.items-end {
+
+            .form-row {
                 flex-direction: column;
-                gap: 1rem;
+                gap: 0.5rem;
+                align-items: stretch;
             }
-            .flex-1 {
-                width: 100%;
-            }
-            .attendance-table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-                max-height: 400px;
-            }
-            th, td {
-                padding: 8px;
+
+            .load-btn {
+                align-self: stretch;
                 font-size: 0.9rem;
-                min-width: 100px;
+                padding: 0.6rem;
             }
-            .attendance-btn {
-                padding: 6px 10px;
+
+            .attendance-table th,
+            .attendance-table td {
                 font-size: 0.85rem;
-                margin: 2px;
+                padding: 0.6rem;
+            }
+
+            .attendance-btn {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+                margin: 0.125rem;
+            }
+
+            .logo-img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
             }
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
             .header {
-                padding: 0.6rem;
-                gap: 0.5rem;
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
             }
+
             .header h1 {
-                font-size: 1.2rem;
+                font-size: 1.25rem;
             }
-            .back-btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.8rem;
+
+            .main-content {
+                padding: 1rem;
+                margin-top: 100px;
+                border-radius: 8px;
             }
-            .logo {
-                width: 35px;
-                height: 35px;
+
+            .section {
+                padding: 1rem;
             }
-            .container {
-                padding: 0 5px;
-                margin: 5px auto;
+
+            h2 {
+                font-size: 1.25rem;
             }
-            .form-header {
-                font-size: 1.3rem;
+
+            .form-group label {
+                font-size: 0.85rem;
             }
-            .form-container select,
-            .form-container input {
+
+            .form-group input[type="text"],
+            .form-group input[type="date"],
+            .form-group select,
+            .form-group textarea {
+                font-size: 0.85rem;
                 padding: 0.5rem;
-                font-size: 0.9rem;
             }
-            .button {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
+
+            .load-btn {
+                font-size: 0.85rem;
+                padding: 0.5rem;
             }
-            th, td {
-                padding: 6px;
-                font-size: 0.8rem;
-                min-width: 80px;
+
+            .attendance-table th,
+            .attendance-table td {
+                font-size: 0.75rem;
+                padding: 0.5rem;
             }
+
             .attendance-btn {
-                padding: 5px 8px;
+                font-size: 0.75rem;
+                padding: 0.3rem 0.6rem;
+                min-width: 60px;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
                 font-size: 0.8rem;
             }
-            .attendance-table {
-                max-height: 350px;
+        }
+
+        @media (hover: none) {
+            .section:hover, .load-btn:hover, .attendance-btn:hover, .logo-img:hover, .back-btn:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
             }
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <div class="header">
-            <button class="back-btn" onclick="window.location.href='{% url 'teacher_dashboard' %}'">Back</button>
-            <h1>Attendance Portal</h1>
-            <a href="{% url 'teacher_dashboard' %}">
-                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal SMS Logo" class="logo">
-            </a>
-        </div>
+    <div class="header">
+        <a href="{% url 'teacher_dashboard' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back To Main Dashboard
+        </a>
+        <h1><i class="fas fa-table"></i> Attendance Portal</h1>
+        <a href="{% url 'teacher_dashboard' %}">
+            <img src="{% static 'users/images/pinklogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+        </a>
+    </div>
 
-        <div class="container">
-            <div class="main-content">
-                <div class="messages">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">
-                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+    <div class="container">
+        <div class="main-content">
+            {% if messages %}
+            <div class="alert-message">
+                {% for message in messages %}
+                <div class="{{ message.tags }}">
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                    {{ message }}
                 </div>
-
-                <div class="form-container">
-                    <form id="classSelectForm" action="{% url 'teacher_portal' %}" method="get" class="mb-6">
-                        <div class="flex gap-4 items-end">
-                            <div class="flex-1">
-                                <label for="class" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-chalkboard icon"></i> Select Class
-                                </label>
-                                <select name="class" id="class" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500" onchange="updateSections()">
-                                    <option value="">Select a Class</option>
-                                    {% for class in classes %}
-                                        <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="flex-1">
-                                <label for="section" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-chalkboard-teacher icon"></i> Select Section
-                                </label>
-                                <select name="section" id="section" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">Select a Section</option>
-                                </select>
-                                <div id="no-sections-message" class="no-sections hidden">No sections available for this class.</div>
-                            </div>
-                            <div class="flex-1">
-                                <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-calendar icon"></i> Select Date
-                                </label>
-                                <input type="date" name="date" id="date" value="{{ selected_date }}" class="mt-1 block w-full border rounded-md p-3 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-                            <button type="submit" class="button bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-                                <i class="fas fa-search icon"></i> Load
-                            </button>
-                        </div>
-                    </form>
-
-                    {% if students %}
-                        <form id="attendanceForm" action="{% url 'mark_attendance' %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="class" value="{{ selected_class }}">
-                            <input type="hidden" name="section" value="{{ selected_section }}">
-                            <input type="hidden" name="date" value="{{ selected_date }}">
-                            <h2 class="form-header">
-                                <i class="fas fa-table icon"></i> Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}
-                            </h2>
-                            <div class="attendance-table">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Student ID</th>
-                                            <th>Name</th>
-                                            <th>Admission Number</th>
-                                            <th>Class</th>
-                                            <th>Section</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for student in students %}
-                                            <tr class="{% cycle 'bg-white' 'highlight' %}">
-                                                <td>{{ student.user_id }}</td>
-                                                <td>{{ student.name }}</td>
-                                                <td>{{ student.admission_number }}</td>
-                                                <td>{{ student.class }}</td>
-                                                <td>{{ student.section|default:"N/A" }}</td>
-                                                <td>
-                                                    <button type="submit" name="student_{{ student.user_id }}" value="present" class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">
-                                                        Present
-                                                    </button>
-                                                    <button type="submit" name="student_{{ student.user_id }}" value="absent" class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">
-                                                        Absent
-                                                    </button>
-                                                    <button type="submit" name="student_{{ student.user_id }}" value="leave" class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">
-                                                        Leave
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </form>
-                        
-                    {% endif %}
-                </div>
+                {% endfor %}
             </div>
+            {% endif %}
+
+            <div class="section">
+                <h2><i class="fas fa-search"></i> Select Attendance Details</h2>
+                <form method="GET" action="{% url 'teacher_portal' %}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="class"><i class="fas fa-chalkboard"></i> Select Class</label>
+                            <select id="class" name="class" required onchange="updateSections()">
+                                <option value="">Select a Class</option>
+                                {% for class in classes %}
+                                <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="section"><i class="fas fa-chalkboard-teacher"></i> Select Section</label>
+                            <select id="section" name="section" required>
+                                <option value="">Select a Section</option>
+                            </select>
+                            <div id="no-sections-message" class="no-sections" style="display: none;">No sections available for this class.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="date"><i class="fas fa-calendar"></i> Select Date</label>
+                            <input type="date" id="date" name="date" value="{{ selected_date }}" required>
+                        </div>
+                        <button type="submit" class="load-btn"><i class="fas fa-search"></i> Load</button>
+                    </div>
+                </form>
+            </div>
+
+            {% if students %}
+            <div class="section">
+                <h2><i class="fas fa-table"></i> Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}</h2>
+                <form method="POST" action="{% url 'mark_attendance' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="class" value="{{ selected_class }}">
+                    <input type="hidden" name="section" value="{{ selected_section }}">
+                    <input type="hidden" name="date" value="{{ selected_date }}">
+                    <div class="table-container">
+                        <table class="attendance-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Admission Number</th>
+                                    <th>Class</th>
+                                    <th>Section</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in students %}
+                                <tr>
+                                    <td>{{ student.user_id }}</td>
+                                    <td>{{ student.name }}</td>
+                                    <td>{{ student.admission_number }}</td>
+                                    <td>{{ student.class }}</td>
+                                    <td>{{ student.section|default:"N/A" }}</td>
+                                    <td>
+                                        <button type="submit" name="student_{{ student.user_id }}" value="present" class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">Present</button>
+                                        <button type="submit" name="student_{{ student.user_id }}" value="absent" class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">Absent</button>
+                                        <button type="submit" name="student_{{ student.user_id }}" value="leave" class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">Leave</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
         </div>
     </div>
 
@@ -466,7 +599,7 @@
                         const row = e.target.parentNode;
                         const rows = Array.from(table.querySelectorAll('tbody tr'));
                         const index = rows.indexOf(row);
-                        row.style.backgroundColor = index % 2 === 0 ? 'white' : '#fff1f7';
+                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#fff1f7';
                     }
                 });
             }
@@ -503,10 +636,10 @@
                         sectionSelect.appendChild(option);
                     });
                     sectionSelect.disabled = false;
-                    noSectionsMessage.classList.add('hidden');
+                    noSectionsMessage.style.display = 'none';
                 } else {
                     sectionSelect.disabled = true;
-                    noSectionsMessage.classList.remove('hidden');
+                    noSectionsMessage.style.display = 'block';
                 }
             }
 

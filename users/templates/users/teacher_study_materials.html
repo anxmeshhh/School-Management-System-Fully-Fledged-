@@ -5,214 +5,276 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Study Materials</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Roboto', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #fce4ec 100%);
-            background-size: 200%;
-            animation: gradient 20s ease infinite;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
             min-height: 100vh;
-            padding: 0;
+            color: var(--text-color);
+            padding: 80px 20px 40px 20px;
         }
 
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        :root {
+            --primary-color: #be185d;
+            --primary-hover: #ec4899;
+            --sidebar-bg: #fdf2f8;
+            --sidebar-border: #f8d7e5;
+            --white: #ffffff;
+            --light-bg: #fff1f7;
+            --border-color: #f8d7e5;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: linear-gradient(90deg, #be185d, #f472b6);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            position: sticky;
+            background: var(--white);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
             top: 0;
-            z-index: 1000;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
 
         .header h1 {
-            color: white;
             font-size: 2rem;
             font-weight: 700;
             text-align: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-        }
-
-        .header h1:hover {
-            color: #fef2f2;
+            flex-grow: 1;
+            color: var(--primary-color);
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: none;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            background: linear-gradient(90deg, #6b7280, #9ca3af);
-            color: white;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .back-btn:hover {
-            background: linear-gradient(90deg, #4b5563, #6b7280);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
-        .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+        .logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
             object-fit: cover;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 1.5rem;
-            width: 100%;
+        .logo-img:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
         }
 
         .main-content {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(244, 114, 182, 0.4);
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
             padding: 2rem;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            margin-top: 80px;
         }
 
-        .main-content:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(236, 72, 153, 0.15);
+        .alert-message {
+            margin-bottom: 1.5rem;
         }
 
-        .form-header {
-            color: #be185d;
-            font-size: 1.8rem;
+        .alert-message .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-message .success {
+            background: #fdf2f8;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
-        }
-
-        .form-header:hover {
-            color: #f472b6;
-        }
-
-        .upload-form {
-            background-color: #fff1f7;
-            padding: 20px;
-            border-radius: 8px;
-            border: 2px solid #f48fb1;
-            margin-bottom: 2rem;
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
+            color: var(--text-color);
+            font-size: 1rem;
             font-weight: 500;
-            color: #be185d;
             margin-bottom: 0.5rem;
         }
 
         .form-group input[type="text"],
+        .form-group input[type="date"],
         .form-group select,
-        .form-group input[type="file"] {
+        .form-group input[type="file"],
+        .form-group textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #f48fb1;
-            border-radius: 5px;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+            transition: var(--transition);
+        }
+
+        .form-group textarea {
+            resize: vertical;
         }
 
         .form-group input[type="text"]:focus,
-        .form-group select:focus {
-            border-color: #be185d;
+        .form-group input[type="date"]:focus,
+        .form-group input[type="file"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(190, 24, 93, 0.1);
             outline: none;
         }
 
-        .upload-btn {
-            background: #be185d;
-            color: white;
-            padding: 12px 20px;
+        .form-row {
+            display: flex;
+            align-items: end;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .upload-btn, .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
             border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.3s ease;
-            width: 100%;
-        }
-
-        .upload-btn:hover {
-            background: #880e4f;
-            transform: translateY(-2px);
-        }
-
-        .filter-form {
-            background-color: #fff1f7;
-            padding: 20px;
             border-radius: 8px;
-            border: 2px solid #f48fb1;
-            margin-bottom: 2rem;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            align-self: flex-end;
+            width: auto;
+        }
+
+        .upload-btn:hover, .filter-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .material-card {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(244, 114, 182, 0.4);
+            background: var(--white);
+            border: 1px solid var(--border-color);
             border-radius: 10px;
             padding: 1.5rem;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
         }
 
         .material-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(190, 24, 93, 0.15);
+            box-shadow: var(--shadow-md);
         }
 
         .material-card h3 {
-            color: #be185d;
+            color: var(--primary-color);
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            letter-spacing: 0.3px;
-        }
-
-        .material-card h3:hover {
-            color: #f472b6;
         }
 
         .material-card p {
-            color: #555;
+            color: var(--text-color);
             font-size: 1rem;
             margin-bottom: 0.25rem;
         }
 
         .material-card p strong {
-            color: #be185d;
+            color: var(--primary-color);
             font-weight: 500;
         }
 
@@ -223,188 +285,143 @@
         }
 
         .file-link {
-            color: #be185d;
+            color: var(--primary-color);
             text-decoration: none;
             padding: 0.5rem 1rem;
-            border: 1px solid #f48fb1;
+            border: 1px solid var(--border-color);
             border-radius: 5px;
             font-weight: 500;
-            transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .file-link:hover {
-            background: #f48fb1;
-            color: white;
-            transform: scale(1.05);
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
         }
 
         .no-materials {
             text-align: center;
-            color: #be185d;
+            color: var(--primary-color);
             font-size: 1.1rem;
             padding: 2rem;
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
         }
 
         .homework-btn {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(90deg, #be185d, #f472b6);
-            color: white;
+            background: var(--primary-color);
+            color: var(--white);
             padding: 0.8rem 1.5rem;
             border-radius: 8px;
             text-decoration: none;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             z-index: 1000;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 12px rgba(190, 24, 93, 0.3);
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .homework-btn:hover {
-            background: linear-gradient(90deg, #f472b6, #be185d);
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(190, 24, 93, 0.4);
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
-        .messages .success {
-            background: #f8bbd0;
-            color: #be185d;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+        @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
 
-        .messages .error {
-            background: #ffcdd2;
-            color: #d32f2f;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 1024px) {
-            .container {
+            .header {
                 padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
             }
 
             .main-content {
                 padding: 1.5rem;
+                margin-top: 70px;
             }
 
-            .form-header {
+            .section {
+                padding: 1.2rem;
+            }
+
+            h2 {
                 font-size: 1.5rem;
             }
 
-            .file-links {
-                flex-direction: column;
-                gap: 0.5rem;
+            .form-group label {
+                font-size: 0.9rem;
             }
-        }
 
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 0.8rem;
-                padding: 0.8rem;
-            }
-            .header h1 {
-                font-size: 1.5rem;
-                line-height: 1.2;
-            }
-            .back-btn {
-                padding: 0.6rem 1.2rem;
+            .form-group input[type="text"],
+            .form-group input[type="date"],
+            .form-group input[type="file"],
+            .form-group select,
+            .form-group textarea {
                 font-size: 0.9rem;
-                width: fit-content;
-            }
-            .logo {
-                width: 40px;
-                height: 40px;
-            }
-            .container {
-                padding: 0.75rem;
-                margin: 10px auto;
-            }
-            .main-content {
-                margin-top: 0;
-                padding: 1rem;
-            }
-            .upload-form, .filter-form {
-                padding: 1rem;
-            }
-            .material-card {
-                padding: 1rem;
-            }
-            .material-card h3 {
-                font-size: 1.3rem;
-            }
-            .material-card p {
-                font-size: 0.9rem;
-            }
-            .file-links {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            .file-link {
-                padding: 0.5rem;
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header {
                 padding: 0.6rem;
+            }
+
+            .form-row {
+                flex-direction: column;
                 gap: 0.5rem;
+                align-items: stretch;
             }
-            .header h1 {
-                font-size: 1.2rem;
+
+            .upload-btn, .filter-btn {
+                align-self: stretch;
+                font-size: 0.9rem;
+                padding: 0.6rem;
             }
-            .back-btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.8rem;
+
+            .material-card {
+                padding: 1rem;
             }
-            .logo {
-                width: 35px;
-                height: 35px;
-            }
-            .container {
-                padding: 0 5px;
-                margin: 5px auto;
-            }
-            .form-header {
+
+            .material-card h3 {
                 font-size: 1.3rem;
             }
-            .upload-form input[type="text"],
-            .upload-form select,
-            .upload-form input[type="file"],
-            .filter-form select {
+
+            .material-card p {
+                font-size: 0.9rem;
+            }
+
+            .file-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .file-link {
                 padding: 0.5rem;
                 font-size: 0.9rem;
             }
-            .upload-btn {
-                padding: 0.5rem 1rem;
+
+            .logo-img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
-            .material-card {
-                padding: 0.75rem;
-            }
-            .material-card h3 {
-                font-size: 1.2rem;
-            }
-            .material-card p {
-                font-size: 0.85rem;
-            }
-            .file-link {
-                font-size: 0.85rem;
-                padding: 0.4rem 0.8rem;
-            }
+
             .homework-btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
@@ -412,150 +429,229 @@
                 right: 10px;
             }
         }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
+            .header {
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+                margin-top: 100px;
+                border-radius: 8px;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            .form-group label {
+                font-size: 0.85rem;
+            }
+
+            .form-group input[type="text"],
+            .form-group input[type="date"],
+            .form-group input[type="file"],
+            .form-group select,
+            .form-group textarea {
+                font-size: 0.85rem;
+                padding: 0.5rem;
+            }
+
+            .upload-btn, .filter-btn {
+                font-size: 0.85rem;
+                padding: 0.5rem;
+            }
+
+            .material-card {
+                padding: 0.75rem;
+            }
+
+            .material-card h3 {
+                font-size: 1.2rem;
+            }
+
+            .material-card p {
+                font-size: 0.85rem;
+            }
+
+            .file-link {
+                font-size: 0.85rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .homework-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (hover: none) {
+            .section:hover, .upload-btn:hover, .filter-btn:hover, .file-link:hover, .material-card:hover, .logo-img:hover, .back-btn:hover, .homework-btn:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="app">
-        <div class="header">
-            <button class="back-btn" onclick="window.location.href='{% url 'teacher_dashboard' %}'">
-                <i class="fas fa-arrow-left"></i> Back
-            </button>
-            <h1>📚 Teacher Study Materials</h1>
-            <a href="{% url 'teacher_dashboard' %}">
-                <img src="{% static 'users/images/teacherlogo.jpg' %}" alt="Manavargal SMS Logo" class="logo">
-            </a>
-        </div>
+    <div class="header">
+        <a href="{% url 'teacher_dashboard' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back To Main Dashboard
+        </a>
+        <h1><i class="fas fa-book"></i> Teacher Study Materials</h1>
+        <a href="{% url 'teacher_dashboard' %}">
+            <img src="{% static 'users/images/pinklogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+        </a>
+    </div>
 
-        <div class="container">
-            <div class="main-content">
-                <div class="messages">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">
-                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+    <div class="container">
+        <div class="main-content">
+            {% if messages %}
+            <div class="alert-message">
+                {% for message in messages %}
+                <div class="{{ message.tags }}">
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                    {{ message }}
                 </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
-                <h2 class="form-header">
-                    <i class="fas fa-upload icon"></i> Upload New Study Material
-                </h2>
-                <div class="upload-form">
-                    <form method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
+            <div class="section">
+                <h2><i class="fas fa-upload"></i> Upload New Study Material</h2>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-row">
                         <div class="form-group">
-                            <label for="title">
-                                <i class="fas fa-heading icon"></i> Title
-                            </label>
+                            <label for="title"><i class="fas fa-heading"></i> Title</label>
                             <input type="text" id="title" name="title" required>
                         </div>
                         <div class="form-group">
-                            <label for="class">
-                                <i class="fas fa-chalkboard icon"></i> Select Class
-                            </label>
+                            <label for="class"><i class="fas fa-chalkboard"></i> Select Class</label>
                             <select id="class" name="class" required>
                                 <option value="">Select Class</option>
                                 {% for class in classes %}
-                                    <option value="{{ class }}">{{ class }}</option>
+                                <option value="{{ class }}">{{ class }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="section">
-                                <i class="fas fa-layer-group icon"></i> Select Section
-                            </label>
+                            <label for="section"><i class="fas fa-layer-group"></i> Select Section</label>
                             <select id="section" name="section" required>
                                 <option value="">Select Section</option>
                                 {% for section in sections %}
-                                    <option value="{{ section }}">{{ section|capfirst }}</option>
+                                <option value="{{ section }}">{{ section|capfirst }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="file">
-                                <i class="fas fa-file-pdf icon"></i> Upload File (PDF only)
-                            </label>
+                            <label for="file"><i class="fas fa-file-pdf"></i> Upload File (PDF only)</label>
                             <input type="file" id="file" name="file" accept="application/pdf" required>
                         </div>
-                        <button type="submit" class="upload-btn">
-                            <i class="fas fa-cloud-upload-alt icon"></i> Upload
-                        </button>
-                    </form>
-                </div>
+                        <button type="submit" class="upload-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</button>
+                    </div>
+                </form>
+            </div>
 
-                <h2 class="form-header">
-                    <i class="fas fa-filter icon"></i> Filter Study Materials
-                </h2>
-                <div class="filter-form">
-                    <form method="GET">
+            <div class="section">
+                <h2><i class="fas fa-filter"></i> Filter Study Materials</h2>
+                <form method="GET">
+                    <div class="form-row">
                         <div class="form-group">
-                            <label for="class_filter">
-                                <i class="fas fa-chalkboard icon"></i> Filter by Class
-                            </label>
+                            <label for="class_filter"><i class="fas fa-chalkboard"></i> Filter by Class</label>
                             <select id="class_filter" name="class">
                                 <option value="">All Classes</option>
                                 {% for class in classes %}
-                                    <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
+                                <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="section_filter">
-                                <i class="fas fa-layer-group icon"></i> Filter by Section
-                            </label>
+                            <label for="section_filter"><i class="fas fa-layer-group"></i> Filter by Section</label>
                             <select id="section_filter" name="section">
                                 <option value="">All Sections</option>
                                 {% for section in sections %}
-                                    <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section|capfirst }}</option>
+                                <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section|capfirst }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <button type="submit" class="upload-btn">
-                            <i class="fas fa-search icon"></i> Filter
-                        </button>
-                    </form>
-                </div>
-
-                <h2 class="form-header">
-                    <i class="fas fa-file-alt icon"></i> Existing Study Materials
-                </h2>
-
-                {% for material in study_materials %}
-                    <div class="material-card">
-                        <h3>{{ material.title }}</h3>
-                        <p><strong><i class="fas fa-chalkboard icon"></i> Class:</strong> {{ material.class|capfirst }}</p>
-                        <p><strong><i class="fas fa-layer-group icon"></i> Section:</strong> {{ material.section|capfirst }}</p>
-                        <p><strong><i class="fas fa-calendar icon"></i> Uploaded on:</strong> {{ material.upload_date }}</p>
-                        <div class="file-links">
-                            {% if material.file_path %}
-                                <a href="{% url 'serve_pdf' material.file_path %}" target="_blank" class="file-link">
-                                    <i class="fas fa-eye icon"></i> View PDF
-                                </a>
-                                <a href="{% url 'serve_pdf' material.file_path %}?download=true" target="_blank" class="file-link">
-                                    <i class="fas fa-download icon"></i> Download PDF
-                                </a>
-                            {% else %}
-                                <p>No file available.</p>
-                            {% endif %}
-                        </div>
+                        <button type="submit" class="filter-btn"><i class="fas fa-search"></i> Filter</button>
                     </div>
-                {% empty %}
-                    <div class="no-materials">
-                        {% if selected_class and selected_section %}
-                            <i class="fas fa-inbox"></i> No study materials available for Class: {{ selected_class|capfirst }}, Section: {{ selected_section|capfirst }}.
+                </form>
+            </div>
+
+            <div class="section">
+                <h2><i class="fas fa-file-alt"></i> Existing Study Materials</h2>
+                {% for material in study_materials %}
+                <div class="material-card">
+                    <h3>{{ material.title }}</h3>
+                    <p><strong><i class="fas fa-chalkboard"></i> Class:</strong> {{ material.class|capfirst }}</p>
+                    <p><strong><i class="fas fa-layer-group"></i> Section:</strong> {{ material.section|capfirst }}</p>
+                    <p><strong><i class="fas fa-calendar"></i> Uploaded on:</strong> {{ material.upload_date }}</p>
+                    <div class="file-links">
+                        {% if material.file_path %}
+                        <a href="{% url 'serve_pdf' material.file_path %}" target="_blank" class="file-link">
+                            <i class="fas fa-eye"></i> View PDF
+                        </a>
+                        <a href="{% url 'serve_pdf' material.file_path %}?download=true" target="_blank" class="file-link">
+                            <i class="fas fa-download"></i> Download PDF
+                        </a>
                         {% else %}
-                            <i class="fas fa-inbox"></i> No study materials uploaded yet.
+                        <p>No file available.</p>
                         {% endif %}
                     </div>
+                </div>
+                {% empty %}
+                <div class="no-materials">
+                    {% if selected_class and selected_section %}
+                    <i class="fas fa-inbox"></i> No study materials available for Class: {{ selected_class|capfirst }}, Section: {{ selected_section|capfirst }}.
+                    {% else %}
+                    <i class="fas fa-inbox"></i> No study materials uploaded yet.
+                    {% endif %}
+                </div>
                 {% endfor %}
             </div>
         </div>
-
-        <a href="{% url 'teacher_homework_panel' %}" class="homework-btn">
-            <i class="fas fa-tasks icon"></i> Go to Homework Panel
-        </a>
     </div>
+
+    <a href="{% url 'teacher_homework_panel' %}" class="homework-btn">
+        <i class="fas fa-tasks"></i> Go to Homework Panel
+    </a>
 </body>
 </html>
