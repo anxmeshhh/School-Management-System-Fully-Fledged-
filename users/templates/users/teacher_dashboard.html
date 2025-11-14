@@ -24,10 +24,10 @@
         }
 
         :root {
-            --primary-color: #db7093;
-            --primary-hover: #c71585;
-            --sidebar-bg: #fdf2f8; /* Slight pink tint for sidebar to align with theme */
-            --sidebar-border: #f9a8d4; /* Darker pink border for sidebar */
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4; /* Slight green tint for sidebar to align with theme */
+            --sidebar-border: #a8d5c2; /* Darker green border for sidebar */
             --white: #ffffff;
             --light-bg: #f8f9fa;
             --border-color: #ced4da; /* Darker gray border */
@@ -38,7 +38,7 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --dull-highlighter: #fce7f3; /* Slightly darker dull pink highlighter for sidebar hover */
+            --dull-highlighter: #d4edda; /* Slightly darker dull green highlighter for sidebar hover */
         }
 
         html {
@@ -68,7 +68,7 @@
         .sidebar {
             width: 280px;
             height: 100vh;
-            background: var(--sidebar-bg); /* Updated to subtle theme-aligned pink tint */
+            background: var(--sidebar-bg); /* Updated to subtle theme-aligned green tint */
             color: var(--text-color);
             overflow-y: auto;
             scroll-behavior: smooth;
@@ -404,7 +404,7 @@
         .ripple {
             position: absolute;
             border-radius: 50%;
-            background: rgba(219, 112, 147, 0.3);
+            background: rgba(0, 166, 118, 0.3);
             transform: scale(0);
             animation: ripple 0.6s linear;
             pointer-events: none;
@@ -618,14 +618,14 @@
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo-container">
-                    <img src="{% static 'users/images/pinklogo.jpg' %}" alt="School Logo">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
                 </div>
                 Manavargal SMS
             </div>
             <nav class="sidebar-nav">
                 <a href="{% url 'teacher_profile' %}" class="nav-item">
                     <span class="nav-icon">👤</span>
-                    Profile
+                    My Profile
                 </a>
                 <a href="{% url 'teacher_mark_entry' %}" class="nav-item">
                     <span class="nav-icon">📝</span>

@@ -6,21 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Teacher Login</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
 
         /* Reset and Base Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Arial', sans-serif;
         }
 
         /* CSS Variables */
         :root {
-            --primary-color: #db7093; /* Primary pink */
-            --primary-hover: #c71585; /* Darker pink */
+            --primary-color: #006b3e; /* Primary green */
+            --primary-hover: #004f2d; /* Darker green */
             --white: #ffffff;
             --light-bg: rgba(255, 255, 255, 0.95);
             --border-color: #ddd;
@@ -29,7 +28,7 @@
             --success-color: #28a745;
             --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
-            --shadow-lg: 0 4px 15px rgba(219, 112, 147, 0.2); /* Pink shadow */
+            --shadow-lg: 0 4px 15px rgba(0, 107, 62, 0.2); /* Green shadow */
             --space-xs: 5px;
             --space-sm: 10px;
             --space-md: 15px;
@@ -55,8 +54,8 @@
 
         /* Body Styling */
         body {
-            background: linear-gradient(135deg, #fff0f5 0%, #fce4ec 100%),
-                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(219,112,147,0.1)"/></svg>') repeat;
+            background: linear-gradient(135deg, #e6f5ee 0%, #d4edda 100%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(0,139,79,0.1)"/></svg>') repeat;
             background-size: 200%, 20px 20px;
             min-height: 100vh;
             display: flex;
@@ -195,7 +194,7 @@
 
         .form-group input:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 8px rgba(219, 112, 147, 0.3); /* Pink shadow */
+            box-shadow: 0 0 8px rgba(0, 107, 62, 0.3); /* Green shadow */
             transform: scale(1.02);
         }
 
@@ -513,7 +512,7 @@
 </head>
 <body>
     <div class="logo">
-        <img src="{% static 'users/images/pinklogo.jpg' %}" alt="Logo">
+        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
     </div>
     <div class="welcome-header">
         Welcome to Manavargal School Management System
