@@ -5,26 +5,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Manage Users</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        body {
             font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--text-color);
+            padding: 80px 20px 40px 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
         }
 
         :root {
-            --primary-color: #1e40af;
-            --primary-hover: #3b82f6;
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #d1e7dd;
             --white: #ffffff;
-            --light-bg: rgba(255, 255, 255, 0.95);
-            --border-color: #b3d4fc;
-            --text-color: #666;
-            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
-            --shadow-lg: 0 4px 15px rgba(30, 58, 138, 0.2);
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         html {
@@ -33,231 +51,245 @@
             overflow-x: hidden;
         }
 
-        body {
-            background: linear-gradient(135deg, #e6f0fa 0%, #b3d4fc 50%, #e6f0fa 100%);
-            background-size: 200%;
-            animation: gradient 15s ease infinite;
-            min-height: 100vh;
-            display: flex;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(30,64,175,0.15)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 80%, rgba(30, 64, 175, 0.2) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 40%, rgba(230, 240, 250, 0.15) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
         .container {
-            display: flex;
-            width: 100%;
-            max-width: 1400px;
+            max-width: 1000px;
             margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .main-content {
-            padding: 2rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
         }
 
         .header {
+            background: var(--white);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(230, 240, 250, 0.9) 100%);
-            backdrop-filter: blur(15px);
-            border-radius: 12px;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: var(--shadow-md);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .header-text {
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            flex-grow: 1;
             color: var(--primary-color);
-            font-size: 1.125rem;
-            font-weight: 500;
         }
 
         .back-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 24px;
-            cursor: pointer;
-            background: #ef4444;
-            color: var(--white);
-            font-weight: 500;
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .back-btn:hover {
-            background: #dc2626;
+            background: var(--primary-color);
+            color: var(--white);
             transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .main-content {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 2rem;
+            margin-top: 80px;
+        }
+
+        .alert-message {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-message .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-message .success {
+            background: #f0f9f4;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .alert-message .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-section h1 {
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .create-btn {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .create-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .search-bar {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 0.5rem;
+            background: var(--white);
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            flex: 1;
+            max-width: 300px;
         }
 
         .search-bar input {
-            padding: 10px;
-            border: 2px solid transparent;
-            background: linear-gradient(var(--white), var(--white)) padding-box, linear-gradient(90deg, #bfdbfe, #dbeafe) border-box;
-            border-radius: 8px;
-            font-size: 1rem;
+            flex: 1;
+            border: none;
             outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .search-bar input:focus {
-            border: 2px solid transparent;
-            background: linear-gradient(var(--white), var(--white)) padding-box, linear-gradient(90deg, #b3d4fc, var(--primary-color)) border-box;
-            box-shadow: 0 0 10px rgba(179, 212, 252, 0.4);
+            font-size: 0.9rem;
+            color: var(--text-color);
         }
 
         .search-bar button {
             background: none;
             border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
             color: var(--primary-color);
-        }
-
-        .create-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 24px;
             cursor: pointer;
-            background: #2dd4bf;
-            color: var(--white);
-            font-weight: 500;
             font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .create-btn:hover {
-            background: #14b8a6;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
-        }
-
-        .logo-container {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            overflow: hidden;
             display: flex;
             align-items: center;
-            justify-content: center;
-            border: 2px solid rgba(30, 64, 175, 0.2);
         }
 
-        .logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .title {
-            color: var(--primary-color);
-            font-size: 2.5rem;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .card-container {
-            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(230, 240, 250, 0.9) 100%);
-            backdrop-filter: blur(15px);
-            padding: 2.5rem;
-            border-radius: 16px;
-            transition: all 0.3s ease;
-            max-width: 100%;
-            box-shadow: var(--shadow-md);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+        .table-container {
             overflow-x: auto;
-        }
-
-        .card-container:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(230, 240, 250, 0.95) 100%);
+            margin-bottom: 1.5rem;
         }
 
         .user-table {
             width: 100%;
+            min-width: 600px;
             border-collapse: collapse;
-            margin-top: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
         }
 
         .user-table th, .user-table td {
-            padding: 16px;
+            padding: 0.75rem;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
         }
 
         .user-table th {
-            background: rgba(248, 250, 252, 0.9);
+            background: var(--light-bg);
             color: var(--primary-color);
             font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .user-table td {
+            color: var(--text-color);
+        }
+
+        .user-table tr:nth-child(even) {
+            background: var(--light-bg);
         }
 
         .user-table tr:hover {
-            background: rgba(230, 240, 250, 0.6);
-        }
-
-        .user-table td:first-child {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            background: #f0f9f4;
         }
 
         .user-table .profile-pic {
@@ -266,53 +298,53 @@
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--primary-color);
+            margin-right: 0.5rem;
         }
 
         .action-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 16px;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            text-decoration: none;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            border: none;
         }
 
         .update-btn {
-            background: var(--primary-hover);
-            color: var(--white);
-            margin-right: 20px;
-        }
-
-        .update-btn:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
-        }
-
-        .delete-btn {
-            background: #ef4444;
-            color: var(--white);
-        }
-
-        .delete-btn:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
-        }
-
-        .messages {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            box-shadow: var(--shadow-sm);
+            background: var(--sidebar-bg);
             color: var(--text-color);
         }
 
-        .messages .success {
-            color: #2dd4bf;
+        .update-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            box-shadow: var(--shadow-sm);
         }
 
-        .messages .error {
-            color: #ef4444;
+        .delete-btn {
+            background: #f8d7da;
+            color: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background: #dc3545;
+            color: var(--white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .no-users {
+            font-size: 1rem;
+            color: var(--text-color);
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
         .popup {
@@ -322,39 +354,33 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            backdrop-filter: blur(4px);
         }
 
         .popup-content {
-            background: var(--light-bg);
-            border-radius: 16px;
+            background: var(--white);
+            border-radius: 8px;
             width: 90%;
             max-width: 500px;
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-lg);
             overflow: hidden;
-            animation: popIn 0.4s ease-out;
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            transition: var(--transition);
         }
 
         .popup-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 24px;
-            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+            padding: 1rem 1.5rem;
+            background: var(--primary-color);
             color: var(--white);
         }
 
         .popup-header h3 {
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             font-weight: 600;
         }
 
@@ -362,243 +388,251 @@
             background: none;
             border: none;
             color: var(--white);
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
 
         .close-btn:hover {
-            color: #ef4444;
-            transform: scale(1.2);
+            color: #f0f9f4;
         }
 
         .popup-body {
-            padding: 30px;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 1rem;
         }
 
         .popup-body label {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--primary-color);
             font-weight: 500;
-            margin-bottom: 5px;
+            margin-bottom: 0.25rem;
         }
 
         .popup-body input, .popup-body select {
-            padding: 12px 15px;
-            border: 2px solid transparent;
-            background: linear-gradient(var(--white), var(--white)) padding-box, linear-gradient(90deg, #bfdbfe, #dbeafe) border-box;
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s ease;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: var(--white);
+            color: var(--text-color);
+            transition: var(--transition);
             width: 100%;
         }
 
         .popup-body input:focus, .popup-body select:focus {
-            border: 2px solid transparent;
-            background: linear-gradient(var(--white), var(--white)) padding-box, linear-gradient(90deg, #b3d4fc, var(--primary-color)) border-box;
-            box-shadow: 0 0 10px rgba(179, 212, 252, 0.4);
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
         }
 
         .popup-body .image-upload {
-            margin-top: 10px;
-        }
-
-        .popup-body .image-upload label {
-            margin-bottom: 5px;
+            margin-top: 0.5rem;
         }
 
         .popup-body .image-upload input[type="file"] {
             width: 100%;
-            padding: 8px 0;
+            padding: 0.5rem 0;
         }
 
         .popup-body button {
-            background: #2dd4bf;
-            color: var(--white);
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
             font-weight: 500;
-            transition: all 0.3s ease;
-            margin-top: 10px;
+            cursor: pointer;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            transition: var(--transition);
+            margin-top: 0.5rem;
             width: 100%;
         }
 
         .popup-body button:hover {
-            background: #14b8a6;
+            background: var(--primary-color);
+            color: var(--white);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-md);
         }
 
-        .pulse {
-            animation: pulse 4s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(30, 64, 175, 0.4);
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            pointer-events: none;
-        }
-
-        @keyframes ripple {
-            to { transform: scale(4); opacity: 0; }
-        }
-
-        @media (max-width: 1024px) {
-            .main-content {
-                padding: 1.5rem;
-            }
-
-            .title {
-                font-size: 2.2rem;
-            }
-
-            .user-table th, .user-table td {
-                padding: 12px;
-                font-size: 0.95rem;
-            }
-
-            .action-btn {
-                padding: 6px 12px;
-                font-size: 0.9rem;
-            }
+        .icon {
+            margin-right: 0.5rem;
         }
 
         @media (max-width: 768px) {
-            .main-content {
-                padding: 1rem;
-            }
-
-            .title {
-                font-size: 2rem;
-            }
-
-            .user-table th, .user-table td {
-                padding: 10px;
-                font-size: 0.9rem;
-            }
-
-            .action-btn {
-                padding: 5px 10px;
-                font-size: 0.85rem;
-            }
-
-            .update-btn {
-                margin-right: 10px;
+            body {
+                padding: 70px 10px 20px 10px;
             }
 
             .header {
-                flex-direction: column;
-                gap: 1rem;
                 padding: 1rem;
             }
 
-            .header-right {
-                justify-content: center;
-                gap: 1rem;
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+                margin-top: 70px;
+            }
+
+            .section {
+                padding: 1.2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .header-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .header-section h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-buttons {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.75rem;
             }
 
             .search-bar {
-                flex-direction: column;
-                align-items: stretch;
+                max-width: none;
+                width: 100%;
             }
 
-            .search-bar input {
-                width: 100%;
+            .user-table th, .user-table td {
+                font-size: 0.85rem;
+                padding: 0.6rem;
+            }
+
+            .alert-message .error,
+            .alert-message .success,
+            .alert-message .warning {
+                font-size: 0.9rem;
+            }
+
+            .no-users {
+                font-size: 0.9rem;
+            }
+
+            .logo-img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
             }
 
             .create-btn {
-                width: 100%;
-                margin-left: 0;
-                margin-top: 0.5rem;
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
+            .header {
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+                margin-top: 100px;
+                border-radius: 8px;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            .header-section h1 {
+                font-size: 1.25rem;
+            }
+
+            .user-table th, .user-table td {
+                font-size: 0.75rem;
+                padding: 0.5rem;
+            }
+
+            .action-btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.7rem;
+            }
+
+            .alert-message .error,
+            .alert-message .success,
+            .alert-message .warning {
+                font-size: 0.85rem;
+            }
+
+            .no-users {
+                font-size: 0.85rem;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .create-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
             }
 
             .popup-content {
                 width: 95%;
-                max-width: 400px;
+                margin: 1rem;
             }
 
             .popup-body {
-                padding: 20px;
-                gap: 15px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .main-content {
                 padding: 1rem;
-            }
-
-            .card-container {
-                padding: 1.5rem;
-            }
-
-            .title {
-                font-size: 1.75rem;
-            }
-
-            .user-table th, .user-table td {
-                padding: 8px;
-                font-size: 0.85rem;
-            }
-
-            .action-btn {
-                padding: 4px 8px;
-                font-size: 0.8rem;
-            }
-
-            .logo-container {
-                width: 36px;
-                height: 36px;
-            }
-
-            .popup-body {
-                padding: 15px;
-                gap: 10px;
-            }
-
-            .popup-body label {
-                font-size: 0.9rem;
+                gap: 0.75rem;
             }
 
             .popup-body input, .popup-body select {
-                padding: 10px;
-                font-size: 0.9rem;
+                padding: 0.6rem;
+                font-size: 0.85rem;
             }
 
             .popup-body button {
-                padding: 10px;
-                font-size: 0.9rem;
+                padding: 0.6rem;
+                font-size: 0.85rem;
             }
         }
 
         @media (hover: none) {
-            .card-container:hover, .header:hover {
+            .section:hover, .logo-img:hover, .back-btn:hover, .create-btn:hover {
                 transform: none;
-                box-shadow: var(--shadow-md);
-            }
-
-            .back-btn:hover, .create-btn:hover, .update-btn:hover, .delete-btn:hover, .close-btn:hover, .logo-container:hover {
-                transform: none;
-                background: none;
+                box-shadow: var(--shadow-sm);
             }
         }
 
@@ -615,78 +649,88 @@
     </style>
 </head>
 <body>
+    <div class="header">
+        <a href="{% url 'admin_page' %}" class="back-btn">
+            <i class="fas fa-arrow-left icon"></i> Back to Main Dashboard
+        </a>
+        <h1><i class="fas fa-users-cog icon"></i> Manage Users</h1>
+        <a href="{% url 'admin_page' %}">
+            <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
+        </a>
+    </div>
+
     <div class="container">
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Header Section -->
-            <header class="header">
-                <div class="header-left">
-                    <button class="back-btn" onclick="window.location.href='{% url 'admin_page' %}'">Back</button>
-                    <span class="header-text">Manavargal School Management System, Admin v1.0</span>
+           
+
+            {% if messages %}
+                <div class="alert-message">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
                 </div>
-                <div class="header-right">
+            {% endif %}
+
+            <div class="header-section">
+                <h1><i class="fas fa-search icon"></i> Search Users</h1>
+                <div class="header-buttons">
                     <div class="search-bar">
-                        <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchUsers()">
-                        <button>🔍</button>
+                        <input type="text" id="searchInput" placeholder="Search users...">
+                        <button onclick="searchUsers()">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
-                    <button class="create-btn" onclick="showPopup('add')">Create New User</button>
-                    <div class="logo-container">
-                        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
-                    </div>
+                    <button class="create-btn" onclick="showPopup('add')">
+                        <i class="fas fa-plus icon"></i> Create New User
+                    </button>
                 </div>
-            </header>
+            </div>
 
-            <!-- Title Section -->
-            <h1 class="title">Manage Users</h1>
-
-            <!-- Content Section -->
-            <div id="contentSection">
-                {% if messages %}
-                    <div class="messages">
-                        {% for message in messages %}
-                            <div class="{{ message.tags }}">{{ message }}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                <div class="card-container">
-                    <table class="user-table" id="userTable">
-                        <thead>
+            <div class="table-container">
+                <table class="user-table" id="userTable">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-user icon"></i> Name</th>
+                            <th><i class="fas fa-envelope icon"></i> Email</th>
+                            <th><i class="fas fa-user-tag icon"></i> Username</th>
+                            <th><i class="fas fa-lock icon"></i> Password</th>
+                            <th><i class="fas fa-user-cog icon"></i> Role</th>
+                            <th><i class="fas fa-edit icon"></i> Update</th>
+                            <th><i class="fas fa-trash icon"></i> Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
                             <tr>
-                                <th>Name</th>
-                                <th>Email Id</th>
-                                <th>Username</th>
-                                <th>Password</th>
-                                <th>Role</th>
-                                <th>Update</th>
-                                <th>Delete</th>
+                                <td>
+                                    <img src="{{ user.profile_pic_url }}" alt="{{ user.name }}" class="profile-pic" onerror="this.src='{% static 'users/images/greenlogo.png' %}'">
+                                    {{ user.name }}
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.password }}</td>
+                                <td>{{ user.role }}</td>
+                                <td>
+                                    <button class="action-btn update-btn" onclick="showPopup('update', '{{ user.id }}', '{{ user.name }}', '{{ user.email }}', '{{ user.username }}', '{{ user.password }}', '{{ user.role }}')">
+                                        <i class="fas fa-edit icon"></i> Update
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="action-btn delete-btn" onclick="deleteUser('{{ user.id }}')">
+                                        <i class="fas fa-trash icon"></i> Delete
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {% for user in users %}
-                                <tr>
-                                    <td>
-                                        <img src="{{ user.profile_pic_url }}" alt="{{ user.name }}" class="profile-pic" onerror="this.src='{% static 'users/images/adminlogo.jpg' %}';">
-                                        {{ user.name }}
-                                    </td>
-                                    <td>{{ user.email }}</td>
-                                    <td>{{ user.username }}</td>
-                                    <td>{{ user.password }}</td>
-                                    <td>{{ user.role }}</td>
-                                    <td>
-                                        <button class="action-btn update-btn" onclick="showPopup('update', '{{ user.id }}', '{{ user.name }}', '{{ user.email }}', '{{ user.username }}', '{{ user.password }}', '{{ user.role }}')">Update</button>
-                                    </td>
-                                    <td>
-                                        <button class="action-btn delete-btn" onclick="deleteUser('{{ user.id }}')">🗑️</button>
-                                    </td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="7">No users found.</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="no-users"><i class="fas fa-search icon"></i> No users found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -694,22 +738,24 @@
     <div class="popup" id="userPopup">
         <div class="popup-content">
             <div class="popup-header">
-                <h3 id="popupTitle">Create New User</h3>
-                <button class="close-btn" onclick="hidePopup()">✖</button>
+                <h3 id="popupTitle"><i class="fas fa-user-plus icon"></i> Create New User</h3>
+                <button class="close-btn" onclick="hidePopup()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="popup-body">
                 <form id="userForm" method="POST" action="" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="hidden" name="user_id" id="userId">
-                    <label for="nameInput">Name</label>
+                    <label for="nameInput"><i class="fas fa-user icon"></i> Name</label>
                     <input type="text" name="name" id="nameInput" placeholder="Enter name" required>
-                    <label for="emailInput">Email ID</label>
+                    <label for="emailInput"><i class="fas fa-envelope icon"></i> Email ID</label>
                     <input type="email" name="email" id="emailInput" placeholder="Enter email" required>
-                    <label for="usernameInput">Username</label>
+                    <label for="usernameInput"><i class="fas fa-user-tag icon"></i> Username</label>
                     <input type="text" name="username" id="usernameInput" placeholder="Enter username" required>
-                    <label for="passwordInput">Password (leave blank to keep unchanged)</label>
+                    <label for="passwordInput"><i class="fas fa-lock icon"></i> Password (leave blank to keep unchanged)</label>
                     <input type="password" name="password" id="passwordInput" placeholder="Enter new password">
-                    <label for="roleInput">Role</label>
+                    <label for="roleInput"><i class="fas fa-user-cog icon"></i> Role</label>
                     <select name="role" id="roleInput" required>
                         <option value="">Select Role</option>
                         <option value="admin">Admin</option>
@@ -718,10 +764,12 @@
                         <option value="finance">Finance</option>
                     </select>
                     <div class="image-upload" id="imageUploadSection" style="display: none;">
-                        <label for="profilePicInput">Profile Picture</label>
+                        <label for="profilePicInput"><i class="fas fa-image icon"></i> Profile Picture</label>
                         <input type="file" name="profile_pic" id="profilePicInput" accept="image/*">
                     </div>
-                    <button type="submit" id="submitBtn">Create New User</button>
+                    <button type="submit" id="submitBtn">
+                        <i class="fas fa-save icon"></i> Create New User
+                    </button>
                 </form>
             </div>
         </div>
@@ -742,9 +790,9 @@
             const imageUploadSection = document.getElementById('imageUploadSection');
 
             if (type === 'add') {
-                title.textContent = 'Create New User';
+                title.innerHTML = '<i class="fas fa-user-plus icon"></i> Create New User';
                 form.action = "{% url 'add_user' %}";
-                submitBtn.textContent = 'Create New User';
+                submitBtn.innerHTML = '<i class="fas fa-save icon"></i> Create New User';
                 userIdInput.value = '';
                 nameInput.value = '';
                 emailInput.value = '';
@@ -754,9 +802,9 @@
                 roleInput.value = '';
                 imageUploadSection.style.display = 'block';
             } else if (type === 'update') {
-                title.textContent = 'Update User';
+                title.innerHTML = '<i class="fas fa-user-edit icon"></i> Update User';
                 form.action = `/update_user/${userId}/`;
-                submitBtn.textContent = 'Update User';
+                submitBtn.innerHTML = '<i class="fas fa-save icon"></i> Update User';
                 userIdInput.value = userId;
                 nameInput.value = name;
                 emailInput.value = email;
@@ -791,26 +839,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.card-container');
-            cards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.classList.add('pulse');
-                }, index * 300);
-            });
-
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach((button) => {
-                button.addEventListener('click', function(e) {
-                    const x = e.clientX - e.target.getBoundingClientRect().left;
-                    const y = e.clientY - e.target.getBoundingClientRect().top;
-                    const ripple = document.createElement('span');
-                    ripple.className = 'ripple';
-                    ripple.style.left = `${x}px`;
-                    ripple.style.top = `${y}px`;
-                    this.appendChild(ripple);
-                    setTimeout(() => ripple.remove(), 600);
-                });
-            });
+            const input = document.getElementById('searchInput');
+            input.addEventListener('keyup', searchUsers);
         });
     </script>
 </body>

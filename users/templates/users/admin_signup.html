@@ -6,362 +6,519 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Manavargal School Management System - Admin Sign Up</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+     
+   @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+        /* Importing Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
 
-        body {
-            background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 100%),
-                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
-            background-size: 200%, 40px 40px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            position: relative;
-            overflow: hidden;
-        }
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url("{% static 'users/images/admin.jpg' %}?v=3") no-repeat center center fixed;
-            background-size: cover;
-            opacity: 0.1;
-            z-index: 1;
-            animation: subtlePulse 12s ease-in-out infinite;
-            filter: brightness(1.5);
-        }
+/* CSS Variables */
+:root {
+    --primary-color: #006b3e; /* Primary green */
+    --primary-hover: #004f2d; /* Darker green */
+    --white: #ffffff;
+    --light-bg: rgba(255, 255, 255, 0.95);
+    --border-color: #ddd;
+    --text-color: #666;
+    --error-color: #dc3545;
+    --success-color: #28a745;
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 4px 15px rgba(0, 107, 62, 0.2); /* Green shadow */
+    --space-xs: 5px;
+    --space-sm: 10px;
+    --space-md: 15px;
+    --space-lg: 20px;
+    --space-xl: 30px;
+    --font-xs: 12px;
+    --font-sm: 14px;
+    --font-md: 16px;
+    --font-lg: 18px;
+    --font-xl: 24px;
+    --radius-sm: 5px;
+    --radius-md: 8px;
+    --radius-lg: 20px;
+    --radius-full: 50%;
+}
 
-        body > * {
-            position: relative;
-            z-index: 2;
-        }
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+}
 
-        .logo {
-            position: absolute;
+/* Body Styling */
+body {
+    background: linear-gradient(135deg, #e6f5ee 0%, #d4edda 100%),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(0,139,79,0.1)"/></svg>') repeat;
+    background-size: 200%, 20px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+    touch-action: pan-y;
+}
+
+/* Background Overlay */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 1;
+    animation: subtlePulse 12s ease-in-out infinite;
+    filter: brightness(1.1);
+}
+
+/* Ensure content is above background */
+body > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Logo Styling */
+.logo {
+    position: absolute;
             top: 20px;
-            left: 20px;
-            width: 150px;
-            height: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             overflow: hidden;
             z-index: 3;
             transition: transform 0.6s ease-in-out;
+            border: 4px solid var(--primary-color);
+            box-shadow: var(--shadow-lg);
 
-        }
+}
 
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            animation: bounceIn 1.2s ease-out;
-        }
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: bounceIn 1.2s ease-out;
+}
 
-        .logo:hover {
-            transform: scale(1.15) rotate(5deg);
-        }
+.logo:hover {
+    transform: translateX(-50%) scale(1.05);
+}
 
-        .welcome-header {
-            position: absolute;
-            top: 10px;
-            text-align: center;
-            color: #2563eb;
-            font-size: 1.4rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            width: 100%;
-            z-index: 3;
-            animation: slideInDown 1.2s ease-in-out;
-        }
+/* Welcome Header */
+.welcome-header {
+    position: absolute;
+    top: 240px;
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    width: 100%;
+    z-index: 3;
+    animation: slideInDown 1.2s ease-in-out;
+}
 
-        .welcome-header span {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: normal;
-            color: #170d0d;
-        }
+.welcome-header span {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: normal;
+    color: #170d0d;
+}
 
-        .container {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(8px);
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            width: 100%;
-            max-width: 360px;
-            margin-top: 90px;
-            z-index: 3;
-            animation: slideInRight 1.2s ease-in-out;
-            transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-        }
+/* Container Styling */
+.container {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 2px solid var(--primary-color);
+    width: 100%;
+    max-width: 400px;
+    margin-top: 320px;
+    z-index: 3;
+    animation: slideInRight 1.2s ease-in-out;
+    transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+}
 
-        .container:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-        }
+.container:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
 
-        h2 {
-            color: #2563eb;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            font-weight: 600;
-            animation: fadeIn 1.5s ease-in-out;
-        }
+/* Heading Styling */
+h2 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    animation: fadeIn 1.5s ease-in-out;
+}
 
-        .form-group {
-            margin-bottom: 1rem;
-            position: relative;
-            animation: fadeInUp 1s ease-in-out;
-        }
+/* Form Group Styling */
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+    animation: fadeInUp 1s ease-in-out;
+}
 
-        .form-group label {
-            display: block;
-            color: #2563eb;
-            font-size: 0.9rem;
-            font-weight: 400;
-            margin-bottom: 0.4rem;
-        }
+.form-group label {
+    display: block;
+    color: var(--primary-color);
+    font-size: var(--font-md);
+    font-weight: 400;
+    margin-bottom: var(--space-xs);
+}
 
-        .form-group input {
-            width: 100%;
-            padding: 0.6rem 30px 0.6rem 0.6rem;
-            border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #93c5fd, #2563eb) border-box;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
-        }
+.form-group input {
+    width: 100%;
+    padding: 0.8rem 40px 0.8rem 0.8rem;
+    border: 2px solid var(--border-color);
+    background: var(--white);
+    border-radius: 8px;
+    font-size: var(--font-md);
+    transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
+    outline: none;
+}
 
-        .form-group input:focus {
-            outline: none;
-            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
-            transform: scale(1.02);
-        }
+.form-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(0, 107, 62, 0.3); /* Green shadow */
+    transform: scale(1.02);
+}
 
-        .toggle-password {
-            position: absolute;
-            right: 8px;
-            top: 60%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            width: 20px;
-            height: 20px;
-            fill: #2563eb;
-            transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
-        }
+/* Toggle Password Icon */
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 65%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    fill: var(--primary-color);
+    transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
 
-        .toggle-password:hover {
-            fill: #1d4ed8;
-            transform: translateY(-50%) scale(1.1);
-        }
+.toggle-password:hover {
+    fill: var(--primary-hover);
+    transform: translateY(-50%) scale(1.1);
+}
 
-        button {
-            width: 100%;
-            padding: 0.8rem;
-            background: #2563eb;
-            border: none;
-            border-radius: 25px;
-            color: white;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 8px;
-            transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-        }
+/* Button Styling */
+button {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 25px;
+    color: var(--white);
+    font-size: var(--font-md);
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+}
 
-        button:hover {
-            background: #1d4ed8;
-            transform: scale(1.08);
-            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
-        }
+button:hover {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: scale(1.08);
+    box-shadow: var(--shadow-lg);
+}
 
-        .signup-btn {
-            background: #fff;
-            border: 1px solid #2563eb;
-            color: #2563eb;
-        }
+/* Signup Button Styling */
+.signup-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--white);
+    border: 2px solid var(--primary-color);
+    border-radius: 25px;
+    color: var(--primary-color);
+    font-size: var(--font-md);
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 10px;
+    transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+}
 
-        .signup-btn:hover {
-            background: #2563eb;
-            color: #fff;
-            transform: scale(1.08);
-            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
-        }
+.signup-btn:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    transform: scale(1.08);
+    box-shadow: var(--shadow-lg);
+}
 
-        .messages p {
-            text-align: center;
-            margin: 0.8rem 0;
-            font-size: 0.85rem;
-            color: #dc2626;
-            background: rgba(255, 75, 75, 0.1);
-            padding: 0.5rem;
-            border-radius: 6px;
-        }
+/* Messages Styling (adapted to notification style) */
+.messages p {
+    text-align: center;
+    margin: 1rem 0;
+    font-size: var(--font-sm);
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border-left: 5px solid transparent;
+    border-right: 2px solid transparent;
+}
 
-        p {
-            text-align: center;
-            margin-top: 1rem;
-            font-size: 0.85rem;
-            color: #374151;
-        }
+.messages p.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 5px solid var(--error-color);
+    border-right: 2px solid var(--error-color);
+}
 
-        p a {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
+/* Animations */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
 
-        p a:hover {
-            color: #1d4ed8;
-            text-decoration: underline;
-        }
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
 
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
+@keyframes slideInDown {
+    0% { transform: translateY(-50px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
 
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
+@keyframes slideInRight {
+    0% { transform: translateX(50px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
 
-        @keyframes slideInDown {
-            0% { transform: translateY(-50px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
 
-        @keyframes slideInRight {
-            0% { transform: translateX(50px); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
+@keyframes subtlePulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.15; }
+    100% { opacity: 0.3; }
+}
 
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+/* Responsive Design */
+@media (max-width: 992px) {
+    .container {
+        max-width: 360px;
+        margin-top: 300px;
+    }
 
-        @keyframes subtlePulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.15; }
-            100% { opacity: 0.3; }
-        }
+    .welcome-header {
+        font-size: 2rem;
+        top: 220px;
+    }
 
-        @media (max-width: 768px) {
-            .welcome-header {
-                font-size: 1.2rem;
-                padding: 0 10px;
-            }
+    .welcome-header span {
+        font-size: 1.1rem;
+    }
 
-            .welcome-header span {
-                font-size: 0.8rem;
-            }
+    .logo {
+        width: 180px;
+        height: 180px;
+    }
+}
 
-            .logo {
-                width: 60px;
-                height: 60px;
-                top: 10px;
-                left: 10px;
-            }
+@media (max-width: 768px) {
+    .welcome-header {
+        font-size: 1.8rem;
+        padding: 0 10px;
+        top: 200px;
+    }
 
-            .container {
-                padding: 1.2rem;
-                max-width: 90%;
-                margin-top: 80px;
-            }
+    .welcome-header span {
+        font-size: 1rem;
+    }
 
-            h2 {
-                font-size: 1.3rem;
-            }
+    .logo {
+        width: 120px;
+        height: 120px;
+        top: 15px;
+    }
 
-            .form-group label {
-                font-size: 0.8rem;
-            }
+    .container {
+        padding: 1.5rem;
+        max-width: 90%;
+        margin-top: 260px;
+    }
 
-            .form-group input {
-                padding: 0.5rem 25px 0.5rem 0.5rem;
-                font-size: 0.8rem;
-            }
+    h2 {
+        font-size: 1.5rem;
+    }
 
-            button {
-                padding: 0.7rem;
-                font-size: 0.8rem;
-            }
+    .form-group label {
+        font-size: 0.9rem;
+    }
 
-            p {
-                font-size: 0.75rem;
-            }
+    .form-group input {
+        padding: 0.7rem 40px 0.7rem 0.7rem;
+        font-size: 0.9rem;
+    }
 
-            .toggle-password {
-                width: 18px;
-                height: 18px;
-            }
-        }
+    button, .signup-btn {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
 
-        @media (max-width: 480px) {
-            .logo {
-                width: 50px;
-                height: 50px;
-                top: 8px;
-                left: 8px;
-            }
+    .toggle-password {
+        width: 22px;
+        height: 22px;
+    }
+}
 
-            .welcome-header {
-                top: 60px;
-                font-size: 1rem;
-            }
+@media (max-width: 480px) {
+    .logo {
+        width: 100px;
+        height: 100px;
+        top: 10px;
+    }
 
-            .welcome-header span {
-                font-size: 0.7rem;
-            }
+    .welcome-header {
+        top: 130px;
+        font-size: 1.6rem;
+    }
 
-            .container {
-                max-width: 280px;
-                padding: 1rem;
-                margin-top: 70px;
-            }
+    .welcome-header span {
+        font-size: 0.9rem;
+    }
 
-            h2 {
-                font-size: 1.2rem;
-            }
+    .container {
+        max-width: 300px;
+        padding: 1.2rem;
+        margin-top: 190px;
+    }
 
-            .form-group input {
-                font-size: 0.75rem;
-                padding: 0.4rem 20px 0.4rem 0.4rem;
-            }
+    h2 {
+        font-size: 1.3rem;
+    }
 
-            button {
-                font-size: 0.75rem;
-                padding: 0.6rem;
-            }
+    .form-group input {
+        font-size: 0.85rem;
+        padding: 0.6rem 40px 0.6rem 0.6rem;
+    }
 
-            .toggle-password {
-                width: 16px;
-                height: 16px;
-                right: 6px;
-            }
-        }
+    button, .signup-btn {
+        font-size: 0.85rem;
+        padding: 0.7rem;
+    }
+
+    .toggle-password {
+        width: 20px;
+        height: 20px;
+        right: 8px;
+    }
+}
+
+@media (max-width: 320px) {
+    .container {
+        max-width: 280px;
+        margin-top: 170px;
+    }
+
+    .welcome-header {
+        font-size: 1.4rem;
+        top: 120px;
+    }
+
+    .welcome-header span {
+        font-size: 0.8rem;
+    }
+
+    .logo {
+        width: 90px;
+        height: 90px;
+    }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .container {
+        margin-top: 200px;
+        padding: 1rem;
+    }
+
+    .logo {
+        width: 100px;
+        height: 100px;
+        top: 10px;
+    }
+
+    .welcome-header {
+        top: 130px;
+        font-size: 1.6rem;
+    }
+
+    .welcome-header span {
+        font-size: 0.9rem;
+    }
+}
+
+@media (hover: none) {
+    .container:hover {
+        transform: none;
+        box-shadow: var(--shadow-md);
+    }
+
+    button:hover, .signup-btn:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    button:active, .signup-btn:active {
+        transform: scale(0.98);
+    }
+
+    .toggle-password:hover {
+        transform: translateY(-50%);
+        fill: var(--primary-color);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+@supports (padding: max(0px)) {
+    .container {
+        padding-left: max(15px, env(safe-area-inset-left));
+        padding-right: max(15px, env(safe-area-inset-right));
+        padding-bottom: max(15px, env(safe-area-inset-bottom));
+    }
+}
     </style>
 </head>
 <body>
     <div class="logo">
-        <img src="{% static 'users/images/blue_admin.png' %}" alt="Logo">
+        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
     </div>
     <div class="welcome-header">
         Welcome to Manavargal School System
@@ -372,7 +529,7 @@
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
-                    <p class="{{ message.tags }}">{{ message }}</p>
+                    <p class="error">{{ message }}</p>
                 {% endfor %}
             </div>
         {% endif %}
@@ -391,7 +548,7 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="number" id="password" name="password" maxlength="10" min="0" oninput="restrictToNumbers(this)" required>
-                <svg class="toggle-password" onclick="togglePassword()" viewBox="0 0 24 24">
+                <svg class="toggle-password" onclick="togglePassword('password')" viewBox="0 0 24 24">
                     <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                 </svg>
             </div>
@@ -407,12 +564,12 @@
             }
         }
 
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleButton = document.querySelector('.toggle-password[onclick]');
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const toggleButton = passwordInput.nextElementSibling;
             if (passwordInput.type === 'number') {
                 passwordInput.type = 'text';
-                toggleButton.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-4.01.68l2.02 2.02c.57-.23 1.18-.36 1.83-.36zm-6.36 1.47l2.43 2.43.02.02c-.54.38-1.03.86-1.39 1.42l-2.92-2.92C2.27 10.68 1.08 12.31.35 14.17c1.73 4.39 6 7.5 11 7.5 1.4 0 2.74-.25 4.01-.68l-2.02-2.02c-.57.23-1.18.36-1.83.36-2.76 0-5-2.24-5-5 0-.65.13-1.26.36-1.83l-2.43-2.43z"/>';
+                toggleButton.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-4.01.68l2.02 2.02c.57-.23 1.18-.36 1.83-.36zm-6.36 1.47l2.43 2.43.02.02c-.54.38-1.03.86-1.39 1.42l-2.92-2.92C2.27 10.68 1.08 12.31.35 14.17c1.73 4.39 6 7.5 11 7.5 1.4 0 2.74-.25 4.01-.68l-2.02-2.02c-.57.23-1.18-.36 1.83-.36-2.76 0-5-2.24-5-5 0-.65.13-1.26.36-1.83l-2.43-2.43z"/>';
             } else {
                 passwordInput.type = 'number';
                 toggleButton.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';

@@ -4,277 +4,433 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Timetable Entry - Manavargal SMS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Manavargal School Management System - Admin Timetable Add</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Roboto', sans-serif;
         }
+
         body {
-            background-color: #f4f7fa;
-            color: #333;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--text-color);
             padding: 80px 20px 40px 20px;
-            position: relative;
         }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background: linear-gradient(90deg, #1565c0, #42a5f5);
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            animation: fadeInDown 0.8s ease-out;
-            flex-wrap: wrap;
-            position: fixed;
-            top: 0;
-            left: 20px;
-            right: 20px;
-            z-index: 1000;
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
         }
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        :root {
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #d1e7dd;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .welcome-header {
-            color: white;
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-align: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease, transform 0.3s ease;
-            flex-grow: 1;
-            margin: 0;
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
         }
-        .welcome-header:hover {
-            color: #e3f2fd;
-            transform: scale(1.02);
-        }
-        .back-button {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            background: linear-gradient(90deg, #1976d2, #42a5f5);
-            color: white;
-            text-decoration: none;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        }
-        .back-button:hover {
-            background: linear-gradient(90deg, #1565c0, #1976d2);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
-        }
-        .logo-container {
-            z-index: 1000;
-        }
-        .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+
         .container {
             max-width: 600px;
-            margin: 100px auto 20px;
-            padding: 0 15px;
+            margin: 0 auto;
         }
-        h2 {
-            margin-bottom: 20px;
-            color: #007BFF;
-        }
-        .form-group {
-            margin-bottom: 15px;
+
+        .header {
+            background: var(--white);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
-        label {
-            width: 120px;
-            font-weight: 500;
-            color: #333;
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            flex-grow: 1;
+            color: var(--primary-color);
         }
-        input, select {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .btn:hover {
-            background-color: #0056b3;
+
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
-        .message {
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
+
+        .logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
         }
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
+
+        .logo-img:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
         }
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
+
+        .main-content {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 2rem;
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
         }
+
+        .alert-message {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-message .success {
+            background: #f0f9f4;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .alert-message .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group select,
+        .form-group input[type="text"],
+        .form-group input[type="time"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--white);
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .form-group select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+        }
+
+        .submit-btn {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            justify-content: center;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .icon {
+            margin-right: 0.5rem;
+        }
+
         @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
+
             .header {
-                flex-direction: row;
-                gap: 0.5rem;
-                padding: 0.8rem 1rem;
-                align-items: center;
-                justify-content: space-between;
-                left: 10px;
-                right: 10px;
+                padding: 1rem;
             }
-            .welcome-header {
-                font-size: 1.8rem;
-                margin: 0;
-                flex-grow: 1;
-                text-align: center;
+
+            .header h1 {
+                font-size: 1.5rem;
             }
-            .back-button {
-                padding: 0.7rem 1.2rem;
+
+            .main-content {
+                padding: 1.5rem;
+                margin-top: 70px;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .logo-img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
-            .logo {
-                width: 40px;
-                height: 40px;
-            }
-            .form-group {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            label {
-                width: 100%;
-                margin-bottom: 5px;
-            }
-            input, select {
-                width: 100%;
-            }
-            .container {
-                margin-top: 90px;
-            }
         }
+
         @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
             .header {
-                padding: 0.6rem 0.8rem;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                gap: 0.3rem;
-                left: 5px;
-                right: 5px;
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
             }
-            .welcome-header {
-                font-size: 1.4rem;
+
+            .header h1 {
+                font-size: 1.25rem;
             }
-            .back-button {
-                padding: 0.6rem 1rem;
+
+            .main-content {
+                padding: 1rem;
+                margin-top: 100px;
+                border-radius: 8px;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            .submit-btn {
+                padding: 0.7rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
                 font-size: 0.8rem;
             }
-            .logo {
-                width: 35px;
-                height: 35px;
+        }
+
+        @media (hover: none) {
+            .section:hover, .logo-img:hover, .back-btn:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
             }
-            .container {
-                margin-top: 80px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <a href="{% url 'admin_timetable' %}" class="back-button">Back</a>
-        <h1 class="welcome-header">MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
-        <div class="logo-container">
-            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal SMS Logo" class="logo">
+    <div id="app">
+        <div class="header">
+            <a href="{% url 'admin_timetable' %}" class="back-btn">
+                <i class="fas fa-arrow-left icon"></i> Back to Timetable Dashboard
+            </a>
+            <h1><i class="fas fa-calendar-plus icon"></i> Admin Timetable Add</h1>
+            <a href="{% url 'admin_page' %}">
+                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo" class="logo-img">
+            </a>
         </div>
-    </div>
-    <div class="container">
-        <h2>Add Timetable Entry</h2>
+
         {% if messages %}
-            {% for message in messages %}
-                <div class="message {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
+            <div class="alert-message">
+                {% for message in messages %}
+                    <div class="{{ message.tags }}">
+                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="class">Class:</label>
-                <select id="class" name="class" required>
-                    <option value="" disabled selected>Select a class</option>
-                    {% for cls in classes %}
-                    <option value="{{ cls }}">{{ cls }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="section">Section:</label>
-                <select id="section" name="section">
-                    <option value="">None</option>
-                    {% for sec in sections %}
-                    <option value="{{ sec }}">{{ sec }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="subject">Subject:</label>
-                <input type="text" id="subject" name="subject" required>
-            </div>
-            <div class="form-group">
-                <label for="teacher_id">Teacher:</label>
-                <select id="teacher_id" name="teacher_id" required>
-                    <option value="" disabled selected>Select a teacher</option>
-                    {% for teacher in teachers %}
-                    <option value="{{ teacher.id }}">{{ teacher.name }} ({{ teacher.subject }})</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="day_of_week">Day:</label>
-                <select id="day_of_week" name="day_of_week" required>
-                    <option value="" disabled selected>Select a day</option>
-                    <option value="Monday">Monday</option>
-                    <option value="Tuesday">Tuesday</option>
-                    <option value="Wednesday">Wednesday</option>
-                    <option value="Thursday">Thursday</option>
-                    <option value="Friday">Friday</option>
 
-
-                    <option value="Saturday">Saturday</option>
-                </select>
+        <div class="container">
+            <div class="main-content">
+                <div class="section">
+                    <h2><i class="fas fa-plus-circle icon"></i> Add Timetable Entry</h2>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="class"><i class="fas fa-graduation-cap icon"></i> Class:</label>
+                            <select id="class" name="class" required>
+                                <option value="" disabled selected>Select a class</option>
+                                {% for cls in classes %}
+                                <option value="{{ cls }}">{{ cls }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="section"><i class="fas fa-th-large icon"></i> Section:</label>
+                            <select id="section" name="section">
+                                <option value="">None</option>
+                                {% for sec in sections %}
+                                <option value="{{ sec }}">{{ sec|capfirst }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject"><i class="fas fa-book icon"></i> Subject:</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher_id"><i class="fas fa-user-tie icon"></i> Teacher:</label>
+                            <select id="teacher_id" name="teacher_id" required>
+                                <option value="" disabled selected>Select a teacher</option>
+                                {% for teacher in teachers %}
+                                <option value="{{ teacher.id }}">{{ teacher.name }} ({{ teacher.subject }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="day_of_week"><i class="fas fa-calendar-day icon"></i> Day:</label>
+                            <select id="day_of_week" name="day_of_week" required>
+                                <option value="" disabled selected>Select a day</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="start_time"><i class="fas fa-clock icon"></i> Start Time:</label>
+                            <input type="time" id="start_time" name="start_time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_time"><i class="fas fa-clock icon"></i> End Time:</label>
+                            <input type="time" id="end_time" name="end_time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="room"><i class="fas fa-door-open icon"></i> Room:</label>
+                            <input type="text" id="room" name="room">
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-plus icon"></i> Add Entry
+                        </button>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="start_time">Start Time:</label>
-                <input type="time" id="start_time" name="start_time" required>
-            </div>
-            <div class="form-group">
-                <label for="end_time">End Time:</label>
-                <input type="time" id="end_time" name="end_time" required>
-            </div>
-            <div class="form-group">
-                <label for="room">Room:</label>
-                <input type="text" id="room" name="room">
-            </div>
-            <button type="submit" class="btn">Add Entry</button>
-        </form>
+        </div>
     </div>
 </body>
 </html>

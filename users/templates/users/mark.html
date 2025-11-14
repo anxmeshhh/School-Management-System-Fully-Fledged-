@@ -4,203 +4,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Exam Mark Entry</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Manavargal School Management System - Admin Exam Mark Entry</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Roboto', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #eff6ff 100%);
-            background-size: 200%;
-            animation: gradient 20s ease infinite;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
             min-height: 100vh;
-            padding: 0;
-            position: relative;
+            color: var(--text-color);
+            padding: 80px 20px 40px 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        :root {
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #d1e7dd;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
-        }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            flex-wrap: wrap;
-        }
-
-        .header a.back-btn {
-            color: white;
-            text-decoration: none;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            background: linear-gradient(90deg, #6b7280, #9ca3af);
-        }
-
-        .header a.back-btn:hover {
-            background: linear-gradient(90deg, #4b5563, #6b7280);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
-        }
-
-        .header h1 {
-            color: white;
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 0;
-            flex: 1;
-            text-align: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .header h1:hover {
-            color: #e0f2fe;
-        }
-
-        .header .logo-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(59, 130, 246, 0.4);
         }
 
         .container {
             max-width: 1200px;
-            margin: 5rem auto 1.5rem;
-            padding: 1.5rem;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--white);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-        }
-
-        .section {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            margin-bottom: 1.5rem;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            animation: slideIn 0.6s ease-out;
-        }
-
-        .section:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(37, 99, 235, 0.15);
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section h2 {
-            color: #1d4ed8;
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
-        }
-
-        .section h2:hover {
-            color: #3b82f6;
-        }
-
-        .alert {
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            border-radius: 5px;
-            display: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            animation: fadeIn 0.3s ease-in-out;
+            z-index: 10;
             display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            flex-grow: 1;
+            color: var(--primary-color);
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
-        .alert-success {
-            background: #dbeafe;
-            color: #1d4ed8;
+        .logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
         }
 
-        .alert-error {
-            background: #fee2e2;
-            color: #dc2626;
+        .logo-img:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .main-content {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 2rem;
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        .alert-message {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-message .success {
+            background: #f0f9f4;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .alert-message .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-buttons span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .nav-button {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .logout-button {
+            background: var(--light-bg);
+            border-color: var(--border-color);
+        }
+
+        .logout-button:hover {
+            background: var(--primary-color);
+            color: var(--white);
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
         }
 
         .form-group label {
             display: block;
+            color: var(--primary-color);
+            font-size: 0.9rem;
             font-weight: 500;
-            color: #1d4ed8;
             margin-bottom: 0.5rem;
-            transition: color 0.3s ease;
-        }
-
-        .form-group label:hover {
-            color: #3b82f6;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #bfdbfe;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-            background: white;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--white);
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .form-group select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
         }
 
         .form-group input:focus,
         .form-group select:focus {
-            border-color: #1d4ed8;
             outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
         }
 
         .class-section {
             display: flex;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
         .class-section > div {
@@ -209,18 +282,17 @@
 
         .subject-row {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            padding: 20px;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
             border-radius: 8px;
-            background-color: #f0f9ff;
-            border: 2px solid #bfdbfe;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
         }
 
         .subject-row:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(29, 78, 216, 0.15);
+            box-shadow: var(--shadow-md);
         }
 
         .subject-row > div {
@@ -229,197 +301,118 @@
 
         .button-group {
             display: flex;
-            gap: 0.75rem;
+            gap: 1rem;
             flex-wrap: wrap;
         }
 
         .button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
             font-size: 1rem;
-            font-weight: 600;
-            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .button:hover {
+            background: var(--primary-color);
+            color: var(--white);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(29, 78, 216, 0.4);
-        }
-
-        .button:active {
-            transform: scale(0.98);
+            box-shadow: var(--shadow-md);
         }
 
         .button-primary {
-            background: #1d4ed8;
-            color: white;
-        }
-
-        .button-primary:hover {
-            background: #1e40af;
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
         }
 
         .button-secondary {
-            background: linear-gradient(90deg, #6b7280, #9ca3af);
-            color: white;
-        }
-
-        .button-secondary:hover {
-            background: linear-gradient(90deg, #4b5563, #6b7280);
+            background: var(--light-bg);
+            border-color: var(--border-color);
         }
 
         .button-green {
-            background: #1d4ed8;
-            color: white;
-        }
-
-        .button-green:hover {
-            background: #1e40af;
-        }
-
-        .button-purple {
-            background: #1d4ed8;
-            color: white;
-        }
-
-        .button-purple:hover {
-            background: #1e40af;
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
         }
 
         .button-red {
-            background: linear-gradient(90deg, #6b7280, #9ca3af);
-            color: white;
+            background: #dc3545;
+            color: var(--white);
+            border-color: #dc3545;
         }
 
         .button-red:hover {
-            background: linear-gradient(90deg, #4b5563, #6b7280);
+            background: #c82333;
+            color: var(--white);
         }
 
-        .nav-buttons {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 1rem;
+        .button-purple {
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
         }
 
-        .nav-buttons span {
-            font-size: 1rem;
-            font-weight: 500;
-            color: #1d4ed8;
-        }
-
-        .nav-button {
-            background: #1d4ed8;
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .nav-button:hover {
-            background: #1e40af;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(29, 78, 216, 0.4);
-        }
-
-        .nav-button:active {
-            transform: scale(0.98);
-        }
-
-        .logout-button {
-            background: linear-gradient(90deg, #6b7280, #9ca3af);
-            color: white;
-        }
-
-        .logout-button:hover {
-            background: linear-gradient(90deg, #4b5563, #6b7280);
-            box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            z-index: 200;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: rgba(255, 255, 255, 0.95);
+        .loading {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.1rem;
             padding: 2rem;
-            border-radius: 15px;
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            animation: slideIn 0.3s ease-out;
+            display: none;
         }
 
-        .table {
+        .loading.show {
+            display: block;
+        }
+
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
-            background-color: white;
-            border-radius: 10px;
+            background: var(--white);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
             overflow: hidden;
-            border: 1px solid #bfdbfe;
+            margin-top: 1rem;
         }
 
-        .table th,
-        .table td {
-            border: 1px solid #bfdbfe;
-            padding: 0.75rem;
+        th, td {
+            padding: 1rem;
             text-align: left;
-            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .table th {
-            background-color: #f0f9ff;
-            color: #1d4ed8;
+        th {
+            background: var(--sidebar-bg);
+            color: var(--primary-color);
             font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            font-size: 0.95rem;
         }
 
-        .table td {
-            color: #555;
-        }
-
-        .table tr:nth-child(even) {
-            background-color: #f0f9ff;
-        }
-
-        .table tr:hover {
-            background-color: #dbeafe;
+        tr:hover {
+            background: var(--light-bg);
         }
 
         .signature-pad {
-            border: 2px solid #bfdbfe;
-            border-radius: 5px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
             margin-bottom: 1rem;
-            background-color: #f0f9ff;
-            transition: border-color 0.3s ease;
+            background: var(--light-bg);
+            transition: var(--transition);
             width: 100%;
             max-width: 300px;
         }
 
         .signature-pad:hover {
-            border-color: #1d4ed8;
+            border-color: var(--primary-color);
         }
 
         .progress-card-header {
@@ -433,14 +426,15 @@
             width: 80px;
             height: 80px;
             border-radius: 8px;
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
             object-fit: cover;
-            transition: transform 0.3s ease;
+            transition: var(--transition);
         }
 
         .student-profile-pic:hover {
             transform: scale(1.05);
+            box-shadow: var(--shadow-md);
         }
 
         .student-info-header {
@@ -449,109 +443,124 @@
 
         .student-info-header h3 {
             margin: 0 0 0.5rem 0;
-            color: #1d4ed8;
+            color: var(--primary-color);
             font-size: 1.25rem;
             font-weight: 600;
         }
 
-        .loading {
-            text-align: center;
-            color: #1d4ed8;
-            font-size: 1.1rem;
-            padding: 2rem;
+        .modal {
             display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
         }
 
-        .loading.show {
-            display: block;
+        .modal-content {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            box-shadow: var(--shadow-lg);
         }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 1024px) {
-            .container {
+        .modal-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .summary-section {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .summary-section p {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .summary-section p:last-child {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .icon {
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
+
+            .header {
                 padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+                margin-top: 70px;
             }
 
             .section {
                 padding: 1.5rem;
             }
 
-            .section h2 {
-                font-size: 1.5rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
+            .nav-buttons {
                 flex-direction: column;
-                gap: 0.8rem;
-                padding: 0.8rem;
+                align-items: stretch;
+                gap: 0.5rem;
             }
 
-            .header h1 {
-                font-size: 1.5rem;
-                line-height: 1.2;
+            .nav-button {
+                justify-content: center;
             }
 
-            .header .logo-img {
-                width: 40px;
-                height: 40px;
+            .class-section {
+                flex-direction: column;
+                gap: 1rem;
             }
 
-            .container {
-                margin-top: 7rem;
-                padding: 0.75rem;
-            }
-
-            .section {
-                padding: 1rem;
-            }
-
-            .section h2 {
-                font-size: 1.3rem;
-            }
-
-            .form-group label {
-                font-size: 0.9rem;
-            }
-
-            .form-group input,
-            .form-group select {
-                padding: 0.6rem;
-                font-size: 0.9rem;
-            }
-
-            .class-section,
             .subject-row {
                 flex-direction: column;
-                gap: 0.75rem;
+                gap: 1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+                width: 100%;
             }
 
             .button {
-                padding: 0.6rem 0.75rem;
-                font-size: 0.9rem;
+                justify-content: center;
             }
 
-            .table {
-                font-size: 0.85rem;
-                display: block;
+            table {
+                font-size: 0.9rem;
                 overflow-x: auto;
+                display: block;
                 white-space: nowrap;
             }
 
-            .table th,
-            .table td {
-                padding: 0.6rem;
-            }
-
-            .modal-content {
-                padding: 1rem;
-                max-width: 95%;
-            }
-
-            .student-profile-pic {
-                width: 60px;
-                height: 60px;
+            th, td {
+                padding: 0.75rem 0.5rem;
             }
 
             .progress-card-header {
@@ -560,103 +569,99 @@
                 gap: 0.75rem;
             }
 
-            .nav-buttons {
-                flex-direction: column;
-                width: 100%;
-                gap: 0.5rem;
+            .student-profile-pic {
+                width: 60px;
+                height: 60px;
             }
 
-            .nav-button {
-                width: 100%;
-                text-align: center;
-                padding: 0.6rem;
+            .logo-img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
             .header {
-                padding: 0.6rem;
-                gap: 0.5rem;
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
             }
 
             .header h1 {
-                font-size: 1.2rem;
-                gap: 0.3rem;
+                font-size: 1.25rem;
             }
 
-            .header .logo-img {
-                width: 35px;
-                height: 35px;
-            }
-
-            .header a.back-btn {
-                font-size: 0.9rem;
-                padding: 0.6rem 1.2rem;
-            }
-
-            .container {
-                margin-top: 6rem;
-                padding: 0 5px;
+            .main-content {
+                padding: 1rem;
+                margin-top: 100px;
+                border-radius: 8px;
             }
 
             .section {
-                padding: 0.75rem;
+                padding: 1rem;
             }
 
-            .section h2 {
-                font-size: 1.1rem;
+            h2 {
+                font-size: 1.25rem;
             }
 
-            .form-group label {
-                font-size: 0.85rem;
-            }
-
-            .form-group input,
-            .form-group select {
-                padding: 0.5rem;
-                font-size: 0.85rem;
-            }
-
-            .class-section,
-            .subject-row {
+            .nav-buttons {
                 gap: 0.5rem;
             }
 
-            .button {
-                padding: 0.5rem;
-                font-size: 0.85rem;
+            .nav-button {
+                padding: 0.7rem 1rem;
+                font-size: 0.9rem;
             }
 
-            .table {
+            .button-group .button {
+                padding: 0.7rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            table {
                 font-size: 0.8rem;
             }
 
-            .table th,
-            .table td {
-                padding: 0.5rem;
+            th, td {
+                padding: 0.5rem 0.25rem;
             }
 
-            .modal-content {
-                padding: 0.75rem;
-            }
-
-            .signature-pad {
-                margin-bottom: 0.75rem;
-            }
-
-            .student-profile-pic {
+            .logo-img {
                 width: 50px;
                 height: 50px;
             }
 
-            .nav-buttons span {
-                font-size: 0.85rem;
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (hover: none) {
+            .section:hover, .logo-img:hover, .back-btn:hover, .subject-row:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
             }
 
-            .nav-button {
-                padding: 0.5rem;
-                font-size: 0.85rem;
+            html {
+                scroll-behavior: auto;
             }
         }
     </style>
@@ -664,161 +669,202 @@
 <body>
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
-    <div class="header">
-        <a href="{% url 'admin_page' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back
-        </a>
-        <h1><i class="fas fa-book-open"></i> Exam Mark Entry</h1>
-        <a href="{% url 'admin_page' %}">
-            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
-        </a>
-    </div>
-
-    <div class="container">
-        <div class="nav-buttons">
-            <span>Welcome, {{ teacher_name }}</span>
-            <button id="showMarkEntry" class="nav-button">Mark Entry</button>
-            <button id="showProgressCard" class="nav-button">Progress Card</button>
-            <a href="{% url 'admin_page' %}" class="nav-button logout-button">Back to Admin</a>
-        </div>
-    </div>
-
-    <div class="container">
-        <div id="markEntrySection" class="section">
-            <h2>Mark Entry</h2>
-            <div id="alert" class="alert"></div>
-            <div class="form-group class-section">
-                <div>
-                    <label>Class</label>
-                    <select id="classSelect" required>
-                        <option value="">Select Class</option>
-                        {% for class in classes %}
-                            <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div>
-                    <label>Section</label>
-                    <select id="sectionSelect" required>
-                        <option value="">Select Section</option>
-                        {% for section in sections %}
-                            <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Select Student</label>
-                <select id="studentSelect" style="max-width: 300px;" required>
-                    <option value="">Select Student</option>
-                </select>
-            </div>
-            <div id="subjectSelection"></div>
-            <div id="marksInput"></div>
-            <div class="form-group">
-                <label>Digital Signature</label>
-                <canvas id="signaturePad" class="signature-pad" width="300" height="100"></canvas>
-                <button id="clearSignature" class="button button-secondary">Clear Signature</button>
-            </div>
-            <div class="form-group">
-                <button id="addSubject" class="button button-green">Add Subject</button>
-                <button id="deleteSubject" class="button button-red">Delete Subject</button>
-            </div>
-            <div class="button-group">
-                <button id="saveMarks" class="button button-primary">Save Marks</button>
-                <button id="clearForm" class="button button-secondary">Clear Form</button>
-            </div>
+    <div id="app">
+        <div class="header">
+            <a href="{% url 'admin_page' %}" class="back-btn">
+                <i class="fas fa-arrow-left icon"></i> Back to Main Dashboard
+            </a>
+            <h1><i class="fas fa-book-open icon"></i> Admin Exam Mark Entry</h1>
+            <a href="{% url 'admin_page' %}">
+                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo" class="logo-img">
+            </a>
         </div>
 
-        <div id="progressCardSection" class="section" style="display: none;">
-            <h2>Digital Progress Card</h2>
-            <div class="form-group class-section">
-                <div>
-                    <label>Class</label>
-                    <select id="progressClassSelect" required>
-                        <option value="">Select Class</option>
-                        {% for class in classes %}
-                            <option value="{{ class }}">{{ class }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div>
-                    <label>Section</label>
-                    <select id="progressSectionSelect" required>
-                        <option value="">Select Section</option>
-                        {% for section in sections %}
-                            <option value="{{ section }}">{{ section }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+        {% if messages %}
+            <div class="alert-message">
+                {% for message in messages %}
+                    <div class="{{ message.tags }}">
+                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
             </div>
-            <div class="form-group">
-                <label>Select Student</label>
-                <select id="progressStudentSelect" style="max-width: 300px;">
-                    <option value="">Select Student</option>
-                </select>
-            </div>
-            <div class="loading" id="loadingProgress">Loading progress card...</div>
-            <div id="progressCard" style="display: none; border: 1px solid #bfdbfe; padding: 15px; border-radius: 8px;">
-                <div class="progress-card-header">
-                    <img id="studentProfilePic" class="student-profile-pic" alt="Student Profile Picture" style="display: none;">
-                    <div class="student-info-header">
-                        <h3 id="studentName"></h3>
-                        <p id="studentDetails" style="font-size: 14px; color: #555; margin: 0;"></p>
+        {% endif %}
+
+        <div class="container">
+            <div class="main-content">
+                <div class="nav-buttons">
+                    <span><i class="fas fa-user icon"></i> Welcome, {{ teacher_name }}</span>
+                    <button id="showMarkEntry" class="nav-button">
+                        <i class="fas fa-edit icon"></i> Mark Entry
+                    </button>
+                    <button id="showProgressCard" class="nav-button">
+                        <i class="fas fa-chart-bar icon"></i> Progress Card
+                    </button>
+                    
+                </div>
+
+                <div id="markEntrySection" class="section">
+                    <h2><i class="fas fa-edit icon"></i> Mark Entry</h2>
+                    <div id="alert" class="alert-message success"></div>
+                    <div class="form-group class-section">
+                        <div>
+                            <label for="classSelect"><i class="fas fa-graduation-cap icon"></i> Class</label>
+                            <select id="classSelect" required>
+                                <option value="">Select Class</option>
+                                {% for class in classes %}
+                                    <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="sectionSelect"><i class="fas fa-th-large icon"></i> Section</label>
+                            <select id="sectionSelect" required>
+                                <option value="">Select Section</option>
+                                {% for section in sections %}
+                                    <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentSelect"><i class="fas fa-user icon"></i> Select Student</label>
+                        <select id="studentSelect" required>
+                            <option value="">Select Student</option>
+                        </select>
+                    </div>
+                    <div id="subjectSelection"></div>
+                    <div id="marksInput"></div>
+                    <div class="form-group">
+                        <label for="signaturePad"><i class="fas fa-signature icon"></i> Digital Signature</label>
+                        <canvas id="signaturePad" class="signature-pad" width="300" height="100"></canvas>
+                        <button id="clearSignature" class="button button-secondary">
+                            <i class="fas fa-eraser icon"></i> Clear Signature
+                        </button>
+                    </div>
+                    <div class="form-group button-group">
+                        <button id="addSubject" class="button button-green">
+                            <i class="fas fa-plus icon"></i> Add Subject
+                        </button>
+                        <button id="deleteSubject" class="button button-red">
+                            <i class="fas fa-trash icon"></i> Delete Subject
+                        </button>
+                    </div>
+                    <div class="button-group">
+                        <button id="saveMarks" class="button button-primary">
+                            <i class="fas fa-save icon"></i> Save Marks
+                        </button>
+                        <button id="clearForm" class="button button-secondary">
+                            <i class="fas fa-times icon"></i> Clear Form
+                        </button>
                     </div>
                 </div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Subject</th>
-                            <th>Marks</th>
-                            <th>Max Marks</th>
-                            <th>Grade</th>
-                        </tr>
-                    </thead>
-                    <tbody id="marksTable"></tbody>
-                </table>
-                <div style="margin-top: 15px; padding: 10px; background-color: #f0f9ff; border-radius: 5px; border: 1px solid #bfdbfe;">
-                    <p id="totalMarks" style="margin: 0 0 5px 0; font-weight: 600; color: #1d4ed8;"></p>
-                    <p id="percentage" style="margin: 0 0 5px 0; font-weight: 600; color: #1d4ed8;"></p>
-                    <p id="grade" style="margin: 0 0 5px 0; font-weight: 600; color: #1d4ed8;"></p>
-                    <p id="status" style="margin: 0; font-weight: bold; font-size: 1.1rem;"></p>
-                </div>
-                <button id="downloadPDF" class="button button-purple" style="margin-top: 15px;">Download Progress Card</button>
-            </div>
-        </div>
 
-        <div id="addSubjectModal" class="modal">
-            <div class="modal-content">
-                <h3 style="font-size: 18px; margin-bottom: 15px; color: #1d4ed8;">Add New Subject</h3>
-                <div class="form-group">
-                    <label>Subject Name</label>
-                    <input id="newSubjectName" type="text" placeholder="Enter subject name" required>
+                <div id="progressCardSection" class="section" style="display: none;">
+                    <h2><i class="fas fa-chart-bar icon"></i> Digital Progress Card</h2>
+                    <div class="form-group class-section">
+                        <div>
+                            <label for="progressClassSelect"><i class="fas fa-graduation-cap icon"></i> Class</label>
+                            <select id="progressClassSelect" required>
+                                <option value="">Select Class</option>
+                                {% for class in classes %}
+                                    <option value="{{ class }}">{{ class }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="progressSectionSelect"><i class="fas fa-th-large icon"></i> Section</label>
+                            <select id="progressSectionSelect" required>
+                                <option value="">Select Section</option>
+                                {% for section in sections %}
+                                    <option value="{{ section }}">{{ section }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="progressStudentSelect"><i class="fas fa-user icon"></i> Select Student</label>
+                        <select id="progressStudentSelect">
+                            <option value="">Select Student</option>
+                        </select>
+                    </div>
+                    <div class="loading" id="loadingProgress">
+                        <i class="fas fa-spinner fa-spin icon"></i> Loading progress card...
+                    </div>
+                    <div id="progressCard" style="display: none;">
+                        <div class="progress-card-header">
+                            <img id="studentProfilePic" class="student-profile-pic" alt="Student Profile Picture" style="display: none;">
+                            <div class="student-info-header">
+                                <h3 id="studentName"></h3>
+                                <p id="studentDetails"></p>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-book icon"></i> Subject</th>
+                                    <th><i class="fas fa-star icon"></i> Marks</th>
+                                    <th><i class="fas fa-trophy icon"></i> Max Marks</th>
+                                    <th><i class="fas fa-award icon"></i> Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marksTable"></tbody>
+                        </table>
+                        <div class="summary-section">
+                            <p id="totalMarks"></p>
+                            <p id="percentage"></p>
+                            <p id="grade"></p>
+                            <p id="status"></p>
+                        </div>
+                        <button id="downloadPDF" class="button button-purple">
+                            <i class="fas fa-download icon"></i> Download Progress Card
+                        </button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Maximum Marks</label>
-                    <input id="newMaxMarks" type="number" min="1" placeholder="Enter max marks" required>
-                </div>
-                <div class="button-group">
-                    <button id="submitSubject" class="button button-primary">Add Subject</button>
-                    <button id="cancelSubject" class="button button-secondary">Cancel</button>
-                </div>
-            </div>
-        </div>
 
-        <div id="deleteSubjectModal" class="modal">
-            <div class="modal-content">
-                <h3 style="font-size: 18px; margin-bottom: 15px; color: #1d4ed8;">Delete Subject</h3>
-                <div class="form-group">
-                    <label>Select Subject to Delete</label>
-                    <select id="deleteSubjectSelect" required>
-                        <option value="">Select Subject</option>
-                    </select>
+                <div id="addSubjectModal" class="modal">
+                    <div class="modal-content">
+                        <h3><i class="fas fa-plus-circle icon"></i> Add New Subject</h3>
+                        <div class="form-group">
+                            <label for="newSubjectName"><i class="fas fa-book icon"></i> Subject Name</label>
+                            <input id="newSubjectName" type="text" placeholder="Enter subject name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newMaxMarks"><i class="fas fa-star icon"></i> Maximum Marks</label>
+                            <input id="newMaxMarks" type="number" min="1" placeholder="Enter max marks" required>
+                        </div>
+                        <div class="button-group">
+                            <button id="submitSubject" class="button button-primary">
+                                <i class="fas fa-plus icon"></i> Add Subject
+                            </button>
+                            <button id="cancelSubject" class="button button-secondary">
+                                <i class="fas fa-times icon"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <p style="color: #dc2626; font-size: 14px; margin: 10px 0;">Warning: This will delete the subject and all associated marks. This action cannot be undone.</p>
-                <div class="button-group">
-                    <button id="confirmDeleteSubject" class="button button-red">Delete Subject</button>
-                    <button id="cancelDeleteSubject" class="button button-secondary">Cancel</button>
+
+                <div id="deleteSubjectModal" class="modal">
+                    <div class="modal-content">
+                        <h3><i class="fas fa-trash icon"></i> Delete Subject</h3>
+                        <div class="form-group">
+                            <label for="deleteSubjectSelect"><i class="fas fa-book icon"></i> Select Subject to Delete</label>
+                            <select id="deleteSubjectSelect" required>
+                                <option value="">Select Subject</option>
+                            </select>
+                        </div>
+                        <p style="color: #dc3545; font-size: 0.9rem; margin: 1rem 0;">
+                            <i class="fas fa-exclamation-triangle icon"></i> Warning: This will delete the subject and all associated marks. This action cannot be undone.
+                        </p>
+                        <div class="button-group">
+                            <button id="confirmDeleteSubject" class="button button-red">
+                                <i class="fas fa-trash icon"></i> Delete Subject
+                            </button>
+                            <button id="cancelDeleteSubject" class="button button-secondary">
+                                <i class="fas fa-times icon"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -886,8 +932,8 @@
 
             function showAlert(message, type = 'success') {
                 alertBox.style.display = 'flex';
-                alertBox.className = 'alert alert-' + type;
-                alertBox.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${message}`;
+                alertBox.className = 'alert-message ' + type;
+                alertBox.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'} icon"></i> ${message}`;
                 setTimeout(() => alertBox.style.display = 'none', 5000);
             }
 
@@ -1051,7 +1097,7 @@
                     if (subject) {
                         subjectSelection.innerHTML = `
                             <div class="form-group">
-                                <label>Subject</label>
+                                <label for="subject"><i class="fas fa-book icon"></i> Subject</label>
                                 <select id="subject" required>
                                     <option value="${subject.id}">${subject.name}</option>
                                 </select>
@@ -1060,11 +1106,11 @@
                         marksInput.innerHTML = `
                             <div class="subject-row">
                                 <div>
-                                    <label>Marks</label>
+                                    <label for="marks"><i class="fas fa-star icon"></i> Marks</label>
                                     <input id="marks" type="number" min="0" max="${subject.max_marks}" placeholder="Enter marks" required>
                                 </div>
                                 <div>
-                                    <label>Max Marks</label>
+                                    <label for="maxMarks"><i class="fas fa-trophy icon"></i> Max Marks</label>
                                     <input id="maxMarks" type="number" min="1" value="${subject.max_marks}" readonly>
                                 </div>
                             </div>
@@ -1080,11 +1126,11 @@
                             marksInput.innerHTML += `
                                 <div class="subject-row">
                                     <div>
-                                        <label>${sub.name} Marks</label>
+                                        <label for="${sub.id}-marks"><i class="fas fa-star icon"></i> ${sub.name} Marks</label>
                                         <input id="${sub.id}-marks" type="number" min="0" max="${sub.max_marks}" placeholder="Enter ${sub.name} marks" required>
                                     </div>
                                     <div>
-                                        <label>${sub.name} Max Marks</label>
+                                        <label for="${sub.id}-maxMarks"><i class="fas fa-trophy icon"></i> ${sub.name} Max Marks</label>
                                         <input id="${sub.id}-maxMarks" type="number" min="1" value="${sub.max_marks}" readonly>
                                     </div>
                                 </div>
@@ -1210,7 +1256,7 @@
                 percentage.textContent = `Percentage: ${data.percentage}%`;
                 grade.textContent = `Overall Grade: ${data.grade}`;
                 status.textContent = `Status: ${data.status}`;
-                status.style.color = data.status === 'Pass' ? '#059669' : '#dc2626';
+                status.style.color = data.status === 'Pass' ? '#00a676' : '#dc3545';
             }
 
             // PDF Generation
@@ -1226,9 +1272,9 @@
                     const data = currentProgressData;
 
                     // Colors
-                    const headerColor = '#1e3a8a';
-                    const tableHeaderColor = '#10b981';
-                    const summaryColor = '#f59e0b';
+                    const headerColor = '#00a676';
+                    const tableHeaderColor = '#00a676';
+                    const summaryColor = '#00a676';
 
                     // Header
                     doc.setFillColor(headerColor);
@@ -1287,7 +1333,7 @@
                     doc.text('Grade', 155, y + 5);
                     
                     y += 8;
-                    doc.setDrawColor('#1e3a8a');
+                    doc.setDrawColor('#00a676');
                     doc.setLineWidth(0.5);
                     doc.line(15, y, 185, y);
 
@@ -1298,7 +1344,7 @@
                         y += 8;
                         // Alternate row colors
                         if (index % 2 === 0) {
-                            doc.setFillColor('#f8fafc');
+                            doc.setFillColor('#f0f9f4');
                             doc.rect(15, y - 6, 170, 8, 'F');
                         }
                         
@@ -1308,7 +1354,7 @@
                         doc.text(mark.grade, 160, y, { align: 'center' });
                         
                         // Row border
-                        doc.setDrawColor('#d1d5db');
+                        doc.setDrawColor('#d1e7dd');
                         doc.setLineWidth(0.2);
                         doc.line(15, y + 2, 185, y + 2);
                     });
@@ -1348,7 +1394,7 @@
 
                     // Footer
                     doc.setFontSize(8);
-                    doc.setTextColor('#6b7280');
+                    doc.setTextColor('#868e96');
                     doc.text('This is a computer-generated document.', 105, 280, { align: 'center' });
 
                     // Save the PDF

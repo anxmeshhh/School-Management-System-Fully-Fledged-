@@ -6,48 +6,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Admin Dashboard</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #2563EB, #93C5FD, #DBEAFE);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             position: relative;
             overflow-x: hidden;
-            touch-action: manipulation;
+            color: #495057;
         }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(37,99,235,0.2)" fill-opacity="1" d="M0,224L60,208C120,192,240,160,360,176C480,192,600,256,720,256C840,256,960,192,1080,160C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>') repeat-x bottom;
-            pointer-events: none;
-            z-index: 0;
+        h1, h2, h3, .sidebar-header, .header-text, .username-box {
+            font-family: 'Montserrat', sans-serif;
         }
 
-        body::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 80%, rgba(37, 99, 235, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(147, 197, 253, 0.25) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 40%, rgba(219, 234, 254, 0.2) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
+        :root {
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4; /* Slight green tint for sidebar to align with theme */
+            --sidebar-border: #a8d5c2; /* Darker green border for sidebar */
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #ced4da; /* Darker gray border */
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --dull-highlighter: #d4edda; /* Slightly darker dull green highlighter for sidebar hover */
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
         }
 
         .container {
@@ -60,100 +63,100 @@
         }
 
         .sidebar {
-            width: 300px;
+            width: 280px;
             height: 100vh;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(219, 234, 254, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            color: #333;
+            background: var(--sidebar-bg); /* Updated to subtle theme-aligned green tint */
+            color: var(--text-color);
             overflow-y: auto;
             scroll-behavior: smooth;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-md);
             position: fixed;
             top: 0;
             left: 0;
             z-index: 20;
-            transition: transform 0.3s ease;
-            border-right: 1px solid rgba(37, 99, 235, 0.3);
+            transition: var(--transition);
+            border-right: 2px solid var(--sidebar-border); /* Increased border thickness */
         }
 
         .sidebar-header {
-            padding: 1.5rem 2rem 2rem;
-            background: linear-gradient(135deg, rgba(219, 234, 254, 0.95) 0%, rgba(147, 197, 253, 0.9) 100%);
+            padding: 2rem 1.5rem;
+            background: var(--white); /* Keep header white for contrast, but could tint if needed */
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
-            color: #2563EB;
+            color: var(--primary-color);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 1rem;
-            border-bottom: 2px solid rgba(37, 99, 235, 0.2);
-            min-height: 44px;
+            border-bottom: 2px solid var(--sidebar-border); /* Increased border thickness */
         }
 
         .logo-container {
-            width: 120px;
-            height: 96px;
-            background: linear-gradient(135deg, rgba(147, 197, 253, 0.9) 0%, rgba(219, 234, 254, 0.8) 100%);
-            border-radius: 16px;
+            width: 100px;
+            height: 80px;
+            background: var(--white); /* Slight adjustment for contrast */
+            border-radius: var(--border-radius);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.25);
-            border: 2px solid rgba(37, 99, 235, 0.2);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border); /* Increased border thickness */
         }
 
         .logo-container img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            transition: transform 0.3s ease;
+            transition: var(--transition);
         }
 
         .logo-container:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+            box-shadow: var(--shadow-md);
         }
 
         .logo-container:hover img {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
         .sidebar-header:hover {
-            background: linear-gradient(135deg, rgba(147, 197, 253, 1) 0%, rgba(219, 234, 254, 1) 100%);
+            background: var(--light-bg);
         }
 
         .sidebar-nav {
-            padding: 1.5rem 0;
+            padding: 1rem 0;
         }
 
         .sidebar-nav a {
             display: flex;
             align-items: center;
-            padding: 1rem 2rem;
-            color: #333;
+            padding: 1rem 1.5rem;
+            color: var(--text-color);
             text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 1.125rem;
-            border-left: 4px solid transparent;
+            transition: var(--transition);
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
             min-height: 44px;
         }
 
         .sidebar-nav a:hover {
-            background: linear-gradient(90deg, rgba(219, 234, 254, 0.8) 0%, rgba(147, 197, 253, 0.6) 100%);
-            transform: translateX(5px);
-            border-left: 4px solid #2563EB;
+            background: var(--dull-highlighter);
+            border-left: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(4px);
         }
 
         .sidebar-nav a img {
             width: 32px;
             height: 32px;
             margin-right: 1rem;
-            transition: transform 0.3s ease;
+            transition: var(--transition);
             flex-shrink: 0;
         }
 
@@ -161,46 +164,27 @@
             transform: rotate(10deg) scale(1.1);
         }
 
-        .sidebar-nav a .emoji {
-            margin-left: 0.75rem;
-            font-size: 1.5rem;
-            transition: transform 0.3s ease;
-        }
-
-        .sidebar-nav a:hover .emoji {
-            transform: scale(1.2) rotate(15deg);
-        }
-
-        .sidebar-nav a .emoji:active {
-            animation: bounce 0.5s ease;
-        }
-
-        @keyframes bounce {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.5); }
-            100% { transform: scale(1); }
-        }
-
         .main-content {
-            margin-left: 320px;
+            margin-left: 280px;
             padding: 2rem;
             flex: 1;
             display: flex;
             flex-direction: column;
             gap: 2rem;
+            background: var(--white);
+            min-height: 100vh;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(219, 234, 254, 0.2) 100%);
-            backdrop-filter: blur(15px);
-            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            background: var(--white);
+            border-radius: var(--border-radius);
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            border: 2px solid var(--border-color); /* Increased border thickness */
+            box-shadow: var(--shadow-sm);
         }
 
         .header-left {
@@ -216,50 +200,49 @@
         }
 
         .header-text {
-            color: #FFFFFF;
-            font-size: 1.125rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            color: var(--text-color);
+            font-size: 1.2rem; /* Increased font size */
             font-weight: 500;
         }
 
         .username-box {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(219, 234, 254, 1) 100%);
-            color: #333;
-            padding: 0.5rem 1.2rem;
+            background: var(--light-bg);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
             border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(37, 99, 235, 0.5);
+            font-size: 0.875rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
             min-width: 100px;
             text-align: center;
-            line-height: 1.5;
-            transition: all 0.3s ease;
+            line-height: 1.4;
+            transition: var(--transition);
         }
 
         .username-box:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-md);
         }
 
         .notification-panel {
             position: absolute;
             top: 100%;
             right: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(219, 234, 254, 0.95) 100%);
-            backdrop-filter: blur(15px);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
             padding: 1.5rem;
             width: 320px;
             max-height: 400px;
             overflow-y: auto;
             opacity: 0;
             transform: translateY(-10px);
-            transition: all 0.3s ease;
+            transition: var(--transition);
             pointer-events: none;
             z-index: 10;
-            border: 1px solid rgba(37, 99, 235, 0.25);
+            border: 2px solid var(--border-color); /* Increased border thickness */
+            margin-top: 0.5rem;
         }
 
         .notification-panel.active {
@@ -269,22 +252,22 @@
         }
 
         .notification-panel h3 {
-            color: #2563EB;
-            font-size: 1.125rem;
+            color: var(--primary-color);
+            font-size: 1rem;
             font-weight: 600;
             margin-bottom: 1rem;
         }
 
         .notification-panel ul {
             list-style: none;
-            color: #4B5563;
+            color: var(--text-color);
             font-size: 0.875rem;
         }
 
         .notification-panel li {
             padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(147, 197, 253, 0.6);
-            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
             cursor: pointer;
         }
 
@@ -293,130 +276,102 @@
         }
 
         .notification-panel li:hover {
-            background: rgba(219, 234, 254, 0.6);
+            background: var(--light-bg);
             padding-left: 0.5rem;
             border-radius: 6px;
         }
 
         .bell-button,
         .profile-button {
-            color: #FFFFFF;
-            font-size: 1.5rem;
+            color: var(--text-light);
+            font-size: 1.25rem;
             background: none;
             border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
             padding: 0.5rem;
             border-radius: 50%;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 44px;
-            height: 44px;
-            min-height: 44px;
-            min-width: 44px;
         }
 
         .bell-button:hover,
         .profile-button:hover {
             transform: scale(1.1);
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            background: var(--light-bg);
+            color: var(--primary-color);
         }
 
         .title {
-            color: #FFFFFF;
-            font-size: 2.5rem;
-            font-weight: 600;
-            text-align: center;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-size: 2.25rem;
+            font-weight: 700;
+            text-align: left;
+            margin-bottom: 0;
         }
 
         .card-container {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(219, 234, 254, 0.9) 100%);
-            backdrop-filter: blur(15px);
-            padding: 2.5rem;
-            border-radius: 16px;
+            background: var(--white);
+            padding: 3rem 2.5rem;
+            border-radius: var(--border-radius);
             text-align: center;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             max-width: 800px;
             margin: 0 auto;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: var(--shadow-sm);
+            border: 2px solid var(--border-color); /* Increased border thickness */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
         }
 
         .card-container:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
-            background: linear-gradient(135deg, rgba(219, 234, 254, 0.98) 0%, rgba(147, 197, 253, 0.95) 100%);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
         }
 
         .card-container h2 {
-            color: #2563EB;
-            font-size: 1.875rem;
+            color: var(--primary-color);
+            font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
         }
 
         .quote {
-            color: #333;
+            color: var(--text-color);
             font-style: italic;
-            border-left: 4px solid #2563EB;
+            border-left: 4px solid var(--primary-color);
             padding-left: 1.5rem;
             font-size: 1.125rem;
             padding-top: 1rem;
             padding-bottom: 1rem;
-            background: rgba(37, 99, 235, 0.1);
+            background: var(--light-bg);
             border-radius: 0 8px 8px 0;
+            font-weight: 300;
+            position: relative;
         }
 
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(219, 234, 254, 0.9) 100%);
-            padding: 1.5rem;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            min-height: 120px;
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            background: linear-gradient(135deg, rgba(219, 234, 254, 0.98) 0%, rgba(147, 197, 253, 0.95) 100%);
-        }
-
-        .card img {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 1rem;
-            transition: transform 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .card:hover img {
-            transform: scale(1.2);
-        }
-
-        .card span {
-            color: #333;
-            font-size: 1.125rem;
-            font-weight: 500;
+        .quote::before {
+            content: '"';
+            font-size: 4rem;
+            color: var(--primary-color);
+            position: absolute;
+            top: -0.5rem;
+            left: -1rem;
+            opacity: 0.3;
+            font-family: serif;
         }
 
         .pulse {
@@ -425,50 +380,43 @@
 
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.02); }
             100% { transform: scale(1); }
         }
 
         .menu-toggle {
             display: none;
-            font-size: 1.5rem;
-            color: #FFFFFF;
-            background: rgba(255, 255, 255, 0.25);
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            background: var(--white);
             border: none;
             cursor: pointer;
-            position: fixed;
-            top: 1rem;
+            position: absolute;
+            top: 1.5rem;
             left: 1rem;
             z-index: 30;
             padding: 0.75rem;
-            border-radius: 8px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            height: 48px;
-            min-height: 48px;
-            min-width: 48px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
         }
 
         .menu-toggle:hover {
-            background: rgba(255, 255, 255, 0.35);
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            background: var(--primary-color);
+            color: var(--white);
         }
 
-        .welcome-section {
-            display: block;
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 166, 118, 0.3);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
         }
 
-        .master-data-section {
-            display: none;
-        }
-
-        .master-data-section.active {
-            display: block;
+        @keyframes ripple {
+            to { transform: scale(4); opacity: 0; }
         }
 
         @media (max-width: 1024px) {
@@ -477,38 +425,20 @@
             }
 
             .main-content {
-                margin-left: 270px;
+                margin-left: 250px;
             }
 
             .logo-container {
-                width: 100px;
-                height: 80px;
+                width: 80px;
+                height: 64px;
             }
 
             .title {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
 
             .card-container h2 {
-                font-size: 1.75rem;
-            }
-
-            .sidebar-nav a img {
-                width: 28px;
-                height: 28px;
-            }
-
-            .card img {
-                width: 70px;
-                height: 70px;
-            }
-
-            .sidebar-nav a {
-                min-height: 48px;
-            }
-
-            .card {
-                min-height: 130px;
+                font-size: 1.5rem;
             }
         }
 
@@ -529,15 +459,14 @@
             .main-content {
                 margin-left: 0;
                 padding: 1rem;
-                padding-top: 4rem;
             }
 
             .title {
-                font-size: 2rem;
+                font-size: 1.875rem;
             }
 
             .card-container h2 {
-                font-size: 1.5rem;
+                font-size: 1.375rem;
             }
 
             .quote {
@@ -545,55 +474,25 @@
             }
 
             .header-text {
-                font-size: 1rem;
+                font-size: 1rem; /* Increased font size for mobile */
             }
 
             .logo-container {
-                width: 80px;
-                height: 64px;
+                width: 60px;
+                height: 48px;
             }
 
             .notification-panel {
-                width: 100%;
-                right: 0;
+                width: 280px;
+                right: -20px;
             }
 
-            .sidebar-nav a img {
-                width: 26px;
-                height: 26px;
-            }
-
-            .card img {
-                width: 65px;
-                height: 65px;
-            }
-
-            .header {
-                flex-wrap: wrap;
-                gap: 1rem;
-                padding: 1.25rem;
-            }
-
-            .header-right {
-                gap: 1rem;
-            }
-
-            .bell-button,
-            .profile-button {
-                width: 44px;
-                height: 44px;
-                min-height: 44px;
-                min-width: 44px;
+            .sidebar-header {
+                font-size: 1.125rem;
             }
 
             .sidebar-nav a {
-                min-height: 48px;
-                padding: 1.25rem 1.75rem;
-            }
-
-            .card {
-                min-height: 140px;
-                padding: 1.75rem;
+                font-size: 0.95rem;
             }
         }
 
@@ -609,6 +508,7 @@
                 top: 0;
                 left: 0;
                 transform: translateX(-100%);
+                background: var(--sidebar-bg); /* Maintain theme tint on mobile */
             }
 
             .sidebar.active {
@@ -618,12 +518,11 @@
             .main-content {
                 margin-left: 0;
                 padding: 1rem;
-                padding-top: 4rem;
             }
 
             .card-container {
                 max-width: 100%;
-                padding: 1.5rem;
+                padding: 2rem 1.5rem;
             }
 
             .title {
@@ -635,7 +534,7 @@
             }
 
             .quote {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
                 padding-left: 1rem;
             }
 
@@ -648,24 +547,22 @@
             .header-right {
                 justify-content: center;
                 gap: 1rem;
-                width: 100%;
             }
 
             .username-box {
-                font-size: 0.85rem;
-                padding: 0.4rem 1rem;
+                font-size: 0.75rem;
+                padding: 0.4rem 0.75rem;
                 min-width: 80px;
             }
 
             .logo-container {
-                width: 60px;
-                height: 48px;
+                width: 50px;
+                height: 40px;
             }
 
             .sidebar-nav a {
-                font-size: 1rem;
-                padding: 1.5rem 1.5rem;
-                min-height: 52px;
+                font-size: 0.95rem;
+                padding: 0.75rem 1.5rem;
             }
 
             .sidebar-nav a img {
@@ -673,35 +570,46 @@
                 height: 24px;
             }
 
-            .cards-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
-
-            .card img {
-                width: 55px;
-                height: 55px;
-            }
-
-            .menu-toggle {
-                top: 1rem;
+            .notification-panel {
+                width: calc(100% - 2rem);
+                right: 0;
                 left: 1rem;
-                width: 48px;
-                height: 48px;
-                min-height: 48px;
-                min-width: 48px;
+                margin-top: 0.5rem;
             }
 
-            .bell-button,
-            .profile-button {
-                width: 48px;
-                height: 48px;
-                min-height: 48px;
-                min-width: 48px;
+            .sidebar-header {
+                font-size: 1.125rem;
             }
 
-            .card {
-                min-height: 150px;
-                padding: 2rem;
+            .sidebar-nav a {
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (hover: none) {
+            .card-container:hover, .sidebar:hover, .header:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .bell-button:hover, .profile-button:hover, .logo-container:hover {
+                transform: none;
+                background: none;
+            }
+
+            .sidebar-nav a:hover {
+                transform: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
             }
         }
     </style>
@@ -713,17 +621,17 @@
 
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-header" id="homeLink">
+            <div class="sidebar-header">
                 <div class="logo-container">
                     <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
                 </div>
                 Manavargal SMS
             </div>
             <nav class="sidebar-nav">
-                <a href="#" id="masterDataLink">
-                    <img src="https://img.icons8.com/fluency/24/home.png" alt="Home Icon">
-                    Master Data
-                </a>
+                <a href="{% url 'admin_master' %}" id="masterDataLink">
+    <img src="https://img.icons8.com/fluency/24/home.png" alt="Home Icon">
+    Master Data
+</a>
                 <a href="{% url 'admin_accept_portal' %}">
                     <img src="https://img.icons8.com/color/24/000000/calendar--v1.png" alt="Add Batch Icon">
                     Attendance and Leave
@@ -760,10 +668,7 @@
                     <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="Parent Edit Icon">
                     Teacher Management
                 </a>
-                <a href="#">
-                    <img src="https://img.icons8.com/color/24/000000/checked-checkbox.png" alt="Attendance Report Icon">
-                    HR Module
-                </a>
+                
             </nav>
         </div>
 
@@ -779,10 +684,10 @@
                     <div id="notificationPanel" class="notification-panel">
                         <h3>Notifications</h3>
                         <ul>
-                            <li>New leave request from John Doe - 01:41 AM, May 21, 2025</li>
-                            <li>Circular uploaded: School Event - 10:00 PM, May 20, 2025</li>
-                            <li>Homework submission deadline approaching - 8:00 PM, May 20, 2025</li>
-                            <li>Bulk ID cards generated successfully - 3:00 PM, May 20, 2025</li>
+                            <li>New leave request from John Doe - 01:41 AM, November 14, 2025</li>
+                            <li>Circular uploaded: School Event - 10:00 PM, November 13, 2025</li>
+                            <li>Homework submission deadline approaching - 8:00 PM, November 13, 2025</li>
+                            <li>Bulk ID cards generated successfully - 3:00 PM, November 13, 2025</li>
                         </ul>
                     </div>
                     <span class="header-text">Welcome</span>
@@ -796,64 +701,9 @@
 
             <!-- Content Section -->
             <div id="contentSection">
-                <!-- Welcome Section -->
-                <div class="welcome-section" id="welcomeSection">
-                    <div class="card-container">
-                        <h2>Welcome, {{ admin_name }}!</h2>
-                        <p id="quote" class="quote"></p>
-                    </div>
-                </div>
-
-                <!-- Master Data Section -->
-                <div class="master-data-section" id="masterDataSection">
-                    <div class="card-container">
-                        <h2>Master Data</h2>
-                        <div class="cards-grid">
-                            <a href="{% url 'view_edit_class' %}" class="master-data-link" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <img src="https://img.icons8.com/color/70/000000/classroom.png" alt="Add Class">
-                                    <span>Add Class</span>
-                                </div>
-                            </a>
-                            <a href="{% url 'student_info' %}" class="master-data-link" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <img src="https://img.icons8.com/color/70/000000/graduation-cap.png" alt="Student Info">
-                                    <span>Student Info</span>
-                                </div>
-                            </a>
-                            <a href="{% url 'add_student' %}" class="master-data-link" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <img src="https://img.icons8.com/color/70/000000/add-user-male.png" alt="Add New Student">
-                                    <span>Add New Student</span>
-                                </div>
-                            </a>
-                            <a href="{% url 'manage_users' %}" class="master-data-link" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <img src="https://img.icons8.com/color/70/000000/user-group-man-woman.png" alt="Manage Users">
-                                    <span>Manage Users</span>
-                                </div>
-                            </a>
-                            
-                            <a href="{% url 'qr_scan' %}" class="master-data-link" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <img src="https://img.icons8.com/ios-filled/50/000000/qr-code.png" alt="Scan QR">
-                                    <span>QR CODEit</span>
-                                </div>
-                            </a>
-                            <a href="{% url 'bulk_id_card' %}" class="master-data-link" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <img src="https://img.icons8.com/color/70/000000/id-verified.png" alt="Bulk ID Card Generation">
-                                    <span>Bulk ID Card Generation</span>
-                                </div>
-                            </a>
-                            <a href="{% url 'bulk_upload' %}" class="master-data-link" style="text-decoration: none; color: inherit;">
-                                <div class="card">
-                                    <img src="https://img.icons8.com/color/70/000000/upload.png" alt="Bulk Upload Icon">
-                                    <span>Bulk Student Upload</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
+                <div class="card-container">
+                    <h2>Welcome, {{ admin_name }}!</h2>
+                    <p id="quote" class="quote"></p>
                 </div>
             </div>
         </div>
@@ -880,7 +730,7 @@
         setInterval(updateQuote, 120000);
 
         document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.card, .card-container');
+            const cards = document.querySelectorAll('.card-container');
             cards.forEach((card, index) => {
                 setTimeout(() => {
                     card.classList.add('pulse');
@@ -915,35 +765,38 @@
                 }
             });
 
-            const masterDataLink = document.getElementById('masterDataLink');
-            const homeLink = document.getElementById('homeLink');
-            const welcomeSection = document.getElementById('welcomeSection');
-            const masterDataSection = document.getElementById('masterDataSection');
-
-            masterDataLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                welcomeSection.style.display = 'none';
-                masterDataSection.classList.add('active');
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('active');
-                }
+            // Ripple effect for buttons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach((button) => {
+                button.addEventListener('click', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const ripple = document.createElement('span');
+                    ripple.className = 'ripple';
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    ripple.style.width = '20px';
+                    ripple.style.height = '20px';
+                    this.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 600);
+                });
             });
 
-            homeLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                welcomeSection.style.display = 'block';
-                masterDataSection.classList.remove('active');
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('active');
-                }
-            });
+            // Hover effects for nav items
+            const navItems = document.querySelectorAll('.sidebar-nav a');
+            navItems.forEach((item) => {
+                item.addEventListener('mouseenter', () => {
+                    const icon = item.querySelector('img');
+                    if (icon) {
+                        icon.style.transform = 'scale(1.1) rotate(5deg)';
+                    }
+                });
 
-            // Close sidebar on master data link click (mobile only)
-            const masterDataLinks = document.querySelectorAll('.master-data-link');
-            masterDataLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth <= 768) {
-                        sidebar.classList.remove('active');
+                item.addEventListener('mouseleave', () => {
+                    const icon = item.querySelector('img');
+                    if (icon) {
+                        icon.style.transform = 'none';
                     }
                 });
             });

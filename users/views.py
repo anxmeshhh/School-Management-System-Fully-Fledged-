@@ -2732,11 +2732,20 @@ def add_student(request):
         'sports_quota_options': ['yes', 'no']
     })
 
+from django.db import connection
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+from django.db import connection
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
 def update_student(request, admission_number):
     if not request.session.get('admin_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
 
+    student_data = None
     try:
         with connection.cursor() as cursor:
             # Get student data from multiple tables
@@ -2796,23 +2805,282 @@ def update_student(request, admission_number):
                     ('email', email)
                 ] if not value]
                 messages.error(request, f'Missing required fields: {", ".join(missing)}')
-                return redirect('update_student', admission_number=admission_number)
+                # Inline context prep for error case
+                post_data = dict(request.POST)
+                # Map boolean fields from DB robustly (handles int 0/1 or str 'yes'/'no')
+                teacher_ward_db = student_data[36] if len(student_data) > 36 else None
+                teacher_ward = 'yes' if teacher_ward_db in (1, 'yes', 'Yes', True) else 'no'
+                rte_db = student_data[37] if len(student_data) > 37 else None
+                rte = 'yes' if rte_db in (1, 'yes', 'Yes', True) else 'no'
+                sports_quota_db = student_data[38] if len(student_data) > 38 else None
+                sports_quota = 'yes' if sports_quota_db in (1, 'yes', 'Yes', True) else 'no'
+                context = {
+                    'title': 'Update Student',
+                    'admission_number': admission_number,
+                    'post_data': post_data,  # For repopulating form on errors
+                    'id': student_data[0] if len(student_data) > 0 else '',
+                    'user_id': student_data[1] if len(student_data) > 1 else '',
+                    'name': student_data[2] if len(student_data) > 2 else '',
+                    'class_section': f"{student_data[4]}-{student_data[5]}" if len(student_data) > 5 else '',
+                    'roll_number': student_data[6] if len(student_data) > 6 else '',
+                    'emis': student_data[7] if len(student_data) > 7 else '',
+                    'email': student_data[8] if len(student_data) > 8 else '',
+                    'gender': student_data[9] if len(student_data) > 9 else '',
+                    'community': student_data[10] if len(student_data) > 10 else '',
+                    'tamil_name': student_data[11] if len(student_data) > 11 else '',
+                    'dob': student_data[12] if len(student_data) > 12 else '',
+                    'nationality': student_data[13] if len(student_data) > 13 else '',
+                    'blood_group': student_data[14] if len(student_data) > 14 else '',
+                    'mother_tongue': student_data[15] if len(student_data) > 15 else '',
+                    'caste': student_data[16] if len(student_data) > 16 else '',
+                    'religion': student_data[17] if len(student_data) > 17 else '',
+                    'place_of_birth': student_data[18] if len(student_data) > 18 else '',
+                    'aadhaar': student_data[19] if len(student_data) > 19 else '',
+                    'disability': student_data[20] if len(student_data) > 20 else '',
+                    'id_mark1': student_data[21] if len(student_data) > 21 else '',
+                    'id_mark2': student_data[22] if len(student_data) > 22 else '',
+                    'current_class': student_data[23] if len(student_data) > 23 else '',
+                    'admission_class': student_data[24] if len(student_data) > 24 else '',
+                    'admission_year': student_data[25] if len(student_data) > 25 else '',
+                    'admission_date': student_data[26] if len(student_data) > 26 else '',
+                    'address': student_data[27] if len(student_data) > 27 else '',
+                    'contact': student_data[28] if len(student_data) > 28 else '',
+                    'alt_contact': student_data[29] if len(student_data) > 29 else '',
+                    'country': student_data[30] if len(student_data) > 30 else '',
+                    'state': student_data[31] if len(student_data) > 31 else '',
+                    'city': student_data[32] if len(student_data) > 32 else '',
+                    'pincode': student_data[33] if len(student_data) > 33 else '',
+                    'status': student_data[34] if len(student_data) > 34 else '',
+                    'house': student_data[35] if len(student_data) > 35 else '',
+                    'teacher_ward': teacher_ward,
+                    'rte': rte,
+                    'sports_quota': sports_quota,
+                    'prev_school': student_data[39] if len(student_data) > 39 else '',
+                    'prev_board': student_data[40] if len(student_data) > 40 else '',
+                    'father_name': student_data[41] if len(student_data) > 41 else '',
+                    'father_name_tamil': student_data[42] if len(student_data) > 42 else '',
+                    'mother_name': student_data[43] if len(student_data) > 43 else '',
+                    'mother_name_tamil': student_data[44] if len(student_data) > 44 else '',
+                    'father_contact': student_data[45] if len(student_data) > 45 else '',
+                    'mother_contact': student_data[46] if len(student_data) > 46 else '',
+                    'father_email': student_data[47] if len(student_data) > 47 else '',
+                    'mother_email': student_data[48] if len(student_data) > 48 else '',
+                    'father_qualification': student_data[49] if len(student_data) > 49 else '',
+                    'mother_qualification': student_data[50] if len(student_data) > 50 else '',
+                    'father_occupation': student_data[51] if len(student_data) > 51 else '',
+                    'mother_occupation': student_data[52] if len(student_data) > 52 else '',
+                    'father_income': student_data[53] if len(student_data) > 53 else '',
+                    'mother_income': student_data[54] if len(student_data) > 54 else '',
+                    'guardian_name': student_data[55] if len(student_data) > 55 else '',
+                    'guardian_contact': student_data[56] if len(student_data) > 56 else '',
+                    'guardian_email': student_data[57] if len(student_data) > 57 else '',
+                    'child_living': student_data[58] if len(student_data) > 58 else '',
+                    'rights_on_child': student_data[59] if len(student_data) > 59 else '',
+                    'med_blood_group': student_data[60] if len(student_data) > 60 else '',
+                    'diseases': student_data[61] if len(student_data) > 61 else '',
+                    'allergies': student_data[62] if len(student_data) > 62 else '',
+                    'medicines': student_data[63] if len(student_data) > 63 else '',
+                    'hospital': student_data[64] if len(student_data) > 64 else '',
+                    'doctor': student_data[65] if len(student_data) > 65 else '',
+                    'gender_options': ['Male', 'Female', 'Other'],
+                    'community_options': ['General', 'OBC', 'SC', 'ST', 'Other'],
+                    'blood_group_options': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
+                    'teacher_ward_options': ['yes', 'no'],
+                    'rte_options': ['yes', 'no'],
+                    'sports_quota_options': ['yes', 'no']
+                }
+                return render(request, 'users/add_update_student.html', context)
 
             # Split class and section
             try:
                 class_part, section = class_section.split('-')
             except ValueError:
                 messages.error(request, 'Class-Section must be in format "Class-Section" (e.g., 2-A)')
-                return redirect('update_student', admission_number=admission_number)
+                # Inline context prep for error case (same as above)
+                post_data = dict(request.POST)
+                teacher_ward_db = student_data[36] if len(student_data) > 36 else None
+                teacher_ward = 'yes' if teacher_ward_db in (1, 'yes', 'Yes', True) else 'no'
+                rte_db = student_data[37] if len(student_data) > 37 else None
+                rte = 'yes' if rte_db in (1, 'yes', 'Yes', True) else 'no'
+                sports_quota_db = student_data[38] if len(student_data) > 38 else None
+                sports_quota = 'yes' if sports_quota_db in (1, 'yes', 'Yes', True) else 'no'
+                context = {
+                    'title': 'Update Student',
+                    'admission_number': admission_number,
+                    'post_data': post_data,
+                    'id': student_data[0] if len(student_data) > 0 else '',
+                    'user_id': student_data[1] if len(student_data) > 1 else '',
+                    'name': student_data[2] if len(student_data) > 2 else '',
+                    'class_section': f"{student_data[4]}-{student_data[5]}" if len(student_data) > 5 else '',
+                    'roll_number': student_data[6] if len(student_data) > 6 else '',
+                    'emis': student_data[7] if len(student_data) > 7 else '',
+                    'email': student_data[8] if len(student_data) > 8 else '',
+                    'gender': student_data[9] if len(student_data) > 9 else '',
+                    'community': student_data[10] if len(student_data) > 10 else '',
+                    'tamil_name': student_data[11] if len(student_data) > 11 else '',
+                    'dob': student_data[12] if len(student_data) > 12 else '',
+                    'nationality': student_data[13] if len(student_data) > 13 else '',
+                    'blood_group': student_data[14] if len(student_data) > 14 else '',
+                    'mother_tongue': student_data[15] if len(student_data) > 15 else '',
+                    'caste': student_data[16] if len(student_data) > 16 else '',
+                    'religion': student_data[17] if len(student_data) > 17 else '',
+                    'place_of_birth': student_data[18] if len(student_data) > 18 else '',
+                    'aadhaar': student_data[19] if len(student_data) > 19 else '',
+                    'disability': student_data[20] if len(student_data) > 20 else '',
+                    'id_mark1': student_data[21] if len(student_data) > 21 else '',
+                    'id_mark2': student_data[22] if len(student_data) > 22 else '',
+                    'current_class': student_data[23] if len(student_data) > 23 else '',
+                    'admission_class': student_data[24] if len(student_data) > 24 else '',
+                    'admission_year': student_data[25] if len(student_data) > 25 else '',
+                    'admission_date': student_data[26] if len(student_data) > 26 else '',
+                    'address': student_data[27] if len(student_data) > 27 else '',
+                    'contact': student_data[28] if len(student_data) > 28 else '',
+                    'alt_contact': student_data[29] if len(student_data) > 29 else '',
+                    'country': student_data[30] if len(student_data) > 30 else '',
+                    'state': student_data[31] if len(student_data) > 31 else '',
+                    'city': student_data[32] if len(student_data) > 32 else '',
+                    'pincode': student_data[33] if len(student_data) > 33 else '',
+                    'status': student_data[34] if len(student_data) > 34 else '',
+                    'house': student_data[35] if len(student_data) > 35 else '',
+                    'teacher_ward': teacher_ward,
+                    'rte': rte,
+                    'sports_quota': sports_quota,
+                    'prev_school': student_data[39] if len(student_data) > 39 else '',
+                    'prev_board': student_data[40] if len(student_data) > 40 else '',
+                    'father_name': student_data[41] if len(student_data) > 41 else '',
+                    'father_name_tamil': student_data[42] if len(student_data) > 42 else '',
+                    'mother_name': student_data[43] if len(student_data) > 43 else '',
+                    'mother_name_tamil': student_data[44] if len(student_data) > 44 else '',
+                    'father_contact': student_data[45] if len(student_data) > 45 else '',
+                    'mother_contact': student_data[46] if len(student_data) > 46 else '',
+                    'father_email': student_data[47] if len(student_data) > 47 else '',
+                    'mother_email': student_data[48] if len(student_data) > 48 else '',
+                    'father_qualification': student_data[49] if len(student_data) > 49 else '',
+                    'mother_qualification': student_data[50] if len(student_data) > 50 else '',
+                    'father_occupation': student_data[51] if len(student_data) > 51 else '',
+                    'mother_occupation': student_data[52] if len(student_data) > 52 else '',
+                    'father_income': student_data[53] if len(student_data) > 53 else '',
+                    'mother_income': student_data[54] if len(student_data) > 54 else '',
+                    'guardian_name': student_data[55] if len(student_data) > 55 else '',
+                    'guardian_contact': student_data[56] if len(student_data) > 56 else '',
+                    'guardian_email': student_data[57] if len(student_data) > 57 else '',
+                    'child_living': student_data[58] if len(student_data) > 58 else '',
+                    'rights_on_child': student_data[59] if len(student_data) > 59 else '',
+                    'med_blood_group': student_data[60] if len(student_data) > 60 else '',
+                    'diseases': student_data[61] if len(student_data) > 61 else '',
+                    'allergies': student_data[62] if len(student_data) > 62 else '',
+                    'medicines': student_data[63] if len(student_data) > 63 else '',
+                    'hospital': student_data[64] if len(student_data) > 64 else '',
+                    'doctor': student_data[65] if len(student_data) > 65 else '',
+                    'gender_options': ['Male', 'Female', 'Other'],
+                    'community_options': ['General', 'OBC', 'SC', 'ST', 'Other'],
+                    'blood_group_options': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
+                    'teacher_ward_options': ['yes', 'no'],
+                    'rte_options': ['yes', 'no'],
+                    'sports_quota_options': ['yes', 'no']
+                }
+                return render(request, 'users/add_update_student.html', context)
 
             user_id = student_data[1]  # user_id is at index 1 in the query result
+
+            # Map yes/no to strings 'yes'/'no' for string-based boolean fields (to avoid truncation)
+            teacher_ward_str = request.POST.get('teacher_ward', '').strip().lower()
+            teacher_ward = 'yes' if teacher_ward_str == 'yes' else 'no'
+            rte_str = request.POST.get('rte', '').strip().lower()
+            rte = 'yes' if rte_str == 'yes' else 'no'
+            sports_quota_str = request.POST.get('sports_quota', '').strip().lower()
+            sports_quota = 'yes' if sports_quota_str == 'yes' else 'no'
+
             with connection.cursor() as cursor:
                 # Check if new admission number already exists (if changed)
                 if new_admission_number != admission_number:
                     cursor.execute("SELECT admission_number FROM student_page1 WHERE admission_number = %s", [new_admission_number])
                     if cursor.fetchone():
                         messages.error(request, f'Admission number {new_admission_number} already exists.')
-                        return redirect('update_student', admission_number=admission_number)
+                        # Inline context prep for error case (same as above)
+                        post_data = dict(request.POST)
+                        teacher_ward_db = student_data[36] if len(student_data) > 36 else None
+                        teacher_ward_disp = 'yes' if teacher_ward_db in (1, 'yes', 'Yes', True) else 'no'
+                        rte_db = student_data[37] if len(student_data) > 37 else None
+                        rte_disp = 'yes' if rte_db in (1, 'yes', 'Yes', True) else 'no'
+                        sports_quota_db = student_data[38] if len(student_data) > 38 else None
+                        sports_quota_disp = 'yes' if sports_quota_db in (1, 'yes', 'Yes', True) else 'no'
+                        context = {
+                            'title': 'Update Student',
+                            'admission_number': admission_number,
+                            'post_data': post_data,
+                            'id': student_data[0] if len(student_data) > 0 else '',
+                            'user_id': student_data[1] if len(student_data) > 1 else '',
+                            'name': student_data[2] if len(student_data) > 2 else '',
+                            'class_section': f"{student_data[4]}-{student_data[5]}" if len(student_data) > 5 else '',
+                            'roll_number': student_data[6] if len(student_data) > 6 else '',
+                            'emis': student_data[7] if len(student_data) > 7 else '',
+                            'email': student_data[8] if len(student_data) > 8 else '',
+                            'gender': student_data[9] if len(student_data) > 9 else '',
+                            'community': student_data[10] if len(student_data) > 10 else '',
+                            'tamil_name': student_data[11] if len(student_data) > 11 else '',
+                            'dob': student_data[12] if len(student_data) > 12 else '',
+                            'nationality': student_data[13] if len(student_data) > 13 else '',
+                            'blood_group': student_data[14] if len(student_data) > 14 else '',
+                            'mother_tongue': student_data[15] if len(student_data) > 15 else '',
+                            'caste': student_data[16] if len(student_data) > 16 else '',
+                            'religion': student_data[17] if len(student_data) > 17 else '',
+                            'place_of_birth': student_data[18] if len(student_data) > 18 else '',
+                            'aadhaar': student_data[19] if len(student_data) > 19 else '',
+                            'disability': student_data[20] if len(student_data) > 20 else '',
+                            'id_mark1': student_data[21] if len(student_data) > 21 else '',
+                            'id_mark2': student_data[22] if len(student_data) > 22 else '',
+                            'current_class': student_data[23] if len(student_data) > 23 else '',
+                            'admission_class': student_data[24] if len(student_data) > 24 else '',
+                            'admission_year': student_data[25] if len(student_data) > 25 else '',
+                            'admission_date': student_data[26] if len(student_data) > 26 else '',
+                            'address': student_data[27] if len(student_data) > 27 else '',
+                            'contact': student_data[28] if len(student_data) > 28 else '',
+                            'alt_contact': student_data[29] if len(student_data) > 29 else '',
+                            'country': student_data[30] if len(student_data) > 30 else '',
+                            'state': student_data[31] if len(student_data) > 31 else '',
+                            'city': student_data[32] if len(student_data) > 32 else '',
+                            'pincode': student_data[33] if len(student_data) > 33 else '',
+                            'status': student_data[34] if len(student_data) > 34 else '',
+                            'house': student_data[35] if len(student_data) > 35 else '',
+                            'teacher_ward': teacher_ward_disp,
+                            'rte': rte_disp,
+                            'sports_quota': sports_quota_disp,
+                            'prev_school': student_data[39] if len(student_data) > 39 else '',
+                            'prev_board': student_data[40] if len(student_data) > 40 else '',
+                            'father_name': student_data[41] if len(student_data) > 41 else '',
+                            'father_name_tamil': student_data[42] if len(student_data) > 42 else '',
+                            'mother_name': student_data[43] if len(student_data) > 43 else '',
+                            'mother_name_tamil': student_data[44] if len(student_data) > 44 else '',
+                            'father_contact': student_data[45] if len(student_data) > 45 else '',
+                            'mother_contact': student_data[46] if len(student_data) > 46 else '',
+                            'father_email': student_data[47] if len(student_data) > 47 else '',
+                            'mother_email': student_data[48] if len(student_data) > 48 else '',
+                            'father_qualification': student_data[49] if len(student_data) > 49 else '',
+                            'mother_qualification': student_data[50] if len(student_data) > 50 else '',
+                            'father_occupation': student_data[51] if len(student_data) > 51 else '',
+                            'mother_occupation': student_data[52] if len(student_data) > 52 else '',
+                            'father_income': student_data[53] if len(student_data) > 53 else '',
+                            'mother_income': student_data[54] if len(student_data) > 54 else '',
+                            'guardian_name': student_data[55] if len(student_data) > 55 else '',
+                            'guardian_contact': student_data[56] if len(student_data) > 56 else '',
+                            'guardian_email': student_data[57] if len(student_data) > 57 else '',
+                            'child_living': student_data[58] if len(student_data) > 58 else '',
+                            'rights_on_child': student_data[59] if len(student_data) > 59 else '',
+                            'med_blood_group': student_data[60] if len(student_data) > 60 else '',
+                            'diseases': student_data[61] if len(student_data) > 61 else '',
+                            'allergies': student_data[62] if len(student_data) > 62 else '',
+                            'medicines': student_data[63] if len(student_data) > 63 else '',
+                            'hospital': student_data[64] if len(student_data) > 64 else '',
+                            'doctor': student_data[65] if len(student_data) > 65 else '',
+                            'gender_options': ['Male', 'Female', 'Other'],
+                            'community_options': ['General', 'OBC', 'SC', 'ST', 'Other'],
+                            'blood_group_options': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
+                            'teacher_ward_options': ['yes', 'no'],
+                            'rte_options': ['yes', 'no'],
+                            'sports_quota_options': ['yes', 'no']
+                        }
+                        return render(request, 'users/add_update_student.html', context)
 
                 # 1. Update student_page1 (basic info)
                 cursor.execute("""
@@ -2834,24 +3102,24 @@ def update_student(request, admission_number):
                         admission_date = %s
                     WHERE user_id = %s
                 """, [
-                    request.POST.get('gender'),
-                    request.POST.get('community'),
-                    request.POST.get('tamil_name'),
-                    request.POST.get('dob'),
-                    request.POST.get('nationality'),
-                    request.POST.get('blood_group'),
-                    request.POST.get('mother_tongue'),
-                    request.POST.get('caste'),
-                    request.POST.get('religion'),
-                    request.POST.get('place_of_birth'),
-                    request.POST.get('aadhaar'),
-                    request.POST.get('disability'),
-                    request.POST.get('id_mark1'),
-                    request.POST.get('id_mark2'),
+                    request.POST.get('gender', ''),
+                    request.POST.get('community', ''),
+                    request.POST.get('tamil_name', ''),
+                    request.POST.get('dob', ''),
+                    request.POST.get('nationality', ''),
+                    request.POST.get('blood_group', ''),
+                    request.POST.get('mother_tongue', ''),
+                    request.POST.get('caste', ''),
+                    request.POST.get('religion', ''),
+                    request.POST.get('place_of_birth', ''),
+                    request.POST.get('aadhaar', ''),
+                    request.POST.get('disability', ''),
+                    request.POST.get('id_mark1', ''),
+                    request.POST.get('id_mark2', ''),
                     class_part,  # current_class
                     request.POST.get('admission_class', class_part),
-                    request.POST.get('admission_year'),
-                    request.POST.get('admission_date'),
+                    request.POST.get('admission_year', ''),
+                    request.POST.get('admission_date', ''),
                     user_id
                 ])
 
@@ -2875,9 +3143,9 @@ def update_student(request, admission_number):
                     request.POST.get('pincode', ''),
                     request.POST.get('status', ''),
                     request.POST.get('house', ''),
-                    request.POST.get('teacher_ward', 'no'),
-                    request.POST.get('rte', 'no'),
-                    request.POST.get('sports_quota', 'no'),
+                    teacher_ward,
+                    rte,
+                    sports_quota,
                     request.POST.get('prev_school', ''),
                     request.POST.get('prev_board', ''),
                     user_id
@@ -2940,12 +3208,104 @@ def update_student(request, admission_number):
 
         except Exception as e:
             messages.error(request, f'Error updating student: {str(e)}')
-            return redirect('update_student', admission_number=admission_number)
+            # Inline context prep for error case (same as above)
+            post_data = dict(request.POST)
+            teacher_ward_db = student_data[36] if len(student_data) > 36 else None
+            teacher_ward = 'yes' if teacher_ward_db in (1, 'yes', 'Yes', True) else 'no'
+            rte_db = student_data[37] if len(student_data) > 37 else None
+            rte = 'yes' if rte_db in (1, 'yes', 'Yes', True) else 'no'
+            sports_quota_db = student_data[38] if len(student_data) > 38 else None
+            sports_quota = 'yes' if sports_quota_db in (1, 'yes', 'Yes', True) else 'no'
+            context = {
+                'title': 'Update Student',
+                'admission_number': admission_number,
+                'post_data': post_data,
+                'id': student_data[0] if len(student_data) > 0 else '',
+                'user_id': student_data[1] if len(student_data) > 1 else '',
+                'name': student_data[2] if len(student_data) > 2 else '',
+                'class_section': f"{student_data[4]}-{student_data[5]}" if len(student_data) > 5 else '',
+                'roll_number': student_data[6] if len(student_data) > 6 else '',
+                'emis': student_data[7] if len(student_data) > 7 else '',
+                'email': student_data[8] if len(student_data) > 8 else '',
+                'gender': student_data[9] if len(student_data) > 9 else '',
+                'community': student_data[10] if len(student_data) > 10 else '',
+                'tamil_name': student_data[11] if len(student_data) > 11 else '',
+                'dob': student_data[12] if len(student_data) > 12 else '',
+                'nationality': student_data[13] if len(student_data) > 13 else '',
+                'blood_group': student_data[14] if len(student_data) > 14 else '',
+                'mother_tongue': student_data[15] if len(student_data) > 15 else '',
+                'caste': student_data[16] if len(student_data) > 16 else '',
+                'religion': student_data[17] if len(student_data) > 17 else '',
+                'place_of_birth': student_data[18] if len(student_data) > 18 else '',
+                'aadhaar': student_data[19] if len(student_data) > 19 else '',
+                'disability': student_data[20] if len(student_data) > 20 else '',
+                'id_mark1': student_data[21] if len(student_data) > 21 else '',
+                'id_mark2': student_data[22] if len(student_data) > 22 else '',
+                'current_class': student_data[23] if len(student_data) > 23 else '',
+                'admission_class': student_data[24] if len(student_data) > 24 else '',
+                'admission_year': student_data[25] if len(student_data) > 25 else '',
+                'admission_date': student_data[26] if len(student_data) > 26 else '',
+                'address': student_data[27] if len(student_data) > 27 else '',
+                'contact': student_data[28] if len(student_data) > 28 else '',
+                'alt_contact': student_data[29] if len(student_data) > 29 else '',
+                'country': student_data[30] if len(student_data) > 30 else '',
+                'state': student_data[31] if len(student_data) > 31 else '',
+                'city': student_data[32] if len(student_data) > 32 else '',
+                'pincode': student_data[33] if len(student_data) > 33 else '',
+                'status': student_data[34] if len(student_data) > 34 else '',
+                'house': student_data[35] if len(student_data) > 35 else '',
+                'teacher_ward': teacher_ward,
+                'rte': rte,
+                'sports_quota': sports_quota,
+                'prev_school': student_data[39] if len(student_data) > 39 else '',
+                'prev_board': student_data[40] if len(student_data) > 40 else '',
+                'father_name': student_data[41] if len(student_data) > 41 else '',
+                'father_name_tamil': student_data[42] if len(student_data) > 42 else '',
+                'mother_name': student_data[43] if len(student_data) > 43 else '',
+                'mother_name_tamil': student_data[44] if len(student_data) > 44 else '',
+                'father_contact': student_data[45] if len(student_data) > 45 else '',
+                'mother_contact': student_data[46] if len(student_data) > 46 else '',
+                'father_email': student_data[47] if len(student_data) > 47 else '',
+                'mother_email': student_data[48] if len(student_data) > 48 else '',
+                'father_qualification': student_data[49] if len(student_data) > 49 else '',
+                'mother_qualification': student_data[50] if len(student_data) > 50 else '',
+                'father_occupation': student_data[51] if len(student_data) > 51 else '',
+                'mother_occupation': student_data[52] if len(student_data) > 52 else '',
+                'father_income': student_data[53] if len(student_data) > 53 else '',
+                'mother_income': student_data[54] if len(student_data) > 54 else '',
+                'guardian_name': student_data[55] if len(student_data) > 55 else '',
+                'guardian_contact': student_data[56] if len(student_data) > 56 else '',
+                'guardian_email': student_data[57] if len(student_data) > 57 else '',
+                'child_living': student_data[58] if len(student_data) > 58 else '',
+                'rights_on_child': student_data[59] if len(student_data) > 59 else '',
+                'med_blood_group': student_data[60] if len(student_data) > 60 else '',
+                'diseases': student_data[61] if len(student_data) > 61 else '',
+                'allergies': student_data[62] if len(student_data) > 62 else '',
+                'medicines': student_data[63] if len(student_data) > 63 else '',
+                'hospital': student_data[64] if len(student_data) > 64 else '',
+                'doctor': student_data[65] if len(student_data) > 65 else '',
+                'gender_options': ['Male', 'Female', 'Other'],
+                'community_options': ['General', 'OBC', 'SC', 'ST', 'Other'],
+                'blood_group_options': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
+                'teacher_ward_options': ['yes', 'no'],
+                'rte_options': ['yes', 'no'],
+                'sports_quota_options': ['yes', 'no']
+            }
+            return render(request, 'users/add_update_student.html', context)
 
-    # Prepare context with all student data
+    # For GET request or after successful POST, prepare context (inline for safety)
+    post_data = None  # No post_data for GET
+    # Map boolean fields from DB robustly (handles int 0/1 or str 'yes'/'no')
+    teacher_ward_db = student_data[36] if len(student_data) > 36 else None
+    teacher_ward = 'yes' if teacher_ward_db in (1, 'yes', 'Yes', True) else 'no'
+    rte_db = student_data[37] if len(student_data) > 37 else None
+    rte = 'yes' if rte_db in (1, 'yes', 'Yes', True) else 'no'
+    sports_quota_db = student_data[38] if len(student_data) > 38 else None
+    sports_quota = 'yes' if sports_quota_db in (1, 'yes', 'Yes', True) else 'no'
     context = {
         'title': 'Update Student',
         'admission_number': admission_number,
+        'post_data': post_data,  # For repopulating form on errors
         'id': student_data[0] if len(student_data) > 0 else '',
         'user_id': student_data[1] if len(student_data) > 1 else '',
         'name': student_data[2] if len(student_data) > 2 else '',
@@ -2980,9 +3340,9 @@ def update_student(request, admission_number):
         'pincode': student_data[33] if len(student_data) > 33 else '',
         'status': student_data[34] if len(student_data) > 34 else '',
         'house': student_data[35] if len(student_data) > 35 else '',
-        'teacher_ward': student_data[36] if len(student_data) > 36 else '',
-        'rte': student_data[37] if len(student_data) > 37 else '',
-        'sports_quota': student_data[38] if len(student_data) > 38 else '',
+        'teacher_ward': teacher_ward,
+        'rte': rte,
+        'sports_quota': sports_quota,
         'prev_school': student_data[39] if len(student_data) > 39 else '',
         'prev_board': student_data[40] if len(student_data) > 40 else '',
         'father_name': student_data[41] if len(student_data) > 41 else '',
@@ -3017,7 +3377,6 @@ def update_student(request, admission_number):
         'rte_options': ['yes', 'no'],
         'sports_quota_options': ['yes', 'no']
     }
-
     return render(request, 'users/add_update_student.html', context)
 
 import os
@@ -7774,3 +8133,15 @@ def download_student_pdf(request):
 
 def landing_view(request):
     return render(request, 'users/landing.html')
+
+
+def admin_master(request):
+    # Check if admin is logged in via session
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        messages.error(request, 'Please login to access this page.')
+        return redirect('admin_login')
+    
+    # Get admin name from session (fallback to email if name not set)
+    admin_name = request.session.get('admin_name', request.session.get('admin_email', 'Admin'))
+    return render(request, 'users/admin_master.html', {'admin_name': admin_name})

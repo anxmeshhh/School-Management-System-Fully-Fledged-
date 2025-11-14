@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - View and Edit Class</title>
+    <title>Manavargal School Management System - Admin Master Data</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
@@ -52,7 +52,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
@@ -177,161 +177,52 @@
             margin-bottom: 1.5rem;
         }
 
-        .add-class-form {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .add-class-form:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            color: var(--primary-color);
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            background: var(--white);
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
-        }
-
-        .add-class-form button {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-
-        .add-class-form button:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .class-grid {
+        .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
+            margin-top: 1rem;
         }
 
-        .class-card {
+        .card {
             background: var(--white);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            padding: 1rem;
-            text-align: center;
-            transition: var(--transition);
-        }
-
-        .class-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-
-        .class-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            text-align: center;
-            font-size: 1rem;
-            font-weight: 600;
-            background: var(--light-bg);
-            margin-bottom: 1rem;
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-
-        .class-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
-        }
-
-        .class-actions {
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
             display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .update-class-btn, .delete-class-btn {
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            text-decoration: none;
+            text-align: center;
             cursor: pointer;
             transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .update-class-btn {
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-        }
-
-        .update-class-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
             box-shadow: var(--shadow-sm);
+            border: 2px solid var(--border-color);
+            min-height: 120px;
+            text-decoration: none;
+            color: inherit;
         }
 
-        .delete-class-btn {
-            background: #f8d7da;
-            color: #dc3545;
-            border: 1px solid #f5c2c7;
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
         }
 
-        .delete-class-btn:hover {
-            background: #dc3545;
-            color: var(--white);
-            box-shadow: var(--shadow-sm);
+        .card img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            flex-shrink: 0;
         }
 
-        .no-classes {
-            font-size: 1rem;
+        .card:hover img {
+            transform: scale(1.1);
+        }
+
+        .card span {
             color: var(--text-color);
-            text-align: center;
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            background: var(--light-bg);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+            font-size: 1.125rem;
+            font-weight: 500;
         }
 
         .icon {
@@ -364,22 +255,28 @@
                 font-size: 1.5rem;
             }
 
-            .class-grid {
-                grid-template-columns: 1fr;
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
                 gap: 1rem;
             }
 
-            .add-class-form {
+            .card {
                 padding: 1.2rem;
+                min-height: 100px;
+            }
+
+            .card img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .card span {
+                font-size: 1rem;
             }
 
             .alert-message .error,
             .alert-message .success,
             .alert-message .warning {
-                font-size: 0.9rem;
-            }
-
-            .no-classes {
                 font-size: 0.9rem;
             }
 
@@ -423,40 +320,28 @@
                 font-size: 1.25rem;
             }
 
-            .class-grid {
+            .cards-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
             }
 
-            .class-card {
-                padding: 0.75rem;
-            }
-
-            .class-input {
-                font-size: 0.9rem;
-                padding: 0.5rem;
-            }
-
-            .class-actions a {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.7rem;
-            }
-
-            .add-class-form {
+            .card {
                 padding: 1rem;
+                min-height: 100px;
             }
 
-            .add-class-form button {
-                font-size: 0.85rem;
+            .card img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .card span {
+                font-size: 0.9rem;
             }
 
             .alert-message .error,
             .alert-message .success,
             .alert-message .warning {
-                font-size: 0.85rem;
-            }
-
-            .no-classes {
                 font-size: 0.85rem;
             }
 
@@ -472,7 +357,7 @@
         }
 
         @media (hover: none) {
-            .section:hover, .logo-img:hover, .back-btn:hover, .class-card:hover, .add-class-form:hover {
+            .section:hover, .logo-img:hover, .back-btn:hover, .card:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -492,19 +377,17 @@
 </head>
 <body>
     <div class="header">
-        <a href="{% url 'admin_page' %}" class="back-btn">
+        <a href="{% url 'admin_dashboard' %}" class="back-btn">
             <i class="fas fa-arrow-left icon"></i> Back to Main Dashboard
         </a>
-        <h1><i class="fas fa-edit icon"></i> View and Edit Class</h1>
-        <a href="{% url 'admin_page' %}">
-            <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
+        <h1><i class="fas fa-database icon"></i> Admin Master Data</h1>
+        <a href="{% url 'admin_dashboard' %}">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
         </a>
     </div>
 
     <div class="container">
         <div class="main-content">
-            <h2><i class="fas fa-graduation-cap icon"></i> Manage Classes</h2>
-
             {% if messages %}
                 <div class="alert-message">
                     {% for message in messages %}
@@ -516,35 +399,38 @@
                 </div>
             {% endif %}
 
-            <div class="add-class-form">
-                <form method="POST" action="{% url 'add_class' %}">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="class_name"><i class="fas fa-plus-circle icon"></i> Class Name</label>
-                        <input type="text" id="class_name" name="class_name" required>
-                    </div>
-                    <button type="submit">
-                        <i class="fas fa-plus icon"></i> Add New Class
-                    </button>
-                </form>
-            </div>
-
-            <div class="class-grid">
-                {% for class in classes %}
-                    <div class="class-card">
-                        <input type="text" value="{{ class.class_name }}" class="class-input" readonly>
-                        <div class="class-actions">
-                            <a href="{% url 'update_class' class.id %}" class="update-class-btn">
-                                <i class="fas fa-edit icon"></i> Update
-                            </a>
-                            <a href="{% url 'delete_class' class.id %}" class="delete-class-btn" onclick="return confirm('Are you sure you want to delete {{ class.class_name|escapejs }}?')">
-                                <i class="fas fa-trash icon"></i> Delete
-                            </a>
-                        </div>
-                    </div>
-                {% empty %}
-                    <p class="no-classes"><i class="fas fa-search icon"></i> No classes found.</p>
-                {% endfor %}
+            <div class="section">
+                <h2><i class="fas fa-cogs icon"></i> Master Data Management</h2>
+                <div class="cards-grid">
+                    <a href="{% url 'view_edit_class' %}" class="card">
+                        <img src="https://img.icons8.com/color/70/000000/classroom.png" alt="Add Class">
+                        <span>Add Class</span>
+                    </a>
+                    <a href="{% url 'student_info' %}" class="card">
+                        <img src="https://img.icons8.com/color/70/000000/graduation-cap.png" alt="Student Info">
+                        <span>Student Info</span>
+                    </a>
+                    <a href="{% url 'add_student' %}" class="card">
+                        <img src="https://img.icons8.com/color/70/000000/add-user-male.png" alt="Add New Student">
+                        <span>Add New Student</span>
+                    </a>
+                    <a href="{% url 'manage_users' %}" class="card">
+                        <img src="https://img.icons8.com/color/70/000000/user-group-man-woman.png" alt="Manage Users">
+                        <span>Manage Users</span>
+                    </a>
+                    <a href="{% url 'qr_scan' %}" class="card">
+                        <img src="https://img.icons8.com/ios-filled/50/000000/qr-code.png" alt="Scan QR">
+                        <span>QR CODEit</span>
+                    </a>
+                    <a href="{% url 'bulk_id_card' %}" class="card">
+                        <img src="https://img.icons8.com/color/70/000000/id-verified.png" alt="Bulk ID Card Generation">
+                        <span>Bulk ID Card Generation</span>
+                    </a>
+                    <a href="{% url 'bulk_upload' %}" class="card">
+                        <img src="https://img.icons8.com/color/70/000000/upload.png" alt="Bulk Upload Icon">
+                        <span>Bulk Student Upload</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

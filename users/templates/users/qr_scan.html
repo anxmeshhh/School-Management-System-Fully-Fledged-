@@ -6,9 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Scan - Manavargal School Management</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
         * {
             margin: 0;
@@ -18,108 +18,164 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 100%),
-                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
-            background-size: 200%, 20px 20px;
+            font-weight: 400;
+            background: var(--white);
             min-height: 100vh;
+            color: var(--text-color);
             padding: 80px 20px 40px 20px;
-            position: relative;
-            color: #333;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        :root {
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #d1e7dd;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background: linear-gradient(90deg, #1565c0, #42a5f5);
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            animation: fadeInDown 0.8s ease-out;
-            flex-wrap: wrap;
+            background: var(--white);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
-            left: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
 
         .header h1 {
-            color: white;
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 700;
             text-align: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease, transform 0.3s ease;
             flex-grow: 1;
-            margin: 0;
-        }
-
-        .header h1:hover {
-            color: #e3f2fd;
-            transform: scale(1.02);
+            color: var(--primary-color);
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: none;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            background: linear-gradient(90deg, #1976d2, #42a5f5);
-            color: white;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
             text-decoration: none;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .back-btn:hover {
-            background: linear-gradient(90deg, #1565c0, #1976d2);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
-        .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+        .logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
             object-fit: cover;
-            transition: transform 0.3s ease;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
         }
 
-        .logo:hover {
-            transform: scale(1.1);
+        .logo-img:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
         }
 
-        .container {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(8px);
+        .main-content {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            width: 100%;
-            max-width: 700px;
-            margin: 100px auto 20px;
-            transition: box-shadow 0.3s ease;
+            margin-top: 80px;
         }
 
-        .container:hover {
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        .alert-message {
+            margin-bottom: 1.5rem;
         }
 
-        .container h2 {
-            color: #2563eb;
-            text-align: center;
+        .alert-message .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-message .success {
+            background: #f0f9f4;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .alert-message .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
             margin-bottom: 2rem;
-            font-size: 1.8rem;
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.75rem;
             font-weight: 600;
+            margin-bottom: 1.5rem;
         }
 
         .controls {
@@ -128,41 +184,53 @@
             justify-content: center;
             gap: 1rem;
             margin-bottom: 2rem;
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
         }
 
-        .controls button, .controls input[type="file"]::file-selector-button {
+        .controls button {
             padding: 0.8rem 1.5rem;
-            border: none;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            background: linear-gradient(90deg, #1976d2, #42a5f5);
-            color: white;
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             font-family: 'Poppins', sans-serif;
         }
 
-        .controls button:hover, .controls input[type="file"]::file-selector-button:hover {
-            background: linear-gradient(90deg, #1565c0, #1976d2);
+        .controls button:hover {
+            background: var(--primary-color);
+            color: var(--white);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+            box-shadow: var(--shadow-md);
         }
 
         .controls input[type="file"] {
-            padding: 0.7rem;
-            border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #93c5fd, #2563eb) border-box;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 0.9rem;
+            background: var(--white);
+            color: var(--text-color);
+            transition: var(--transition);
+            width: auto;
             cursor: pointer;
             font-family: 'Poppins', sans-serif;
-            transition: box-shadow 0.3s ease;
         }
 
         .controls input[type="file"]:focus {
             outline: none;
-            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
         }
 
         #video, #canvas {
@@ -171,38 +239,40 @@
             margin: 1.5rem auto;
             border-radius: 8px;
             display: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
         }
 
         #student-data {
             margin-top: 2rem;
             padding: 1.5rem;
             border-radius: 8px;
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
+            background: var(--white);
+            border: 1px solid var(--border-color);
             max-height: 800px;
             overflow-y: auto;
             animation: fadeIn 0.5s ease;
             font-size: 0.9rem;
             line-height: 1.6;
+            box-shadow: var(--shadow-sm);
         }
         
         .student-info-header {
             text-align: center;
             margin-bottom: 2rem;
-            border-bottom: 3px solid #2563eb;
+            border-bottom: 3px solid var(--primary-color);
             padding-bottom: 1rem;
         }
         
         .student-info-header h2 {
-            color: #2563eb;
+            color: var(--primary-color);
             font-size: 1.5rem;
             font-weight: 600;
             margin: 0 0 0.5rem 0;
         }
         
         .student-info-header .school-name {
-            color: #6b7280;
+            color: var(--text-light);
             font-size: 1rem;
             margin: 0.3rem 0;
         }
@@ -219,8 +289,8 @@
             object-fit: cover;
             margin: 1rem auto;
             display: block;
-            border: 2px solid #2563eb;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+            border: 2px solid var(--primary-color);
+            box-shadow: var(--shadow-md);
         }
         
         .info-section {
@@ -228,13 +298,14 @@
         }
         
         .section-title {
-            background: linear-gradient(90deg, #1976d2, #42a5f5);
-            color: white;
+            background: var(--light-bg);
+            color: var(--primary-color);
             padding: 0.7rem 1rem;
             margin: 1rem 0 0.7rem 0;
             font-size: 1rem;
             font-weight: 600;
             border-radius: 6px;
+            border: 1px solid var(--border-color);
         }
         
         .info-grid {
@@ -248,18 +319,20 @@
             display: flex;
             margin: 0.5rem 0;
             padding: 0.5rem;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--light-bg);
+            border-radius: 4px;
         }
         
         .info-label {
             font-weight: 600;
-            color: #2563eb;
+            color: var(--primary-color);
             min-width: 150px;
             flex-shrink: 0;
         }
         
         .info-value {
-            color: #374151;
+            color: var(--text-color);
             flex-grow: 1;
             word-wrap: break-word;
         }
@@ -268,40 +341,42 @@
             display: none;
             padding: 0.8rem 1.5rem;
             margin-top: 2rem;
-            border: none;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            background: linear-gradient(90deg, #059669, #10b981);
-            color: white;
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            transition: var(--transition);
             width: 100%;
             font-family: 'Poppins', sans-serif;
         }
         
         #download-btn:hover {
-            background: linear-gradient(90deg, #047857, #059669);
+            background: var(--primary-color);
+            color: var(--white);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(5, 150, 105, 0.4);
+            box-shadow: var(--shadow-md);
         }
         
         .loading {
             text-align: center;
             padding: 1.5rem;
-            color: #2563eb;
+            color: var(--primary-color);
             font-size: 1rem;
             font-weight: 500;
         }
         
         .error {
-            color: #dc2626;
-            background: rgba(255, 75, 75, 0.1);
-            border: 1px solid #fecaca;
+            color: #dc3545;
+            background: #fef2f2;
+            border: 1px solid #f5c2c7;
             padding: 1rem;
-            border-radius: 6px;
+            border-radius: 8px;
             margin: 1rem 0;
             text-align: center;
+            border-left: 4px solid #dc3545;
         }
         
         @keyframes fadeIn {
@@ -309,41 +384,40 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .icon {
+            margin-right: 0.5rem;
+        }
+
         @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
+
             .header {
-                flex-direction: row;
-                gap: 0.5rem;
-                padding: 0.8rem 1rem;
-                align-items: center;
-                justify-content: space-between;
-                left: 10px;
-                right: 10px;
+                padding: 1rem;
             }
 
             .header h1 {
                 font-size: 1.5rem;
-                margin: 0;
-                flex-grow: 1;
-                text-align: center;
             }
 
-            .back-btn {
-                padding: 0.7rem 1.2rem;
-                font-size: 0.9rem;
+            .main-content {
+                padding: 1.5rem;
+                margin-top: 70px;
             }
 
-            .logo {
-                width: 40px;
-                height: 40px;
+            .section {
+                padding: 1.2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
             }
 
             .controls {
-                gap: 0.7rem;
-            }
-
-            .controls button, .controls input[type="file"]::file-selector-button {
-                padding: 0.7rem 1.2rem;
-                font-size: 0.8rem;
+                flex-direction: column;
+                gap: 0.75rem;
+                padding: 1.2rem;
             }
 
             #video, #canvas {
@@ -359,49 +433,59 @@
                 height: 100px;
             }
 
-            .container {
-                margin-top: 90px;
-                padding: 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header {
-                padding: 0.6rem 0.8rem;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                gap: 0.3rem;
-                left: 5px;
-                right: 5px;
+            .alert-message .error,
+            .alert-message .success,
+            .alert-message .warning {
+                font-size: 0.9rem;
             }
 
-            .header h1 {
-                font-size: 1.2rem;
+            .logo-img {
+                width: 60px;
+                height: 60px;
             }
 
             .back-btn {
                 padding: 0.6rem 1rem;
-                font-size: 0.8rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
             }
 
-            .logo {
-                width: 35px;
-                height: 35px;
+            .header {
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
             }
 
-            .container {
-                padding: 1.2rem;
-                margin-top: 80px;
+            .header h1 {
+                font-size: 1.25rem;
             }
 
-            .container h2 {
-                font-size: 1.5rem;
+            .main-content {
+                padding: 1rem;
+                margin-top: 100px;
+                border-radius: 8px;
             }
 
-            .controls button, .controls input[type="file"]::file-selector-button {
+            .section {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            .controls {
+                padding: 1rem;
+            }
+
+            .controls button {
                 padding: 0.6rem 1rem;
-                font-size: 0.8rem;
+                font-size: 0.9rem;
             }
 
             .profile-pic {
@@ -412,6 +496,40 @@
             .info-label {
                 min-width: 120px;
             }
+
+            .alert-message .error,
+            .alert-message .success,
+            .alert-message .warning {
+                font-size: 0.85rem;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (hover: none) {
+            .section:hover, .logo-img:hover, .back-btn:hover, .controls button:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
@@ -419,20 +537,30 @@
 </head>
 <body>
     <div class="header">
-        <a href="/admin_page/" class="back-btn">Back</a>
-        <h1>Scan QR Code</h1>
-        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo" class="logo">
+        <a href="/admin_page/" class="back-btn">
+            <i class="fas fa-arrow-left icon"></i> Back to Main Dashboard
+        </a>
+        <h1><i class="fas fa-qrcode icon"></i> Scan QR Code</h1>
+        <a href="/admin_page/">
+            <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
+        </a>
     </div>
     <div class="container">
-        <h2>Scan QR Code</h2>
-        <div class="controls">
-            <button id="start-camera">Start Camera</button>
-            <input type="file" id="file-upload" accept="image/jpeg,image/png,application/pdf">
+        <div class="main-content">
+            <h2><i class="fas fa-camera icon"></i> QR Code Scanner</h2>
+            <div class="controls">
+                <button id="start-camera">
+                    <i class="fas fa-video icon"></i> Start Camera
+                </button>
+                <input type="file" id="file-upload" accept="image/jpeg,image/png,application/pdf">
+            </div>
+            <video id="video" autoplay></video>
+            <canvas id="canvas"></canvas>
+            <div id="student-data"></div>
+            <button id="download-btn">
+                <i class="fas fa-download icon"></i> Download PDF Report
+            </button>
         </div>
-        <video id="video" autoplay></video>
-        <canvas id="canvas"></canvas>
-        <div id="student-data"></div>
-        <button id="download-btn">Download PDF Report</button>
     </div>
     <script>
         const video = document.getElementById('video');
@@ -448,7 +576,7 @@
 
         async function qr_data_retrieval(source) {
             try {
-                studentDataDiv.innerHTML = '<div class="loading">Processing...</div>';
+                studentDataDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin icon"></i> Processing...</div>';
                 downloadBtn.style.display = 'none';
                 
                 if (source === 'camera') {
@@ -490,7 +618,7 @@
                 } else if (source === 'file') {
                     const file = fileUpload.files[0];
                     if (!file) {
-                        studentDataDiv.innerHTML = '<div class="error">No file selected.</div>';
+                        studentDataDiv.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle icon"></i> No file selected.</div>';
                         return;
                     }
                     const fileType = file.type;
@@ -517,7 +645,7 @@
                             }
                         }
                         if (!qrCodeFound) {
-                            studentDataDiv.innerHTML = '<div class="error">No QR code found in PDF.</div>';
+                            studentDataDiv.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle icon"></i> No QR code found in PDF.</div>';
                             canvas.style.display = 'none';
                         }
                     } else if (fileType === 'image/jpeg' || fileType === 'image/png') {
@@ -533,26 +661,26 @@
                             if (code) {
                                 fetchStudentData(code.data);
                             } else {
-                                studentDataDiv.innerHTML = '<div class="error">No QR code found in image.</div>';
+                                studentDataDiv.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle icon"></i> No QR code found in image.</div>';
                                 canvas.style.display = 'none';
                             }
                         };
                         img.src = URL.createObjectURL(file);
                     } else {
-                        studentDataDiv.innerHTML = '<div class="error">Unsupported file type. Please use JPEG, PNG, or PDF.</div>';
+                        studentDataDiv.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle icon"></i> Unsupported file type. Please use JPEG, PNG, or PDF.</div>';
                     }
                 }
             } catch (err) {
                 isScanning = false;
                 if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
-                studentDataDiv.innerHTML = `<div class="error">Error: ${err.message}</div>`;
+                studentDataDiv.innerHTML = `<div class="error"><i class="fas fa-exclamation-circle icon"></i> Error: ${err.message}</div>`;
                 canvas.style.display = 'none';
             }
         }
 
         async function fetchStudentData(url) {
             try {
-                studentDataDiv.innerHTML = '<div class="loading">Fetching student data...</div>';
+                studentDataDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin icon"></i> Fetching student data...</div>';
                 
                 const response = await fetch('/scan_qr/', {
                     method: 'POST',
@@ -565,19 +693,19 @@
                 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    studentDataDiv.innerHTML = `<div class="error">Error ${response.status}: ${errorText}</div>`;
+                    studentDataDiv.innerHTML = `<div class="error"><i class="fas fa-exclamation-circle icon"></i> Error ${response.status}: ${errorText}</div>`;
                     return;
                 }
                 
                 const data = await response.json();
                 if (data.error) {
-                    studentDataDiv.innerHTML = `<div class="error">${data.error}</div>`;
+                    studentDataDiv.innerHTML = `<div class="error"><i class="fas fa-exclamation-circle icon"></i> ${data.error}</div>`;
                 } else {
                     displayStudentData(data);
                     downloadBtn.style.display = 'block';
                 }
             } catch (err) {
-                studentDataDiv.innerHTML = `<div class="error">Error fetching data: ${err.message}</div>`;
+                studentDataDiv.innerHTML = `<div class="error"><i class="fas fa-exclamation-circle icon"></i> Error fetching data: ${err.message}</div>`;
             }
         }
 
@@ -586,7 +714,7 @@
 
     studentDataDiv.innerHTML = `
         <div class="student-info-header">
-            <h2>Student Information</h2>
+            <h2><i class="fas fa-user-graduate icon"></i> Student Information</h2>
             <div class="school-name">Manavargal School Management System</div>
             <div class="school-name">Generated on: ${new Date().toLocaleDateString()}</div>
         </div>
@@ -594,291 +722,291 @@
         <div class="profile-section">
             ${data.profile_picture ? 
                 `<img src="${data.profile_picture}" class="profile-pic" alt="Profile Picture" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                 <div style="display: none; text-align: center; color: #6b7280; padding: 1.5rem; border: 2px dashed #d1d5db; margin: 1rem 0; border-radius: 8px;">Profile picture not available</div>` : 
-                `<div style="text-align: center; color: #6b7280; padding: 1.5rem; border: 2px dashed #d1d5db; margin: 1rem 0; border-radius: 8px;">No profile picture available</div>`
+                 <div style="display: none; text-align: center; color: var(--text-light); padding: 1.5rem; border: 2px dashed var(--border-color); margin: 1rem 0; border-radius: 8px;"><i class="fas fa-user icon"></i> Profile picture not available</div>` : 
+                `<div style="text-align: center; color: var(--text-light); padding: 1.5rem; border: 2px dashed var(--border-color); margin: 1rem 0; border-radius: 8px;"><i class="fas fa-user icon"></i> No profile picture available</div>`
             }
         </div>
         
         <div class="info-section">
-            <div class="section-title">Basic Information</div>
+            <div class="section-title"><i class="fas fa-info-circle icon"></i> Basic Information</div>
             <div class="info-row">
-                <div class="info-label">Name:</div>
+                <div class="info-label"><i class="fas fa-user icon"></i> Name:</div>
                 <div class="info-value">${formatValue(data.name)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Admission Number:</div>
+                <div class="info-label"><i class="fas fa-id-card icon"></i> Admission Number:</div>
                 <div class="info-value">${formatValue(data.admission_number)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Class:</div>
+                <div class="info-label"><i class="fas fa-graduation-cap icon"></i> Class:</div>
                 <div class="info-value">${formatValue(data.class)}-${formatValue(data.section)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Roll Number:</div>
+                <div class="info-label"><i class="fas fa-hashtag icon"></i> Roll Number:</div>
                 <div class="info-value">${formatValue(data.roll_number)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">EMIS:</div>
+                <div class="info-label"><i class="fas fa-code icon"></i> EMIS:</div>
                 <div class="info-value">${formatValue(data.emis)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Email:</div>
+                <div class="info-label"><i class="fas fa-envelope icon"></i> Email:</div>
                 <div class="info-value">${formatValue(data.email)}</div>
             </div>
         </div>
 
         <div class="info-section">
-            <div class="section-title">Personal Details</div>
+            <div class="section-title"><i class="fas fa-user icon"></i> Personal Details</div>
             <div class="info-row">
-                <div class="info-label">Gender:</div>
+                <div class="info-label"><i class="fas fa-venus-mars icon"></i> Gender:</div>
                 <div class="info-value">${formatValue(data.gender)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Date of Birth:</div>
+                <div class="info-label"><i class="fas fa-birthday-cake icon"></i> Date of Birth:</div>
                 <div class="info-value">${formatValue(data.dob)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Tamil Name:</div>
+                <div class="info-label"><i class="fas fa-font icon"></i> Tamil Name:</div>
                 <div class="info-value">${formatValue(data.tamil_name)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Nationality:</div>
+                <div class="info-label"><i class="fas fa-flag icon"></i> Nationality:</div>
                 <div class="info-value">${formatValue(data.nationality)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Blood Group:</div>
+                <div class="info-label"><i class="fas fa-tint icon"></i> Blood Group:</div>
                 <div class="info-value">${formatValue(data.blood_group)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Mother Tongue:</div>
+                <div class="info-label"><i class="fas fa-language icon"></i> Mother Tongue:</div>
                 <div class="info-value">${formatValue(data.mother_tongue)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Community:</div>
+                <div class="info-label"><i class="fas fa-users icon"></i> Community:</div>
                 <div class="info-value">${formatValue(data.community)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Caste:</div>
+                <div class="info-label"><i class="fas fa-home icon"></i> Caste:</div>
                 <div class="info-value">${formatValue(data.caste)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Religion:</div>
+                <div class="info-label"><i class="fas fa-pray icon"></i> Religion:</div>
                 <div class="info-value">${formatValue(data.religion)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Place of Birth:</div>
+                <div class="info-label"><i class="fas fa-map-marker-alt icon"></i> Place of Birth:</div>
                 <div class="info-value">${formatValue(data.place_of_birth)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Aadhaar:</div>
+                <div class="info-label"><i class="fas fa-id-card-alt icon"></i> Aadhaar:</div>
                 <div class="info-value">${formatValue(data.aadhaar)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Disability:</div>
+                <div class="info-label"><i class="fas fa-wheelchair icon"></i> Disability:</div>
                 <div class="info-value">${formatValue(data.disability)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">ID Mark 1:</div>
+                <div class="info-label"><i class="fas fa-fingerprint icon"></i> ID Mark 1:</div>
                 <div class="info-value">${formatValue(data.id_mark1)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">ID Mark 2:</div>
+                <div class="info-label"><i class="fas fa-fingerprint icon"></i> ID Mark 2:</div>
                 <div class="info-value">${formatValue(data.id_mark2)}</div>
             </div>
         </div>
 
         <div class="info-section">
-            <div class="section-title">Academic Information</div>
+            <div class="section-title"><i class="fas fa-book icon"></i> Academic Information</div>
             <div class="info-row">
-                <div class="info-label">Current Class:</div>
+                <div class="info-label"><i class="fas fa-graduation-cap icon"></i> Current Class:</div>
                 <div class="info-value">${formatValue(data.current_class)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Admission Class:</div>
+                <div class="info-label"><i class="fas fa-door-open icon"></i> Admission Class:</div>
                 <div class="info-value">${formatValue(data.admission_class)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Admission Year:</div>
+                <div class="info-label"><i class="fas fa-calendar-alt icon"></i> Admission Year:</div>
                 <div class="info-value">${formatValue(data.admission_year)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Admission Date:</div>
+                <div class="info-label"><i class="fas fa-sign-in-alt icon"></i> Admission Date:</div>
                 <div class="info-value">${formatValue(data.admission_date)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">House:</div>
+                <div class="info-label"><i class="fas fa-home icon"></i> House:</div>
                 <div class="info-value">${formatValue(data.house)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Teacher Ward:</div>
+                <div class="info-label"><i class="fas fa-chalkboard-teacher icon"></i> Teacher Ward:</div>
                 <div class="info-value">${formatValue(data.teacher_ward)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">RTE:</div>
+                <div class="info-label"><i class="fas fa-check-circle icon"></i> RTE:</div>
                 <div class="info-value">${formatValue(data.rte)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Sports Quota:</div>
+                <div class="info-label"><i class="fas fa-futbol icon"></i> Sports Quota:</div>
                 <div class="info-value">${formatValue(data.sports_quota)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Previous School:</div>
+                <div class="info-label"><i class="fas fa-school icon"></i> Previous School:</div>
                 <div class="info-value">${formatValue(data.prev_school)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Previous Board:</div>
+                <div class="info-label"><i class="fas fa-certificate icon"></i> Previous Board:</div>
                 <div class="info-value">${formatValue(data.prev_board)}</div>
             </div>
         </div>
 
         <div class="info-section">
-            <div class="section-title">Contact Information</div>
+            <div class="section-title"><i class="fas fa-address-book icon"></i> Contact Information</div>
             <div class="info-row">
-                <div class="info-label">Address:</div>
+                <div class="info-label"><i class="fas fa-map-marker-alt icon"></i> Address:</div>
                 <div class="info-value">${formatValue(data.address)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Contact:</div>
+                <div class="info-label"><i class="fas fa-phone icon"></i> Contact:</div>
                 <div class="info-value">${formatValue(data.contact)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Alternate Contact:</div>
+                <div class="info-label"><i class="fas fa-phone-alt icon"></i> Alternate Contact:</div>
                 <div class="info-value">${formatValue(data.alt_contact)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Country:</div>
+                <div class="info-label"><i class="fas fa-globe icon"></i> Country:</div>
                 <div class="info-value">${formatValue(data.country)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">State:</div>
+                <div class="info-label"><i class="fas fa-map icon"></i> State:</div>
                 <div class="info-value">${formatValue(data.state)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">City:</div>
+                <div class="info-label"><i class="fas fa-city icon"></i> City:</div>
                 <div class="info-value">${formatValue(data.city)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Pincode:</div>
+                <div class="info-label"><i class="fas fa-mail-bulk icon"></i> Pincode:</div>
                 <div class="info-value">${formatValue(data.pincode)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Status:</div>
+                <div class="info-label"><i class="fas fa-toggle-on icon"></i> Status:</div>
                 <div class="info-value">${formatValue(data.status)}</div>
             </div>
         </div>
 
         <div class="info-section">
-            <div class="section-title">Father's Information</div>
+            <div class="section-title"><i class="fas fa-male icon"></i> Father's Information</div>
             <div class="info-row">
-                <div class="info-label">Father's Name:</div>
+                <div class="info-label"><i class="fas fa-user icon"></i> Father's Name:</div>
                 <div class="info-value">${formatValue(data.father_name)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Father's Tamil Name:</div>
+                <div class="info-label"><i class="fas fa-font icon"></i> Father's Tamil Name:</div>
                 <div class="info-value">${formatValue(data.father_name_tamil)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Father's Contact:</div>
+                <div class="info-label"><i class="fas fa-phone icon"></i> Father's Contact:</div>
                 <div class="info-value">${formatValue(data.father_contact)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Father's Email:</div>
+                <div class="info-label"><i class="fas fa-envelope icon"></i> Father's Email:</div>
                 <div class="info-value">${formatValue(data.father_email)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Father's Qualification:</div>
+                <div class="info-label"><i class="fas fa-graduation-cap icon"></i> Father's Qualification:</div>
                 <div class="info-value">${formatValue(data.father_qualification)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Father's Occupation:</div>
+                <div class="info-label"><i class="fas fa-briefcase icon"></i> Father's Occupation:</div>
                 <div class="info-value">${formatValue(data.father_occupation)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Father's Income:</div>
+                <div class="info-label"><i class="fas fa-rupee-sign icon"></i> Father's Income:</div>
                 <div class="info-value">${formatValue(data.father_income)}</div>
             </div>
         </div>
 
         <div class="info-section">
-            <div class="section-title">Mother's Information</div>
+            <div class="section-title"><i class="fas fa-female icon"></i> Mother's Information</div>
             <div class="info-row">
-                <div class="info-label">Mother's Name:</div>
+                <div class="info-label"><i class="fas fa-user icon"></i> Mother's Name:</div>
                 <div class="info-value">${formatValue(data.mother_name)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Mother's Tamil Name:</div>
+                <div class="info-label"><i class="fas fa-font icon"></i> Mother's Tamil Name:</div>
                 <div class="info-value">${formatValue(data.mother_name_tamil)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Mother's Contact:</div>
+                <div class="info-label"><i class="fas fa-phone icon"></i> Mother's Contact:</div>
                 <div class="info-value">${formatValue(data.mother_contact)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Mother's Email:</div>
+                <div class="info-label"><i class="fas fa-envelope icon"></i> Mother's Email:</div>
                 <div class="info-value">${formatValue(data.mother_email)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Mother's Qualification:</div>
+                <div class="info-label"><i class="fas fa-graduation-cap icon"></i> Mother's Qualification:</div>
                 <div class="info-value">${formatValue(data.mother_qualification)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Mother's Occupation:</div>
+                <div class="info-label"><i class="fas fa-briefcase icon"></i> Mother's Occupation:</div>
                 <div class="info-value">${formatValue(data.mother_occupation)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Mother's Income:</div>
+                <div class="info-label"><i class="fas fa-rupee-sign icon"></i> Mother's Income:</div>
                 <div class="info-value">${formatValue(data.mother_income)}</div>
             </div>
         </div>
 
         <div class="info-section">
-            <div class="section-title">Guardian Information</div>
+            <div class="section-title"><i class="fas fa-shield-alt icon"></i> Guardian Information</div>
             <div class="info-row">
-                <div class="info-label">Guardian's Name:</div>
+                <div class="info-label"><i class="fas fa-user icon"></i> Guardian's Name:</div>
                 <div class="info-value">${formatValue(data.guardian_name)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Guardian's Contact:</div>
+                <div class="info-label"><i class="fas fa-phone icon"></i> Guardian's Contact:</div>
                 <div class="info-value">${formatValue(data.guardian_contact)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Guardian's Email:</div>
+                <div class="info-label"><i class="fas fa-envelope icon"></i> Guardian's Email:</div>
                 <div class="info-value">${formatValue(data.guardian_email)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Child Living With:</div>
+                <div class="info-label"><i class="fas fa-home icon"></i> Child Living With:</div>
                 <div class="info-value">${formatValue(data.child_living)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Rights on Child:</div>
+                <div class="info-label"><i class="fas fa-gavel icon"></i> Rights on Child:</div>
                 <div class="info-value">${formatValue(data.rights_on_child)}</div>
             </div>
         </div>
 
         <div class="info-section">
-            <div class="section-title">Medical Information</div>
+            <div class="section-title"><i class="fas fa-medkit icon"></i> Medical Information</div>
             <div class="info-row">
-                <div class="info-label">Medical Blood Group:</div>
+                <div class="info-label"><i class="fas fa-tint icon"></i> Medical Blood Group:</div>
                 <div class="info-value">${formatValue(data.med_blood_group)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Diseases:</div>
+                <div class="info-label"><i class="fas fa-virus icon"></i> Diseases:</div>
                 <div class="info-value">${formatValue(data.diseases)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Allergies:</div>
+                <div class="info-label"><i class="fas fa-exclamation-triangle icon"></i> Allergies:</div>
                 <div class="info-value">${formatValue(data.allergies)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Medicines:</div>
+                <div class="info-label"><i class="fas fa-pills icon"></i> Medicines:</div>
                 <div class="info-value">${formatValue(data.medicines)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Hospital:</div>
+                <div class="info-label"><i class="fas fa-hospital icon"></i> Hospital:</div>
                 <div class="info-value">${formatValue(data.hospital)}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Doctor:</div>
+                <div class="info-label"><i class="fas fa-user-md icon"></i> Doctor:</div>
                 <div class="info-value">${formatValue(data.doctor)}</div>
             </div>
         </div>
@@ -890,7 +1018,7 @@
 
         downloadBtn.addEventListener('click', async () => {
             try {
-                downloadBtn.innerHTML = 'Generating PDF...';
+                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin icon"></i> Generating PDF...';
                 downloadBtn.disabled = true;
                 
                 const response = await fetch('/download_student_pdf/', {
@@ -930,7 +1058,7 @@
                 console.error('PDF download error:', error);
                 alert('Error downloading PDF. Please try again.');
             } finally {
-                downloadBtn.innerHTML = 'Download PDF Report';
+                downloadBtn.innerHTML = '<i class="fas fa-download icon"></i> Download PDF Report';
                 downloadBtn.disabled = false;
             }
         });

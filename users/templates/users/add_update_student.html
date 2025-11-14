@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <title>Manavargal School Management System - {{ title }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
         * {
             margin: 0;
@@ -16,183 +17,250 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f0f7ff 0%, #dbeafe 100%),
-                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
-            background-size: 200%, 20px 20px;
+            font-weight: 400;
+            background: var(--white);
             min-height: 100vh;
+            color: var(--text-color);
             padding: 80px 20px 40px 20px;
-            position: relative;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        :root {
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #d1e7dd;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --dull-highlighter: #d4edda;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background: linear-gradient(90deg, #1565c0, #42a5f5);
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            animation: fadeInDown 0.8s ease-out;
-            flex-wrap: wrap;
+            background: var(--white);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
-            left: 20px;
-            right: 20px;
-            z-index: 1000;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
 
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .welcome-header {
-            color: white;
-            font-size: 2.5rem;
+        .header h1 {
+            font-size: 2rem;
             font-weight: 700;
             text-align: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease, transform 0.3s ease;
             flex-grow: 1;
-            margin: 0;
+            color: var(--primary-color);
         }
 
-        .welcome-header:hover {
-            color: #e3f2fd;
-            transform: scale(1.02);
-        }
-
-        .back-button {
+        .back-btn {
             padding: 0.8rem 1.5rem;
-            border: none;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            background: linear-gradient(90deg, #1976d2, #42a5f5);
-            color: white;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
             text-decoration: none;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .back-button:hover {
-            background: linear-gradient(90deg, #1565c0, #1976d2);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
-        .logo-container {
-            z-index: 1000;
-        }
-
-        .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+        .logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
             object-fit: cover;
+            border: none;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(8px);
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            width: 100%;
-            max-width: 1200px;
-            margin: 100px auto 20px;
-            transition: box-shadow 0.3s ease;
+            margin-top: 80px;
+            transition: var(--transition);
         }
 
         .container:hover {
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-md);
         }
 
-        .form-section {
-            margin-bottom: 2rem;
-            padding: 1rem;
-            border: 1px solid #dbeafe;
-            border-radius: 8px;
-            background: #ffffff;
-        }
-
-        .form-section h3 {
-            color: #2563eb;
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-            font-weight: 600;
+        .messages p {
             text-align: center;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #dc2626;
+            background: rgba(255, 75, 75, 0.1);
+            padding: 0.6rem;
+            border-radius: 6px;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
             gap: 1rem;
         }
 
-        .form-group {
+        .header-section h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .back-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .back-student-btn, .back-dashboard-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--light-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .back-student-btn:hover, .back-dashboard-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .subheading {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             margin-bottom: 1rem;
         }
 
-        .form-group label {
+        .subheading h3 {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .required label:after {
+            content: " *";
+            color: #dc2626;
+        }
+
+        label {
             display: block;
-            color: #2563eb;
+            color: var(--primary-color);
             font-size: 0.9rem;
             font-weight: 400;
             margin-bottom: 0.5rem;
         }
 
-        input[type="text"],
-        input[type="email"],
-        input[type="date"],
-        input[type="number"],
-        select,
-        textarea {
+        input, select, textarea {
             width: 100%;
             padding: 0.7rem;
-            border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #93c5fd, #2563eb) border-box;
+            border: 2px solid var(--border-color);
+            background: var(--white);
             border-radius: 8px;
             font-size: 0.9rem;
-            transition: box-shadow 0.3s ease;
-            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="date"]:focus,
-        input[type="number"]:focus,
-        select:focus,
-        textarea:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
-            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
-        }
-
-        select {
-            appearance: none;
-            background: #f0f7ff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="#2563eb"/></svg>') no-repeat right 0.75rem center;
-            background-size: 12px;
-            color: #1e40af;
-        }
-
-        select option {
-            background: #f0f7ff;
-            color: #1e40af;
-            padding: 0.5rem;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(0, 166, 118, 0.3);
         }
 
         textarea {
             resize: vertical;
-            min-height: 80px;
         }
 
-        .button-group {
+        .form-actions {
             display: flex;
+            justify-content: flex-end;
             gap: 1rem;
-            margin-top: 2rem;
-            justify-content: center;
         }
 
         button {
@@ -202,155 +270,148 @@
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-family: 'Poppins', sans-serif;
+            gap: 0.5rem;
         }
 
         .save-btn {
-            background: #2563eb;
-            color: white;
-            min-width: 150px;
-            justify-content: center;
+            background: var(--primary-color);
+            color: var(--white);
+            border: 2px solid var(--primary-color);
         }
 
         .save-btn:hover {
-            background: #1d4ed8;
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .cancel-btn {
-            background: #6b7280;
-            color: white;
-            min-width: 150px;
-            justify-content: center;
+            background: var(--light-bg);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
         }
 
         .cancel-btn:hover {
-            background: #4b5563;
+            background: var(--primary-color);
+            color: var(--white);
             transform: translateY(-2px);
-        }
-
-        .messages {
-            margin: 1rem 0;
-            padding: 0.6rem;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .messages .error {
-            background: rgba(255, 75, 75, 0.1);
-            color: #dc2626;
-            font-size: 0.9rem;
-        }
-
-        .messages .success {
-            background: rgba(34, 197, 94, 0.1);
-            color: #059669;
-            font-size: 0.9rem;
-            border-left: 4px solid #10b981;
+            box-shadow: var(--shadow-md);
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 70px 10px 20px 10px;
+            }
+
             .header {
-                flex-direction: row;
-                gap: 0.5rem;
-                padding: 0.8rem 1rem;
-                align-items: center;
-                justify-content: space-between;
-                left: 10px;
-                right: 10px;
+                padding: 1rem;
             }
 
-            .welcome-header {
-                font-size: 1.8rem;
-                margin: 0;
-                flex-grow: 1;
-                text-align: center;
-            }
-
-            .back-button {
-                padding: 0.7rem 1.2rem;
-                font-size: 0.9rem;
-            }
-
-            .logo {
-                width: 40px;
-                height: 40px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
+            .header h1 {
+                font-size: 1.5rem;
             }
 
             .container {
-                margin-top: 90px;
                 padding: 1.5rem;
+                margin-top: 70px;
             }
 
-            .button-group {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .back-buttons {
                 flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .messages p {
+                font-size: 0.85rem;
             }
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 60px 5px 15px 5px;
+            }
+
             .header {
-                padding: 0.6rem 0.8rem;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                gap: 0.3rem;
-                left: 5px;
-                right: 5px;
+                padding: 0.75rem;
+                flex-direction: column;
+                gap: 1rem;
             }
 
-            .welcome-header {
-                font-size: 1.4rem;
-            }
-
-            .back-button {
-                padding: 0.6rem 1rem;
-                font-size: 0.8rem;
-            }
-
-            .logo {
-                width: 35px;
-                height: 35px;
+            .header h1 {
+                font-size: 1.25rem;
             }
 
             .container {
                 padding: 1rem;
-                margin-top: 80px;
+                margin-top: 100px;
+                border-radius: 8px;
             }
 
-            .form-section h3 {
-                font-size: 1.1rem;
+            .section {
+                padding: 1rem;
             }
 
-            button {
-                padding: 0.7rem 1.2rem;
+            .messages p {
                 font-size: 0.8rem;
+            }
+        }
+
+        @media (hover: none) {
+            .section:hover, .logo-img:hover, .back-btn:hover, .card:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
             }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <a href="{% url 'student_info' %}" class="back-button">Back</a>
-        <h1 class="welcome-header">{{ title }}</h1>
-        <div class="logo-container">
-            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo" class="logo">
-        </div>
+        <a href="{% url 'student_info' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back To Main Dashboard
+        </a>
+        <h1>{{ title }}</h1>
+        <a href="{% url 'student_info' %}">
+            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo" class="logo-img">
+        </a>
     </div>
+
     <div class="container">
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
+        <div class="back-buttons">
+            <button class="cancel-btn" onclick="window.location.href='{% url 'student_info' %}'">
+                <i class="fas fa-arrow-left"></i> Back to Student Info
+            </button>
+            
         </div>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
         {% endif %}
 
         <form method="POST" onsubmit="return confirm('Are you sure you want to update this student\'s information?');">
@@ -358,321 +419,334 @@
             <input type="hidden" name="user_id" value="{{ user_id }}">
 
             <!-- Basic Information Section -->
-            <div class="form-section">
-                <h3>Basic Information</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="name">Full Name*</label>
-                        <input type="text" id="name" name="name" value="{{ name|default_if_none:'' }}" required>
+            <div class="section">
+                <div class="subheading">
+                    <h3><i class="fas fa-user"></i> Basic Information</h3>
+                </div>
+                <div class="grid">
+                    <div class="form-group required">
+                        <label><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" name="name" value="{{ post_data.name|default:name|default_if_none:'' }}" required>
                     </div>
-                    <div class="form-group">
-                        <label for="admission_number">Admission Number*</label>
-                        <input type="text" id="admission_number" name="admission_number" value="{{ admission_number|default_if_none:'' }}" required>
+                    <div class="form-group required">
+                        <label><i class="fas fa-id-card"></i> Admission Number</label>
+                        <input type="text" name="admission_number" value="{{ post_data.admission_number|default:admission_number|default_if_none:'' }}" required>
                     </div>
-                    <div class="form-group">
-                        <label for="class_section">Class-Section* (e.g., 2-A)</label>
-                        <input type="text" id="class_section" name="class_section" value="{{ class_section|default_if_none:'' }}" required>
+                    <div class="form-group required">
+                        <label><i class="fas fa-chalkboard"></i> Class-Section (e.g., 2-A)</label>
+                        <input type="text" name="class_section" value="{{ post_data.class_section|default:class_section|default_if_none:'' }}" required>
                     </div>
-                    <div class="form-group">
-                        <label for="roll_number">Roll Number*</label>
-                        <input type="text" id="roll_number" name="roll_number" value="{{ roll_number|default_if_none:'' }}" required>
+                    <div class="form-group required">
+                        <label><i class="fas fa-hashtag"></i> Roll Number</label>
+                        <input type="text" name="roll_number" value="{{ post_data.roll_number|default:roll_number|default_if_none:'' }}" required>
                     </div>
-                    <div class="form-group">
-                        <label for="emis">EMIS Number*</label>
-                        <input type="text" id="emis" name="emis" value="{{ emis|default_if_none:'' }}" required>
+                    <div class="form-group required">
+                        <label><i class="fas fa-fingerprint"></i> EMIS Number</label>
+                        <input type="text" name="emis" value="{{ post_data.emis|default:emis|default_if_none:'' }}" required>
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email*</label>
-                        <input type="email" id="email" name="email" value="{{ email|default_if_none:'' }}" required>
+                    <div class="form-group required">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" name="email" value="{{ post_data.email|default:email|default_if_none:'' }}" required>
                     </div>
                 </div>
             </div>
 
             <!-- Personal Information Section -->
-            <div class="form-section">
-                <h3>Personal Information</h3>
-                <div class="form-grid">
+            <div class="section">
+                <div class="subheading">
+                    <h3><i class="fas fa-info-circle"></i> Personal Information</h3>
+                </div>
+                <div class="grid">
                     <div class="form-group">
-                        <label for="gender">Gender</label>
-                        <select id="gender" name="gender">
-                            <option value="" {% if not gender %}selected{% endif %}>Select Gender</option>
+                        <label><i class="fas fa-venus-mars"></i> Gender</label>
+                        <select name="gender">
+                            <option value="" {% if not post_data.gender|default:gender %}selected{% endif %}>Select Gender</option>
                             {% for option in gender_options %}
-                            <option value="{{ option }}" {% if gender == option %}selected{% endif %}>{{ option }}</option>
+                                <option value="{{ option }}" {% if post_data.gender|default:gender == option %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="community">Community</label>
-                        <select id="community" name="community">
-                            <option value="" {% if not community %}selected{% endif %}>Select Community</option>
+                        <label><i class="fas fa-users"></i> Community</label>
+                        <select name="community">
+                            <option value="" {% if not post_data.community|default:community %}selected{% endif %}>Select Community</option>
                             {% for option in community_options %}
-                            <option value="{{ option }}" {% if community == option %}selected{% endif %}>{{ option }}</option>
+                                <option value="{{ option }}" {% if post_data.community|default:community == option %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="tamil_name">Tamil Name</label>
-                        <input type="text" id="tamil_name" name="tamil_name" value="{{ tamil_name|default_if_none:'' }}">
+                        <label><i class="fas fa-font"></i> Tamil Name</label>
+                        <input type="text" name="tamil_name" value="{{ post_data.tamil_name|default:tamil_name|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="dob">Date of Birth</label>
-                        <input type="date" id="dob" name="dob" value="{{ dob|date:'Y-m-d'|default_if_none:'' }}">
+                        <label><i class="fas fa-birthday-cake"></i> Date of Birth</label>
+                        <input type="date" name="dob" value="{{ post_data.dob|default:dob|date:'Y-m-d'|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="nationality">Nationality</label>
-                        <input type="text" id="nationality" name="nationality" value="{{ nationality|default_if_none:'' }}">
+                        <label><i class="fas fa-globe"></i> Nationality</label>
+                        <input type="text" name="nationality" value="{{ post_data.nationality|default:nationality|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="blood_group">Blood Group</label>
-                        <select id="blood_group" name="blood_group">
-                            <option value="" {% if not blood_group %}selected{% endif %}>Select Blood Group</option>
+                        <label><i class="fas fa-tint"></i> Blood Group</label>
+                        <select name="blood_group">
+                            <option value="" {% if not post_data.blood_group|default:blood_group %}selected{% endif %}>Select Blood Group</option>
                             {% for option in blood_group_options %}
-                            <option value="{{ option }}" {% if blood_group == option %}selected{% endif %}>{{ option }}</option>
+                                <option value="{{ option }}" {% if post_data.blood_group|default:blood_group == option %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="mother_tongue">Mother Tongue</label>
-                        <input type="text" id="mother_tongue" name="mother_tongue" value="{{ mother_tongue|default_if_none:'' }}">
+                        <label><i class="fas fa-language"></i> Mother Tongue</label>
+                        <input type="text" name="mother_tongue" value="{{ post_data.mother_tongue|default:mother_tongue|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="caste">Caste</label>
-                        <input type="text" id="caste" name="caste" value="{{ caste|default_if_none:'' }}">
+                        <label><i class="fas fa-user-tag"></i> Caste</label>
+                        <input type="text" name="caste" value="{{ post_data.caste|default:caste|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="religion">Religion</label>
-                        <input type="text" id="religion" name="religion" value="{{ religion|default_if_none:'' }}">
+                        <label><i class="fas fa-prayer-rug"></i> Religion</label>
+                        <input type="text" name="religion" value="{{ post_data.religion|default:religion|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="place_of_birth">Place of Birth</label>
-                        <input type="text" id="place_of_birth" name="place_of_birth" value="{{ place_of_birth|default_if_none:'' }}">
+                        <label><i class="fas fa-map-marker-alt"></i> Place of Birth</label>
+                        <input type="text" name="place_of_birth" value="{{ post_data.place_of_birth|default:place_of_birth|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="aadhaar">Aadhaar Number</label>
-                        <input type="text" id="aadhaar" name="aadhaar" value="{{ aadhaar|default_if_none:'' }}">
+                        <label><i class="fas fa-id-card-alt"></i> Aadhaar Number</label>
+                        <input type="text" name="aadhaar" value="{{ post_data.aadhaar|default:aadhaar|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="disability">Disability</label>
-                        <input type="text" id="disability" name="disability" value="{{ disability|default_if_none:'' }}">
+                        <label><i class="fas fa-wheelchair"></i> Disability</label>
+                        <input type="text" name="disability" value="{{ post_data.disability|default:disability|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="id_mark1">Identification Mark 1</label>
-                        <input type="text" id="id_mark1" name="id_mark1" value="{{ id_mark1|default_if_none:'' }}">
+                        <label><i class="fas fa-eye"></i> Identification Mark 1</label>
+                        <input type="text" name="id_mark1" value="{{ post_data.id_mark1|default:id_mark1|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="id_mark2">Identification Mark 2</label>
-                        <input type="text" id="id_mark2" name="id_mark2" value="{{ id_mark2|default_if_none:'' }}">
+                        <label><i class="fas fa-eye-slash"></i> Identification Mark 2</label>
+                        <input type="text" name="id_mark2" value="{{ post_data.id_mark2|default:id_mark2|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="admission_class">Admission Class</label>
-                        <input type="text" id="admission_class" name="admission_class" value="{{ admission_class|default_if_none:'' }}">
+                        <label><i class="fas fa-graduation-cap"></i> Admission Class</label>
+                        <input type="text" name="admission_class" value="{{ post_data.admission_class|default:admission_class|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="admission_year">Admission Year</label>
-                        <input type="text" id="admission_year" name="admission_year" value="{{ admission_year|default_if_none:'' }}">
+                        <label><i class="fas fa-calendar"></i> Admission Year</label>
+                        <input type="text" name="admission_year" value="{{ post_data.admission_year|default:admission_year|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="admission_date">Admission Date</label>
-                        <input type="date" id="admission_date" name="admission_date" value="{{ admission_date|date:'Y-m-d'|default_if_none:'' }}">
+                        <label><i class="fas fa-calendar-check"></i> Admission Date</label>
+                        <input type="date" name="admission_date" value="{{ post_data.admission_date|default:admission_date|date:'Y-m-d'|default_if_none:'' }}">
                     </div>
                 </div>
             </div>
 
             <!-- Contact Information Section -->
-            <div class="form-section">
-                <h3>Contact Information</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <textarea id="address" name="address">{{ address|default_if_none:'' }}</textarea>
+            <div class="section">
+                <div class="subheading">
+                    <h3><i class="fas fa-address-book"></i> Contact Information</h3>
+                </div>
+                <div class="grid">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label><i class="fas fa-map-marked-alt"></i> Address</label>
+                        <textarea name="address" rows="4">{{ post_data.address|default:address|default_if_none:'' }}</textarea>
                     </div>
                     <div class="form-group">
-                        <label for="contact">Contact Number</label>
-                        <input type="text" id="contact" name="contact" value="{{ contact|default_if_none:'' }}">
+                        <label><i class="fas fa-phone"></i> Contact Number</label>
+                        <input type="text" name="contact" value="{{ post_data.contact|default:contact|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="alt_contact">Alternate Contact</label>
-                        <input type="text" id="alt_contact" name="alt_contact" value="{{ alt_contact|default_if_none:'' }}">
+                        <label><i class="fas fa-phone-alt"></i> Alternate Contact</label>
+                        <input type="text" name="alt_contact" value="{{ post_data.alt_contact|default:alt_contact|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="country">Country</label>
-                        <input type="text" id="country" name="country" value="{{ country|default_if_none:'' }}">
+                        <label><i class="fas fa-globe-americas"></i> Country</label>
+                        <input type="text" name="country" value="{{ post_data.country|default:country|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="state">State</label>
-                        <input type="text" id="state" name="state" value="{{ state|default_if_none:'' }}">
+                        <label><i class="fas fa-map"></i> State</label>
+                        <input type="text" name="state" value="{{ post_data.state|default:state|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="city">City</label>
-                        <input type="text" id="city" name="city" value="{{ city|default_if_none:'' }}">
+                        <label><i class="fas fa-city"></i> City</label>
+                        <input type="text" name="city" value="{{ post_data.city|default:city|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="pincode">Pincode</label>
-                        <input type="text" id="pincode" name="pincode" value="{{ pincode|default_if_none:'' }}">
+                        <label><i class="fas fa-map-pin"></i> Pincode</label>
+                        <input type="text" name="pincode" value="{{ post_data.pincode|default:pincode|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="status">Status</label>
-                        <input type="text" id="status" name="status" value="{{ status|default_if_none:'' }}">
+                        <label><i class="fas fa-user-check"></i> Status</label>
+                        <input type="text" name="status" value="{{ post_data.status|default:status|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="house">House</label>
-                        <input type="text" id="house" name="house" value="{{ house|default_if_none:'' }}">
+                        <label><i class="fas fa-home"></i> House</label>
+                        <input type="text" name="house" value="{{ post_data.house|default:house|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="teacher_ward">Teacher Ward</label>
-                        <select id="teacher_ward" name="teacher_ward">
-                            <option value="" {% if not teacher_ward %}selected{% endif %}>Select Option</option>
+                        <label><i class="fas fa-user-tie"></i> Teacher Ward</label>
+                        <select name="teacher_ward">
+                            <option value="" {% if not post_data.teacher_ward|default:teacher_ward %}selected{% endif %}>Select Option</option>
                             {% for option in teacher_ward_options %}
-                            <option value="{{ option }}" {% if teacher_ward == option %}selected{% endif %}>{{ option|title }}</option>
+                                <option value="{{ option }}" {% if post_data.teacher_ward|default:teacher_ward == option %}selected{% endif %}>{{ option|title }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="rte">RTE</label>
-                        <select id="rte" name="rte">
-                            <option value="" {% if not rte %}selected{% endif %}>Select Option</option>
+                        <label><i class="fas fa-school"></i> RTE</label>
+                        <select name="rte">
+                            <option value="" {% if not post_data.rte|default:rte %}selected{% endif %}>Select Option</option>
                             {% for option in rte_options %}
-                            <option value="{{ option }}" {% if rte == option %}selected{% endif %}>{{ option|title }}</option>
+                                <option value="{{ option }}" {% if post_data.rte|default:rte == option %}selected{% endif %}>{{ option|title }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="sports_quota">Sports Quota</label>
-                        <select id="sports_quota" name="sports_quota">
-                            <option value="" {% if not sports_quota %}selected{% endif %}>Select Option</option>
+                        <label><i class="fas fa-running"></i> Sports Quota</label>
+                        <select name="sports_quota">
+                            <option value="" {% if not post_data.sports_quota|default:sports_quota %}selected{% endif %}>Select Option</option>
                             {% for option in sports_quota_options %}
-                            <option value="{{ option }}" {% if sports_quota == option %}selected{% endif %}>{{ option|title }}</option>
+                                <option value="{{ option }}" {% if post_data.sports_quota|default:sports_quota == option %}selected{% endif %}>{{ option|title }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="prev_school">Previous School</label>
-                        <input type="text" id="prev_school" name="prev_school" value="{{ prev_school|default_if_none:'' }}">
+                        <label><i class="fas fa-school"></i> Previous School</label>
+                        <input type="text" name="prev_school" value="{{ post_data.prev_school|default:prev_school|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="prev_board">Previous Board</label>
-                        <input type="text" id="prev_board" name="prev_board" value="{{ prev_board|default_if_none:'' }}">
+                        <label><i class="fas fa-certificate"></i> Previous Board</label>
+                        <input type="text" name="prev_board" value="{{ post_data.prev_board|default:prev_board|default_if_none:'' }}">
                     </div>
                 </div>
             </div>
 
             <!-- Family Information Section -->
-            <div class="form-section">
-                <h3>Family Information</h3>
-                <div class="form-grid">
+            <div class="section">
+                <div class="subheading">
+                    <h3><i class="fas fa-users"></i> Family Information</h3>
+                </div>
+                <div class="grid">
                     <div class="form-group">
-                        <label for="father_name">Father's Name</label>
-                        <input type="text" id="father_name" name="father_name" value="{{ father_name|default_if_none:'' }}">
+                        <label><i class="fas fa-user"></i> Father's Name</label>
+                        <input type="text" name="father_name" value="{{ post_data.father_name|default:father_name|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="father_name_tamil">Father's Name (Tamil)</label>
-                        <input type="text" id="father_name_tamil" name="father_name_tamil" value="{{ father_name_tamil|default_if_none:'' }}">
+                        <label><i class="fas fa-font"></i> Father's Name (Tamil)</label>
+                        <input type="text" name="father_name_tamil" value="{{ post_data.father_name_tamil|default:father_name_tamil|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="mother_name">Mother's Name</label>
-                        <input type="text" id="mother_name" name="mother_name" value="{{ mother_name|default_if_none:'' }}">
+                        <label><i class="fas fa-user-friends"></i> Mother's Name</label>
+                        <input type="text" name="mother_name" value="{{ post_data.mother_name|default:mother_name|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="mother_name_tamil">Mother's Name (Tamil)</label>
-                        <input type="text" id="mother_name_tamil" name="mother_name_tamil" value="{{ mother_name_tamil|default_if_none:'' }}">
+                        <label><i class="fas fa-font"></i> Mother's Name (Tamil)</label>
+                        <input type="text" name="mother_name_tamil" value="{{ post_data.mother_name_tamil|default:mother_name_tamil|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="father_contact">Father's Contact</label>
-                        <input type="text" id="father_contact" name="father_contact" value="{{ father_contact|default_if_none:'' }}">
+                        <label><i class="fas fa-phone"></i> Father's Contact</label>
+                        <input type="text" name="father_contact" value="{{ post_data.father_contact|default:father_contact|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="mother_contact">Mother's Contact</label>
-                        <input type="text" id="mother_contact" name="mother_contact" value="{{ mother_contact|default_if_none:'' }}">
+                        <label><i class="fas fa-phone-alt"></i> Mother's Contact</label>
+                        <input type="text" name="mother_contact" value="{{ post_data.mother_contact|default:mother_contact|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="father_email">Father's Email</label>
-                        <input type="email" id="father_email" name="father_email" value="{{ father_email|default_if_none:'' }}">
+                        <label><i class="fas fa-envelope"></i> Father's Email</label>
+                        <input type="email" name="father_email" value="{{ post_data.father_email|default:father_email|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="mother_email">Mother's Email</label>
-                        <input type="email" id="mother_email" name="mother_email" value="{{ mother_email|default_if_none:'' }}">
+                        <label><i class="fas fa-envelope"></i> Mother's Email</label>
+                        <input type="email" name="mother_email" value="{{ post_data.mother_email|default:mother_email|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="father_qualification">Father's Qualification</label>
-                        <input type="text" id="father_qualification" name="father_qualification" value="{{ father_qualification|default_if_none:'' }}">
+                        <label><i class="fas fa-graduation-cap"></i> Father's Qualification</label>
+                        <input type="text" name="father_qualification" value="{{ post_data.father_qualification|default:father_qualification|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="mother_qualification">Mother's Qualification</label>
-                        <input type="text" id="mother_qualification" name="mother_qualification" value="{{ mother_qualification|default_if_none:'' }}">
+                        <label><i class="fas fa-graduation-cap"></i> Mother's Qualification</label>
+                        <input type="text" name="mother_qualification" value="{{ post_data.mother_qualification|default:mother_qualification|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="father_occupation">Father's Occupation</label>
-                        <input type="text" id="father_occupation" name="father_occupation" value="{{ father_occupation|default_if_none:'' }}">
+                        <label><i class="fas fa-briefcase"></i> Father's Occupation</label>
+                        <input type="text" name="father_occupation" value="{{ post_data.father_occupation|default:father_occupation|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="mother_occupation">Mother's Occupation</label>
-                        <input type="text" id="mother_occupation" name="mother_occupation" value="{{ mother_occupation|default_if_none:'' }}">
+                        <label><i class="fas fa-briefcase"></i> Mother's Occupation</label>
+                        <input type="text" name="mother_occupation" value="{{ post_data.mother_occupation|default:mother_occupation|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="father_income">Father's Income</label>
-                        <input type="text" id="father_income" name="father_income" value="{{ father_income|default_if_none:'' }}">
+                        <label><i class="fas fa-rupee-sign"></i> Father's Income</label>
+                        <input type="text" name="father_income" value="{{ post_data.father_income|default:father_income|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="mother_income">Mother's Income</label>
-                        <input type="text" id="mother_income" name="mother_income" value="{{ mother_income|default_if_none:'' }}">
+                        <label><i class="fas fa-rupee-sign"></i> Mother's Income</label>
+                        <input type="text" name="mother_income" value="{{ post_data.mother_income|default:mother_income|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="guardian_name">Guardian's Name</label>
-                        <input type="text" id="guardian_name" name="guardian_name" value="{{ guardian_name|default_if_none:'' }}">
+                        <label><i class="fas fa-user-shield"></i> Guardian's Name</label>
+                        <input type="text" name="guardian_name" value="{{ post_data.guardian_name|default:guardian_name|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="guardian_contact">Guardian's Contact</label>
-                        <input type="text" id="guardian_contact" name="guardian_contact" value="{{ guardian_contact|default_if_none:'' }}">
+                        <label><i class="fas fa-phone"></i> Guardian's Contact</label>
+                        <input type="text" name="guardian_contact" value="{{ post_data.guardian_contact|default:guardian_contact|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="guardian_email">Guardian's Email</label>
-                        <input type="email" id="guardian_email" name="guardian_email" value="{{ guardian_email|default_if_none:'' }}">
+                        <label><i class="fas fa-envelope"></i> Guardian's Email</label>
+                        <input type="email" name="guardian_email" value="{{ post_data.guardian_email|default:guardian_email|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="child_living">Child Living With</label>
-                        <input type="text" id="child_living" name="child_living" value="{{ child_living|default_if_none:'' }}">
+                        <label><i class="fas fa-home"></i> Child Living With</label>
+                        <input type="text" name="child_living" value="{{ post_data.child_living|default:child_living|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="rights_on_child">Rights on Child</label>
-                        <input type="text" id="rights_on_child" name="rights_on_child" value="{{ rights_on_child|default_if_none:'' }}">
+                        <label><i class="fas fa-balance-scale"></i> Rights on Child</label>
+                        <input type="text" name="rights_on_child" value="{{ post_data.rights_on_child|default:rights_on_child|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="med_blood_group">Medical Blood Group</label>
-                        <select id="med_blood_group" name="med_blood_group">
-                            <option value="" {% if not med_blood_group %}selected{% endif %}>Select Blood Group</option>
+                        <label><i class="fas fa-tint"></i> Medical Blood Group</label>
+                        <select name="med_blood_group">
+                            <option value="" {% if not post_data.med_blood_group|default:med_blood_group %}selected{% endif %}>Select Blood Group</option>
                             {% for option in blood_group_options %}
-                            <option value="{{ option }}" {% if med_blood_group == option %}selected{% endif %}>{{ option }}</option>
+                                <option value="{{ option }}" {% if post_data.med_blood_group|default:med_blood_group == option %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="diseases">Diseases</label>
-                        <textarea id="diseases" name="diseases">{{ diseases|default_if_none:'' }}</textarea>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label><i class="fas fa-biohazard"></i> Diseases</label>
+                        <textarea name="diseases" rows="4">{{ post_data.diseases|default:diseases|default_if_none:'' }}</textarea>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label><i class="fas fa-allergies"></i> Allergies</label>
+                        <textarea name="allergies" rows="4">{{ post_data.allergies|default:allergies|default_if_none:'' }}</textarea>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label><i class="fas fa-pills"></i> Medicines</label>
+                        <textarea name="medicines" rows="4">{{ post_data.medicines|default:medicines|default_if_none:'' }}</textarea>
                     </div>
                     <div class="form-group">
-                        <label for="allergies">Allergies</label>
-                        <textarea id="allergies" name="allergies">{{ allergies|default_if_none:'' }}</textarea>
+                        <label><i class="fas fa-hospital"></i> Hospital</label>
+                        <input type="text" name="hospital" value="{{ post_data.hospital|default:hospital|default_if_none:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="medicines">Medicines</label>
-                        <textarea id="medicines" name="medicines">{{ medicines|default_if_none:'' }}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="hospital">Hospital</label>
-                        <input type="text" id="hospital" name="hospital" value="{{ hospital|default_if_none:'' }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="doctor">Doctor</label>
-                        <input type="text" id="doctor" name="doctor" value="{{ doctor|default_if_none:'' }}">
+                        <label><i class="fas fa-user-md"></i> Doctor</label>
+                        <input type="text" name="doctor" value="{{ post_data.doctor|default:doctor|default_if_none:'' }}">
                     </div>
                 </div>
             </div>
 
-            <div class="button-group">
-                <button type="button" class="cancel-btn" onclick="window.location.href='{% url 'student_info' %}'">Cancel</button>
-                <button type="submit" class="save-btn">Update Student</button>
+            <div class="form-actions">
+                <button type="button" class="cancel-btn" onclick="window.location.href='{% url 'student_info' %}'">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="submit" class="save-btn">
+                    <i class="fas fa-save"></i> Update Student
+                </button>
             </div>
         </form>
     </div>
+
 </body>
 </html>

@@ -119,8 +119,8 @@ urlpatterns = [
     path('admin_attendance/', views.admin_attendance_portal, name='admin_attendance_portal'),
     path('admin_mark_attendance/', views.admin_mark_attendance, name='admin_mark_attendance'),
     path('admin_generate_attendance_pdf/', views.admin_generate_attendance_pdf, name='admin_generate_attendance_pdf'),
-
-
+    # urls.py snippet for rendering admin_master.html (assuming app_name='admin')
+    path('master-data/', views.admin_master, name='admin_master'),
     path('admin_timetable/', views.admin_timetable_view, name='admin_timetable'),
     path('admin_timetable/add/', views.admin_timetable_add, name='admin_timetable_add'),
     path('admin_timetable/edit/<int:id>/', views.admin_timetable_edit, name='admin_timetable_edit'),
