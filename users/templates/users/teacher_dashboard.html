@@ -627,10 +627,6 @@
                     <span class="nav-icon">👤</span>
                     My Profile
                 </a>
-                <a href="{% url 'teacher_mark_entry' %}" class="nav-item">
-                    <span class="nav-icon">📝</span>
-                    Mark Entry
-                </a>
                 <a href="{% url 'teacher_portal' %}" class="nav-item">
                     <span class="nav-icon">📅</span>
                     Mark Attendance
@@ -649,11 +645,15 @@
                 </a>
                 <a href="{% url 'teacher_accept_portal' %}" class="nav-item">
                     <span class="nav-icon">✅</span>
-                    Approve Student Leave Requests
+                    Student Leave Requests
                 </a>
                 <a href="{% url 'teacher_timetable' %}" class="nav-item">
                     <span class="nav-icon">🕐</span>
                     Timetable
+                </a>
+                <a href="{% url 'teacher_mark_entry' %}" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    Mark Entry
                 </a>
             </nav>
         </div>
