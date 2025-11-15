@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Teacher Accept Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
@@ -26,6 +28,7 @@
 
         h1, h2, h3 {
             font-family: 'Montserrat', sans-serif;
+            text-align: center;
         }
 
         :root {
@@ -37,7 +40,7 @@
             --sidebar-border: #a8d5c2;
             --white: #ffffff;
             --light-bg: #f8f9fa;
-            --border-color: #ced4da;
+            --border-color: #adb5bd;
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -56,8 +59,8 @@
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
@@ -67,7 +70,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-radius: 0;
+            gap: 0.5rem;
         }
 
         .header h1 {
@@ -76,11 +80,17 @@
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            flex: none;
+            margin: 0;
+            z-index: 0;
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
@@ -92,6 +102,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .back-btn:hover {
@@ -101,19 +113,36 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-img {
+        .logo-container {
             width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: none;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: var(--transition);
             box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             transition: var(--transition);
         }
 
-        .logo-img:hover {
+        .logo-container:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
+        }
+
+        .logo-container:hover img {
+            transform: scale(1.05);
         }
 
         .container {
@@ -134,6 +163,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
 
         .messages .error {
@@ -145,6 +175,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
 
         .form-header {
@@ -163,7 +194,7 @@
 
         .request {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             padding: 1.5rem;
             border-radius: 10px;
             box-shadow: var(--shadow-sm);
@@ -255,7 +286,7 @@
             font-size: 1.1rem;
             padding: 2rem;
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             grid-column: 1 / -1;
         }
@@ -308,9 +339,9 @@
                 font-size: 1.5rem;
             }
 
-            .logo-img {
-                width: 60px;
-                height: 60px;
+            .logo-container {
+                width: 80px;
+                height: 64px;
             }
 
             .form-header {
@@ -384,9 +415,9 @@
                 font-size: 1.25rem;
             }
 
-            .logo-img {
-                width: 50px;
-                height: 50px;
+            .logo-container {
+                width: 60px;
+                height: 48px;
             }
 
             .form-header {
@@ -442,7 +473,7 @@
         }
 
         @media (hover: none) {
-            .request:hover, .approve-btn:hover, .reject-btn:hover, .logo-img:hover, .back-btn:hover, .scroll-top-btn:hover {
+            .request:hover, .approve-btn:hover, .reject-btn:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -467,7 +498,9 @@
         </a>
         <h1><i class="fas fa-calendar-times"></i> Teacher Accept Portal</h1>
         <a href="{% url 'teacher_dashboard' %}">
-            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+            <div class="logo-container">
+                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
+            </div>
         </a>
     </div>
 

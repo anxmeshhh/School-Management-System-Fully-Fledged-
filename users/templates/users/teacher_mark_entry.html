@@ -8,6 +8,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
         * {
@@ -50,8 +52,8 @@
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
@@ -61,15 +63,24 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-radius: 0;
+            gap: 0.5rem;
         }
+
         .header h1 {
             font-size: 2rem;
             font-weight: 700;
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            flex: none;
+            margin: 0;
+            z-index: 0;
         }
+
         .back-btn {
             padding: 0.8rem 1.5rem;
             border: 1px solid var(--border-color);

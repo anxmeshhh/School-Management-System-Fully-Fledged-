@@ -6,27 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Attendance Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            background: var(--white);
-            min-height: 100vh;
-            color: var(--text-color);
-            padding: 80px 20px 40px 20px;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Montserrat', sans-serif;
-        }
 
         :root {
             --primary-color: #00a676;
@@ -35,7 +18,7 @@
             --sidebar-border: #a8d5c2;
             --white: #ffffff;
             --light-bg: #f8f9fa;
-            --border-color: #ced4da;
+            --border-color: #adb5bd;
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -45,10 +28,30 @@
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         html {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--text-color);
+            padding: 120px 20px 40px 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
         }
 
         .container {
@@ -59,8 +62,8 @@
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
@@ -70,7 +73,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-radius: 0;
+            gap: 0.5rem;
         }
 
         .header h1 {
@@ -79,11 +83,17 @@
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            flex: none;
+            margin: 0;
+            z-index: 0;
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
@@ -95,6 +105,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .back-btn:hover {
@@ -104,28 +116,44 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-img {
+        .logo-container {
             width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: none;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: var(--transition);
             box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             transition: var(--transition);
         }
 
-        .logo-img:hover {
+        .logo-container:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
 
+        .logo-container:hover img {
+            transform: scale(1.05);
+        }
+
         .main-content {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
             padding: 2rem;
-            margin-top: 80px;
         }
 
         .alert-message {
@@ -138,6 +166,10 @@
             padding: 0.75rem;
             border-radius: 8px;
             border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
 
         .alert-message .success {
@@ -146,13 +178,17 @@
             padding: 0.75rem;
             border-radius: 8px;
             border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
 
         .section {
             background: var(--light-bg);
             padding: 1.5rem;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             margin-bottom: 2rem;
             transition: var(--transition);
@@ -167,6 +203,7 @@
             font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
+            text-align: center;
         }
 
         .form-group {
@@ -244,7 +281,7 @@
             width: 100%;
             min-width: 600px;
             border-collapse: collapse;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             background: var(--white);
         }
 
@@ -327,22 +364,27 @@
             margin-top: 0.5rem;
         }
 
+        /* Media Queries */
         @media (max-width: 768px) {
             body {
-                padding: 70px 10px 20px 10px;
+                padding: 100px 10px 20px 10px;
             }
 
             .header {
-                padding: 1rem;
+                padding: 1rem 1rem 1rem 0.5rem;
             }
 
             .header h1 {
                 font-size: 1.5rem;
             }
 
+            .logo-container {
+                width: 80px;
+                height: 64px;
+            }
+
             .main-content {
                 padding: 1.5rem;
-                margin-top: 70px;
             }
 
             .section {
@@ -389,11 +431,6 @@
                 margin: 0.125rem;
             }
 
-            .logo-img {
-                width: 60px;
-                height: 60px;
-            }
-
             .back-btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
@@ -402,22 +439,29 @@
 
         @media (max-width: 480px) {
             body {
-                padding: 60px 5px 15px 5px;
+                padding: 80px 5px 15px 5px;
             }
 
             .header {
-                padding: 0.75rem;
+                padding: 0.75rem 1rem 0.75rem 0.25rem;
                 flex-direction: column;
                 gap: 1rem;
             }
 
             .header h1 {
                 font-size: 1.25rem;
+                position: static;
+                transform: none;
+                flex-grow: 1;
+            }
+
+            .logo-container {
+                width: 60px;
+                height: 48px;
             }
 
             .main-content {
                 padding: 1rem;
-                margin-top: 100px;
                 border-radius: 8px;
             }
 
@@ -458,11 +502,6 @@
                 min-width: 60px;
             }
 
-            .logo-img {
-                width: 50px;
-                height: 50px;
-            }
-
             .back-btn {
                 padding: 0.5rem 0.8rem;
                 font-size: 0.8rem;
@@ -470,7 +509,7 @@
         }
 
         @media (hover: none) {
-            .section:hover, .load-btn:hover, .attendance-btn:hover, .logo-img:hover, .back-btn:hover {
+            .section:hover, .load-btn:hover, .attendance-btn:hover, .logo-container:hover, .back-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -489,30 +528,32 @@
     </style>
 </head>
 <body>
-    <div class="header">
+    <header class="header">
         <a href="{% url 'teacher_dashboard' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back To Main Dashboard
         </a>
         <h1><i class="fas fa-table"></i> Attendance Portal</h1>
         <a href="{% url 'teacher_dashboard' %}">
-            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Manavargal Logo" class="logo-img">
+            <div class="logo-container">
+                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
+            </div>
         </a>
-    </div>
+    </header>
 
     <div class="container">
-        <div class="main-content">
+        <main class="main-content">
             {% if messages %}
-            <div class="alert-message">
-                {% for message in messages %}
-                <div class="{{ message.tags }}">
-                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                    {{ message }}
+                <div class="alert-message">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
             {% endif %}
 
-            <div class="section">
+            <section class="section">
                 <h2><i class="fas fa-search"></i> Select Attendance Details</h2>
                 <form method="GET" action="{% url 'teacher_portal' %}">
                     <div class="form-row">
@@ -521,7 +562,7 @@
                             <select id="class" name="class" required onchange="updateSections()">
                                 <option value="">Select a Class</option>
                                 {% for class in classes %}
-                                <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
+                                    <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -539,64 +580,65 @@
                         <button type="submit" class="load-btn"><i class="fas fa-search"></i> Load</button>
                     </div>
                 </form>
-            </div>
+            </section>
 
             {% if students %}
-            <div class="section">
-                <h2><i class="fas fa-table"></i> Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}</h2>
-                <form method="POST" action="{% url 'mark_attendance' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="class" value="{{ selected_class }}">
-                    <input type="hidden" name="section" value="{{ selected_section }}">
-                    <input type="hidden" name="date" value="{{ selected_date }}">
-                    <div class="table-container">
-                        <table class="attendance-table">
-                            <thead>
-                                <tr>
-                                    <th>Student ID</th>
-                                    <th>Name</th>
-                                    <th>Admission Number</th>
-                                    <th>Class</th>
-                                    <th>Section</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for student in students %}
-                                <tr>
-                                    <td>{{ student.user_id }}</td>
-                                    <td>{{ student.name }}</td>
-                                    <td>{{ student.admission_number }}</td>
-                                    <td>{{ student.class }}</td>
-                                    <td>{{ student.section|default:"N/A" }}</td>
-                                    <td>
-                                        <button type="submit" name="student_{{ student.user_id }}" value="present" class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">Present</button>
-                                        <button type="submit" name="student_{{ student.user_id }}" value="absent" class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">Absent</button>
-                                        <button type="submit" name="student_{{ student.user_id }}" value="leave" class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">Leave</button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </form>
-            </div>
+                <section class="section">
+                    <h2><i class="fas fa-table"></i> Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}</h2>
+                    <form method="POST" action="{% url 'mark_attendance' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="class" value="{{ selected_class }}">
+                        <input type="hidden" name="section" value="{{ selected_section }}">
+                        <input type="hidden" name="date" value="{{ selected_date }}">
+                        <div class="table-container">
+                            <table class="attendance-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Admission Number</th>
+                                        <th>Class</th>
+                                        <th>Section</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                        <tr>
+                                            <td>{{ student.user_id }}</td>
+                                            <td>{{ student.name }}</td>
+                                            <td>{{ student.admission_number }}</td>
+                                            <td>{{ student.class }}</td>
+                                            <td>{{ student.section|default:"N/A" }}</td>
+                                            <td>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="present" class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">Present</button>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="absent" class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">Absent</button>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="leave" class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">Leave</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </section>
             {% endif %}
-        </div>
+        </main>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const table = document.querySelector('table');
+            // Table hover effects
+            const table = document.querySelector('.attendance-table');
             if (table) {
                 table.addEventListener('mouseover', function(e) {
                     if (e.target.tagName === 'TD') {
-                        e.target.parentNode.style.backgroundColor = '#f0f9f4';
+                        e.target.closest('tr').style.backgroundColor = '#f0f9f4';
                     }
                 });
                 table.addEventListener('mouseout', function(e) {
                     if (e.target.tagName === 'TD') {
-                        const row = e.target.parentNode;
+                        const row = e.target.closest('tr');
                         const rows = Array.from(table.querySelectorAll('tbody tr'));
                         const index = rows.indexOf(row);
                         row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f8f9fa';
@@ -604,19 +646,21 @@
                 });
             }
 
+            // Update sections based on class selection
             function updateSections() {
                 const classSelect = document.getElementById('class');
                 const sectionSelect = document.getElementById('section');
                 const noSectionsMessage = document.getElementById('no-sections-message');
                 const selectedClass = classSelect.value;
-                let classSections;
+
+                let classSections = [];
                 try {
                     classSections = JSON.parse('{{ class_sections|escapejs }}');
                 } catch (e) {
                     console.error('Failed to parse class_sections:', e);
-                    classSections = [];
                 }
 
+                // Clear and reset options
                 sectionSelect.innerHTML = '<option value="">Select a Section</option>';
 
                 const availableSections = classSections
@@ -636,10 +680,10 @@
                         sectionSelect.appendChild(option);
                     });
                     sectionSelect.disabled = false;
-                    noSectionsMessage.style.display = 'none';
+                    if (noSectionsMessage) noSectionsMessage.style.display = 'none';
                 } else {
                     sectionSelect.disabled = true;
-                    noSectionsMessage.style.display = 'block';
+                    if (noSectionsMessage) noSectionsMessage.style.display = 'block';
                 }
             }
 
