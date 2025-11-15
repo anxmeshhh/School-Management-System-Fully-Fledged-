@@ -5,650 +5,778 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-     
-   @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap');
 
-        /* Importing Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
-}
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
 
-/* CSS Variables */
-:root {
-    --primary-color: #006b3e; /* Primary green */
-    --primary-hover: #004f2d; /* Darker green */
-    --white: #ffffff;
-    --light-bg: rgba(255, 255, 255, 0.95);
-    --border-color: #ddd;
-    --text-color: #666;
-    --error-color: #dc3545;
-    --success-color: #28a745;
-    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
-    --shadow-lg: 0 4px 15px rgba(0, 107, 62, 0.2); /* Green shadow */
-    --space-xs: 5px;
-    --space-sm: 10px;
-    --space-md: 15px;
-    --space-lg: 20px;
-    --space-xl: 30px;
-    --font-xs: 12px;
-    --font-sm: 14px;
-    --font-md: 16px;
-    --font-lg: 18px;
-    --font-xl: 24px;
-    --radius-sm: 5px;
-    --radius-md: 8px;
-    --radius-lg: 20px;
-    --radius-full: 50%;
-}
+        h1, h2 {
+            font-family: 'Montserrat', sans-serif;
+        }
 
-/* Smooth Scrolling */
-html {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    overflow-x: hidden;
-}
+        /* CSS Variables - Green and White Theme */
+        :root {
+            --primary-green: #00a651; /* Bright green */
+            --secondary-green: #008c44; /* Darker green */
+            --light-green: #e8f5e8; /* Light green */
+            --white: #ffffff;
+            --border-color: #d4edda;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --error-color: #e74c3c;
+            --success-color: #27ae60;
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 20px rgba(0, 166, 81, 0.2);
+            --space-xs: 8px;
+            --space-sm: 12px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --font-xs: 12px;
+            --font-sm: 14px;
+            --font-md: 16px;
+            --font-lg: 18px;
+            --font-xl: 20px;
+            --font-xxl: 24px;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 50%;
+        }
 
-/* Body Styling */
-body {
-    background: linear-gradient(135deg, #e6f5ee 0%, #d4edda 100%),
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(0,139,79,0.1)"/></svg>') repeat;
-    background-size: 200%, 20px 20px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    position: relative;
-    overflow-x: hidden;
-    touch-action: pan-y;
-}
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+        }
 
-/* Background Overlay */
-body::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    z-index: 1;
-    animation: subtlePulse 12s ease-in-out infinite;
-    filter: brightness(1.1);
-}
+        /* Body Styling - Light Green/White */
+        body {
+            background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-/* Ensure content is above background */
-body > * {
-    position: relative;
-    z-index: 2;
-}
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(0, 166, 81, 0.04) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(0, 166, 81, 0.02) 0%, transparent 50%);
+            z-index: -1;
+            animation: subtleGlow 8s ease-in-out infinite alternate;
+        }
 
-/* Logo Styling */
-.logo {
-    position: absolute;
-            top: 20px;
+        /* Main Container - Split Layout */
+        .main-container {
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            min-height: 500px;
+            height: auto;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md), var(--shadow-glow);
+            position: relative;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .main-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 25px rgba(0, 166, 81, 0.25);
+        }
+
+        /* Left Panel - Green Side with Logo and Content */
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: var(--space-xl);
+            color: var(--white);
+            animation: slideInLeft 1s ease-out;
+            overflow: visible;
+            min-height: 500px;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><path d="M0 0h60v60H0z" fill="rgba(255,255,255,0.06)"/><circle cx="30" cy="30" r="3" fill="rgba(255,255,255,0.2)"/></svg>') repeat;
+            opacity: 0.3;
+            animation: gentleWave 15s linear infinite;
+        }
+
+        .project-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: var(--space-md);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            border: none;
+            box-shadow: 
+                inset 0 4px 8px rgba(0, 0, 0, 0.15), 
+                inset 0 -4px 8px rgba(0, 0, 0, 0.1),
+                0 4px 12px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            z-index: 1;
+            position: relative;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            animation: logoSubmerge 4s ease-in-out infinite alternate;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .project-logo::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .project-logo:hover {
+            transform: scale(1.02);
+            box-shadow: 
+                inset 0 3px 6px rgba(0, 0, 0, 0.2), 
+                inset 0 -3px 6px rgba(0, 0, 0, 0.15),
+                0 6px 18px rgba(0, 0, 0, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.15);
+        }
+
+        .project-logo:hover::before {
+            opacity: 1;
+        }
+
+        .project-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .project-title {
+            font-size: var(--font-xxl);
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: var(--space-sm);
+            z-index: 1;
+            position: relative;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            animation: titlePulse 3s ease-in-out infinite alternate;
+            word-break: break-word;
+            hyphens: auto;
+            padding: 0 var(--space-sm);
+            max-width: 100%;
+        }
+
+        .project-motto {
+            font-size: var(--font-lg);
+            text-align: center;
+            opacity: 0.9;
+            z-index: 1;
+            position: relative;
+            line-height: 1.4;
+            font-weight: 400;
+            font-style: italic;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2), 0 0 8px rgba(255,255,255,0.4);
+            font-family: 'Noto Sans Tamil', 'Poppins', sans-serif;
+            position: relative;
+            margin-top: var(--space-sm);
+            word-break: break-word;
+            hyphens: auto;
+            padding: 0 var(--space-sm);
+            max-width: 100%;
+        }
+
+        .project-motto .english {
+            font-weight: 600;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: var(--space-xs);
+        }
+
+        .project-motto .tamil {
+            font-weight: 500;
+            color: rgba(255,255,255,0.95);
+            font-size: var(--font-md);
+            display: block;
+        }
+
+        .project-motto::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
             left: 50%;
             transform: translateX(-50%);
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            border-radius: 1px;
+        }
+
+        /* Right Panel - White Form Side */
+        .right-panel {
+            flex: 1.2;
+            background: var(--white);
+            padding: var(--space-xl);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: slideInRight 1s ease-out;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .right-panel::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(0, 166, 81, 0.01) 100%);
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+            color: var(--primary-green);
+            font-size: var(--font-xl);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.05);
+            animation: fadeInUp 1.2s ease-out;
+            word-break: break-word;
+        }
+
+        /* Form Styling */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+            position: relative;
+            gap: var(--space-sm);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-md);
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--secondary-green);
+            font-size: var(--font-sm);
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+            letter-spacing: 0.1px;
+            word-break: break-word;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: var(--space-md) var(--space-lg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: var(--font-md);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            outline: none;
+            background: var(--white);
+            font-family: 'Poppins', sans-serif;
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.03);
+            word-break: normal;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.1), inset 0 1px 4px rgba(0, 0, 0, 0.03);
+            transform: translateY(-1px);
+        }
+
+        /* Toggle Password Icon */
+        .toggle-password {
+            position: absolute;
+            right: var(--space-md);
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            fill: var(--text-light);
+            transition: fill 0.3s ease, transform 0.3s ease;
+        }
+
+        .toggle-password:hover {
+            fill: var(--primary-green);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        /* Button Styling - Green Login Button */
+        .login-btn {
+            width: 100%;
+            padding: var(--space-md) var(--space-lg);
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--white);
+            font-size: var(--font-lg);
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: var(--space-md);
+            margin-bottom: var(--space-sm);
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 15px rgba(0, 166, 81, 0.25);
+            position: relative;
             overflow: hidden;
-            z-index: 3;
-            transition: transform 0.6s ease-in-out;
-            border: 4px solid var(--primary-color);
-            box-shadow: var(--shadow-lg);
-
-}
-
-.logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    animation: bounceIn 1.2s ease-out;
-}
-
-.logo:hover {
-    transform: translateX(-50%) scale(1.05);
-}
-
-/* Welcome Header */
-.welcome-header {
-    position: absolute;
-    top: 240px;
-    text-align: center;
-    color: var(--primary-color);
-    font-size: 2.5rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    width: 100%;
-    z-index: 3;
-    animation: slideInDown 1.2s ease-in-out;
-}
-
-.welcome-header span {
-    display: block;
-    font-size: 1.2rem;
-    font-weight: normal;
-    color: #170d0d;
-}
-
-/* Container Styling */
-.container {
-    background: var(--white);
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: var(--shadow-md);
-    border: 2px solid var(--primary-color);
-    width: 100%;
-    max-width: 400px;
-    margin-top: 320px;
-    z-index: 3;
-    animation: slideInRight 1.2s ease-in-out;
-    transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-}
-
-.container:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-lg);
-}
-
-/* Heading Styling */
-h2 {
-    color: var(--primary-color);
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 1.8rem;
-    font-weight: 600;
-    animation: fadeIn 1.5s ease-in-out;
-}
-
-/* Form Group Styling */
-.form-group {
-    margin-bottom: 1.5rem;
-    position: relative;
-    animation: fadeInUp 1s ease-in-out;
-}
-
-.form-group label {
-    display: block;
-    color: var(--primary-color);
-    font-size: var(--font-md);
-    font-weight: 400;
-    margin-bottom: var(--space-xs);
-}
-
-.form-group input {
-    width: 100%;
-    padding: 0.8rem 40px 0.8rem 0.8rem;
-    border: 2px solid var(--border-color);
-    background: var(--white);
-    border-radius: 8px;
-    font-size: var(--font-md);
-    transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
-    outline: none;
-}
-
-.form-group input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 8px rgba(0, 107, 62, 0.3); /* Green shadow */
-    transform: scale(1.02);
-}
-
-/* Toggle Password Icon */
-.toggle-password {
-    position: absolute;
-    right: 10px;
-    top: 65%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    fill: var(--primary-color);
-    transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
-}
-
-.toggle-password:hover {
-    fill: var(--primary-hover);
-    transform: translateY(-50%) scale(1.1);
-}
-
-/* Button Styling */
-button {
-    width: 100%;
-    padding: 1rem;
-    background: var(--primary-color);
-    border: 2px solid var(--primary-color);
-    border-radius: 25px;
-    color: var(--white);
-    font-size: var(--font-md);
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 10px;
-    transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-}
-
-button:hover {
-    background: var(--primary-hover);
-    border-color: var(--primary-hover);
-    transform: scale(1.08);
-    box-shadow: var(--shadow-lg);
-}
-
-/* Signup Button Styling */
-.signup-btn, .change-btn {
-    width: 100%;
-    padding: 1rem;
-    background: var(--white);
-    border: 2px solid var(--primary-color);
-    border-radius: 25px;
-    color: var(--primary-color);
-    font-size: var(--font-md);
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    display: block;
-    margin-bottom: 10px;
-    transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-}
-
-.signup-btn:hover, .change-btn:hover {
-    background: var(--primary-color);
-    color: var(--white);
-    transform: scale(1.08);
-    box-shadow: var(--shadow-lg);
-}
-
-/* Messages Styling (adapted to notification style) */
-.messages p {
-    text-align: center;
-    margin: 1rem 0;
-    font-size: var(--font-sm);
-    padding: var(--space-sm);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    border-left: 5px solid transparent;
-    border-right: 2px solid transparent;
-}
-
-.messages p.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border-left: 5px solid var(--error-color);
-    border-right: 2px solid var(--error-color);
-}
-
-/* Modal Styles (adapted to green theme) */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1001;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-.modal-content {
-    background: var(--white);
-    margin: 10% auto;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: var(--shadow-lg);
-    border: 2px solid var(--primary-color);
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-    animation: slideInDown 0.3s ease-in-out;
-}
-
-.close {
-    color: var(--text-color);
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    transition: color 0.3s ease;
-}
-
-.close:hover {
-    color: var(--primary-color);
-}
-
-.modal h3 {
-    color: var(--primary-color);
-    text-align: center;
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-.password-mismatch, .admin-email-exists {
-    color: var(--error-color);
-    font-size: var(--font-sm);
-    margin-top: 5px;
-    display: none;
-}
-
-.modal-notification {
-    margin-bottom: 1rem;
-    padding: var(--space-sm);
-    border-radius: var(--radius-md);
-    text-align: center;
-    font-weight: 600;
-    display: none;
-    border: 2px solid transparent;
-}
-
-.modal-notification.success {
-    background-color: #d4edda;
-    color: #155724;
-    border-left: 5px solid var(--success-color);
-    border-right: 2px solid var(--success-color);
-}
-
-.modal-notification.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border-left: 5px solid var(--error-color);
-    border-right: 2px solid var(--error-color);
-}
-
-/* Animations */
-@keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-@keyframes fadeInUp {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideInDown {
-    0% { transform: translateY(-50px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideInRight {
-    0% { transform: translateX(50px); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes bounceIn {
-    0% { transform: scale(0.3); opacity: 0; }
-    50% { transform: scale(1.2); opacity: 0.8; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes subtlePulse {
-    0% { opacity: 0.3; }
-    50% { opacity: 0.15; }
-    100% { opacity: 0.3; }
-}
-
-/* Responsive Design */
-@media (max-width: 992px) {
-    .container {
-        max-width: 360px;
-        margin-top: 300px;
-    }
-
-    .welcome-header {
-        font-size: 2rem;
-        top: 220px;
-    }
-
-    .welcome-header span {
-        font-size: 1.1rem;
-    }
-
-    .logo {
-        width: 180px;
-        height: 180px;
-    }
-}
-
-@media (max-width: 768px) {
-    .welcome-header {
-        font-size: 1.8rem;
-        padding: 0 10px;
-        top: 200px;
-    }
-
-    .welcome-header span {
-        font-size: 1rem;
-    }
-
-    .logo {
-        width: 120px;
-        height: 120px;
-        top: 15px;
-    }
-
-    .container {
-        padding: 1.5rem;
-        max-width: 90%;
-        margin-top: 260px;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-    }
-
-    .form-group label {
-        font-size: 0.9rem;
-    }
-
-    .form-group input {
-        padding: 0.7rem 40px 0.7rem 0.7rem;
-        font-size: 0.9rem;
-    }
-
-    button, .signup-btn, .change-btn {
-        padding: 0.8rem;
-        font-size: 0.9rem;
-    }
-
-    .toggle-password {
-        width: 22px;
-        height: 22px;
-    }
-
-    .modal-content {
-        margin: 5% auto;
-        padding: 1.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .logo {
-        width: 100px;
-        height: 100px;
-        top: 10px;
-    }
-
-    .welcome-header {
-        top: 130px;
-        font-size: 1.6rem;
-    }
-
-    .welcome-header span {
-        font-size: 0.9rem;
-    }
-
-    .container {
-        max-width: 300px;
-        padding: 1.2rem;
-        margin-top: 190px;
-    }
-
-    h2 {
-        font-size: 1.3rem;
-    }
-
-    .form-group input {
-        font-size: 0.85rem;
-        padding: 0.6rem 40px 0.6rem 0.6rem;
-    }
-
-    button, .signup-btn, .change-btn {
-        font-size: 0.85rem;
-        padding: 0.7rem;
-    }
-
-    .toggle-password {
-        width: 20px;
-        height: 20px;
-        right: 8px;
-    }
-
-    .modal-content {
-        width: 95%;
-        padding: 1rem;
-    }
-
-    .close {
-        font-size: 24px;
-        right: 10px;
-        top: 5px;
-    }
-}
-
-@media (max-width: 320px) {
-    .container {
-        max-width: 280px;
-        margin-top: 170px;
-    }
-
-    .welcome-header {
-        font-size: 1.4rem;
-        top: 120px;
-    }
-
-    .welcome-header span {
-        font-size: 0.8rem;
-    }
-
-    .logo {
-        width: 90px;
-        height: 90px;
-    }
-}
-
-@media (max-height: 500px) and (orientation: landscape) {
-    .container {
-        margin-top: 200px;
-        padding: 1rem;
-    }
-
-    .logo {
-        width: 100px;
-        height: 100px;
-        top: 10px;
-    }
-
-    .welcome-header {
-        top: 130px;
-        font-size: 1.6rem;
-    }
-
-    .welcome-header span {
-        font-size: 0.9rem;
-    }
-}
-
-@media (hover: none) {
-    .container:hover {
-        transform: none;
-        box-shadow: var(--shadow-md);
-    }
-
-    button:hover, .signup-btn:hover, .change-btn:hover {
-        transform: none;
-        box-shadow: none;
-    }
-
-    button:active, .signup-btn:active, .change-btn:active {
-        transform: scale(0.98);
-    }
-
-    .toggle-password:hover {
-        transform: translateY(-50%);
-        fill: var(--primary-color);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    * {
-        transition: none !important;
-        animation: none !important;
-    }
-
-    html {
-        scroll-behavior: auto;
-    }
-}
-
-@supports (padding: max(0px)) {
-    .container {
-        padding-left: max(15px, env(safe-area-inset-left));
-        padding-right: max(15px, env(safe-area-inset-right));
-        padding-bottom: max(15px, env(safe-area-inset-bottom));
-    }
-}
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, var(--secondary-green), var(--primary-green));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 166, 81, 0.3);
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Secondary Buttons */
+        .secondary-btn {
+            width: 100%;
+            padding: var(--space-md) var(--space-lg);
+            background: var(--white);
+            border: 2px solid var(--primary-green);
+            border-radius: var(--radius-md);
+            color: var(--primary-green);
+            font-size: var(--font-md);
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: var(--space-sm);
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .secondary-btn:hover {
+            background: var(--primary-green);
+            color: var(--white);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 166, 81, 0.25);
+        }
+
+        /* Notification Box Styling */
+        .notification-box {
+            position: fixed;
+            top: var(--space-md);
+            right: var(--space-md);
+            z-index: 1000;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-sm);
+            font-weight: 500;
+            box-shadow: var(--shadow-md), var(--shadow-glow);
+            opacity: 0.95;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            max-width: 90%;
+            display: none;
+            text-align: center;
+            border: 2px solid transparent;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .notification-box.show {
+            display: block;
+            transform: translateX(0);
+        }
+
+        .notification-box.success {
+            background: linear-gradient(135deg, #d4edda, #c8e6c9);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .notification-box.error {
+            background: linear-gradient(135deg, #f8d7da, #ffcdd2);
+            color: var(--error-color);
+            border-left: 4px solid var(--error-color);
+        }
+
+        /* Messages Styling (for Django messages) */
+        .messages {
+            margin-bottom: var(--space-md);
+        }
+
+        .messages p {
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-size: var(--font-sm);
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+            word-break: break-word;
+        }
+
+        .messages p.error {
+            background: linear-gradient(135deg, #f8d7da, #ffcdd2);
+            color: var(--error-color);
+            border-left: 4px solid var(--error-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: var(--white);
+            margin: 5% auto;
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md), var(--shadow-glow);
+            border: 2px solid var(--primary-green);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .close {
+            color: var(--text-light);
+            float: right;
+            font-size: var(--font-xl);
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: var(--space-md);
+            top: var(--space-md);
+            transition: color 0.3s ease;
+            z-index: 1002;
+        }
+
+        .close:hover {
+            color: var(--primary-green);
+        }
+
+        .modal h3 {
+            color: var(--primary-green);
+            text-align: center;
+            margin-bottom: var(--space-lg);
+            font-size: var(--font-xl);
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .password-mismatch, .admin-email-exists {
+            color: var(--error-color);
+            font-size: var(--font-sm);
+            margin-top: var(--space-xs);
+            display: none;
+            word-break: break-word;
+        }
+
+        .modal-notification {
+            margin-bottom: var(--space-md);
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-weight: 500;
+            display: none;
+            border: 2px solid transparent;
+            word-break: break-word;
+        }
+
+        .modal-notification.success {
+            background: linear-gradient(135deg, #d4edda, #c8e6c9);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .modal-notification.error {
+            background: linear-gradient(135deg, #f8d7da, #ffcdd2);
+            color: var(--error-color);
+            border-left: 4px solid var(--error-color);
+        }
+
+        /* Animations */
+        @keyframes slideInLeft {
+            0% { transform: translateX(-40px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            0% { transform: translateX(40px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes subtleGlow {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes gentleWave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(60px); }
+        }
+
+        @keyframes logoSubmerge {
+            0% { 
+                transform: translateY(0px) scale(1);
+                box-shadow: 
+                    inset 0 4px 8px rgba(0, 0, 0, 0.15), 
+                    inset 0 -4px 8px rgba(0, 0, 0, 0.1),
+                    0 4px 12px rgba(0, 0, 0, 0.2),
+                    0 0 0 1px rgba(255, 255, 255, 0.1);
+            }
+            100% { 
+                transform: translateY(-1px) scale(1.01);
+                box-shadow: 
+                    inset 0 3px 6px rgba(0, 0, 0, 0.18), 
+                    inset 0 -3px 6px rgba(0, 0, 0, 0.12),
+                    0 3px 10px rgba(0, 0, 0, 0.18),
+                    0 0 0 1px rgba(255, 255, 255, 0.12);
+            }
+        }
+
+        @keyframes titlePulse {
+            0% { text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+            100% { text-shadow: 1px 1px 10px rgba(255,255,255,0.3); }
+        }
+
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                min-height: auto;
+                max-width: 100%;
+                padding: 15px;
+            }
+
+            .left-panel {
+                padding: var(--space-lg);
+                min-height: 250px;
+            }
+
+            .right-panel {
+                padding: var(--space-lg);
+                min-height: 400px;
+            }
+
+            .project-title {
+                font-size: var(--font-xl);
+            }
+
+            .project-motto {
+                font-size: var(--font-md);
+            }
+
+            .project-motto .english {
+                font-size: var(--font-md);
+            }
+
+            .project-motto .tamil {
+                font-size: var(--font-sm);
+            }
+
+            .form-title {
+                font-size: var(--font-lg);
+            }
+
+            .project-logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            body {
+                padding: 15px;
+            }
+
+            .modal-content {
+                margin: 5% auto;
+                padding: var(--space-lg);
+                width: 95%;
+                max-height: 85vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .left-panel, .right-panel {
+                padding: var(--space-md);
+            }
+
+            .project-title {
+                font-size: var(--font-lg);
+            }
+
+            .project-motto {
+                font-size: var(--font-sm);
+            }
+
+            .project-motto .english {
+                font-size: var(--font-sm);
+            }
+
+            .project-motto .tamil {
+                font-size: var(--font-xs);
+            }
+
+            .form-title {
+                font-size: var(--font-md);
+            }
+
+            .form-group input {
+                padding: var(--space-sm) var(--space-md);
+                font-size: var(--font-sm);
+            }
+
+            .login-btn, .secondary-btn {
+                padding: var(--space-sm) var(--space-md);
+                font-size: var(--font-md);
+            }
+
+            .project-logo {
+                width: 80px;
+                height: 80px;
+            }
+
+            body {
+                padding: 10px;
+            }
+
+            .close {
+                font-size: var(--font-lg);
+                right: var(--space-sm);
+                top: var(--space-sm);
+            }
+
+            .modal-content {
+                padding: var(--space-md);
+                max-height: 80vh;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="logo">
-        <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
-    </div>
-    <div class="welcome-header">
-        Welcome to Manavargal School System
-        <span>INFORMATION AT EASE | தகவல் உங்கள் கையில்</span>
-    </div>
-    <div class="container">
-        <h2>Admin Login</h2>
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <p class="error">{{ message }}</p>
-                {% endfor %}
+    <div class="main-container">
+        <!-- Left Panel - Green Side with Logo and Project Info -->
+        <div class="left-panel">
+            <div class="project-logo">
+                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MANAVARGAL Logo">
             </div>
-        {% endif %}
-        <form method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
-                <svg class="toggle-password" style="display: none;"></svg>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" maxlength="10" oninput="restrictToNumbers(this)" required>
-                <svg class="toggle-password" onclick="togglePassword('password')" viewBox="0 0 24 24">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                </svg>
-            </div>
-            <button type="submit">Login</button>
-            <button type="button" class="signup-btn" onclick="window.location.href='{% url 'admin_signup' %}'">New User Signup</button>
-            <button type="button" class="change-btn" onclick="openChangePasswordModal()">Change Credentials</button>
-        </form>
+            <h1 class="project-title">MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
+            <p class="project-motto">
+                <span class="english">INFORMATION AT EASE</span>
+                <span class="tamil">| தகவல் உங்கள் கையில்</span>
+            </p>
+        </div>
+
+        <!-- Right Panel - Login Form Side -->
+        <div class="right-panel">
+            <h2 class="form-title">Admin Login</h2>
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <p class="error">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <form method="POST" class="login-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" maxlength="10" oninput="restrictToNumbers(this)" required>
+                    <svg class="toggle-password" onclick="togglePassword('password')" viewBox="0 0 24 24">
+                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                    </svg>
+                </div>
+                <button type="submit" class="login-btn">Log In</button>
+                <button type="button" class="secondary-btn" onclick="window.location.href='{% url 'admin_signup' %}'">New User Signup</button>
+                <button type="button" class="secondary-btn" onclick="openChangePasswordModal()">Change Credentials</button>
+            </form>
+        </div>
     </div>
 
     <!-- Change Credentials Modal -->
@@ -662,7 +790,7 @@ button:hover {
             <div id="modalErrorMessage" class="modal-notification error">
                 ❌ Error changing credentials. Please try again.
             </div>
-            <form id="changePasswordForm" method="POST" data-url="{% url 'admin_change_credentials' %}">
+            <form id="changePasswordForm" method="POST" data-url="{% url 'admin_change_credentials' %}" class="login-form">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="currentAdminEmail">Current Admin Email</label>
@@ -688,16 +816,21 @@ button:hover {
                     </svg>
                     <div id="passwordMismatch" class="password-mismatch">Passwords do not match!</div>
                 </div>
-                <button type="submit">Change Credentials</button>
+                <button type="submit" class="login-btn">Change Credentials</button>
             </form>
         </div>
     </div>
 
+    <div id="successMessage" class="notification-box success">
+        ✅ Login Successful! Redirecting...
+    </div>
+    <div id="errorMessage" class="notification-box error">
+        ❌ Invalid credentials! Try again.
+    </div>
+
     <script>
         function restrictToNumbers(input) {
-            // Remove any non-digit characters
             input.value = input.value.replace(/[^0-9]/g, '');
-            // Ensure the length does not exceed 10 digits
             if (input.value.length > 10) {
                 input.value = input.value.slice(0, 10);
             }

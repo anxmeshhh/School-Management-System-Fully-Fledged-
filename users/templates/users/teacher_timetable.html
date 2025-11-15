@@ -28,6 +28,7 @@
 
         h1, h2, h3 {
             font-family: 'Montserrat', sans-serif;
+            text-align: center;
         }
 
         :root {
@@ -143,8 +144,30 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
+        }
+
+        .main-content {
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 2rem;
+        }
+
+        .section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
         }
 
         .timetable-header {
@@ -173,30 +196,50 @@
         }
 
         .filter-form select {
-            padding: 0.5rem;
-            border: 2px solid var(--border-color);
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             background: var(--white);
             color: var(--text-color);
+            font-size: 1rem;
+            transition: var(--transition);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            appearance: none;
+        }
+
+        .filter-form select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
         }
 
         .filter-form button {
-            padding: 0.5rem 1rem;
+            padding: 0.8rem 1.5rem;
             background: var(--primary-color);
             color: var(--white);
             border: none;
             border-radius: 8px;
             cursor: pointer;
             transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
         }
 
         .filter-form button:hover {
             background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
+            padding: 0.8rem 1.5rem;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
@@ -206,11 +249,11 @@
             align-items: center;
             gap: 0.5rem;
             text-decoration: none;
-            color: var(--white);
         }
 
         .btn-primary {
             background: var(--primary-color);
+            color: var(--white);
         }
 
         .btn-primary:hover {
@@ -222,7 +265,6 @@
         .btn-secondary {
             background: var(--sidebar-bg);
             color: var(--text-color);
-            border: 2px solid var(--border-color);
         }
 
         .btn-secondary:hover {
@@ -235,7 +277,7 @@
 
         .day-header {
             color: var(--primary-color);
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 600;
             margin: 2rem 0 1rem 0;
             text-align: center;
@@ -243,38 +285,54 @@
             padding-bottom: 0.5rem;
         }
 
-        .timetable-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: var(--white);
-            border: 2px solid var(--border-color);
+        .table-container {
+            overflow-x: auto;
             border-radius: 8px;
-            overflow: hidden;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             margin-bottom: 2rem;
             transition: var(--transition);
         }
 
-        .timetable-table:hover {
+        .table-container:hover {
             box-shadow: var(--shadow-md);
+        }
+
+        .timetable-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            margin-bottom: 2rem;
+            transition: var(--transition);
         }
 
         .timetable-table th,
         .timetable-table td {
-            padding: 1rem;
+            padding: 0.75rem;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
         }
 
         .timetable-table th {
-            background-color: var(--primary-color);
-            color: var(--white);
-            font-weight: 500;
+            background: var(--light-bg);
+            color: var(--primary-color);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .timetable-table td {
+            color: var(--text-color);
+        }
+
+        .timetable-table tr:nth-child(even) {
+            background: var(--light-bg);
         }
 
         .timetable-table tr:hover {
-            background-color: var(--light-bg);
+            background: #f0f9f4;
         }
 
         .action-btn {
@@ -322,25 +380,18 @@
             border-radius: 8px;
             box-shadow: var(--shadow-sm);
             margin-bottom: 2rem;
+            transition: var(--transition);
         }
 
-        .messages {
+        .no-timetable:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .alert-message {
             margin-bottom: 1.5rem;
         }
 
-        .messages .success {
-            background: #d4edda;
-            color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .messages .error {
+        .alert-message .error {
             background: #fef2f2;
             color: #dc3545;
             padding: 0.75rem;
@@ -352,7 +403,19 @@
             border: 2px solid var(--border-color);
         }
 
-        .messages .warning {
+        .alert-message .success {
+            background: #d4edda;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .alert-message .warning {
             background: #fff3cd;
             color: #856404;
             padding: 0.75rem;
@@ -399,6 +462,33 @@
             display: flex;
         }
 
+        .action-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-right: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .action-links a:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 100px 10px 20px 10px;
@@ -415,6 +505,14 @@
             .logo-container {
                 width: 80px;
                 height: 64px;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .section {
+                padding: 1.2rem;
             }
 
             .timetable-header {
@@ -445,7 +543,7 @@
 
             .timetable-table th,
             .timetable-table td {
-                padding: 0.75rem;
+                padding: 0.6rem;
                 font-size: 0.85rem;
                 min-width: 100px;
             }
@@ -501,6 +599,15 @@
                 height: 48px;
             }
 
+            .main-content {
+                padding: 1rem;
+                border-radius: 8px;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
             .timetable-header {
                 font-size: 1.3rem;
             }
@@ -552,7 +659,7 @@
         }
 
         @media (hover: none) {
-            .timetable-table:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover, .btn:hover, .action-btn:hover {
+            .timetable-table:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover, .btn:hover, .action-btn:hover, .section:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -584,89 +691,95 @@
     </header>
 
     <div class="container">
-        <div class="timetable-header">
-            
-            <div class="actions-bar">
-                <a href="{% url 'teacher_timetable_add' %}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Add Single Entry
-                </a>
-                <a href="{% url 'teacher_timetable_weekly' %}" class="btn btn-secondary">
-                    <i class="fas fa-calendar-week"></i> Create Weekly Timetable
-                </a>
-                
-                <form method="get" action="{% url 'teacher_timetable' %}" class="filter-form">
+        <div class="main-content">
+            <div class="section">
+                <div class="timetable-header">
                     
-                    <select name="day">
+                    <div class="actions-bar">
+                        <a href="{% url 'teacher_timetable_add' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Single Entry
+                        </a>
+                        <a href="{% url 'teacher_timetable_weekly' %}" class="btn btn-secondary">
+                            <i class="fas fa-calendar-week"></i> Create Weekly Timetable
+                        </a>
                         
-                        <option value="">All Days</option>
-                        
-                        <option value="Monday" {% if selected_day == 'Monday' %}selected{% endif %}>Monday</option>
-                        <option value="Tuesday" {% if selected_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
-                        <option value="Wednesday" {% if selected_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
-                        <option value="Thursday" {% if selected_day == 'Thursday' %}selected{% endif %}>Thursday</option>
-                        <option value="Friday" {% if selected_day == 'Friday' %}selected{% endif %}>Friday</option>
-                        <option value="Saturday" {% if selected_day == 'Saturday' %}selected{% endif %}>Saturday</option>
-                    </select>
-                    <button type="submit"><i class="fas fa-filter"></i> Filter</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="messages">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="{{ message.tags }}">
-                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
-                        {{ message }}
+                        <form method="get" action="{% url 'teacher_timetable' %}" class="filter-form">
+                            
+                            <select name="day">
+                                
+                                <option value="">All Days</option>
+                                
+                                <option value="Monday" {% if selected_day == 'Monday' %}selected{% endif %}>Monday</option>
+                                <option value="Tuesday" {% if selected_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                                <option value="Wednesday" {% if selected_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                                <option value="Thursday" {% if selected_day == 'Thursday' %}selected{% endif %}>Thursday</option>
+                                <option value="Friday" {% if selected_day == 'Friday' %}selected{% endif %}>Friday</option>
+                                <option value="Saturday" {% if selected_day == 'Saturday' %}selected{% endif %}>Saturday</option>
+                            </select>
+                            <button type="submit"><i class="fas fa-filter"></i> Filter</button>
+                        </form>
                     </div>
-                {% endfor %}
-            {% endif %}
-        </div>
+                </div>
 
-        {% if timetable_data %}
-            {% for day, entries in timetable_data %}
-                <h3 class="day-header">
-                    <i class="fas fa-calendar-day icon"></i> {{ day }}
-                </h3>
-                <table class="timetable-table">
-                    <thead>
-                        <tr>
-                            <th>Class</th>
-                            <th>Subject</th>
-                            <th>Time</th>
-                            <th>Room</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for entry in entries %}
-                            <tr>
-                                <td>{{ entry.class_id }}</td>
-                                <td>{{ entry.subject }}</td>
-                                <td>{{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }}</td>
-                                <td>{{ entry.room|default:"N/A" }}</td>
-                                <td>
-                                    <a href="{% url 'teacher_timetable_edit' entry.id %}" class="action-btn edit-btn" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="{% url 'teacher_timetable_delete' entry.id %}" class="action-btn delete-btn" title="Delete" onclick="return confirm('Are you sure you want to delete this entry?')">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="5" style="text-align: center; color: var(--text-light);">No classes scheduled for this day.</td>
-                            </tr>
+                <div class="alert-message">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="{{ message.tags }}">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
+                                {{ message }}
+                            </div>
                         {% endfor %}
-                    </tbody>
-                </table>
-            {% endfor %}
-        {% else %}
-            <div class="no-timetable">
-                <i class="fas fa-inbox icon"></i> No timetable entries assigned to you yet. <a href="{% url 'teacher_timetable_add' %}">Add your first entry</a>.
+                    {% endif %}
+                </div>
+
+                {% if timetable_data %}
+                    {% for day, entries in timetable_data %}
+                        <h3 class="day-header">
+                            <i class="fas fa-calendar-day icon"></i> {{ day }}
+                        </h3>
+                        <div class="table-container">
+                            <table class="timetable-table">
+                                <thead>
+                                    <tr>
+                                        <th>Class</th>
+                                        <th>Subject</th>
+                                        <th>Time</th>
+                                        <th>Room</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in entries %}
+                                        <tr>
+                                            <td>{{ entry.class_id }}</td>
+                                            <td>{{ entry.subject }}</td>
+                                            <td>{{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }}</td>
+                                            <td>{{ entry.room|default:"N/A" }}</td>
+                                            <td class="action-links">
+                                                <a href="{% url 'teacher_timetable_edit' entry.id %}" class="action-btn edit-btn" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'teacher_timetable_delete' entry.id %}" class="action-btn delete-btn" title="Delete" onclick="return confirm('Are you sure you want to delete this entry?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="no-data">No classes scheduled for this day.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-timetable">
+                        <i class="fas fa-inbox icon"></i> No timetable entries assigned to you yet. <a href="{% url 'teacher_timetable_add' %}">Add your first entry</a>.
+                    </div>
+                {% endif %}
             </div>
-        {% endif %}
+        </div>
     </div>
 
     <button class="scroll-top-btn" onclick="scrollToTop()">
