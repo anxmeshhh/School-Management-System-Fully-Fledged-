@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Student Circulars</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
@@ -21,10 +23,7 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 80px 20px 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 120px 20px 40px 20px;
         }
 
         h1, h2, h3 {
@@ -35,10 +34,10 @@
             --primary-color: #00a676;
             --primary-hover: #00b88d;
             --sidebar-bg: #f0f9f4;
-            --sidebar-border: #d1e7dd;
+            --sidebar-border: #a8d5c2;
             --white: #ffffff;
             --light-bg: #f8f9fa;
-            --border-color: #e9ecef;
+            --border-color: #adb5bd;
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -57,8 +56,8 @@
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
@@ -68,7 +67,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-radius: 0;
+            gap: 0.5rem;
         }
 
         .header h1 {
@@ -77,11 +77,17 @@
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            flex: none;
+            margin: 0;
+            z-index: 0;
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
@@ -93,6 +99,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .back-btn:hover {
@@ -102,25 +110,202 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-img {
+        .logo-container {
             width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: none;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: var(--transition);
             box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             transition: var(--transition);
         }
 
-        .logo-img:hover {
+        .logo-container:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
 
+        .logo-container:hover img {
+            transform: scale(1.05);
+        }
+
         .container {
             max-width: 1000px;
-            width: 100%;
             margin: 0 auto;
+        }
+
+        .main-content {
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 2rem;
+        }
+
+        .messages {
+            margin-bottom: 1.5rem;
+        }
+
+        .messages .success {
+            background: #d4edda;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .messages .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .messages .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .timetable-header {
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .day-header {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .timetable-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .timetable-table:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .timetable-table th,
+        .timetable-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1rem;
+        }
+
+        .timetable-table th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        .timetable-table tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        .no-timetable {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            padding: 2rem;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .icon {
+            margin-right: 0.5rem;
+        }
+
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .scroll-top-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .scroll-top-btn.show {
+            display: flex;
         }
 
         .student-info {
@@ -128,11 +313,16 @@
             color: var(--text-light);
             font-size: 1.2rem;
             margin-bottom: 1.5rem;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            padding: 1rem;
         }
 
         .filter-form {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             padding: 1.5rem;
             border-radius: 8px;
             box-shadow: var(--shadow-sm);
@@ -162,6 +352,7 @@
             background: var(--white);
             font-size: 1rem;
             transition: var(--transition);
+            margin-bottom: 1rem;
         }
 
         .filter-form select:focus {
@@ -199,6 +390,10 @@
             max-width: 500px;
             width: 100%;
             text-align: center;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .circular-container {
@@ -240,7 +435,7 @@
 
         .circular {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             padding: 1.5rem;
             border-radius: 8px;
             box-shadow: var(--shadow-sm);
@@ -324,47 +519,17 @@
             color: var(--text-light);
             text-align: center;
             margin-top: 1.5rem;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            padding: 2rem;
             grid-column: 1 / -1;
-        }
-
-        .icon {
-            margin-right: 0.5rem;
-        }
-
-        .scroll-top-btn {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: var(--primary-color);
-            color: var(--white);
-            padding: 1rem;
-            border-radius: 50px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            width: 50px;
-            height: 50px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .scroll-top-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .scroll-top-btn.show {
-            display: flex;
         }
 
         @media (max-width: 768px) {
             body {
-                padding: 70px 10px 20px 10px;
+                padding: 100px 10px 20px 10px;
             }
 
             .header {
@@ -375,9 +540,57 @@
                 font-size: 1.5rem;
             }
 
-            .logo-img {
-                width: 60px;
-                height: 60px;
+            .logo-container {
+                width: 80px;
+                height: 64px;
+            }
+
+            .timetable-header {
+                font-size: 1.5rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .day-header {
+                font-size: 1.25rem;
+                margin: 1.5rem 0 0.75rem 0;
+            }
+
+            .timetable-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                font-size: 0.9rem;
+            }
+
+            .timetable-table th,
+            .timetable-table td {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+                min-width: 100px;
+            }
+
+            .no-timetable {
+                font-size: 0.9rem;
+                padding: 1.5rem;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .scroll-top-btn {
+                bottom: 1rem;
+                right: 1rem;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+                padding: 0.9rem;
+            }
+
+            .student-info {
+                font-size: 1rem;
+                padding: 0.75rem;
             }
 
             .filter-form,
@@ -401,15 +614,7 @@
 
             .no-circulars {
                 font-size: 0.9rem;
-            }
-
-            .student-info {
-                font-size: 1rem;
-            }
-
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
+                padding: 1.5rem;
             }
 
             .circular-container {
@@ -421,20 +626,11 @@
                 font-size: 0.75rem;
                 padding: 0.2rem 0.5rem;
             }
-
-            .scroll-top-btn {
-                bottom: 1rem;
-                right: 1rem;
-                width: 45px;
-                height: 45px;
-                font-size: 1.1rem;
-                padding: 0.9rem;
-            }
         }
 
         @media (max-width: 480px) {
             body {
-                padding: 60px 5px 15px 5px;
+                padding: 80px 5px 15px 5px;
             }
 
             .header {
@@ -447,9 +643,50 @@
                 font-size: 1.25rem;
             }
 
-            .logo-img {
-                width: 50px;
-                height: 50px;
+            .logo-container {
+                width: 60px;
+                height: 48px;
+            }
+
+            .timetable-header {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+
+            .day-header {
+                font-size: 1.1rem;
+                margin: 1.25rem 0 0.5rem 0;
+            }
+
+            .timetable-table th,
+            .timetable-table td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+                min-width: 80px;
+            }
+
+            .no-timetable {
+                font-size: 0.85rem;
+                padding: 1rem;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .scroll-top-btn {
+                bottom: 0.75rem;
+                right: 0.75rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                padding: 0.8rem;
+            }
+
+            .student-info {
+                font-size: 0.9rem;
+                padding: 0.5rem;
             }
 
             .filter-form,
@@ -473,15 +710,7 @@
 
             .no-circulars {
                 font-size: 0.85rem;
-            }
-
-            .student-info {
-                font-size: 0.9rem;
-            }
-
-            .back-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
+                padding: 1rem;
             }
 
             .download-btn {
@@ -493,19 +722,15 @@
                 font-size: 0.7rem;
                 padding: 0.15rem 0.4rem;
             }
-
-            .scroll-top-btn {
-                bottom: 0.75rem;
-                right: 0.75rem;
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-                padding: 0.8rem;
-            }
         }
 
         @media (hover: none) {
-            .filter-form:hover, .circular:hover, .filter-form button:hover, .logo-img:hover, .back-btn:hover, .download-btn:hover, .scroll-top-btn:hover {
+            .timetable-table:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .section:hover, .filter-form:hover, .circular:hover, .filter-form button:hover, .logo-container:hover, .back-btn:hover, .download-btn:hover, .scroll-top-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -524,63 +749,93 @@
     </style>
 </head>
 <body>
-    <div class="header">
+    <header class="header">
         <a href="{% url 'parent_dashboard' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Main Dashboard
         </a>
         <h1><i class="fas fa-file-alt"></i> School Circulars</h1>
         <a href="{% url 'parent_dashboard' %}">
-            <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
+            <div class="logo-container">
+                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
+            </div>
         </a>
-    </div>
+    </header>
 
     <div class="container">
-        {% if error_message %}
-            <div class="error-message">{{ error_message }}</div>
-        {% endif %}
-
-        {% if student_class and student_section %}
-            <div class="student-info">
-                Your Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}
+        <div class="main-content">
+            <div class="messages">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </div>
-        {% endif %}
 
-        <form class="filter-form" method="post">
-            {% csrf_token %}
-            <label for="filter_type"><i class="fas fa-filter"></i> Filter Circulars</label>
-            <select id="filter_type" name="filter_type" required>
-                <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Circulars</option>
-                <option value="specific" {% if filter_type == 'specific' %}selected{% endif %}>Class/Section Only</option>
-            </select>
-            <button type="submit"><i class="fas fa-check"></i> Apply Filter</button>
-        </form>
-
-        <div class="circular-container">
-            {% for circular in circulars %}
-                <div class="circular">
-                    <div class="circular-type">
-                        {% if 'school' in circular.target|lower or circular.target == 'All' %}
-                            School Circular
-                        {% else %}
-                            Class Circular
-                        {% endif %}
+            {% if error_message %}
+                <div class="messages">
+                    <div class="error">
+                        <i class="fas fa-exclamation-circle icon"></i>
+                        {{ error_message }}
                     </div>
-                    <h3>{{ circular.title }}</h3>
-                    <small>Posted on: {{ circular.date }}</small>
-                    <small>Target: {{ circular.target }}</small>
-                    <img src="{{ circular.image_url }}" alt="Circular Image">
-                    <a href="{{ circular.image_url }}" download="{{ circular.title|slugify }}.jpg" class="download-btn">
-                        <i class="fas fa-download"></i> Download Circular
-                    </a>
                 </div>
-            {% empty %}
-                <p class="no-circulars">
-                    No circulars available for {% if filter_type == 'specific' %}your class and section{% else %}the selected filter{% endif %}.
-                    {% if student_class and student_section %}
-                        (Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }})
-                    {% endif %}
-                </p>
-            {% endfor %}
+            {% endif %}
+
+            {% if student_class and student_section %}
+                <div class="student-info">
+                    Your Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}
+                </div>
+            {% endif %}
+
+            <div class="section">
+                <h3 class="day-header">
+                    <i class="fas fa-filter icon"></i> Filter Circulars
+                </h3>
+                <form class="filter-form" method="post">
+                    {% csrf_token %}
+                    <label for="filter_type">Filter Type:</label>
+                    <select id="filter_type" name="filter_type" required>
+                        <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Circulars</option>
+                        <option value="specific" {% if filter_type == 'specific' %}selected{% endif %}>Class/Section Only</option>
+                    </select>
+                    <button type="submit"><i class="fas fa-check icon"></i> Apply Filter</button>
+                </form>
+            </div>
+
+            <div class="section">
+                <h3 class="day-header">
+                    <i class="fas fa-file-alt icon"></i> Circulars List
+                </h3>
+                <div class="circular-container">
+                    {% for circular in circulars %}
+                        <div class="circular">
+                            <div class="circular-type">
+                                {% if 'school' in circular.target|lower or circular.target == 'All' %}
+                                    School Circular
+                                {% else %}
+                                    Class Circular
+                                {% endif %}
+                            </div>
+                            <h3>{{ circular.title }}</h3>
+                            <small>Posted on: {{ circular.date }}</small>
+                            <small>Target: {{ circular.target }}</small>
+                            <img src="{{ circular.image_url }}" alt="Circular Image">
+                            <a href="{{ circular.image_url }}" download="{{ circular.title|slugify }}.jpg" class="download-btn">
+                                <i class="fas fa-download icon"></i> Download Circular
+                            </a>
+                        </div>
+                    {% empty %}
+                        <div class="no-circulars">
+                            <i class="fas fa-inbox icon"></i> No circulars available for {% if filter_type == 'specific' %}your class and section{% else %}the selected filter{% endif %}.
+                            {% if student_class and student_section %}
+                                (Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }})
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
 

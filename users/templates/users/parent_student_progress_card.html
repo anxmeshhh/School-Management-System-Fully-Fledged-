@@ -1,12 +1,13 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parent Student Progress Card</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Manavargal School Management System - Student Progress Card</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
@@ -22,7 +23,7 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 80px 20px 40px 20px;
+            padding: 120px 20px 40px 20px;
         }
 
         h1, h2, h3 {
@@ -33,10 +34,10 @@
             --primary-color: #00a676;
             --primary-hover: #00b88d;
             --sidebar-bg: #f0f9f4;
-            --sidebar-border: #d1e7dd;
+            --sidebar-border: #a8d5c2;
             --white: #ffffff;
             --light-bg: #f8f9fa;
-            --border-color: #e9ecef;
+            --border-color: #adb5bd;
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -52,16 +53,11 @@
             overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 1.5rem 2rem;
-            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
@@ -71,13 +67,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-        }
-
-        .header .logo-button {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            border-radius: 0;
+            gap: 0.5rem;
         }
 
         .header h1 {
@@ -86,26 +77,17 @@
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
-        }
-
-        .logo-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-        }
-
-        .logo-img:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            flex: none;
+            margin: 0;
+            z-index: 0;
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
@@ -117,6 +99,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .back-btn:hover {
@@ -126,43 +110,353 @@
             box-shadow: var(--shadow-md);
         }
 
+        .logo-container {
+            width: 100px;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: var(--transition);
+        }
+
+        .logo-container:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
         .main-content {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
             padding: 2rem;
-            margin-top: 80px;
+        }
+
+        .messages {
+            margin-bottom: 1.5rem;
+        }
+
+        .messages .success {
+            background: #d4edda;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .messages .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .messages .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="date"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
+        }
+
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-range span {
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .leave-duration {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .half-day-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .radio-label input[type="radio"] {
+            accent-color: var(--primary-color);
+            width: 1.2rem;
+            height: 1.2rem;
+        }
+
+        .half-day-options {
+            margin-left: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .sub-option {
+            font-size: 0.9rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .attendance-table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            border: 2px solid var(--border-color);
+            background: var(--white);
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .attendance-table th {
+            background: var(--primary-color);
+            color: var(--white);
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .attendance-table td {
+            color: var(--text-color);
+        }
+
+        .attendance-table tr:hover {
+            background: var(--light-bg);
+        }
+
+        .status-approved { color: var(--primary-color); font-weight: 600; }
+        .status-pending { color: #ffc107; font-weight: 600; }
+        .status-rejected { color: #dc3545; font-weight: 600; }
+        .status-present { color: var(--primary-color); font-weight: 600; }
+        .status-absent { color: #dc3545; font-weight: 600; }
+        .status-leave { color: #ffc107; font-weight: 600; }
+
+        .download-btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .download-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .no-requests {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            padding: 2rem;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .icon {
+            margin-right: 0.5rem;
+        }
+
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .scroll-top-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .scroll-top-btn.show {
+            display: flex;
         }
 
         .student-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
             text-align: center;
             color: var(--text-color);
             font-size: 1.2rem;
             margin-bottom: 1.5rem;
         }
 
-        .progress-card-message {
-            background: var(--light-bg);
-            border: 1px solid var(--border-color);
-            padding: 1.5rem;
+        .student-info p {
+            background: var(--white);
+            padding: 1rem;
             border-radius: 8px;
+            border: 1px solid var(--border-color);
             box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
+        }
+
+        .progress-card-message {
             text-align: center;
             color: var(--primary-color);
             font-size: 1.5rem;
             font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .progress-card-message:hover {
-            box-shadow: var(--shadow-md);
         }
 
         @media (max-width: 768px) {
             body {
-                padding: 70px 10px 20px 10px;
+                padding: 100px 10px 20px 10px;
             }
 
             .header {
@@ -173,34 +467,78 @@
                 font-size: 1.5rem;
             }
 
+            .logo-container {
+                width: 80px;
+                height: 64px;
+            }
+
             .main-content {
                 padding: 1.5rem;
-                margin-top: 70px;
             }
 
-            .student-info {
-                font-size: 1rem;
-            }
-
-            .progress-card-message {
-                font-size: 1.25rem;
+            .section {
                 padding: 1.2rem;
             }
 
-            .logo-img {
-                width: 40px;
-                height: 40px;
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .form-group label {
+                font-size: 0.9rem;
+            }
+
+            .form-group input[type="text"],
+            .form-group input[type="date"],
+            .form-group select,
+            .form-group textarea {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+            }
+
+            .attendance-table th,
+            .attendance-table td {
+                font-size: 0.85rem;
+                padding: 0.6rem;
+            }
+
+            .download-btn {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
             }
 
             .back-btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
+
+            .scroll-top-btn {
+                bottom: 1rem;
+                right: 1rem;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+                padding: 0.9rem;
+            }
+
+            .no-requests {
+                font-size: 0.9rem;
+                padding: 1.5rem;
+            }
+
+            .student-info {
+                font-size: 1rem;
+                grid-template-columns: 1fr;
+            }
+
+            .progress-card-message {
+                font-size: 1.25rem;
+            }
         }
 
         @media (max-width: 480px) {
             body {
-                padding: 60px 5px 15px 5px;
+                padding: 80px 5px 15px 5px;
             }
 
             .header {
@@ -213,10 +551,64 @@
                 font-size: 1.25rem;
             }
 
+            .logo-container {
+                width: 60px;
+                height: 48px;
+            }
+
             .main-content {
                 padding: 1rem;
-                margin-top: 100px;
                 border-radius: 8px;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            .form-group label {
+                font-size: 0.85rem;
+            }
+
+            .form-group input[type="text"],
+            .form-group input[type="date"],
+            .form-group select,
+            .form-group textarea {
+                font-size: 0.85rem;
+                padding: 0.5rem;
+            }
+
+            .attendance-table th,
+            .attendance-table td {
+                font-size: 0.75rem;
+                padding: 0.5rem;
+            }
+
+            .download-btn {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.6rem;
+            }
+
+            .back-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .scroll-top-btn {
+                bottom: 0.75rem;
+                right: 0.75rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                padding: 0.8rem;
+            }
+
+            .no-requests {
+                font-size: 0.85rem;
+                padding: 1rem;
             }
 
             .student-info {
@@ -225,22 +617,16 @@
 
             .progress-card-message {
                 font-size: 1.1rem;
-                padding: 1rem;
-            }
-
-            .logo-img {
-                width: 35px;
-                height: 35px;
-            }
-
-            .back-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
             }
         }
 
         @media (hover: none) {
-            .progress-card-message:hover, .logo-img:hover, .back-btn:hover {
+            .section:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .section:hover, .submit-btn:hover, .download-btn:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -259,25 +645,96 @@
     </style>
 </head>
 <body>
-    <div class="header">
+    <header class="header">
         <a href="{% url 'parent_dashboard' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Main Dashboard
         </a>
-        <h1>Student Progress Card</h1>
-        <div class="logo-button">
-            <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo" class="logo-img">
-        </div>
-    </div>
+        <h1><i class="fas fa-chart-line"></i> Student Progress Card</h1>
+        <a href="{% url 'parent_dashboard' %}">
+            <div class="logo-container">
+                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
+            </div>
+        </a>
+    </header>
+
     <div class="container">
         <div class="main-content">
-            <div class="student-info">
-                <p>Class: {{ class_name }}</p>
-                <p>Section: {{ section|default:"N/A" }}</p>
+            <div class="messages">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </div>
-            <div class="progress-card-message">
-                The results will be announced soon.
+
+            <div class="section">
+                <h2><i class="fas fa-user-graduate icon"></i> Student Information</h2>
+                <div class="student-info">
+                    <p><i class="fas fa-school icon"></i> Class: {{ class_name }}</p>
+                    <p><i class="fas fa-th-large icon"></i> Section: {{ section|default:"N/A" }}</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><i class="fas fa-info-circle icon"></i> Progress Update</h2>
+                <div class="progress-card-message">
+                    The results will be announced soon.
+                </div>
             </div>
         </div>
     </div>
+
+    <button class="scroll-top-btn" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('table');
+            if (table) {
+                table.addEventListener('mouseover', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        e.target.parentNode.style.backgroundColor = '#f0f9f4';
+                    }
+                });
+                table.addEventListener('mouseout', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        const row = e.target.parentNode;
+                        const rows = Array.from(table.querySelectorAll('tbody tr'));
+                        const index = rows.indexOf(row);
+                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f8f9fa';
+                    }
+                });
+            }
+            document.querySelectorAll('input[name="leave_duration"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.getElementById('half-day-options').style.display = 
+                        this.value === 'half' ? 'block' : 'none';
+                    if (this.value === 'full') {
+                        document.querySelectorAll('input[name="half_day_type"]').forEach(
+                            input => input.checked = false
+                        );
+                    }
+                });
+            });
+        });
+
+        window.onscroll = function() {
+            const btn = document.querySelector('.scroll-top-btn');
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        };
+
+        function scrollToTop() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
 </body>
 </html>
