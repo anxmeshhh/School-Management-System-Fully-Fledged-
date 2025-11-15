@@ -127,6 +127,14 @@ urlpatterns = [
     path('admin_timetable/delete/<int:id>/', views.admin_timetable_delete, name='admin_timetable_delete'),
     path('admin_timetable/weekly/', views.admin_timetable_weekly, name='admin_timetable_weekly'),
     path('admin_timetable/filter/', views.admin_timetable_filter, name='admin_timetable_filter'),
+
+    # Teacher Timetable URLs
+   
+    path('teacher_timetable/filter/', views.teacher_timetable_view, name='teacher_timetable_filter'),  # Handles filtering via GET params
+    path('teacher_timetable/add/', views.teacher_timetable_add, name='teacher_timetable_add'),
+    path('teacher_timetable/edit/<int:id>/', views.teacher_timetable_edit, name='teacher_timetable_edit'),
+    path('teacher_timetable/delete/<int:id>/', views.teacher_timetable_delete, name='teacher_timetable_delete'),
+    path('teacher_timetable/weekly/', views.teacher_timetable_weekly, name='teacher_timetable_weekly'),
     
     # Teacher route
     path('teacher_timetable/', views.teacher_timetable_view, name='teacher_timetable'),

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Teacher Timetable</title>
+    <title>Manavargal School Management System - Add Teacher Timetable Entry</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -143,59 +143,63 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
-        .timetable-header {
+        .form-header {
             color: var(--primary-color);
             font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
             text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
 
-        .actions-bar {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .filter-form {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .filter-form select {
-            padding: 0.5rem;
+        .form-container {
+            background: var(--white);
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            background: var(--white);
-            color: var(--text-color);
-        }
-
-        .filter-form button {
-            padding: 0.5rem 1rem;
-            background: var(--primary-color);
-            color: var(--white);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
             transition: var(--transition);
         }
 
-        .filter-form button:hover {
-            background: var(--primary-hover);
+        .form-container:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--light-bg);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
         }
 
         .btn {
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 2rem;
             border: none;
             border-radius: 8px;
             font-size: 1rem;
@@ -206,11 +210,12 @@
             align-items: center;
             gap: 0.5rem;
             text-decoration: none;
-            color: var(--white);
+            margin-right: 1rem;
         }
 
         .btn-primary {
             background: var(--primary-color);
+            color: var(--white);
         }
 
         .btn-primary:hover {
@@ -231,97 +236,6 @@
             border-color: var(--primary-color);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
-        }
-
-        .day-header {
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin: 2rem 0 1rem 0;
-            text-align: center;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
-
-        .timetable-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .timetable-table:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .timetable-table th,
-        .timetable-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 1rem;
-        }
-
-        .timetable-table th {
-            background-color: var(--primary-color);
-            color: var(--white);
-            font-weight: 500;
-        }
-
-        .timetable-table tr:hover {
-            background-color: var(--light-bg);
-        }
-
-        .action-btn {
-            padding: 0.5rem;
-            margin: 0 0.25rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.9rem;
-            width: 35px;
-            height: 35px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: var(--white);
-        }
-
-        .edit-btn {
-            background: #007bff;
-        }
-
-        .edit-btn:hover {
-            background: #0056b3;
-            transform: translateY(-1px);
-        }
-
-        .delete-btn {
-            background: #dc3545;
-        }
-
-        .delete-btn:hover {
-            background: #c82333;
-            transform: translateY(-1px);
-        }
-
-        .no-timetable {
-            text-align: center;
-            color: var(--primary-color);
-            font-size: 1.1rem;
-            padding: 2rem;
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
         }
 
         .messages {
@@ -346,18 +260,6 @@
             padding: 0.75rem;
             border-radius: 8px;
             border-left: 4px solid #dc3545;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .messages .warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #ffc107;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -417,56 +319,28 @@
                 height: 64px;
             }
 
-            .timetable-header {
+            .form-header {
                 font-size: 1.5rem;
-                flex-direction: column;
-                align-items: stretch;
+                margin-bottom: 1.25rem;
             }
 
-            .actions-bar {
-                justify-content: center;
-            }
-
-            .filter-form {
-                justify-content: center;
-            }
-
-            .day-header {
-                font-size: 1.25rem;
-                margin: 1.5rem 0 0.75rem 0;
-            }
-
-            .timetable-table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-                font-size: 0.9rem;
-            }
-
-            .timetable-table th,
-            .timetable-table td {
-                padding: 0.75rem;
-                font-size: 0.85rem;
-                min-width: 100px;
-            }
-
-            .action-btn {
-                width: 30px;
-                height: 30px;
-                font-size: 0.8rem;
-            }
-
-            .no-timetable {
-                font-size: 0.9rem;
+            .form-container {
                 padding: 1.5rem;
             }
 
-            .back-btn {
-                padding: 0.6rem 1rem;
+            .form-group input,
+            .form-group select {
+                padding: 0.75rem;
                 font-size: 0.9rem;
             }
 
             .btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+                margin-right: 0.5rem;
+            }
+
+            .back-btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
@@ -501,44 +375,33 @@
                 height: 48px;
             }
 
-            .timetable-header {
+            .form-header {
                 font-size: 1.3rem;
+                margin-bottom: 1rem;
             }
 
-            .day-header {
-                font-size: 1.1rem;
-                margin: 1.25rem 0 0.5rem 0;
-            }
-
-            .timetable-table th,
-            .timetable-table td {
-                padding: 0.5rem;
-                font-size: 0.8rem;
-                min-width: 80px;
-            }
-
-            .action-btn {
-                width: 28px;
-                height: 28px;
-                font-size: 0.7rem;
-            }
-
-            .no-timetable {
-                font-size: 0.85rem;
+            .form-container {
                 padding: 1rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+                width: 100%;
+                justify-content: center;
             }
 
             .back-btn {
                 padding: 0.5rem 0.8rem;
                 font-size: 0.8rem;
-            }
-
-            .btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-                width: 100%;
-                justify-content: center;
-                margin-bottom: 0.5rem;
             }
 
             .scroll-top-btn {
@@ -552,7 +415,7 @@
         }
 
         @media (hover: none) {
-            .timetable-table:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover, .btn:hover, .action-btn:hover {
+            .form-container:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover, .btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -572,10 +435,10 @@
 </head>
 <body>
     <header class="header">
-        <a href="{% url 'teacher_dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Main Dashboard
+        <a href="{% url 'teacher_timetable' %}" class="back-btn">  <!-- Fixed URL name -->
+            <i class="fas fa-arrow-left"></i> Back to Timetable
         </a>
-        <h1><i class="fas fa-clock"></i> Teacher Timetable</h1>
+        <h1><i class="fas fa-plus-circle"></i> Add Timetable Entry</h1>
         <a href="{% url 'teacher_dashboard' %}">
             <div class="logo-container">
                 <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
@@ -584,33 +447,9 @@
     </header>
 
     <div class="container">
-        <div class="timetable-header">
+        <h2 class="form-header">
             
-            <div class="actions-bar">
-                <a href="{% url 'teacher_timetable_add' %}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Add Single Entry
-                </a>
-                <a href="{% url 'teacher_timetable_weekly' %}" class="btn btn-secondary">
-                    <i class="fas fa-calendar-week"></i> Create Weekly Timetable
-                </a>
-                
-                <form method="get" action="{% url 'teacher_timetable' %}" class="filter-form">
-                    
-                    <select name="day">
-                        
-                        <option value="">All Days</option>
-                        
-                        <option value="Monday" {% if selected_day == 'Monday' %}selected{% endif %}>Monday</option>
-                        <option value="Tuesday" {% if selected_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
-                        <option value="Wednesday" {% if selected_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
-                        <option value="Thursday" {% if selected_day == 'Thursday' %}selected{% endif %}>Thursday</option>
-                        <option value="Friday" {% if selected_day == 'Friday' %}selected{% endif %}>Friday</option>
-                        <option value="Saturday" {% if selected_day == 'Saturday' %}selected{% endif %}>Saturday</option>
-                    </select>
-                    <button type="submit"><i class="fas fa-filter"></i> Filter</button>
-                </form>
-            </div>
-        </div>
+        </h2>
 
         <div class="messages">
             {% if messages %}
@@ -623,50 +462,65 @@
             {% endif %}
         </div>
 
-        {% if timetable_data %}
-            {% for day, entries in timetable_data %}
-                <h3 class="day-header">
-                    <i class="fas fa-calendar-day icon"></i> {{ day }}
-                </h3>
-                <table class="timetable-table">
-                    <thead>
-                        <tr>
-                            <th>Class</th>
-                            <th>Subject</th>
-                            <th>Time</th>
-                            <th>Room</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for entry in entries %}
-                            <tr>
-                                <td>{{ entry.class_id }}</td>
-                                <td>{{ entry.subject }}</td>
-                                <td>{{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }}</td>
-                                <td>{{ entry.room|default:"N/A" }}</td>
-                                <td>
-                                    <a href="{% url 'teacher_timetable_edit' entry.id %}" class="action-btn edit-btn" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="{% url 'teacher_timetable_delete' entry.id %}" class="action-btn delete-btn" title="Delete" onclick="return confirm('Are you sure you want to delete this entry?')">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="5" style="text-align: center; color: var(--text-light);">No classes scheduled for this day.</td>
-                            </tr>
+        <div class="form-container">
+            <form method="post" action="{% url 'teacher_timetable_add' %}">  <!-- Correct self-reference -->
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="class">Class:</label>
+                    <select name="class" id="class" required>
+                        <option value="">Select Class</option>
+                        {% for cls in classes %}
+                            <option value="{{ cls }}">{{ cls }}</option>
                         {% endfor %}
-                    </tbody>
-                </table>
-            {% endfor %}
-        {% else %}
-            <div class="no-timetable">
-                <i class="fas fa-inbox icon"></i> No timetable entries assigned to you yet. <a href="{% url 'teacher_timetable_add' %}">Add your first entry</a>.
-            </div>
-        {% endif %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="section">Section (Optional):</label>
+                    <select name="section" id="section">
+                        <option value="">No Section</option>
+                        {% for sec in sections %}
+                            <option value="{{ sec }}">{{ sec }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject:</label>
+                    <input type="text" name="subject" id="subject" required placeholder="e.g., Mathematics">
+                </div>
+                <div class="form-group">
+                    <label for="day_of_week">Day of Week:</label>
+                    <select name="day_of_week" id="day_of_week" required>
+                        <option value="">Select Day</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="start_time">Start Time:</label>
+                    <input type="time" name="start_time" id="start_time" required>
+                </div>
+                <div class="form-group">
+                    <label for="end_time">End Time:</label>
+                    <input type="time" name="end_time" id="end_time" required>
+                </div>
+                <div class="form-group">
+                    <label for="room">Room (Optional):</label>
+                    <input type="text" name="room" id="room" placeholder="e.g., Room 101">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Add Entry
+                    </button>
+                    <a href="{% url 'teacher_timetable' %}" class="btn btn-secondary">  <!-- Fixed URL name -->
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 
     <button class="scroll-top-btn" onclick="scrollToTop()">
