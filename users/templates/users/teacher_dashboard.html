@@ -31,6 +31,7 @@
             --white: #ffffff;
             --light-bg: #f8f9fa;
             --border-color: #ced4da; /* Darker gray border */
+            --darker-border: #495057; /* Darker border color for header and username */
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -39,6 +40,7 @@
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             --dull-highlighter: #d4edda; /* Slightly darker dull green highlighter for sidebar hover */
+            --username-bg: #e6f4ea; /* Different subtle green for username box */
         }
 
         html {
@@ -185,7 +187,7 @@
             background: var(--white);
             border-radius: var(--border-radius);
             position: relative;
-            border: 2px solid var(--border-color); /* Increased border thickness */
+            border: 2px solid var(--darker-border); /* Updated to even darker border */
             box-shadow: var(--shadow-sm);
         }
 
@@ -208,14 +210,14 @@
         }
 
         .username-box {
-            background: var(--light-bg);
-            color: var(--text-color);
+            background: var(--username-bg); /* Updated to different subtle green background */
+            color: var(--primary-color); /* Bright color for username text */
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.875rem;
             font-weight: 500;
             box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--darker-border); /* Updated to darker border */
             min-width: 100px;
             text-align: center;
             line-height: 1.4;
@@ -237,7 +239,7 @@
             transition: var(--transition);
             pointer-events: none;
             z-index: 10;
-            border: 2px solid var(--border-color); /* Increased border thickness */
+            border: 2px solid var(--darker-border); /* Updated to darker border */
             margin-top: 0.5rem;
         }
 
@@ -677,7 +679,7 @@
                         </ul>
                     </div>
                     <span class="header-text">Welcome</span>
-                    <span class="username-box">{{ username }}</span>
+                    <span class="username-box">verrgroup</span>
                     <button class="profile-button">👤</button>
                 </div>
             </header>
@@ -690,7 +692,7 @@
                 <!-- Welcome Section -->
                 <div class="welcome-section" id="welcomeSection">
                     <div class="card-container">
-                        <h2>Welcome, {{ username }}!</h2>
+                        <h2>Welcome, verrgroup!</h2>
                         <p id="quote" class="quote"></p>
                     </div>
                 </div>

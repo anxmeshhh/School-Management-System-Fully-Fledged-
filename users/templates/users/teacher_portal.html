@@ -653,15 +653,24 @@
                 const noSectionsMessage = document.getElementById('no-sections-message');
                 const selectedClass = classSelect.value;
 
+                // Clear and reset options
+                sectionSelect.innerHTML = '<option value="">Select a Section</option>';
+
+                if (!selectedClass) {
+                    // No class selected: disable section select and hide message
+                    sectionSelect.disabled = true;
+                    if (noSectionsMessage) noSectionsMessage.style.display = 'none';
+                    return;
+                }
+
+                // Class selected: proceed to populate sections
+                sectionSelect.disabled = false;
                 let classSections = [];
                 try {
                     classSections = JSON.parse('{{ class_sections|escapejs }}');
                 } catch (e) {
                     console.error('Failed to parse class_sections:', e);
                 }
-
-                // Clear and reset options
-                sectionSelect.innerHTML = '<option value="">Select a Section</option>';
 
                 const availableSections = classSections
                     .filter(([cls, section]) => cls === selectedClass && section && section.trim() !== '')
@@ -679,10 +688,8 @@
                         }
                         sectionSelect.appendChild(option);
                     });
-                    sectionSelect.disabled = false;
                     if (noSectionsMessage) noSectionsMessage.style.display = 'none';
                 } else {
-                    sectionSelect.disabled = true;
                     if (noSectionsMessage) noSectionsMessage.style.display = 'block';
                 }
             }
