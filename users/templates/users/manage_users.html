@@ -6,36 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Manage Users</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            background: var(--white);
-            min-height: 100vh;
-            color: var(--text-color);
-            padding: 80px 20px 40px 20px;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Montserrat', sans-serif;
-        }
 
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
             --sidebar-bg: #f0f9f4;
-            --sidebar-border: #d1e7dd;
+            --sidebar-border: #a8d5c2;
             --white: #ffffff;
             --light-bg: #f8f9fa;
-            --border-color: #e9ecef;
+            --border-color: #adb5bd;
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -45,10 +28,30 @@
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         html {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--text-color);
+            padding: 120px 20px 40px 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
         }
 
         .container {
@@ -59,8 +62,8 @@
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
@@ -70,7 +73,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-radius: 0;
+            gap: 0.5rem;
         }
 
         .header h1 {
@@ -79,11 +83,17 @@
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            flex: none;
+            margin: 0;
+            z-index: 0;
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
@@ -95,6 +105,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .back-btn:hover {
@@ -104,28 +116,44 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-img {
+        .logo-container {
             width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: none;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: var(--transition);
             box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             transition: var(--transition);
         }
 
-        .logo-img:hover {
+        .logo-container:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
 
+        .logo-container:hover img {
+            transform: scale(1.05);
+        }
+
         .main-content {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
             padding: 2rem;
-            margin-top: 80px;
         }
 
         .alert-message {
@@ -138,14 +166,22 @@
             padding: 0.75rem;
             border-radius: 8px;
             border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
 
         .alert-message .success {
-            background: #f0f9f4;
+            background: #d4edda;
             color: var(--primary-color);
             padding: 0.75rem;
             border-radius: 8px;
             border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
 
         .alert-message .warning {
@@ -154,13 +190,17 @@
             padding: 0.75rem;
             border-radius: 8px;
             border-left: 4px solid #ffc107;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
 
         .section {
             background: var(--light-bg);
             padding: 1.5rem;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             margin-bottom: 2rem;
             transition: var(--transition);
@@ -175,6 +215,7 @@
             font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
+            text-align: center;
         }
 
         .header-section {
@@ -199,15 +240,14 @@
         }
 
         .create-btn {
-            padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            border: none;
             border-radius: 8px;
+            color: var(--white);
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            text-decoration: none;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
@@ -215,8 +255,7 @@
         }
 
         .create-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
+            background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
@@ -260,7 +299,7 @@
             width: 100%;
             min-width: 600px;
             border-collapse: collapse;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             background: var(--white);
         }
 
@@ -303,8 +342,8 @@
 
         .action-btn {
             padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            border-radius: 5px;
+            font-size: 0.85rem;
             text-decoration: none;
             cursor: pointer;
             transition: var(--transition);
@@ -312,39 +351,40 @@
             align-items: center;
             gap: 0.25rem;
             border: none;
+            min-width: 70px;
         }
 
         .update-btn {
-            background: var(--sidebar-bg);
-            color: var(--text-color);
+            background: var(--primary-color);
+            color: var(--white);
         }
 
         .update-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
+            background: var(--primary-hover);
+            transform: translateY(-1px);
             box-shadow: var(--shadow-sm);
         }
 
         .delete-btn {
-            background: #f8d7da;
-            color: #dc3545;
+            background: #dc3545;
+            color: var(--white);
         }
 
         .delete-btn:hover {
-            background: #dc3545;
-            color: var(--white);
+            background: #c82333;
+            transform: translateY(-1px);
             box-shadow: var(--shadow-sm);
         }
 
         .no-users {
-            font-size: 1rem;
-            color: var(--text-color);
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
             text-align: center;
-            margin-top: 1.5rem;
             padding: 1.5rem;
             background: var(--light-bg);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
         }
 
         .popup {
@@ -362,7 +402,8 @@
 
         .popup-content {
             background: var(--white);
-            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
             width: 90%;
             max-width: 500px;
             box-shadow: var(--shadow-lg);
@@ -405,8 +446,8 @@
         }
 
         .popup-body label {
-            font-size: 0.9rem;
-            color: var(--primary-color);
+            font-size: 1rem;
+            color: var(--text-color);
             font-weight: 500;
             margin-bottom: 0.25rem;
         }
@@ -414,8 +455,8 @@
         .popup-body input, .popup-body select {
             padding: 0.75rem;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.9rem;
+            border-radius: 8px;
+            font-size: 1rem;
             background: var(--white);
             color: var(--text-color);
             transition: var(--transition);
@@ -423,9 +464,9 @@
         }
 
         .popup-body input:focus, .popup-body select:focus {
-            outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
         }
 
         .popup-body .image-upload {
@@ -439,45 +480,45 @@
 
         .popup-body button {
             padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.9rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
             transition: var(--transition);
             margin-top: 0.5rem;
             width: 100%;
         }
 
         .popup-body button:hover {
-            background: var(--primary-color);
-            color: var(--white);
+            background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
 
-        .icon {
-            margin-right: 0.5rem;
-        }
-
+        /* Media Queries */
         @media (max-width: 768px) {
             body {
-                padding: 70px 10px 20px 10px;
+                padding: 100px 10px 20px 10px;
             }
 
             .header {
-                padding: 1rem;
+                padding: 1rem 1rem 1rem 0.5rem;
             }
 
             .header h1 {
                 font-size: 1.5rem;
             }
 
+            .logo-container {
+                width: 80px;
+                height: 64px;
+            }
+
             .main-content {
                 padding: 1.5rem;
-                margin-top: 70px;
             }
 
             .section {
@@ -514,50 +555,62 @@
                 padding: 0.6rem;
             }
 
-            .alert-message .error,
-            .alert-message .success,
-            .alert-message .warning {
-                font-size: 0.9rem;
-            }
-
-            .no-users {
-                font-size: 0.9rem;
-            }
-
-            .logo-img {
-                width: 60px;
-                height: 60px;
-            }
-
             .back-btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
 
             .create-btn {
-                padding: 0.6rem 1rem;
                 font-size: 0.9rem;
+                padding: 0.6rem;
+            }
+
+            .popup-content {
+                width: 95%;
+                margin: 1rem;
+            }
+
+            .popup-body {
+                padding: 1.2rem;
+                gap: 0.75rem;
+            }
+
+            .popup-body input, .popup-body select {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+            }
+
+            .popup-body button {
+                font-size: 0.9rem;
+                padding: 0.6rem;
             }
         }
 
         @media (max-width: 480px) {
             body {
-                padding: 60px 5px 15px 5px;
+                padding: 80px 5px 15px 5px;
             }
 
             .header {
-                padding: 0.75rem;
+                padding: 0.75rem 1rem 0.75rem 0.25rem;
                 flex-direction: column;
                 gap: 1rem;
             }
 
             .header h1 {
                 font-size: 1.25rem;
+                position: static;
+                transform: none;
+                flex-grow: 1;
+            }
+
+            .logo-container {
+                width: 60px;
+                height: 48px;
             }
 
             .main-content {
                 padding: 1rem;
-                margin-top: 100px;
                 border-radius: 8px;
             }
 
@@ -579,23 +632,9 @@
             }
 
             .action-btn {
+                font-size: 0.75rem;
                 padding: 0.3rem 0.6rem;
-                font-size: 0.7rem;
-            }
-
-            .alert-message .error,
-            .alert-message .success,
-            .alert-message .warning {
-                font-size: 0.85rem;
-            }
-
-            .no-users {
-                font-size: 0.85rem;
-            }
-
-            .logo-img {
-                width: 50px;
-                height: 50px;
+                min-width: 60px;
             }
 
             .back-btn {
@@ -604,33 +643,33 @@
             }
 
             .create-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
+                font-size: 0.85rem;
+                padding: 0.5rem;
             }
 
             .popup-content {
                 width: 95%;
-                margin: 1rem;
+                margin: 0.5rem;
             }
 
             .popup-body {
                 padding: 1rem;
-                gap: 0.75rem;
+                gap: 0.5rem;
             }
 
             .popup-body input, .popup-body select {
-                padding: 0.6rem;
                 font-size: 0.85rem;
+                padding: 0.5rem;
             }
 
             .popup-body button {
-                padding: 0.6rem;
                 font-size: 0.85rem;
+                padding: 0.5rem;
             }
         }
 
         @media (hover: none) {
-            .section:hover, .logo-img:hover, .back-btn:hover, .create-btn:hover {
+            .section:hover, .create-btn:hover, .logo-container:hover, .back-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -649,96 +688,98 @@
     </style>
 </head>
 <body>
-    <div class="header">
+    <header class="header">
         <a href="{% url 'admin_page' %}" class="back-btn">
-            <i class="fas fa-arrow-left icon"></i> Back to Main Dashboard
+            <i class="fas fa-arrow-left"></i> Back To Main Dashboard
         </a>
-        <h1><i class="fas fa-users-cog icon"></i> Manage Users</h1>
+        <h1><i class="fas fa-users-cog"></i> Manage Users</h1>
         <a href="{% url 'admin_page' %}">
-            <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo" class="logo-img">
+            <div class="logo-container">
+                <img src="{% static 'users/images/greenlogo.png' %}" alt="Manavargal Logo">
+            </div>
         </a>
-    </div>
+    </header>
 
     <div class="container">
-        <div class="main-content">
-           
-
+        <main class="main-content">
             {% if messages %}
                 <div class="alert-message">
                     {% for message in messages %}
                         <div class="{{ message.tags }}">
-                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
                             {{ message }}
                         </div>
                     {% endfor %}
                 </div>
             {% endif %}
 
-            <div class="header-section">
-                <h1><i class="fas fa-search icon"></i> Search Users</h1>
-                <div class="header-buttons">
-                    <div class="search-bar">
-                        <input type="text" id="searchInput" placeholder="Search users...">
-                        <button onclick="searchUsers()">
-                            <i class="fas fa-search"></i>
+            <section class="section">
+                <div class="header-section">
+                    <h1><i class="fas fa-search"></i> Search Users</h1>
+                    <div class="header-buttons">
+                        <div class="search-bar">
+                            <input type="text" id="searchInput" placeholder="Search users...">
+                            <button onclick="searchUsers()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <button class="create-btn" onclick="showPopup('add')">
+                            <i class="fas fa-plus"></i> Create New User
                         </button>
                     </div>
-                    <button class="create-btn" onclick="showPopup('add')">
-                        <i class="fas fa-plus icon"></i> Create New User
-                    </button>
                 </div>
-            </div>
 
-            <div class="table-container">
-                <table class="user-table" id="userTable">
-                    <thead>
-                        <tr>
-                            <th><i class="fas fa-user icon"></i> Name</th>
-                            <th><i class="fas fa-envelope icon"></i> Email</th>
-                            <th><i class="fas fa-user-tag icon"></i> Username</th>
-                            <th><i class="fas fa-lock icon"></i> Password</th>
-                            <th><i class="fas fa-user-cog icon"></i> Role</th>
-                            <th><i class="fas fa-edit icon"></i> Update</th>
-                            <th><i class="fas fa-trash icon"></i> Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
+                <div class="table-container">
+                    <table class="user-table" id="userTable">
+                        <thead>
                             <tr>
-                                <td>
-                                    <img src="{{ user.profile_pic_url }}" alt="{{ user.name }}" class="profile-pic" onerror="this.src='{% static 'users/images/greenlogo.png' %}'">
-                                    {{ user.name }}
-                                </td>
-                                <td>{{ user.email }}</td>
-                                <td>{{ user.username }}</td>
-                                <td>{{ user.password }}</td>
-                                <td>{{ user.role }}</td>
-                                <td>
-                                    <button class="action-btn update-btn" onclick="showPopup('update', '{{ user.id }}', '{{ user.name }}', '{{ user.email }}', '{{ user.username }}', '{{ user.password }}', '{{ user.role }}')">
-                                        <i class="fas fa-edit icon"></i> Update
-                                    </button>
-                                </td>
-                                <td>
-                                    <button class="action-btn delete-btn" onclick="deleteUser('{{ user.id }}')">
-                                        <i class="fas fa-trash icon"></i> Delete
-                                    </button>
-                                </td>
+                                <th><i class="fas fa-user"></i> Name</th>
+                                <th><i class="fas fa-envelope"></i> Email</th>
+                                <th><i class="fas fa-user-tag"></i> Username</th>
+                                <th><i class="fas fa-lock"></i> Password</th>
+                                <th><i class="fas fa-user-cog"></i> Role</th>
+                                <th><i class="fas fa-edit"></i> Update</th>
+                                <th><i class="fas fa-trash"></i> Delete</th>
                             </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="7" class="no-users"><i class="fas fa-search icon"></i> No users found.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                <tr>
+                                    <td>
+                                        <img src="{{ user.profile_pic_url }}" alt="{{ user.name }}" class="profile-pic" onerror="this.src='{% static 'users/images/greenlogo.png' %}'">
+                                        {{ user.name }}
+                                    </td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.password }}</td>
+                                    <td>{{ user.role }}</td>
+                                    <td>
+                                        <button class="action-btn update-btn" onclick="showPopup('update', '{{ user.id }}', '{{ user.name }}', '{{ user.email }}', '{{ user.username }}', '{{ user.password }}', '{{ user.role }}')">
+                                            <i class="fas fa-edit"></i> Update
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button class="action-btn delete-btn" onclick="deleteUser('{{ user.id }}')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7" class="no-users"><i class="fas fa-search"></i> No users found.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
     </div>
 
     <div class="popup" id="userPopup">
         <div class="popup-content">
             <div class="popup-header">
-                <h3 id="popupTitle"><i class="fas fa-user-plus icon"></i> Create New User</h3>
+                <h3 id="popupTitle"><i class="fas fa-user-plus"></i> Create New User</h3>
                 <button class="close-btn" onclick="hidePopup()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -747,15 +788,15 @@
                 <form id="userForm" method="POST" action="" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="hidden" name="user_id" id="userId">
-                    <label for="nameInput"><i class="fas fa-user icon"></i> Name</label>
+                    <label for="nameInput"><i class="fas fa-user"></i> Name</label>
                     <input type="text" name="name" id="nameInput" placeholder="Enter name" required>
-                    <label for="emailInput"><i class="fas fa-envelope icon"></i> Email ID</label>
+                    <label for="emailInput"><i class="fas fa-envelope"></i> Email ID</label>
                     <input type="email" name="email" id="emailInput" placeholder="Enter email" required>
-                    <label for="usernameInput"><i class="fas fa-user-tag icon"></i> Username</label>
+                    <label for="usernameInput"><i class="fas fa-user-tag"></i> Username</label>
                     <input type="text" name="username" id="usernameInput" placeholder="Enter username" required>
-                    <label for="passwordInput"><i class="fas fa-lock icon"></i> Password (leave blank to keep unchanged)</label>
+                    <label for="passwordInput"><i class="fas fa-lock"></i> Password (leave blank to keep unchanged)</label>
                     <input type="password" name="password" id="passwordInput" placeholder="Enter new password">
-                    <label for="roleInput"><i class="fas fa-user-cog icon"></i> Role</label>
+                    <label for="roleInput"><i class="fas fa-user-cog"></i> Role</label>
                     <select name="role" id="roleInput" required>
                         <option value="">Select Role</option>
                         <option value="admin">Admin</option>
@@ -764,11 +805,11 @@
                         <option value="finance">Finance</option>
                     </select>
                     <div class="image-upload" id="imageUploadSection" style="display: none;">
-                        <label for="profilePicInput"><i class="fas fa-image icon"></i> Profile Picture</label>
+                        <label for="profilePicInput"><i class="fas fa-image"></i> Profile Picture</label>
                         <input type="file" name="profile_pic" id="profilePicInput" accept="image/*">
                     </div>
                     <button type="submit" id="submitBtn">
-                        <i class="fas fa-save icon"></i> Create New User
+                        <i class="fas fa-save"></i> Create New User
                     </button>
                 </form>
             </div>

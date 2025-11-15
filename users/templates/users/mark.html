@@ -6,37 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Admin Exam Mark Entry</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Poppins', sans-serif;
             font-weight: 400;
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 80px 20px 40px 20px;
+            padding: 120px 20px 40px 20px;
         }
-
         h1, h2, h3 {
             font-family: 'Montserrat', sans-serif;
         }
-
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
             --sidebar-bg: #f0f9f4;
-            --sidebar-border: #d1e7dd;
+            --sidebar-border: #a8d5c2;
             --white: #ffffff;
             --light-bg: #f8f9fa;
-            --border-color: #e9ecef;
+            --border-color: #adb5bd;
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -45,23 +42,20 @@
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         html {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
         }
-
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
@@ -71,20 +65,25 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-radius: 0;
+            gap: 0.5rem;
         }
-
         .header h1 {
             font-size: 2rem;
             font-weight: 700;
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            flex: none;
+            margin: 0;
+            z-index: 0;
         }
-
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
@@ -96,33 +95,46 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
-
         .back-btn:hover {
             background: var(--primary-color);
             color: var(--white);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
-
-        .logo-img {
+        .logo-container {
             width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: none;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: var(--transition);
             box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border);
+            position: relative;
+            z-index: 1;
+        }
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             transition: var(--transition);
         }
-
-        .logo-img:hover {
+        .logo-container:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
-
+        .logo-container:hover img {
+            transform: scale(1.05);
+        }
         .main-content {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
             padding: 2rem;
@@ -131,79 +143,85 @@
             flex-direction: column;
             gap: 3rem;
         }
-
         .alert-message {
             margin-bottom: 1.5rem;
         }
-
         .alert-message .success {
-            background: #f0f9f4;
+            background: #d4edda;
             color: var(--primary-color);
             padding: 0.75rem;
             border-radius: 8px;
             border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
-
         .alert-message .error {
             background: #fef2f2;
             color: #dc3545;
             padding: 0.75rem;
             border-radius: 8px;
             border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
-
         .section {
-            background: var(--white);
+            background: var(--light-bg);
             padding: 2rem;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             transition: var(--transition);
         }
-
         .section:hover {
             box-shadow: var(--shadow-md);
         }
-
         h2 {
             color: var(--primary-color);
             font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
+            text-align: center;
         }
-
         h3 {
             color: var(--primary-color);
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 1rem;
         }
-
         .nav-buttons {
             display: flex;
-            gap: 1rem;
+            justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             margin-bottom: 2rem;
             padding: 1rem;
-            background: var(--light-bg);
+            background: var(--white);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
+            gap: 1rem;
         }
-
         .nav-buttons span {
             font-size: 1rem;
             font-weight: 500;
             color: var(--primary-color);
+            flex-shrink: 0;
         }
-
+        .nav-buttons-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
         .nav-button {
-            padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            padding: 0.75rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
             background: var(--sidebar-bg);
             color: var(--text-color);
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
@@ -211,39 +229,36 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+            min-height: 44px;
         }
-
         .nav-button:hover {
             background: var(--primary-color);
             color: var(--white);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
         }
-
         .logout-button {
             background: var(--light-bg);
             border-color: var(--border-color);
         }
-
         .logout-button:hover {
             background: var(--primary-color);
             color: var(--white);
         }
-
         .form-group {
             margin-bottom: 1.5rem;
             display: flex;
             flex-direction: column;
         }
-
         .form-group label {
             display: block;
-            color: var(--primary-color);
+            color: var(--text-color);
             font-size: 0.9rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
         }
-
         .form-group input,
         .form-group select {
             width: 100%;
@@ -255,7 +270,6 @@
             color: var(--text-color);
             transition: var(--transition);
         }
-
         .form-group select {
             appearance: none;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
@@ -263,104 +277,124 @@
             background-position: right 0.75rem center;
             background-size: 12px;
         }
-
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
         }
-
         .class-section {
             display: flex;
             gap: 1.5rem;
         }
-
         .class-section > div {
             flex: 1;
         }
-
         .subject-row {
             display: flex;
             gap: 1.5rem;
             margin-bottom: 1.5rem;
             padding: 1rem;
             border-radius: 8px;
-            background: var(--light-bg);
-            border: 1px solid var(--border-color);
+            background: var(--white);
+            border: 2px solid var(--border-color);
             transition: var(--transition);
         }
-
         .subject-row:hover {
             box-shadow: var(--shadow-md);
         }
-
         .subject-row > div {
             flex: 1;
         }
-
         .button-group {
             display: flex;
-            gap: 1rem;
+            gap: 1.5rem;
             flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1rem;
         }
-
         .button {
-            padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            padding: 0.75rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
             background: var(--sidebar-bg);
             color: var(--text-color);
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+            min-height: 44px;
+            white-space: nowrap;
+            justify-content: center;
         }
-
+        .button i {
+            font-size: 0.875rem;
+        }
         .button:hover {
             background: var(--primary-color);
             color: var(--white);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
         }
-
         .button-primary {
             background: var(--primary-color);
             color: var(--white);
             border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
         }
-
+        .button-primary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+            box-shadow: var(--shadow-md);
+        }
         .button-secondary {
             background: var(--light-bg);
             border-color: var(--border-color);
         }
-
+        .button-secondary:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
         .button-green {
             background: var(--primary-color);
             color: var(--white);
             border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
         }
-
+        .button-green:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+            box-shadow: var(--shadow-md);
+        }
         .button-red {
             background: #dc3545;
             color: var(--white);
             border-color: #dc3545;
+            box-shadow: var(--shadow-sm);
         }
-
         .button-red:hover {
             background: #c82333;
             color: var(--white);
+            border-color: #c82333;
+            box-shadow: var(--shadow-md);
         }
-
         .button-purple {
             background: var(--primary-color);
             color: var(--white);
             border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
         }
-
+        .button-purple:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+            box-shadow: var(--shadow-md);
+        }
         .loading {
             text-align: center;
             color: var(--primary-color);
@@ -368,39 +402,33 @@
             padding: 2rem;
             display: none;
         }
-
         .loading.show {
             display: block;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             background: var(--white);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             overflow: hidden;
             margin-top: 1rem;
         }
-
         th, td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
-
         th {
             background: var(--sidebar-bg);
             color: var(--primary-color);
             font-weight: 600;
             font-size: 0.95rem;
         }
-
         tr:hover {
             background: var(--light-bg);
         }
-
         .signature-pad {
             border: 2px solid var(--border-color);
             border-radius: 8px;
@@ -410,18 +438,15 @@
             width: 100%;
             max-width: 300px;
         }
-
         .signature-pad:hover {
             border-color: var(--primary-color);
         }
-
         .progress-card-header {
             display: flex;
             align-items: center;
             gap: 1rem;
             margin-bottom: 1rem;
         }
-
         .student-profile-pic {
             width: 80px;
             height: 80px;
@@ -431,23 +456,19 @@
             object-fit: cover;
             transition: var(--transition);
         }
-
         .student-profile-pic:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
-
         .student-info-header {
             flex: 1;
         }
-
         .student-info-header h3 {
             margin: 0 0 0.5rem 0;
             color: var(--primary-color);
             font-size: 1.25rem;
             font-weight: 600;
         }
-
         .modal {
             display: none;
             position: fixed;
@@ -460,10 +481,9 @@
             justify-content: center;
             align-items: center;
         }
-
         .modal-content {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             padding: 2rem;
             width: 90%;
@@ -471,195 +491,170 @@
             position: relative;
             box-shadow: var(--shadow-lg);
         }
-
         .modal-content h3 {
             color: var(--primary-color);
             margin-bottom: 1.5rem;
             text-align: center;
         }
-
         .summary-section {
             margin-top: 1.5rem;
             padding: 1rem;
             background: var(--light-bg);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
         }
-
         .summary-section p {
             margin-bottom: 0.5rem;
             font-weight: 600;
             color: var(--primary-color);
         }
-
         .summary-section p:last-child {
             font-size: 1.1rem;
             font-weight: bold;
         }
-
         .icon {
             margin-right: 0.5rem;
         }
-
         @media (max-width: 768px) {
             body {
-                padding: 70px 10px 20px 10px;
+                padding: 100px 10px 20px 10px;
             }
-
             .header {
                 padding: 1rem;
             }
-
             .header h1 {
                 font-size: 1.5rem;
             }
-
+            .logo-container {
+                width: 80px;
+                height: 64px;
+            }
             .main-content {
                 padding: 1.5rem;
                 margin-top: 70px;
             }
-
             .section {
                 padding: 1.5rem;
             }
-
             .nav-buttons {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 0.5rem;
+                gap: 0.75rem;
+                text-align: center;
             }
-
+            .nav-buttons-right {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.75rem;
+            }
             .nav-button {
                 justify-content: center;
+                padding: 0.75rem;
             }
-
             .class-section {
                 flex-direction: column;
                 gap: 1rem;
             }
-
             .subject-row {
                 flex-direction: column;
                 gap: 1rem;
             }
-
             .button-group {
                 flex-direction: column;
                 width: 100%;
-            }
-
-            .button {
+                gap: 1rem;
                 justify-content: center;
             }
-
+            .button {
+                justify-content: center;
+                padding: 0.75rem;
+            }
             table {
                 font-size: 0.9rem;
                 overflow-x: auto;
                 display: block;
                 white-space: nowrap;
             }
-
             th, td {
                 padding: 0.75rem 0.5rem;
             }
-
             .progress-card-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 0.75rem;
             }
-
             .student-profile-pic {
                 width: 60px;
                 height: 60px;
             }
-
-            .logo-img {
-                width: 60px;
-                height: 60px;
-            }
-
             .back-btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
         }
-
         @media (max-width: 480px) {
             body {
-                padding: 60px 5px 15px 5px;
+                padding: 80px 5px 15px 5px;
             }
-
             .header {
                 padding: 0.75rem;
                 flex-direction: column;
                 gap: 1rem;
             }
-
             .header h1 {
                 font-size: 1.25rem;
             }
-
+            .logo-container {
+                width: 60px;
+                height: 48px;
+            }
             .main-content {
                 padding: 1rem;
                 margin-top: 100px;
                 border-radius: 8px;
             }
-
             .section {
                 padding: 1rem;
             }
-
             h2 {
                 font-size: 1.25rem;
             }
-
             .nav-buttons {
-                gap: 0.5rem;
+                gap: 0.75rem;
             }
-
+            .nav-buttons-right {
+                gap: 0.75rem;
+            }
             .nav-button {
-                padding: 0.7rem 1rem;
+                padding: 0.7rem;
                 font-size: 0.9rem;
             }
-
             .button-group .button {
-                padding: 0.7rem 1rem;
+                padding: 0.7rem;
                 font-size: 0.9rem;
             }
-
             table {
                 font-size: 0.8rem;
             }
-
             th, td {
                 padding: 0.5rem 0.25rem;
             }
-
-            .logo-img {
-                width: 50px;
-                height: 50px;
-            }
-
             .back-btn {
                 padding: 0.5rem 0.8rem;
                 font-size: 0.8rem;
             }
         }
-
         @media (hover: none) {
-            .section:hover, .logo-img:hover, .back-btn:hover, .subject-row:hover {
+            .section:hover, .logo-container:hover, .back-btn:hover, .subject-row:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
         }
-
         @media (prefers-reduced-motion: reduce) {
             * {
                 transition: none !important;
                 animation: none !important;
             }
-
             html {
                 scroll-behavior: auto;
             }
@@ -668,7 +663,6 @@
 </head>
 <body>
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-
     <div id="app">
         <div class="header">
             <a href="{% url 'admin_page' %}" class="back-btn">
@@ -676,10 +670,11 @@
             </a>
             <h1><i class="fas fa-book-open icon"></i> Admin Exam Mark Entry</h1>
             <a href="{% url 'admin_page' %}">
-                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo" class="logo-img">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
+                </div>
             </a>
         </div>
-
         {% if messages %}
             <div class="alert-message">
                 {% for message in messages %}
@@ -690,20 +685,20 @@
                 {% endfor %}
             </div>
         {% endif %}
-
         <div class="container">
             <div class="main-content">
                 <div class="nav-buttons">
                     <span><i class="fas fa-user icon"></i> Welcome, {{ teacher_name }}</span>
-                    <button id="showMarkEntry" class="nav-button">
-                        <i class="fas fa-edit icon"></i> Mark Entry
-                    </button>
-                    <button id="showProgressCard" class="nav-button">
-                        <i class="fas fa-chart-bar icon"></i> Progress Card
-                    </button>
-                    
+                    <div class="nav-buttons-right">
+                        <button id="showMarkEntry" class="nav-button">
+                            <i class="fas fa-edit icon"></i> Mark Entry
+                        </button>
+                        <button id="showProgressCard" class="nav-button">
+                            <i class="fas fa-chart-bar icon"></i> Progress Card
+                        </button>
+                    </div>
+                   
                 </div>
-
                 <div id="markEntrySection" class="section">
                     <h2><i class="fas fa-edit icon"></i> Mark Entry</h2>
                     <div id="alert" class="alert-message success"></div>
@@ -759,7 +754,6 @@
                         </button>
                     </div>
                 </div>
-
                 <div id="progressCardSection" class="section" style="display: none;">
                     <h2><i class="fas fa-chart-bar icon"></i> Digital Progress Card</h2>
                     <div class="form-group class-section">
@@ -821,7 +815,6 @@
                         </button>
                     </div>
                 </div>
-
                 <div id="addSubjectModal" class="modal">
                     <div class="modal-content">
                         <h3><i class="fas fa-plus-circle icon"></i> Add New Subject</h3>
@@ -843,7 +836,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div id="deleteSubjectModal" class="modal">
                     <div class="modal-content">
                         <h3><i class="fas fa-trash icon"></i> Delete Subject</h3>
@@ -869,7 +861,6 @@
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // DOM Elements
@@ -901,7 +892,7 @@
             const showMarkEntry = document.getElementById('showMarkEntry');
             const showProgressCard = document.getElementById('showProgressCard');
             const loadingProgress = document.getElementById('loadingProgress');
-            
+           
             // Modal elements
             const addSubjectModal = document.getElementById('addSubjectModal');
             const newSubjectName = document.getElementById('newSubjectName');
@@ -912,41 +903,35 @@
             const deleteSubjectSelect = document.getElementById('deleteSubjectSelect');
             const confirmDeleteSubject = document.getElementById('confirmDeleteSubject');
             const cancelDeleteSubject = document.getElementById('cancelDeleteSubject');
-            
+           
             // Signature pad elements
             const signaturePad = document.getElementById('signaturePad');
             const clearSignatureBtn = document.getElementById('clearSignature');
-
             // Variables
             const role = '{{ role }}';
             const teacherSubject = '{{ teacher_subject }}';
             let subjects = [];
             let currentSignature = null;
             let currentProgressData = null;
-
             // Utility Functions
             function getCsrfToken() {
                 const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
                 return tokenElement ? tokenElement.value : '';
             }
-
             function showAlert(message, type = 'success') {
                 alertBox.style.display = 'flex';
                 alertBox.className = 'alert-message ' + type;
                 alertBox.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'} icon"></i> ${message}`;
                 setTimeout(() => alertBox.style.display = 'none', 5000);
             }
-
             function showLoading(show = true) {
                 loadingProgress.classList.toggle('show', show);
             }
-
             // Signature Pad Setup
             const ctx = signaturePad.getContext('2d');
             let isDrawing = false;
             let lastX = 0;
             let lastY = 0;
-
             function getEventPos(e) {
                 const rect = signaturePad.getBoundingClientRect();
                 const clientX = e.clientX || (e.touches && e.touches[0].clientX);
@@ -956,7 +941,6 @@
                     y: clientY - rect.top
                 };
             }
-
             function startDrawing(e) {
                 e.preventDefault();
                 isDrawing = true;
@@ -964,7 +948,6 @@
                 lastX = pos.x;
                 lastY = pos.y;
             }
-
             function draw(e) {
                 e.preventDefault();
                 if (!isDrawing) return;
@@ -979,7 +962,6 @@
                 lastX = pos.x;
                 lastY = pos.y;
             }
-
             function stopDrawing(e) {
                 e.preventDefault();
                 if (isDrawing) {
@@ -987,29 +969,25 @@
                     currentSignature = signaturePad.toDataURL();
                 }
             }
-
             // Mouse events
             signaturePad.addEventListener('mousedown', startDrawing);
             signaturePad.addEventListener('mousemove', draw);
             signaturePad.addEventListener('mouseup', stopDrawing);
             signaturePad.addEventListener('mouseleave', stopDrawing);
-
             // Touch events
             signaturePad.addEventListener('touchstart', startDrawing);
             signaturePad.addEventListener('touchmove', draw);
             signaturePad.addEventListener('touchend', stopDrawing);
-
             clearSignatureBtn.addEventListener('click', () => {
                 ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
                 currentSignature = null;
             });
-
             // Image loading utility with CORS handling
             function loadImageAsBase64(src) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
                     img.crossOrigin = 'anonymous';
-                    
+                   
                     img.onload = function() {
                         try {
                             const canvas = document.createElement('canvas');
@@ -1024,17 +1002,16 @@
                             reject(error);
                         }
                     };
-                    
+                   
                     img.onerror = function() {
                         console.error('Error loading image:', src);
                         reject(new Error('Failed to load image'));
                     };
-                    
+                   
                     // Try to load the image with cache busting
                     img.src = src + (src.includes('?') ? '&' : '?') + 't=' + Date.now();
                 });
             }
-
             // Mark Entry Functions
             async function updateMarkEntryForm() {
                 const classValue = classSelect.value;
@@ -1042,21 +1019,19 @@
                 studentSelect.innerHTML = '<option value="">Select Student</option>';
                 subjectSelection.innerHTML = '';
                 marksInput.innerHTML = '';
-
                 if (!classValue || !sectionValue) {
                     return;
                 }
-
                 try {
                     // Fetch students
                     const studentResponse = await fetch(`/get_students/?class=${encodeURIComponent(classValue)}&section=${encodeURIComponent(sectionValue)}`, {
                         headers: { 'X-CSRFToken': getCsrfToken() }
                     });
-                    
+                   
                     if (!studentResponse.ok) {
                         throw new Error(`HTTP error! status: ${studentResponse.status}`);
                     }
-                    
+                   
                     const studentData = await studentResponse.json();
                     if (studentData.success) {
                         studentData.students.forEach(student => {
@@ -1065,16 +1040,15 @@
                     } else {
                         showAlert(studentData.message || 'Error fetching students', 'error');
                     }
-
                     // Fetch subjects
                     const subjectResponse = await fetch(`/get_subjects/?class=${encodeURIComponent(classValue)}`, {
                         headers: { 'X-CSRFToken': getCsrfToken() }
                     });
-                    
+                   
                     if (!subjectResponse.ok) {
                         throw new Error(`HTTP error! status: ${subjectResponse.status}`);
                     }
-                    
+                   
                     const subjectData = await subjectResponse.json();
                     if (subjectData.success) {
                         subjects = subjectData.subjects;
@@ -1087,11 +1061,9 @@
                     showAlert('Error updating form. Please try again.', 'error');
                 }
             }
-
             function renderMarkEntryForm() {
                 subjectSelection.innerHTML = '';
                 marksInput.innerHTML = '';
-
                 if (role === 'subjectTeacher') {
                     const subject = subjects.find(sub => sub.name === teacherSubject);
                     if (subject) {
@@ -1139,14 +1111,12 @@
                     }
                 }
             }
-
             function populateDeleteSubjectSelect() {
                 deleteSubjectSelect.innerHTML = '<option value="">Select Subject</option>';
                 subjects.forEach(subject => {
                     deleteSubjectSelect.innerHTML += `<option value="${subject.id}">${subject.name}</option>`;
                 });
             }
-
             function clearForm() {
                 studentSelect.value = '';
                 ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
@@ -1161,18 +1131,17 @@
                     });
                 }
             }
-
             // Progress Card Functions
             async function fetchStudents(classValue, sectionValue) {
                 try {
                     const response = await fetch(`/get_students/?class=${encodeURIComponent(classValue)}&section=${encodeURIComponent(sectionValue)}`, {
                         headers: { 'X-CSRFToken': getCsrfToken() }
                     });
-                    
+                   
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    
+                   
                     const data = await response.json();
                     if (data.success) {
                         progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
@@ -1187,25 +1156,24 @@
                     showAlert('Error fetching students. Please try again.', 'error');
                 }
             }
-
             async function fetchProgressCard(studentId) {
                 showLoading(true);
                 progressCard.style.display = 'none';
-                
+               
                 try {
                     const response = await fetch('/progress_card/', {
                         method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json', 
-                            'X-CSRFToken': getCsrfToken() 
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCsrfToken()
                         },
                         body: JSON.stringify({ studentId })
                     });
-                    
+                   
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    
+                   
                     const data = await response.json();
                     if (data.success) {
                         currentProgressData = data;
@@ -1220,12 +1188,11 @@
                     showLoading(false);
                 }
             }
-
             function displayProgressCard(data) {
                 progressCard.style.display = 'block';
                 studentNameDisplay.textContent = data.student.name;
                 studentDetails.textContent = `Roll Number: ${data.student.roll_number}, Class: ${data.student.class}, Section: ${data.student.section}`;
-                
+               
                 // Handle profile picture
                 if (data.student.image_path) {
                     studentProfilePic.src = `/media/${data.student.image_path}`;
@@ -1237,7 +1204,7 @@
                     studentProfilePic.src = "{% static 'users/images/default_profile.jpg' %}";
                     studentProfilePic.style.display = 'block';
                 }
-                
+               
                 // Populate marks table
                 marksTable.innerHTML = '';
                 data.marks.forEach(mark => {
@@ -1250,7 +1217,7 @@
                         </tr>
                     `;
                 });
-                
+               
                 // Display summary
                 totalMarks.textContent = `Total Marks: ${data.total_marks}/${data.total_max_marks}`;
                 percentage.textContent = `Percentage: ${data.percentage}%`;
@@ -1258,24 +1225,20 @@
                 status.textContent = `Status: ${data.status}`;
                 status.style.color = data.status === 'Pass' ? '#00a676' : '#dc3545';
             }
-
             // PDF Generation
             async function generatePDF() {
                 if (!currentProgressData) {
                     showAlert('No progress card data available', 'error');
                     return;
                 }
-
                 try {
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
                     const data = currentProgressData;
-
                     // Colors
                     const headerColor = '#00a676';
                     const tableHeaderColor = '#00a676';
                     const summaryColor = '#00a676';
-
                     // Header
                     doc.setFillColor(headerColor);
                     doc.rect(10, 10, 190, 25, 'F');
@@ -1285,7 +1248,6 @@
                     doc.text('PROGRESS CARD', 105, 20, { align: 'center' });
                     doc.setFontSize(10);
                     doc.text('Academic Year: 2024-2025', 105, 28, { align: 'center' });
-
                     // Add Profile Picture on the left side
                     let profileImageBase64 = null;
                     try {
@@ -1295,7 +1257,7 @@
                         } else {
                             imageSrc = "{% static 'users/images/default_profile.jpg' %}";
                         }
-                        
+                       
                         profileImageBase64 = await loadImageAsBase64(imageSrc);
                         doc.addImage(profileImageBase64, 'JPEG', 15, 40, 25, 25); // Left side positioning
                     } catch (error) {
@@ -1307,7 +1269,6 @@
                         doc.setFontSize(8);
                         doc.text('No Photo', 27.5, 52.5, { align: 'center' });
                     }
-
                     // Student Details (to the right of the photo)
                     doc.setTextColor('#000000');
                     doc.setFontSize(12);
@@ -1317,12 +1278,11 @@
                     doc.text(`Roll Number: ${data.student.roll_number}`, 45, 52);
                     doc.text(`Class: ${data.student.class} - ${data.student.section}`, 45, 59);
                     doc.text(`Date: ${new Date().toLocaleDateString()}`, 45, 66);
-
                     // Marks Table
                     let y = 75;
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'bold');
-                    
+                   
                     // Table header
                     doc.setFillColor(tableHeaderColor);
                     doc.rect(15, y, 170, 8, 'F');
@@ -1331,12 +1291,11 @@
                     doc.text('Marks Obtained', 70, y + 5);
                     doc.text('Maximum Marks', 110, y + 5);
                     doc.text('Grade', 155, y + 5);
-                    
+                   
                     y += 8;
                     doc.setDrawColor('#00a676');
                     doc.setLineWidth(0.5);
                     doc.line(15, y, 185, y);
-
                     // Table rows
                     doc.setFont('helvetica', 'normal');
                     doc.setTextColor('#000000');
@@ -1347,18 +1306,17 @@
                             doc.setFillColor('#f0f9f4');
                             doc.rect(15, y - 6, 170, 8, 'F');
                         }
-                        
+                       
                         doc.text(mark.subject, 20, y);
                         doc.text(mark.marks.toString(), 80, y, { align: 'center' });
                         doc.text(mark.max_marks.toString(), 120, y, { align: 'center' });
                         doc.text(mark.grade, 160, y, { align: 'center' });
-                        
+                       
                         // Row border
                         doc.setDrawColor('#d1e7dd');
                         doc.setLineWidth(0.2);
                         doc.line(15, y + 2, 185, y + 2);
                     });
-
                     // Summary Section
                     y += 15;
                     doc.setFillColor(summaryColor);
@@ -1366,12 +1324,11 @@
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(11);
                     doc.setTextColor('#ffffff');
-                    
+                   
                     doc.text(`Total Marks: ${data.total_marks}/${data.total_max_marks}`, 20, y + 8);
                     doc.text(`Percentage: ${data.percentage}%`, 20, y + 16);
                     doc.text(`Overall Grade: ${data.grade}`, 110, y + 8);
                     doc.text(`Result: ${data.status}`, 110, y + 16);
-
                     // Teacher Signature Section
                     y += 35;
                     doc.setFont('helvetica', 'normal');
@@ -1379,7 +1336,7 @@
                     doc.setTextColor('#000000');
                     doc.text('Class Teacher:', 20, y);
                     doc.text(data.teacher_name, 50, y);
-                    
+                   
                     // Add signature if available
                     if (data.signature) {
                         try {
@@ -1388,32 +1345,28 @@
                             console.warn('Could not add signature to PDF:', error);
                         }
                     }
-                    
+                   
                     doc.text('Signature', 20, y + 25);
                     doc.line(20, y + 22, 70, y + 22); // Signature line
-
                     // Footer
                     doc.setFontSize(8);
                     doc.setTextColor('#868e96');
                     doc.text('This is a computer-generated document.', 105, 280, { align: 'center' });
-
                     // Save the PDF
                     doc.save(`${data.student.name}_ProgressCard_${new Date().toISOString().split('T')[0]}.pdf`);
                     showAlert('PDF downloaded successfully!', 'success');
-                    
+                   
                 } catch (error) {
                     console.error('Error generating PDF:', error);
                     showAlert('Error generating PDF. Please try again.', 'error');
                 }
             }
-
             // Event Listeners
             showMarkEntry.addEventListener('click', () => {
                 markEntrySection.style.display = 'block';
                 progressCardSection.style.display = 'none';
                 updateMarkEntryForm();
             });
-
             showProgressCard.addEventListener('click', () => {
                 markEntrySection.style.display = 'none';
                 progressCardSection.style.display = 'block';
@@ -1421,10 +1374,8 @@
                 progressCard.style.display = 'none';
                 currentProgressData = null;
             });
-
             classSelect.addEventListener('change', updateMarkEntryForm);
             sectionSelect.addEventListener('change', updateMarkEntryForm);
-
             progressClassSelect.addEventListener('change', () => {
                 if (progressClassSelect.value && progressSectionSelect.value) {
                     fetchStudents(progressClassSelect.value, progressSectionSelect.value);
@@ -1434,7 +1385,6 @@
                     currentProgressData = null;
                 }
             });
-
             progressSectionSelect.addEventListener('change', () => {
                 if (progressClassSelect.value && progressSectionSelect.value) {
                     fetchStudents(progressClassSelect.value, progressSectionSelect.value);
@@ -1444,7 +1394,6 @@
                     currentProgressData = null;
                 }
             });
-
             progressStudentSelect.addEventListener('change', () => {
                 const studentId = progressStudentSelect.value;
                 if (studentId) {
@@ -1454,9 +1403,7 @@
                     currentProgressData = null;
                 }
             });
-
             downloadPDFBtn.addEventListener('click', generatePDF);
-
             // Subject Management
             addSubjectBtn.addEventListener('click', () => {
                 if (!classSelect.value) {
@@ -1467,7 +1414,6 @@
                 newSubjectName.value = '';
                 newMaxMarks.value = '';
             });
-
             deleteSubjectBtn.addEventListener('click', () => {
                 if (!classSelect.value) {
                     showAlert('Please select a class first.', 'error');
@@ -1476,36 +1422,31 @@
                 populateDeleteSubjectSelect();
                 deleteSubjectModal.style.display = 'flex';
             });
-
             cancelSubject.addEventListener('click', () => {
                 addSubjectModal.style.display = 'none';
             });
-
             cancelDeleteSubject.addEventListener('click', () => {
                 deleteSubjectModal.style.display = 'none';
             });
-
             submitSubject.addEventListener('click', async () => {
                 const subjectName = newSubjectName.value.trim();
                 const maxMarks = parseInt(newMaxMarks.value);
                 const classValue = classSelect.value;
-
                 if (!subjectName || isNaN(maxMarks) || maxMarks < 1) {
                     showAlert('Please enter a valid subject name and max marks.', 'error');
                     return;
                 }
-
                 try {
                     const response = await fetch('/add_subject/', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
                         body: JSON.stringify({ subjectName, maxMarks, class: classValue })
                     });
-                    
+                   
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    
+                   
                     const data = await response.json();
                     if (data.success) {
                         subjects = data.subjects;
@@ -1520,7 +1461,6 @@
                     showAlert('Error adding subject. Please try again.', 'error');
                 }
             });
-
             confirmDeleteSubject.addEventListener('click', async () => {
                 const subjectId = deleteSubjectSelect.value;
                 const classValue = classSelect.value;
@@ -1528,18 +1468,17 @@
                     showAlert('Please select a subject to delete.', 'error');
                     return;
                 }
-
                 try {
                     const response = await fetch('/delete_subject/', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
                         body: JSON.stringify({ subjectId, class: classValue })
                     });
-                    
+                   
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    
+                   
                     const data = await response.json();
                     if (data.success) {
                         subjects = data.subjects;
@@ -1554,59 +1493,53 @@
                     showAlert('Error deleting subject. Please try again.', 'error');
                 }
             });
-
             // Save Marks
             saveMarksBtn.addEventListener('click', async () => {
                 const classValue = classSelect.value;
                 const sectionValue = sectionSelect.value;
                 const studentId = studentSelect.value;
                 const signatureData = currentSignature;
-
                 if (!classValue || !sectionValue || !studentId) {
                     showAlert('Please select class, section, and student.', 'error');
                     return;
                 }
-
                 if (!signatureData) {
                     showAlert('Please provide a digital signature.', 'error');
                     return;
                 }
-
                 let marksData;
                 if (role === 'subjectTeacher') {
                     const subjectElement = document.getElementById('subject');
                     const marksElement = document.getElementById('marks');
                     const maxMarksElement = document.getElementById('maxMarks');
-                    
+                   
                     if (!subjectElement || !marksElement || !maxMarksElement) {
                         showAlert('Form elements not found. Please refresh the page.', 'error');
                         return;
                     }
-                    
+                   
                     const subjectId = subjectElement.value;
                     const marks = parseInt(marksElement.value);
                     const maxMarks = parseInt(maxMarksElement.value);
-
                     if (!subjectId || isNaN(marks) || isNaN(maxMarks) || marks < 0 || maxMarks < 1 || marks > maxMarks) {
                         showAlert('Please enter valid marks. Marks cannot exceed maximum marks.', 'error');
                         return;
                     }
-
                     marksData = { subjectId, marks, maxMarks, signature: signatureData };
                 } else {
                     marksData = [];
                     for (const sub of subjects) {
                         const marksElement = document.getElementById(`${sub.id}-marks`);
                         const maxMarksElement = document.getElementById(`${sub.id}-maxMarks`);
-                        
+                       
                         if (!marksElement || !maxMarksElement) {
                             showAlert(`Form elements for ${sub.name} not found.`, 'error');
                             return;
                         }
-                        
+                       
                         const marks = parseInt(marksElement.value);
                         const maxMarks = parseInt(maxMarksElement.value);
-                        
+                       
                         if (isNaN(marks) || isNaN(maxMarks) || marks < 0 || maxMarks < 1 || marks > maxMarks) {
                             showAlert(`Please enter valid marks for ${sub.name}. Marks cannot exceed maximum marks.`, 'error');
                             return;
@@ -1614,18 +1547,17 @@
                         marksData.push({ subjectId: sub.id, marks, maxMarks, signature: signatureData });
                     }
                 }
-
                 try {
                     const response = await fetch('/save_marks/', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
                         body: JSON.stringify({ role, studentId, class: classValue, section: sectionValue, marks: marksData })
                     });
-                    
+                   
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    
+                   
                     const data = await response.json();
                     if (data.success) {
                         showAlert(data.message);
@@ -1638,9 +1570,7 @@
                     showAlert('Error saving marks. Please try again.', 'error');
                 }
             });
-
             clearFormBtn.addEventListener('click', clearForm);
-
             // Modal click outside to close
             window.addEventListener('click', (e) => {
                 if (e.target === addSubjectModal) {
@@ -1650,7 +1580,6 @@
                     deleteSubjectModal.style.display = 'none';
                 }
             });
-
             // Initialize
             updateMarkEntryForm();
         });

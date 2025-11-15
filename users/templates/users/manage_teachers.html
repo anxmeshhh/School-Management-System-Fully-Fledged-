@@ -6,36 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Admin Teacher Panel</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            background: var(--white);
-            min-height: 100vh;
-            color: var(--text-color);
-            padding: 80px 20px 40px 20px;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Montserrat', sans-serif;
-        }
 
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
             --sidebar-bg: #f0f9f4;
-            --sidebar-border: #d1e7dd;
+            --sidebar-border: #a8d5c2;
             --white: #ffffff;
             --light-bg: #f8f9fa;
-            --border-color: #e9ecef;
+            --border-color: #adb5bd;
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -45,22 +28,42 @@
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         html {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
         }
 
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--text-color);
+            padding: 120px 20px 40px 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+        }
+
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
@@ -70,7 +73,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-radius: 0;
+            gap: 0.5rem;
         }
 
         .header h1 {
@@ -79,11 +83,17 @@
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            flex: none;
+            margin: 0;
+            z-index: 0;
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
@@ -95,6 +105,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .back-btn:hover {
@@ -104,43 +116,48 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-img {
+        .logo-container {
             width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: none;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: var(--transition);
             box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             transition: var(--transition);
         }
 
-        .logo-img:hover {
+        .logo-container:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
 
+        .logo-container:hover img {
+            transform: scale(1.05);
+        }
+
         .main-content {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
             padding: 2rem;
-            margin-top: 80px;
-            display: flex;
-            flex-direction: column;
-            gap: 3rem;
         }
 
         .alert-message {
             margin-bottom: 1.5rem;
-        }
-
-        .alert-message .success {
-            background: #f0f9f4;
-            color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
         }
 
         .alert-message .error {
@@ -149,14 +166,31 @@
             padding: 0.75rem;
             border-radius: 8px;
             border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .alert-message .success {
+            background: #d4edda;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
 
         .section {
-            background: var(--white);
-            padding: 2rem;
+            background: var(--light-bg);
+            padding: 1.5rem;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
             transition: var(--transition);
         }
 
@@ -169,6 +203,7 @@
             font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
+            text-align: center;
         }
 
         h3 {
@@ -176,6 +211,7 @@
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 1rem;
+            text-align: center;
         }
 
         .form-group {
@@ -186,8 +222,8 @@
 
         .form-group label {
             display: block;
-            color: var(--primary-color);
-            font-size: 0.9rem;
+            color: var(--text-color);
+            font-size: 1rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
         }
@@ -198,14 +234,13 @@
             padding: 0.75rem;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             background: var(--white);
             color: var(--text-color);
             transition: var(--transition);
         }
 
         .form-group select {
-            appearance: none;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
             background-repeat: no-repeat;
             background-position: right 0.75rem center;
@@ -214,17 +249,17 @@
 
         .form-group input:focus,
         .form-group select:focus {
-            outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
         }
 
         .add-btn {
-            padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            border: none;
             border-radius: 8px;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
+            color: var(--white);
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
@@ -239,8 +274,7 @@
         }
 
         .add-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
+            background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
@@ -252,9 +286,9 @@
         }
 
         .teacher-card {
-            background: var(--light-bg);
+            background: var(--white);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             padding: 1.5rem;
             transition: var(--transition);
@@ -262,7 +296,6 @@
         }
 
         .teacher-card:hover {
-            transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
 
@@ -323,14 +356,14 @@
         }
 
         .no-teachers {
-            font-size: 1rem;
-            color: var(--text-color);
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
             text-align: center;
-            margin-top: 1.5rem;
             padding: 1.5rem;
             background: var(--light-bg);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
         }
 
         .modal {
@@ -348,7 +381,7 @@
 
         .modal-content {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             padding: 2rem;
             width: 90%;
@@ -383,48 +416,66 @@
 
         .modal-content button {
             width: 100%;
-            padding: 0.8rem;
-            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            background: var(--primary-color);
+            border: none;
             border-radius: 8px;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            font-size: 0.9rem;
+            color: var(--white);
+            font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
         }
 
         .modal-content button:hover {
-            background: var(--primary-color);
-            color: var(--white);
+            background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
 
-        .icon {
-            margin-right: 0.5rem;
-        }
-
+        /* Media Queries */
         @media (max-width: 768px) {
             body {
-                padding: 70px 10px 20px 10px;
+                padding: 100px 10px 20px 10px;
             }
 
             .header {
-                padding: 1rem;
+                padding: 1rem 1rem 1rem 0.5rem;
             }
 
             .header h1 {
                 font-size: 1.5rem;
             }
 
+            .logo-container {
+                width: 80px;
+                height: 64px;
+            }
+
             .main-content {
                 padding: 1.5rem;
-                margin-top: 70px;
             }
 
             .section {
-                padding: 1.5rem;
+                padding: 1.2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.125rem;
+            }
+
+            .form-group label {
+                font-size: 0.9rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                font-size: 0.9rem;
+                padding: 0.6rem;
             }
 
             .teacher-grid {
@@ -437,11 +488,6 @@
                 height: 60px;
             }
 
-            .logo-img {
-                width: 60px;
-                height: 60px;
-            }
-
             .back-btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
@@ -450,22 +496,29 @@
 
         @media (max-width: 480px) {
             body {
-                padding: 60px 5px 15px 5px;
+                padding: 80px 5px 15px 5px;
             }
 
             .header {
-                padding: 0.75rem;
+                padding: 0.75rem 1rem 0.75rem 0.25rem;
                 flex-direction: column;
                 gap: 1rem;
             }
 
             .header h1 {
                 font-size: 1.25rem;
+                position: static;
+                transform: none;
+                flex-grow: 1;
+            }
+
+            .logo-container {
+                width: 60px;
+                height: 48px;
             }
 
             .main-content {
                 padding: 1rem;
-                margin-top: 100px;
                 border-radius: 8px;
             }
 
@@ -477,16 +530,25 @@
                 font-size: 1.25rem;
             }
 
+            h3 {
+                font-size: 1rem;
+            }
+
+            .form-group label {
+                font-size: 0.85rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                font-size: 0.85rem;
+                padding: 0.5rem;
+            }
+
             .teacher-card {
                 padding: 1rem;
             }
 
             .teacher-card img {
-                width: 50px;
-                height: 50px;
-            }
-
-            .logo-img {
                 width: 50px;
                 height: 50px;
             }
@@ -498,7 +560,7 @@
         }
 
         @media (hover: none) {
-            .section:hover, .logo-img:hover, .back-btn:hover, .teacher-card:hover {
+            .section:hover, .add-btn:hover, .teacher-card:hover, .logo-container:hover, .back-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -518,55 +580,57 @@
 </head>
 <body>
     <div id="app">
-        <div class="header">
+        <header class="header">
             <a href="{% url 'admin_page' %}" class="back-btn">
-                <i class="fas fa-arrow-left icon"></i> Back to Main Dashboard
+                <i class="fas fa-arrow-left"></i> Back To Main Dashboard
             </a>
-            <h1><i class="fas fa-users icon"></i> Admin Teacher Panel</h1>
+            <h1><i class="fas fa-users"></i> Admin Teacher Panel</h1>
             <a href="{% url 'admin_page' %}">
-                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo" class="logo-img">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
+                </div>
             </a>
-        </div>
-
-        {% if messages %}
-            <div class="alert-message">
-                {% for message in messages %}
-                    <div class="{{ message.tags }}">
-                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        </header>
 
         <div class="container">
-            <div class="main-content">
-                <div class="section">
-                    <h2><i class="fas fa-user-tie icon"></i> Manage Teachers</h2>
+            <main class="main-content">
+                {% if messages %}
+                    <div class="alert-message">
+                        {% for message in messages %}
+                            <div class="{{ message.tags }}">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <section class="section">
+                    <h2><i class="fas fa-user-tie"></i> Manage Teachers</h2>
 
                     <!-- Add Teacher Form -->
                     <div class="add-teacher-form">
-                        <h3><i class="fas fa-user-plus icon"></i> Add New Teacher</h3>
+                        <h3><i class="fas fa-user-plus"></i> Add New Teacher</h3>
                         <form method="POST" action="{% url 'add_teacher' %}">
                             {% csrf_token %}
                             <div class="form-group">
-                                <label for="name"><i class="fas fa-user icon"></i> Full Name</label>
+                                <label for="name"><i class="fas fa-user"></i> Full Name</label>
                                 <input type="text" id="name" name="name" required>
                             </div>
                             <div class="form-group">
-                                <label for="email"><i class="fas fa-envelope icon"></i> Email</label>
+                                <label for="email"><i class="fas fa-envelope"></i> Email</label>
                                 <input type="email" id="email" name="email" required>
                             </div>
                             <div class="form-group">
-                                <label for="subject"><i class="fas fa-book icon"></i> Subject</label>
+                                <label for="subject"><i class="fas fa-book"></i> Subject</label>
                                 <input type="text" id="subject" name="subject" required>
                             </div>
                             <div class="form-group">
-                                <label for="password"><i class="fas fa-lock icon"></i> Password</label>
+                                <label for="password"><i class="fas fa-lock"></i> Password</label>
                                 <input type="text" id="password" name="password" required>
                             </div>
                             <div class="form-group">
-                                <label for="class_teacher_of"><i class="fas fa-graduation-cap icon"></i> Class Teacher Of (Optional)</label>
+                                <label for="class_teacher_of"><i class="fas fa-graduation-cap"></i> Class Teacher Of (Optional)</label>
                                 <select id="class_teacher_of" name="class_teacher_of">
                                     <option value="">Not Assigned</option>
                                     <option value="Class 1-A">Class 1-A</option>
@@ -608,7 +672,7 @@
                                 </select>
                             </div>
                             <button type="submit" class="add-btn">
-                                <i class="fas fa-plus icon"></i> Add Teacher
+                                <i class="fas fa-plus"></i> Add Teacher
                             </button>
                         </form>
                     </div>
@@ -618,7 +682,7 @@
                         {% for teacher in teachers %}
                         <div class="teacher-card">
                             <img src="{{ teacher.profile_pic_url }}" alt="{{ teacher.name }}" onerror="this.src='{% static 'users/images/greenlogo.png' %}';">
-                            <h3><i class="fas fa-user-tie icon"></i> {{ teacher.name }}</h3>
+                            <h3><i class="fas fa-user-tie"></i> {{ teacher.name }}</h3>
                             <p><strong>ID:</strong> {{ teacher.id }}</p>
                             <p><strong>Email:</strong> {{ teacher.email }}</p>
                             <p><strong>Subject:</strong> {{ teacher.subject }}</p>
@@ -626,21 +690,21 @@
                             <p><strong>Password:</strong> {{ teacher.password }}</p>
                             <div class="actions">
                                 <button class="edit-btn" onclick="openEditModal('{{ teacher.id }}', '{{ teacher.name|escapejs }}', '{{ teacher.email|escapejs }}', '{{ teacher.subject|escapejs }}', '{{ teacher.class_teacher_of|default:''|escapejs }}', '{{ teacher.password|escapejs }}')">
-                                    <i class="fas fa-edit icon"></i> Edit
+                                    <i class="fas fa-edit"></i> Edit
                                 </button>
                                 <a href="{% url 'delete_teacher' teacher.id %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete {{ teacher.name|escapejs }}?')">
-                                    <i class="fas fa-trash icon"></i> Delete
+                                    <i class="fas fa-trash"></i> Delete
                                 </a>
                             </div>
                         </div>
                         {% empty %}
                         <p class="no-teachers">
-                            <i class="fas fa-search icon"></i> No teachers found.
+                            <i class="fas fa-search"></i> No teachers found.
                         </p>
                         {% endfor %}
                     </div>
-                </div>
-            </div>
+                </section>
+            </main>
         </div>
     </div>
 
@@ -648,28 +712,28 @@
     <div id="editModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeEditModal()">&times;</span>
-            <h3><i class="fas fa-edit icon"></i> Edit Teacher</h3>
+            <h3><i class="fas fa-edit"></i> Edit Teacher</h3>
             <form method="POST" action="{% url 'update_teacher' %}">
                 {% csrf_token %}
                 <input type="hidden" id="edit_teacher_id" name="teacher_id">
                 <div class="form-group">
-                    <label for="edit_id"><i class="fas fa-hashtag icon"></i> ID</label>
+                    <label for="edit_id"><i class="fas fa-hashtag"></i> ID</label>
                     <input type="number" id="edit_id" name="id">
                 </div>
                 <div class="form-group">
-                    <label for="edit_name"><i class="fas fa-user icon"></i> Full Name</label>
+                    <label for="edit_name"><i class="fas fa-user"></i> Full Name</label>
                     <input type="text" id="edit_name" name="name" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit_email"><i class="fas fa-envelope icon"></i> Email</label>
+                    <label for="edit_email"><i class="fas fa-envelope"></i> Email</label>
                     <input type="email" id="edit_email" name="email" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit_subject"><i class="fas fa-book icon"></i> Subject</label>
+                    <label for="edit_subject"><i class="fas fa-book"></i> Subject</label>
                     <input type="text" id="edit_subject" name="subject" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit_class_teacher_of"><i class="fas fa-graduation-cap icon"></i> Class Teacher Of (Optional)</label>
+                    <label for="edit_class_teacher_of"><i class="fas fa-graduation-cap"></i> Class Teacher Of (Optional)</label>
                     <select id="edit_class_teacher_of" name="class_teacher_of">
                         <option value="">Not Assigned</option>
                         <option value="Class 1-A">Class 1-A</option>
@@ -711,11 +775,11 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="edit_password"><i class="fas fa-lock icon"></i> Password</label>
+                    <label for="edit_password"><i class="fas fa-lock"></i> Password</label>
                     <input type="text" id="edit_password" name="password" required>
                 </div>
                 <button type="submit">
-                    <i class="fas fa-save icon"></i> Update Teacher
+                    <i class="fas fa-save"></i> Update Teacher
                 </button>
             </form>
         </div>

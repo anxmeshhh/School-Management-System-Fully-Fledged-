@@ -17,12 +17,6 @@
         body {
             font-family: 'Poppins', sans-serif;
             font-weight: 400;
-            background: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            position: relative;
-            overflow-x: hidden;
-            color: #495057;
         }
 
         h1, h2, h3, .sidebar-header, .header-text, .username-box {
@@ -37,6 +31,7 @@
             --white: #ffffff;
             --light-bg: #f8f9fa;
             --border-color: #ced4da; /* Darker gray border */
+            --darker-border: #495057; /* Darker border color for header and username */
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -45,12 +40,22 @@
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             --dull-highlighter: #d4edda; /* Slightly darker dull green highlighter for sidebar hover */
+            --username-bg: #e6f4ea; /* Different subtle green for username box */
         }
 
         html {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
+        }
+
+        body {
+            background: var(--white);
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+            overflow-x: hidden;
+            color: var(--text-color);
         }
 
         .container {
@@ -142,7 +147,6 @@
             font-size: 1.05rem;
             font-weight: 500;
             border-left: 3px solid transparent;
-            min-height: 44px;
         }
 
         .sidebar-nav a:hover {
@@ -153,15 +157,14 @@
         }
 
         .sidebar-nav a img {
-            width: 32px;
-            height: 32px;
             margin-right: 1rem;
             transition: var(--transition);
+            width: 20px;
             flex-shrink: 0;
         }
 
         .sidebar-nav a:hover img {
-            transform: rotate(10deg) scale(1.1);
+            transform: scale(1.1);
         }
 
         .main-content {
@@ -183,7 +186,7 @@
             background: var(--white);
             border-radius: var(--border-radius);
             position: relative;
-            border: 2px solid var(--border-color); /* Increased border thickness */
+            border: 2px solid var(--darker-border); /* Updated to even darker border */
             box-shadow: var(--shadow-sm);
         }
 
@@ -206,23 +209,17 @@
         }
 
         .username-box {
-            background: var(--light-bg);
-            color: var(--text-color);
+            background: var(--username-bg); /* Updated to different subtle green background */
+            color: var(--primary-color); /* Bright color for username text */
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.875rem;
             font-weight: 500;
             box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--darker-border); /* Updated to darker border */
             min-width: 100px;
             text-align: center;
             line-height: 1.4;
-            transition: var(--transition);
-        }
-
-        .username-box:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
         }
 
         .notification-panel {
@@ -241,7 +238,7 @@
             transition: var(--transition);
             pointer-events: none;
             z-index: 10;
-            border: 2px solid var(--border-color); /* Increased border thickness */
+            border: 2px solid var(--darker-border); /* Updated to darker border */
             margin-top: 0.5rem;
         }
 
@@ -268,7 +265,6 @@
             padding: 0.75rem 0;
             border-bottom: 1px solid var(--border-color);
             transition: var(--transition);
-            cursor: pointer;
         }
 
         .notification-panel li:last-child {
@@ -566,8 +562,8 @@
             }
 
             .sidebar-nav a img {
-                width: 24px;
-                height: 24px;
+                font-size: 1rem;
+                width: 16px;
             }
 
             .notification-panel {

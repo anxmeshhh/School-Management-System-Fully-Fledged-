@@ -6,36 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Admin Circular Upload</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            background: var(--white);
-            min-height: 100vh;
-            color: var(--text-color);
-            padding: 80px 20px 40px 20px;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Montserrat', sans-serif;
-        }
 
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
             --sidebar-bg: #f0f9f4;
-            --sidebar-border: #d1e7dd;
+            --sidebar-border: #a8d5c2;
             --white: #ffffff;
             --light-bg: #f8f9fa;
-            --border-color: #e9ecef;
+            --border-color: #adb5bd;
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -45,22 +28,42 @@
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         html {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
         }
 
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--text-color);
+            padding: 120px 20px 40px 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+        }
+
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
@@ -70,7 +73,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-radius: 0;
+            gap: 0.5rem;
         }
 
         .header h1 {
@@ -79,11 +83,17 @@
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            flex: none;
+            margin: 0;
+            z-index: 0;
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
@@ -95,6 +105,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .back-btn:hover {
@@ -104,43 +116,48 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-img {
+        .logo-container {
             width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: none;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: var(--transition);
             box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             transition: var(--transition);
         }
 
-        .logo-img:hover {
+        .logo-container:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
 
+        .logo-container:hover img {
+            transform: scale(1.05);
+        }
+
         .main-content {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
             padding: 2rem;
-            margin-top: 80px;
-            display: flex;
-            flex-direction: column;
-            gap: 3rem;
         }
 
         .alert-message {
             margin-bottom: 1.5rem;
-        }
-
-        .alert-message .success {
-            background: #f0f9f4;
-            color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
         }
 
         .alert-message .error {
@@ -149,14 +166,31 @@
             padding: 0.75rem;
             border-radius: 8px;
             border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .alert-message .success {
+            background: #d4edda;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
 
         .section {
-            background: var(--white);
-            padding: 2rem;
+            background: var(--light-bg);
+            padding: 1.5rem;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
             transition: var(--transition);
         }
 
@@ -169,6 +203,7 @@
             font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
+            text-align: center;
         }
 
         .form-group {
@@ -177,31 +212,36 @@
 
         .form-group label {
             display: block;
-            color: var(--primary-color);
-            font-size: 0.9rem;
+            color: var(--text-color);
+            font-size: 1rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
         }
 
         .form-group input[type="text"],
         .form-group input[type="file"],
-        .form-group select {
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
             background: var(--white);
-            color: var(--text-color);
+            font-size: 1rem;
             transition: var(--transition);
+        }
+
+        .form-group textarea {
+            resize: vertical;
         }
 
         .form-group input[type="text"]:focus,
         .form-group input[type="file"]:focus,
-        .form-group select:focus {
-            outline: none;
+        .form-group select:focus,
+        .form-group textarea:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
         }
 
         .radio-group {
@@ -240,11 +280,11 @@
         }
 
         .upload-btn {
-            padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            border: none;
             border-radius: 8px;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
+            color: var(--white);
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
@@ -255,18 +295,9 @@
         }
 
         .upload-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
+            background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
-        }
-
-        .form-header {
-            color: var(--primary-color);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
         }
 
         .circular-container {
@@ -277,9 +308,9 @@
 
         .circular {
             background: var(--white);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             padding: 1.5rem;
-            border-radius: 10px;
+            border-radius: 8px;
             box-shadow: var(--shadow-sm);
             transition: var(--transition);
             display: flex;
@@ -287,7 +318,6 @@
         }
 
         .circular:hover {
-            transform: translateY(-4px);
             box-shadow: var(--shadow-md);
         }
 
@@ -345,7 +375,7 @@
             font-size: 1rem;
             font-weight: 500;
             transition: var(--transition);
-            border: 1px solid var(--border-color);
+            border: none;
         }
 
         .download-btn:hover {
@@ -359,14 +389,10 @@
             color: var(--primary-color);
             font-size: 1.1rem;
             padding: 2rem;
-            background: var(--white);
-            border: 1px solid var(--border-color);
+            background: var(--light-bg);
             border-radius: 8px;
+            border: 2px solid var(--border-color);
             grid-column: 1 / -1;
-        }
-
-        .icon {
-            margin-right: 0.5rem;
         }
 
         .scroll-top-btn {
@@ -400,26 +426,59 @@
             display: flex;
         }
 
+        /* Media Queries */
         @media (max-width: 768px) {
             body {
-                padding: 70px 10px 20px 10px;
+                padding: 100px 10px 20px 10px;
             }
 
             .header {
-                padding: 1rem;
+                padding: 1rem 1rem 1rem 0.5rem;
             }
 
             .header h1 {
                 font-size: 1.5rem;
             }
 
+            .logo-container {
+                width: 80px;
+                height: 64px;
+            }
+
             .main-content {
                 padding: 1.5rem;
-                margin-top: 70px;
             }
 
             .section {
-                padding: 1.5rem;
+                padding: 1.2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .form-group label {
+                font-size: 0.9rem;
+            }
+
+            .form-group input[type="text"],
+            .form-group input[type="file"],
+            .form-group select,
+            .form-group textarea {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+            }
+
+            .class-section-group .form-row {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: stretch;
+            }
+
+            .upload-btn {
+                align-self: stretch;
+                font-size: 0.9rem;
+                padding: 0.6rem;
             }
 
             .circular-container {
@@ -427,50 +486,9 @@
                 gap: 1rem;
             }
 
-            .class-section-group .form-row {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .logo-img {
-                width: 60px;
-                height: 60px;
-            }
-
             .back-btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
-            }
-
-            .upload-btn {
-                font-size: 0.9rem;
-            }
-
-            .form-header {
-                font-size: 1.5rem;
-                margin-bottom: 1.25rem;
-            }
-
-            .circular {
-                padding: 1.2rem;
-            }
-
-            .circular h3 {
-                font-size: 1.25rem;
-            }
-
-            .circular small {
-                font-size: 0.8rem;
-            }
-
-            .no-circulars {
-                font-size: 0.9rem;
-                padding: 1.5rem;
-            }
-
-            .circular-type {
-                font-size: 0.75rem;
-                padding: 0.2rem 0.5rem;
             }
 
             .scroll-top-btn {
@@ -485,22 +503,29 @@
 
         @media (max-width: 480px) {
             body {
-                padding: 60px 5px 15px 5px;
+                padding: 80px 5px 15px 5px;
             }
 
             .header {
-                padding: 0.75rem;
+                padding: 0.75rem 1rem 0.75rem 0.25rem;
                 flex-direction: column;
                 gap: 1rem;
             }
 
             .header h1 {
                 font-size: 1.25rem;
+                position: static;
+                transform: none;
+                flex-grow: 1;
+            }
+
+            .logo-container {
+                width: 60px;
+                height: 48px;
             }
 
             .main-content {
                 padding: 1rem;
-                margin-top: 100px;
                 border-radius: 8px;
             }
 
@@ -512,51 +537,30 @@
                 font-size: 1.25rem;
             }
 
-            .circular-container {
-                gap: 0.75rem;
-            }
-
-            .circular {
-                padding: 1rem;
-            }
-
-            .circular h3 {
-                font-size: 1.1rem;
-            }
-
-            .circular small {
-                font-size: 0.75rem;
-            }
-
-            .no-circulars {
+            .form-group label {
                 font-size: 0.85rem;
-                padding: 1.25rem;
+            }
+
+            .form-group input[type="text"],
+            .form-group input[type="file"],
+            .form-group select,
+            .form-group textarea {
+                font-size: 0.85rem;
+                padding: 0.5rem;
             }
 
             .upload-btn {
-                padding: 0.6rem 1.2rem;
-                font-size: 0.9rem;
-                width: 100%;
+                font-size: 0.85rem;
+                padding: 0.5rem;
             }
 
-            .logo-img {
-                width: 50px;
-                height: 50px;
+            .circular-container {
+                gap: 0.75rem;
             }
 
             .back-btn {
                 padding: 0.5rem 0.8rem;
                 font-size: 0.8rem;
-            }
-
-            .download-btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.85rem;
-            }
-
-            .circular-type {
-                font-size: 0.7rem;
-                padding: 0.15rem 0.4rem;
             }
 
             .scroll-top-btn {
@@ -570,7 +574,7 @@
         }
 
         @media (hover: none) {
-            .section:hover, .logo-img:hover, .back-btn:hover, .circular:hover, .upload-btn:hover, .download-btn:hover, .scroll-top-btn:hover {
+            .section:hover, .upload-btn:hover, .circular:hover, .logo-container:hover, .back-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -590,51 +594,53 @@
 </head>
 <body>
     <div id="app">
-        <div class="header">
+        <header class="header">
             <a href="{% url 'admin_page' %}" class="back-btn">
-                <i class="fas fa-arrow-left icon"></i> Back to Main Dashboard
+                <i class="fas fa-arrow-left"></i> Back To Main Dashboard
             </a>
-            <h1><i class="fas fa-file-alt icon"></i> Admin Circular Upload</h1>
+            <h1><i class="fas fa-file-alt"></i> Admin Circular Upload</h1>
             <a href="{% url 'admin_page' %}">
-                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo" class="logo-img">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
+                </div>
             </a>
-        </div>
-
-        {% if messages %}
-            <div class="alert-message">
-                {% for message in messages %}
-                    <div class="{{ message.tags }}">
-                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        </header>
 
         <div class="container">
-            <div class="main-content">
+            <main class="main-content">
+                {% if messages %}
+                    <div class="alert-message">
+                        {% for message in messages %}
+                            <div class="{{ message.tags }}">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
                 <!-- Upload Section -->
-                <div class="section">
-                    <h2><i class="fas fa-upload icon"></i> Upload New Circular</h2>
+                <section class="section">
+                    <h2><i class="fas fa-upload"></i> Upload New Circular</h2>
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-group">
-                            <label for="title"><i class="fas fa-heading icon"></i> Title:</label>
+                            <label for="title"><i class="fas fa-heading"></i> Title:</label>
                             <input type="text" name="title" required>
                         </div>
 
                         <div class="form-group">
-                            <label><i class="fas fa-bullseye icon"></i> Target Audience:</label>
+                            <label><i class="fas fa-bullseye"></i> Target Audience:</label>
                             <div class="radio-group">
-                                <label><input type="radio" name="target" value="all" id="target-all" checked onclick="toggleClassSection()"> <i class="fas fa-users icon"></i> All</label>
-                                <label><input type="radio" name="target" value="specific" id="target-specific" onclick="toggleClassSection()"> <i class="fas fa-user-graduate icon"></i> Specific Class/Section</label>
+                                <label><input type="radio" name="target" value="all" id="target-all" checked onclick="toggleClassSection()"> <i class="fas fa-users"></i> All</label>
+                                <label><input type="radio" name="target" value="specific" id="target-specific" onclick="toggleClassSection()"> <i class="fas fa-user-graduate"></i> Specific Class/Section</label>
                             </div>
                         </div>
 
                         <div class="class-section-group">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="class"><i class="fas fa-graduation-cap icon"></i> Class:</label>
+                                    <label for="class"><i class="fas fa-graduation-cap"></i> Class:</label>
                                     <select name="class" id="class">
                                         <option value="">Select Class</option>
                                         {% for cls in classes %}
@@ -643,7 +649,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="section"><i class="fas fa-th-large icon"></i> Section:</label>
+                                    <label for="section"><i class="fas fa-th-large"></i> Section:</label>
                                     <select name="section" id="section">
                                         <option value="">Select Section</option>
                                         {% for sec in sections %}
@@ -655,39 +661,39 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="image"><i class="fas fa-image icon"></i> Image:</label>
+                            <label for="image"><i class="fas fa-image"></i> Image:</label>
                             <input type="file" name="image" accept="image/*" required>
                         </div>
 
                         <button type="submit" class="upload-btn">
-                            <i class="fas fa-upload icon"></i> Upload
+                            <i class="fas fa-upload"></i> Upload
                         </button>
                     </form>
-                </div>
+                </section>
 
                 <!-- Uploaded Circulars Section -->
-                <div class="section">
-                    <h2 class="form-header"><i class="fas fa-list icon"></i> Uploaded Circulars</h2>
+                <section class="section">
+                    <h2><i class="fas fa-list"></i> Uploaded Circulars</h2>
                     <div class="circular-container">
                         {% for circular in circulars %}
                         <div class="circular">
                             <div class="circular-type">Uploaded Circular</div>
                             <h3>{{ circular.title }}</h3>
-                            <small><i class="fas fa-calendar icon"></i> Posted on: {{ circular.date }}</small>
-                            <small><i class="fas fa-bullseye icon"></i> Target: {{ circular.target }}</small>
+                            <small><i class="fas fa-calendar"></i> Posted on: {{ circular.date }}</small>
+                            <small><i class="fas fa-bullseye"></i> Target: {{ circular.target }}</small>
                             <img src="{{ circular.image_url }}" alt="{{ circular.title }}">
                             <a href="{{ circular.image_url }}" download="{{ circular.title|slugify }}.jpg" class="download-btn">
-                                <i class="fas fa-download icon"></i> Download Circular
+                                <i class="fas fa-download"></i> Download Circular
                             </a>
                         </div>
                         {% empty %}
                         <p class="no-circulars">
-                            <i class="fas fa-inbox icon"></i> No circulars available right now. Please check back later.
+                            <i class="fas fa-inbox"></i> No circulars available right now. Please check back later.
                         </p>
                         {% endfor %}
                     </div>
-                </div>
-            </div>
+                </section>
+            </main>
         </div>
     </div>
 

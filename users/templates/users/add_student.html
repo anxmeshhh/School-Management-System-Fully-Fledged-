@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - {{ title }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
@@ -22,21 +23,24 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 80px 20px 40px 20px;
+            padding: 120px 20px 40px 20px;
         }
 
         h1, h2, h3 {
             font-family: 'Montserrat', sans-serif;
+            text-align: center;
         }
 
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
+            --danger-color: #dc2626;
+            --danger-hover: #ef4444;
             --sidebar-bg: #f0f9f4;
-            --sidebar-border: #d1e7dd;
+            --sidebar-border: #a8d5c2;
             --white: #ffffff;
             --light-bg: #f8f9fa;
-            --border-color: #e9ecef;
+            --border-color: #adb5bd;
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -44,7 +48,6 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --dull-highlighter: #d4edda;
         }
 
         html {
@@ -56,8 +59,8 @@
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             position: fixed;
             top: 0;
@@ -67,7 +70,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-radius: 0;
+            gap: 0.5rem;
         }
 
         .header h1 {
@@ -76,11 +80,17 @@
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            flex: none;
+            margin: 0;
+            z-index: 0;
         }
 
         .back-btn {
             padding: 0.8rem 1.5rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
@@ -92,6 +102,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .back-btn:hover {
@@ -101,64 +113,75 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-img {
+        .logo-container {
             width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: none;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: var(--transition);
             box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             transition: var(--transition);
         }
 
-        .logo-img:hover {
+        .logo-container:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
 
+        .logo-container:hover img {
+            transform: scale(1.05);
+        }
+
         .container {
-            background: var(--white);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            padding: 2rem;
-            margin-top: 80px;
-            transition: var(--transition);
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
-        .container:hover {
-            box-shadow: var(--shadow-md);
+        .messages {
+            margin-bottom: 1.5rem;
         }
 
-        .messages p {
-            text-align: center;
-            margin: 1rem 0;
-            font-size: 0.9rem;
-            color: #dc2626;
-            background: rgba(255, 75, 75, 0.1);
-            padding: 0.6rem;
-            border-radius: 6px;
-        }
-
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .header-section h2 {
+        .messages .success {
+            background: #d4edda;
             color: var(--primary-color);
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin: 0;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .messages .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
 
         .back-buttons {
             display: flex;
             gap: 1rem;
+            margin-bottom: 2rem;
         }
 
         .back-student-btn, .back-dashboard-btn {
@@ -175,7 +198,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
         }
 
         .back-student-btn:hover, .back-dashboard-btn:hover {
@@ -225,7 +248,7 @@
             gap: 1rem;
         }
 
-        .required label:after {
+        .form-group.required label:after {
             content: " *";
             color: #dc2626;
         }
@@ -303,9 +326,44 @@
             box-shadow: var(--shadow-md);
         }
 
+        .icon {
+            margin-right: 0.5rem;
+        }
+
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .scroll-top-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .scroll-top-btn.show {
+            display: flex;
+        }
+
         @media (max-width: 768px) {
             body {
-                padding: 70px 10px 20px 10px;
+                padding: 100px 10px 20px 10px;
             }
 
             .header {
@@ -316,13 +374,9 @@
                 font-size: 1.5rem;
             }
 
-            .container {
-                padding: 1.5rem;
-                margin-top: 70px;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
+            .logo-container {
+                width: 80px;
+                height: 64px;
             }
 
             .back-buttons {
@@ -330,18 +384,26 @@
                 gap: 0.75rem;
             }
 
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
             .form-actions {
                 flex-direction: column;
             }
 
-            .messages p {
+            .section {
+                padding: 1.2rem;
+            }
+
+            .messages .success, .messages .error {
                 font-size: 0.85rem;
             }
         }
 
         @media (max-width: 480px) {
             body {
-                padding: 60px 5px 15px 5px;
+                padding: 80px 5px 15px 5px;
             }
 
             .header {
@@ -354,23 +416,45 @@
                 font-size: 1.25rem;
             }
 
-            .container {
-                padding: 1rem;
-                margin-top: 100px;
-                border-radius: 8px;
+            .logo-container {
+                width: 60px;
+                height: 48px;
+            }
+
+            .back-buttons {
+                gap: 0.75rem;
             }
 
             .section {
                 padding: 1rem;
             }
 
-            .messages p {
+            .messages .success, .messages .error {
                 font-size: 0.8rem;
+            }
+
+            .back-student-btn, .back-dashboard-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .save-btn, .cancel-btn {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .scroll-top-btn {
+                bottom: 0.75rem;
+                right: 0.75rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                padding: 0.8rem;
             }
         }
 
         @media (hover: none) {
-            .section:hover, .logo-img:hover, .back-btn:hover, .card:hover {
+            .section:hover, .logo-container:hover, .back-btn:hover, .back-student-btn:hover, .back-dashboard-btn:hover, .save-btn:hover, .cancel-btn:hover, .scroll-top-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -395,25 +479,29 @@
         </a>
         <h1>{{ title }}</h1>
         <a href="{% url 'admin_page' %}">
-            <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo" class="logo-img">
+            <div class="logo-container">
+                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
+            </div>
         </a>
     </div>
 
     <div class="container">
         <div class="back-buttons">
-            <button class="cancel-btn" onclick="window.location.href='{% url 'student_info' %}'">
+            <button class="back-student-btn cancel-btn" onclick="window.location.href='{% url 'student_info' %}'">
                 <i class="fas fa-arrow-left"></i> Back to Student Info
             </button>
-          
         </div>
 
-        {% if messages %}
-            <div class="messages">
+        <div class="messages">
+            {% if messages %}
                 {% for message in messages %}
-                    <p class="{{ message.tags }}">{{ message }}</p>
+                    <div class="{% if message.tags == 'success' %}success{% else %}error{% endif %}">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} icon"></i>
+                        {{ message }}
+                    </div>
                 {% endfor %}
-            </div>
-        {% endif %}
+            {% endif %}
+        </div>
 
         <form method="POST">
             {% csrf_token %}
@@ -739,7 +827,25 @@
         </form>
     </div>
 
+    <button class="scroll-top-btn" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
     <script>
+        window.onscroll = function() {
+            const btn = document.querySelector('.scroll-top-btn');
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        };
+
+        function scrollToTop() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             {% for field, value in request.POST.items %}
                 {% if value %}
