@@ -1624,12 +1624,11 @@ def admin_accept_portal(request):
 
         return redirect('admin_accept_portal')  # Redirect back to the leave requests page
 
-    # Fetch leave requests to display on the page
+    # Fetch all leave requests to display on the page
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT id, student_name, reg_number, class_number, leave_reason, leave_start_date, leave_end_date, leave_duration, status
+            SELECT id, student_name, reg_number, class_number, section, leave_reason, leave_start_date, leave_end_date, leave_duration, status
             FROM student_leave_requests
-            WHERE status = 'Pending'
         """)
         leave_requests = cursor.fetchall()
 
@@ -3971,9 +3970,18 @@ def add_class(request):
 
     if request.method == 'POST':
         class_name = request.POST.get('class_name')
+        class_number = request.POST.get('class_number', '').strip()
+        section_name = request.POST.get('section_name', '').strip()
+        
+        # Fallback: Combine if class_name is empty but components are provided
+        if not class_name and class_number and section_name:
+            class_name = f"{class_number}-{section_name.upper()}"
+        
         if class_name:
             try:
                 class_part, section = class_name.split('-')
+                class_part = class_part.strip()
+                section = section.strip().upper()
                 
                 with connection.cursor() as cursor:
                     # Check if this exact class-section combo already exists for this admin
@@ -6398,6 +6406,7 @@ def fetch_timetable_data(query, params):
         ]
 
 # Admin Timetable Dashboard (with filters)
+# First, update admin_timetable_view to fetch exams and subjects
 def admin_timetable_view(request):
     if not request.session.get('admin_id'):
         messages.error(request, 'You must be logged in to access this page.')
@@ -6414,11 +6423,137 @@ def admin_timetable_view(request):
         sections = [row[0] for row in cursor.fetchall()]
         cursor.execute("SELECT id, name FROM teachers")
         teachers = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
+        
+        # Fetch unique subjects (assuming from exams table; adjust if you have a separate subjects table)
+        cursor.execute("SELECT DISTINCT subject FROM exams ORDER BY subject")
+        subjects = [row[0] for row in cursor.fetchall() if row[0]]
+        
+        # Fetch all exams (unfiltered for main view)
+        cursor.execute("""
+            SELECT e.id, e.class_id, e.subject, e.exam_date, e.start_time, 
+                   e.end_time, e.room, COALESCE(tch.name, 'N/A') as invigilator_name
+            FROM exams e
+            LEFT JOIN teachers tch ON e.invigilator_id = tch.id
+            ORDER BY e.exam_date, e.start_time
+        """)
+        exams = []
+        for row in cursor.fetchall():
+            exams.append({
+                'id': row[0], 'class_id': row[1], 'subject': row[2],
+                'exam_date': row[3], 'start_time': row[4], 'end_time': row[5],
+                'room': row[6], 'invigilator_name': row[7]
+            })
+        
+        # Fetch all timetables (unfiltered)
+        cursor.execute("""
+            SELECT t.id, t.class_id, t.subject, COALESCE(tch.name, 'N/A') as teacher_name, 
+                   t.day_of_week, t.start_time, t.end_time, COALESCE(t.room, 'N/A') as room
+            FROM timetable t
+            LEFT JOIN teachers tch ON t.teacher_id = tch.id
+            ORDER BY t.day_of_week, t.start_time
+        """)
+        timetables = []
+        for row in cursor.fetchall():
+            timetables.append({
+                'id': row[0], 'class_id': row[1], 'subject': row[2],
+                'teacher_name': row[3], 'day_of_week': row[4],
+                'start_time': row[5], 'end_time': row[6], 'room': row[7]
+            })
     
     return render(request, 'users/admin_timetable.html', {
-        'classes': classes, 'sections': sections, 'teachers': teachers
+        'classes': classes, 'sections': sections, 'teachers': teachers,
+        'subjects': subjects, 'exams': exams, 'timetables': timetables
     })
 
+# Admin Filtered Exam View (renders the same template with filtered exams)
+# Admin Filtered Exam View (renders the same template with filtered exams)
+def admin_exam_filter(request):
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    class_filter = request.GET.get('class', '')
+    subject_filter = request.GET.get('subject', '')
+    start_date = request.GET.get('start_date', '')
+    end_date = request.GET.get('end_date', '')
+    invigilator_id = request.GET.get('invigilator', '')
+    
+    query = """
+        SELECT e.id, e.class_id, e.subject, e.exam_date, e.start_time, 
+               e.end_time, e.room, COALESCE(tch.name, 'N/A') as invigilator_name
+        FROM exams e
+        LEFT JOIN teachers tch ON e.invigilator_id = tch.id
+        WHERE 1=1
+    """
+    params = []
+    
+    if class_filter:
+        query += " AND e.class_id LIKE %s"
+        params.append(f"{class_filter}%")
+    if subject_filter:
+        query += " AND e.subject = %s"
+        params.append(subject_filter)
+    if start_date and end_date:
+        query += " AND e.exam_date BETWEEN %s AND %s"
+        params.append(start_date)
+        params.append(end_date)
+    elif start_date:
+        query += " AND e.exam_date >= %s"
+        params.append(start_date)
+    elif end_date:
+        query += " AND e.exam_date <= %s"
+        params.append(end_date)
+    if invigilator_id:
+        query += " AND e.invigilator_id = %s"
+        params.append(invigilator_id)
+    
+    query += " ORDER BY e.exam_date, e.start_time"
+    
+    with connection.cursor() as cursor:
+        cursor.execute(query, params)
+        exams = []
+        for row in cursor.fetchall():
+            exams.append({
+                'id': row[0], 'class_id': row[1], 'subject': row[2],
+                'exam_date': row[3], 'start_time': row[4], 'end_time': row[5],
+                'room': row[6], 'invigilator_name': row[7]
+            })
+        
+        # Fetch other context data (classes, sections, teachers, subjects, and unfiltered timetables)
+        cursor.execute("SELECT DISTINCT class FROM student_page1")
+        classes = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
+        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT id, name FROM teachers")
+        teachers = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT subject FROM exams ORDER BY subject")
+        subjects = [row[0] for row in cursor.fetchall() if row[0]]
+        
+        # Fetch unfiltered timetables (or filtered if you want, but keeping simple)
+        cursor.execute("""
+            SELECT t.id, t.class_id, t.subject, COALESCE(tch.name, 'N/A') as teacher_name, 
+                   t.day_of_week, t.start_time, t.end_time, COALESCE(t.room, 'N/A') as room
+            FROM timetable t
+            LEFT JOIN teachers tch ON t.teacher_id = tch.id
+            ORDER BY t.day_of_week, t.start_time
+        """)
+        timetables = []
+        for row in cursor.fetchall():
+            timetables.append({
+                'id': row[0], 'class_id': row[1], 'subject': row[2],
+                'teacher_name': row[3], 'day_of_week': row[4],
+                'start_time': row[5], 'end_time': row[6], 'room': row[7]
+            })
+    
+    return render(request, 'users/admin_timetable.html', {
+        'exams': exams, 'classes': classes, 'sections': sections, 
+        'teachers': teachers, 'subjects': subjects, 'timetables': timetables,
+        'selected_exam_class': class_filter,
+        'selected_exam_subject': subject_filter,
+        'selected_start_date': start_date,
+        'selected_end_date': end_date,
+        'selected_invigilator': invigilator_id
+    })
 # Admin Filtered Timetable View
 def admin_timetable_filter(request):
     if not request.session.get('admin_id'):
@@ -7463,6 +7598,7 @@ def parent_student_leave(request):
                 "student_name": request.POST.get("student_name", "").strip(),
                 "reg_number": request.POST.get("reg_number", "").strip(),
                 "class_number": request.POST.get("class", "").strip(),
+                "section": request.POST.get("section", "").strip(),
                 "leave_reason": request.POST.get("leave_reason", "").strip(),
                 "leave_start_date": request.POST.get("leave_start_date", ""),
                 "leave_end_date": request.POST.get("leave_end_date", ""),
@@ -7470,7 +7606,7 @@ def parent_student_leave(request):
                 "half_day_type": request.POST.get("half_day_type", "")
             }
 
-            required_fields = ["student_name", "reg_number", "class_number", "leave_reason", 
+            required_fields = ["student_name", "reg_number", "class_number", "section", "leave_reason", 
                              "leave_start_date", "leave_end_date", "leave_duration"]
             missing_fields = [field for field in required_fields if not form_data[field]]
             if missing_fields:
@@ -7498,11 +7634,12 @@ def parent_student_leave(request):
             with connection.cursor() as cursor:
                 cursor.execute("""
                     INSERT INTO student_leave_requests 
-                    (user_id, student_name, reg_number, class_number, leave_reason,
+                    (user_id, student_name, reg_number, class_number, section, leave_reason,
                     leave_start_date, leave_end_date, leave_duration, half_day_type, status)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, [user_id, form_data["student_name"], form_data["reg_number"], 
-                      form_data["class_number"], form_data["leave_reason"], 
+                      form_data["class_number"], form_data["section"],
+                      form_data["leave_reason"], 
                       form_data["leave_start_date"], form_data["leave_end_date"],
                       form_data["leave_duration"], 
                       form_data["half_day_type"] if form_data["leave_duration"] == "half" else None,
@@ -7519,7 +7656,7 @@ def parent_student_leave(request):
     with connection.cursor() as cursor:
         try:
             cursor.execute("""
-                SELECT id, student_name, reg_number, class_number, leave_reason, 
+                SELECT id, student_name, reg_number, class_number, section, leave_reason, 
                 leave_start_date, leave_end_date, leave_duration, half_day_type, status
                 FROM student_leave_requests WHERE user_id = %s
                 ORDER BY leave_start_date DESC
@@ -7531,8 +7668,6 @@ def parent_student_leave(request):
     return render(request, "users/parent_student_leave.html", {
         "leave_requests": leave_requests
     })
-
-
 
 
 def parent_student_circular(request):
@@ -8413,3 +8548,227 @@ def admin_master(request):
     # Get admin name from session (fallback to email if name not set)
     admin_name = request.session.get('admin_name', request.session.get('admin_email', 'Admin'))
     return render(request, 'users/admin_master.html', {'admin_name': admin_name})
+
+
+
+# Admin Add Exam Entry
+def admin_exam_add(request):
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    if request.method == 'POST':
+        class_name = request.POST.get('class_id')
+        section = request.POST.get('section')
+        subject = request.POST.get('subject')
+        exam_date = request.POST.get('exam_date')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+        room = request.POST.get('room')
+        invigilator_id = request.POST.get('invigilator_id')
+
+        # Construct class_id
+        class_id = f"{class_name}{section}" if section else class_name
+
+        # Validate inputs
+        if not class_name or not class_id:
+            messages.error(request, 'Please select a valid class.')
+            return redirect('admin_exam_add')
+        if not subject or not invigilator_id or not exam_date or not start_time or not end_time:
+            messages.error(request, 'Please fill in all required fields.')
+            return redirect('admin_exam_add')
+
+        with connection.cursor() as cursor:
+            # Check for conflicts
+            cursor.execute("""
+                SELECT id FROM exams 
+                WHERE (class_id = %s OR invigilator_id = %s)
+                AND exam_date = %s
+                AND start_time <= %s AND end_time >= %s
+            """, [class_id, invigilator_id, exam_date, end_time, start_time])
+            conflict = cursor.fetchone()
+            
+            if conflict:
+                messages.error(request, 'Scheduling conflict detected.')
+                return redirect('admin_exam_add')
+            
+            # Insert into exams
+            cursor.execute("""
+                INSERT INTO exams (class_id, subject, exam_date, start_time, 
+                                 end_time, room, invigilator_id)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, [class_id, subject, exam_date, start_time, end_time, room or None, invigilator_id])
+        
+        messages.success(request, 'Exam entry added successfully.')
+        return redirect('admin_timetable_panel')
+    
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT DISTINCT class FROM student_page1")
+        classes = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
+        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT id, name FROM teachers")
+        teachers = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
+    
+    return render(request, 'users/admin_exam_add.html', {
+        'classes': classes, 'sections': sections, 'teachers': teachers
+    })
+
+# Admin Exam Schedule Creation (similar to weekly timetable)
+def admin_exam_schedule(request):
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    # Example: Define exam periods or dates; store in session if dynamic
+    if 'num_exam_days' not in request.session:
+        request.session['num_exam_days'] = 5  # Default 5 days
+    
+    # Handle add/delete days (optional)
+    if request.method == 'POST' and 'action' in request.POST:
+        action = request.POST.get('action')
+        current_days = request.session['num_exam_days']
+        if action == 'add' and current_days < 10:
+            request.session['num_exam_days'] = current_days + 1
+        elif action == 'delete' and current_days > 1:
+            request.session['num_exam_days'] = current_days - 1
+        request.session.modified = True
+        return redirect('admin_exam_schedule')
+    
+    num_days = request.session['num_exam_days']
+    exam_days = list(range(1, num_days + 1))  # Or generate dates dynamically
+    
+    if request.method == 'POST' and 'create_schedule' in request.POST:
+        class_name = request.POST.get('class')
+        section = request.POST.get('section')
+        class_id = f"{class_name}{section}" if section else class_name
+        
+        if not class_name or not class_id:
+            messages.error(request, 'Please select a valid class.')
+            return redirect('admin_exam_schedule')
+        
+        with connection.cursor() as cursor:
+            for day in exam_days:
+                subject = request.POST.get(f'subject_day_{day}')
+                exam_date = request.POST.get(f'exam_date_{day}')
+                start_time = request.POST.get(f'start_time_{day}')
+                end_time = request.POST.get(f'end_time_{day}')
+                room = request.POST.get(f'room_{day}')
+                invigilator_id = request.POST.get(f'invigilator_{day}')
+                
+                if not (subject and invigilator_id and exam_date and start_time and end_time):
+                    continue
+                
+                # Check conflicts (adapt query as needed)
+                cursor.execute("""
+                    SELECT id FROM exams 
+                    WHERE (class_id = %s OR invigilator_id = %s)
+                    AND exam_date = %s
+                    AND start_time <= %s AND end_time >= %s
+                """, [class_id, invigilator_id, exam_date, end_time, start_time])
+                conflict = cursor.fetchone()
+                
+                if conflict:
+                    messages.error(request, f'Conflict on day {day}.')
+                    continue
+                
+                cursor.execute("""
+                    INSERT INTO exams (class_id, subject, exam_date, start_time, 
+                                     end_time, room, invigilator_id)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """, [class_id, subject, exam_date, start_time, end_time, room or None, invigilator_id])
+        
+        messages.success(request, 'Exam schedule created successfully.')
+        return redirect('admin_timetable_panel')
+    
+    # Fetch data for form
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT DISTINCT class FROM student_page1")
+        classes = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
+        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT id, name FROM teachers")
+        teachers = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
+    
+    return render(request, 'users/admin_exam_schedule.html', {
+        'exam_days': exam_days, 'teachers': teachers, 
+        'classes': classes, 'sections': sections, 'num_days': num_days
+    })
+
+def admin_exam_pdf_download(request):
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    # Fetch all exams (you can add filters if needed, e.g., from GET params)
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT e.class_id, e.subject, e.exam_date, e.start_time, 
+                   e.end_time, COALESCE(e.room, 'N/A') as room, 
+                   COALESCE(tch.name, 'N/A') as invigilator_name
+            FROM exams e
+            LEFT JOIN teachers tch ON e.invigilator_id = tch.id
+            ORDER BY e.exam_date, e.start_time
+        """)
+        exams_data = cursor.fetchall()
+    
+    # Create PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="exam_schedule.pdf"'
+    
+    doc = SimpleDocTemplate(response, pagesize=letter)
+    styles = getSampleStyleSheet()
+    story = []
+    
+    # Title
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Title'],
+        fontSize=18,
+        spaceAfter=30,
+        textColor=colors.green,
+        alignment=1  # Center
+    )
+    p = Paragraph("Manavargal School - Exam Schedule", title_style)
+    story.append(p)
+    story.append(Spacer(1, 12))
+    
+    # Add date/time info
+    date_style = styles['Normal']
+    p = Paragraph(f"Generated on: {timezone.now().strftime('%Y-%m-%d %H:%M')}", date_style)
+    story.append(p)
+    story.append(Spacer(1, 20))
+    
+    # Table data
+    if exams_data:
+        table_data = [['Class', 'Subject', 'Date', 'Time', 'Room', 'Invigilator']]
+        for row in exams_data:
+            class_id = row[0]
+            # Pretty print class (e.g., '10A' -> 'Class 10 - Section A')
+            class_name = class_id[:-1] if len(class_id) > 1 and class_id[-1].isalpha() else class_id
+            section = f" - Section {class_id[-1]}" if len(class_id) > 1 and class_id[-1].isalpha() else ''
+            pretty_class = f"{class_name}{section}"
+            
+            time_slot = f"{row[3].strftime('%H:%M')} - {row[4].strftime('%H:%M')}"
+            table_data.append([pretty_class, row[1], row[2].strftime('%Y-%m-%d'), time_slot, row[5], row[6]])
+        
+        # Create table
+        table = Table(table_data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTSIZE', (0, 1), (-1, -1), 10),
+        ]))
+        story.append(table)
+    else:
+        p = Paragraph("No exams scheduled yet.", styles['Normal'])
+        story.append(p)
+    
+    doc.build(story)
+    return response

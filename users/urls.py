@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from users.views import profile_view, login_view  # Import views directly
+from django.utils import timezone
 urlpatterns = [
     path('', views.landing_view, name='landing'),
     path('student_signup/', views.signup_view, name='signup'),  
@@ -156,6 +157,20 @@ urlpatterns = [
     path('qr_scan/', views.render_qr_scan, name='qr_scan'),
     path('scan_qr/', views.scan_qr_code, name='scan_qr_code'),
     path('download_student_pdf/', views.download_student_pdf, name='download_student_pdf'),
+
+    path('admin/timetable/', views.admin_timetable_view, name='admin_timetable'),
+    path('admin/timetable/filter/', views.admin_timetable_filter, name='admin_timetable_filter'),
+    path('admin/timetable/add/', views.admin_timetable_add, name='admin_timetable_add'),
+    path('admin/timetable/edit/<int:id>/', views.admin_timetable_edit, name='admin_timetable_edit'),
+    path('admin/timetable/delete/<int:id>/', views.admin_timetable_delete, name='admin_timetable_delete'),
+    path('admin/timetable/weekly/', views.admin_timetable_weekly, name='admin_timetable_weekly'),
+    path('admin/exam/add/', views.admin_exam_add, name='admin_exam_add'),
+    path('admin/exam/schedule/', views.admin_exam_schedule, name='admin_exam_schedule'),
+    # Add to users/urls.py in urlpatterns
+    path('admin/exam/filter/', views.admin_exam_filter, name='admin_exam_filter'),
+    path('admin/exam/pdf-download/', views.admin_exam_pdf_download, name='admin_exam_pdf_download'),
+    
+
 ]
 
 if settings.DEBUG:

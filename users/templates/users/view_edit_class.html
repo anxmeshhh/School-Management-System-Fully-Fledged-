@@ -218,66 +218,30 @@
             text-align: center;
         }
 
-        .add-class-form {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .add-class-form:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            color: var(--text-color);
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            background: var(--white);
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-
-        .form-group input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
-            outline: none;
-        }
-
-        .add-class-form button {
+        .add-class-btn {
+            display: inline-block;
             width: 100%;
             padding: 0.75rem;
             background: var(--primary-color);
-            border: none;
-            border-radius: 8px;
             color: var(--white);
+            text-decoration: none;
+            border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
+            text-align: center;
             cursor: pointer;
             transition: var(--transition);
+            border: none;
         }
 
-        .add-class-form button:hover {
+        .add-class-btn:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+        }
+
+        .add-class-btn-container {
+            margin-bottom: 2rem;
         }
 
         .class-grid {
@@ -410,10 +374,6 @@
                 gap: 1rem;
             }
 
-            .add-class-form {
-                padding: 1.2rem;
-            }
-
             .back-btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
@@ -476,22 +436,19 @@
                 min-width: 60px;
             }
 
-            .add-class-form {
-                padding: 1rem;
-            }
-
-            .add-class-form button {
-                font-size: 0.85rem;
-            }
-
             .back-btn {
                 padding: 0.5rem 0.8rem;
                 font-size: 0.8rem;
             }
+
+            .add-class-btn {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+            }
         }
 
         @media (hover: none) {
-            .section:hover, .logo-container:hover, .back-btn:hover, .class-card:hover, .add-class-form:hover {
+            .section:hover, .logo-container:hover, .back-btn:hover, .class-card:hover, .add-class-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -511,8 +468,8 @@
 </head>
 <body>
     <header class="header">
-        <a href="{% url 'admin_page' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back To Main Dashboard
+        <a href="{% url 'admin_master' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back To Master data
         </a>
         <h1><i class="fas fa-edit"></i> View and Edit Class</h1>
         <a href="{% url 'admin_page' %}">
@@ -538,17 +495,10 @@
                     </div>
                 {% endif %}
 
-                <div class="add-class-form">
-                    <form method="POST" action="{% url 'add_class' %}">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="class_name"><i class="fas fa-plus-circle"></i> Class Name</label>
-                            <input type="text" id="class_name" name="class_name" required>
-                        </div>
-                        <button type="submit">
-                            <i class="fas fa-plus"></i> Add New Class
-                        </button>
-                    </form>
+                <div class="add-class-btn-container">
+                    <a href="{% url 'add_class' %}" class="add-class-btn">
+                        <i class="fas fa-plus"></i> ADD A CLASS
+                    </a>
                 </div>
 
                 <div class="class-grid">

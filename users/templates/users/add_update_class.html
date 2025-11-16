@@ -7,16 +7,13 @@
     <title>Manavargal School Management System - {{ title }}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Poppins', sans-serif;
             font-weight: 400;
@@ -25,12 +22,10 @@
             color: var(--text-color);
             padding: 120px 20px 40px 20px;
         }
-
         h1, h2, h3 {
             font-family: 'Montserrat', sans-serif;
             text-align: center;
         }
-
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
@@ -49,13 +44,11 @@
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         html {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
         }
-
         .header {
             background: var(--white);
             color: var(--text-color);
@@ -73,7 +66,6 @@
             border-radius: 0;
             gap: 0.5rem;
         }
-
         .header h1 {
             font-size: 2rem;
             font-weight: 700;
@@ -87,7 +79,6 @@
             margin: 0;
             z-index: 0;
         }
-
         .back-btn {
             padding: 0.8rem 1.5rem;
             border: 2px solid var(--border-color);
@@ -105,14 +96,12 @@
             position: relative;
             z-index: 1;
         }
-
         .back-btn:hover {
             background: var(--primary-color);
             color: var(--white);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
-
         .logo-container {
             width: 100px;
             height: 80px;
@@ -128,32 +117,26 @@
             position: relative;
             z-index: 1;
         }
-
         .logo-container img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             transition: var(--transition);
         }
-
         .logo-container:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
-
         .logo-container:hover img {
             transform: scale(1.05);
         }
-
         .container {
             max-width: 1000px;
             margin: 0 auto;
         }
-
         .messages {
             margin-bottom: 1.5rem;
         }
-
         .messages .success {
             background: #d4edda;
             color: var(--primary-color);
@@ -165,7 +148,6 @@
             gap: 0.5rem;
             border: 2px solid var(--border-color);
         }
-
         .messages .error {
             background: #fef2f2;
             color: #dc3545;
@@ -177,13 +159,11 @@
             gap: 0.5rem;
             border: 2px solid var(--border-color);
         }
-
         .back-buttons {
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
         }
-
         .back-student-btn, .back-dashboard-btn {
             padding: 0.8rem 1.5rem;
             border: none;
@@ -200,20 +180,17 @@
             gap: 0.5rem;
             border: 2px solid var(--border-color);
         }
-
         .back-student-btn:hover, .back-dashboard-btn:hover {
             background: var(--primary-color);
             color: var(--white);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
-
         form {
             display: flex;
             flex-direction: column;
             gap: 2rem;
         }
-
         .section {
             background: var(--light-bg);
             padding: 1.5rem;
@@ -223,36 +200,30 @@
             margin-bottom: 2rem;
             transition: var(--transition);
         }
-
         .section:hover {
             box-shadow: var(--shadow-md);
         }
-
         .subheading {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             margin-bottom: 1rem;
         }
-
         .subheading h3 {
             color: var(--primary-color);
             font-size: 1.25rem;
             font-weight: 600;
             margin: 0;
         }
-
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
         }
-
         .form-group.required label:after {
             content: " *";
             color: #dc2626;
         }
-
         label {
             display: block;
             color: var(--primary-color);
@@ -260,7 +231,6 @@
             font-weight: 400;
             margin-bottom: 0.5rem;
         }
-
         input, select, textarea {
             width: 100%;
             padding: 0.7rem;
@@ -270,23 +240,19 @@
             font-size: 0.9rem;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 8px rgba(0, 166, 118, 0.3);
         }
-
         textarea {
             resize: vertical;
         }
-
         .form-actions {
             display: flex;
             justify-content: flex-end;
             gap: 1rem;
         }
-
         button {
             padding: 0.8rem 1.5rem;
             border: none;
@@ -299,37 +265,31 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .save-btn {
             background: var(--primary-color);
             color: var(--white);
             border: 2px solid var(--primary-color);
         }
-
         .save-btn:hover {
             background: var(--primary-hover);
             border-color: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
-
         .cancel-btn {
             background: var(--light-bg);
             color: var(--text-color);
             border: 2px solid var(--border-color);
         }
-
         .cancel-btn:hover {
             background: var(--primary-color);
             color: var(--white);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
-
         .icon {
             margin-right: 0.5rem;
         }
-
         .scroll-top-btn {
             position: fixed;
             bottom: 1.5rem;
@@ -350,99 +310,78 @@
             border: none;
             cursor: pointer;
         }
-
         .scroll-top-btn:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
-
         .scroll-top-btn.show {
             display: flex;
         }
-
         @media (max-width: 768px) {
             body {
                 padding: 100px 10px 20px 10px;
             }
-
             .header {
                 padding: 1rem;
             }
-
             .header h1 {
                 font-size: 1.5rem;
             }
-
             .logo-container {
                 width: 80px;
                 height: 64px;
             }
-
             .back-buttons {
                 flex-direction: column;
                 gap: 0.75rem;
             }
-
             .grid {
                 grid-template-columns: 1fr;
             }
-
             .form-actions {
                 flex-direction: column;
             }
-
             .section {
                 padding: 1.2rem;
             }
-
             .messages .success, .messages .error {
                 font-size: 0.85rem;
             }
         }
-
         @media (max-width: 480px) {
             body {
                 padding: 80px 5px 15px 5px;
             }
-
             .header {
                 padding: 0.75rem;
                 flex-direction: column;
                 gap: 1rem;
             }
-
             .header h1 {
                 font-size: 1.25rem;
             }
-
             .logo-container {
                 width: 60px;
                 height: 48px;
             }
-
             .back-buttons {
                 gap: 0.75rem;
             }
-
             .section {
                 padding: 1rem;
             }
-
             .messages .success, .messages .error {
                 font-size: 0.8rem;
             }
-
             .back-student-btn, .back-dashboard-btn {
                 padding: 0.5rem 0.8rem;
                 font-size: 0.8rem;
             }
-
             .save-btn, .cancel-btn {
                 padding: 0.6rem 0.8rem;
                 font-size: 0.9rem;
             }
-
             .scroll-top-btn {
                 bottom: 0.75rem;
                 right: 0.75rem;
@@ -452,20 +391,17 @@
                 padding: 0.8rem;
             }
         }
-
         @media (hover: none) {
             .section:hover, .logo-container:hover, .back-btn:hover, .back-student-btn:hover, .back-dashboard-btn:hover, .save-btn:hover, .cancel-btn:hover, .scroll-top-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
         }
-
         @media (prefers-reduced-motion: reduce) {
             * {
                 transition: none !important;
                 animation: none !important;
             }
-
             html {
                 scroll-behavior: auto;
             }
@@ -484,15 +420,13 @@
             </div>
         </a>
     </div>
-
     <div class="container">
         <div class="back-buttons">
             <button class="back-student-btn cancel-btn" onclick="window.location.href='{% url 'view_edit_class' %}'">
                 <i class="fas fa-arrow-left"></i> Back to Classes
             </button>
-            
+           
         </div>
-
         <div class="messages">
             {% if messages %}
                 {% for message in messages %}
@@ -503,17 +437,21 @@
                 {% endfor %}
             {% endif %}
         </div>
-
-        <form method="POST">
+        <form method="POST" id="classForm">
             {% csrf_token %}
+            <input type="hidden" name="class_name" id="class_name_hidden">
             <div class="section">
                 <div class="subheading">
                     <h3><i class="fas fa-chalkboard-teacher"></i> Class Information</h3>
                 </div>
                 <div class="grid">
                     <div class="form-group required">
-                        <label><i class="fas fa-chalkboard-teacher"></i> Class Name</label>
-                        <input type="text" name="class_name" value="{{ class_name|default:'' }}" placeholder="Enter class name (e.g., 2-A)" required>
+                        <label><i class="fas fa-chalkboard-teacher"></i> Class Number</label>
+                        <input type="text" name="class_number" id="class_number" value="{{ class_number|default:'' }}" placeholder="Enter class number (e.g., 2)" required>
+                    </div>
+                    <div class="form-group required">
+                        <label><i class="fas fa-layer-group"></i> Section</label>
+                        <input type="text" name="section_name" id="section_name" value="{{ section_name|default:'' }}" placeholder="Enter section (e.g., A)" required>
                     </div>
                 </div>
             </div>
@@ -527,11 +465,9 @@
             </div>
         </form>
     </div>
-
     <button class="scroll-top-btn" onclick="scrollToTop()">
         <i class="fas fa-chevron-up"></i>
     </button>
-
     <script>
         window.onscroll = function() {
             const btn = document.querySelector('.scroll-top-btn');
@@ -541,21 +477,41 @@
                 btn.classList.remove('show');
             }
         };
-
         function scrollToTop() {
             document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0;
         }
-
         document.addEventListener('DOMContentLoaded', function() {
+            const fullClassName = "{{ class_name|escapejs|default:'' }}";
+            if (fullClassName) {
+                const parts = fullClassName.split('-');
+                const classNumberInput = document.getElementById('class_number');
+                const sectionInput = document.getElementById('section_name');
+                if (parts.length >= 2) {
+                    classNumberInput.value = parts[0];
+                    sectionInput.value = parts[1];
+                }
+            }
             {% for field, value in request.POST.items %}
                 {% if value %}
-                    const field = document.querySelector('[name="{{ field }}"]');
-                    if (field && field.tagName === 'SELECT') {
-                        field.value = '{{ value }}';
+                    const fieldInput = document.querySelector('[name="{{ field }}"]');
+                    if (fieldInput && fieldInput.tagName === 'SELECT') {
+                        fieldInput.value = '{{ value }}';
                     }
                 {% endif %}
             {% endfor %}
+
+            // Combine class number and section on form submit
+            document.getElementById('classForm').addEventListener('submit', function(e) {
+                const classNum = document.getElementById('class_number').value.trim();
+                const section = document.getElementById('section_name').value.trim();
+                if (classNum && section) {
+                    document.getElementById('class_name_hidden').value = classNum + '-' + section.toUpperCase();
+                } else {
+                    e.preventDefault();
+                    alert('Please fill both class number and section.');
+                }
+            });
         });
     </script>
 </body>

@@ -349,6 +349,7 @@
             background: var(--light-bg);
             border-radius: 8px;
             border: 2px solid var(--border-color);
+            grid-column: 1 / -1;
         }
 
         .study-materials-btn {
@@ -578,7 +579,7 @@
                 {% endif %}
 
                 <section class="section">
-                    <h2><i class="fas fa-file-contract"></i> All Homework Submissions</h2>
+                    <h2><i class="fas fa-filter"></i> Filters</h2>
                     <form method="post">
                         {% csrf_token %}
                         <div class="form-row">
@@ -605,6 +606,10 @@
                             </button>
                         </div>
                     </form>
+                </section>
+
+                <section class="section">
+                    <h2><i class="fas fa-file-contract"></i> All Homework Submissions</h2>
 
                     <div class="homework-grid">
                         {% for hw in homework_list %}

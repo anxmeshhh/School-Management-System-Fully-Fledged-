@@ -697,6 +697,15 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="section"><i class="fas fa-layer-group icon"></i> Select Section</label>
+                        <select id="section" name="section" required>
+                            <option value="">Select Section</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="leave_reason"><i class="fas fa-comment icon"></i> Leave Reason</label>
                         <textarea id="leave_reason" name="leave_reason" rows="4" required></textarea>
                     </div>
@@ -745,12 +754,13 @@
                             <tr>
                                 <th style="width: 15%;">Student Name</th>
                                 <th style="width: 15%;">Reg Number</th>
-                                <th style="width: 10%;">Class</th>
-                                <th style="width: 20%;">Leave Reason</th>
+                                <th style="width: 8%;">Class</th>
+                                <th style="width: 8%;">Section</th>
+                                <th style="width: 18%;">Leave Reason</th>
                                 <th style="width: 10%;">Start Date</th>
                                 <th style="width: 10%;">End Date</th>
-                                <th style="width: 10%;">Duration</th>
-                                <th style="width: 10%;">Status</th>
+                                <th style="width: 8%;">Duration</th>
+                                <th style="width: 8%;">Status</th>
                                 <th style="width: 10%;">Action</th>
                             </tr>
                         </thead>
@@ -763,8 +773,9 @@
                                 <td>{{ request.4 }}</td>
                                 <td>{{ request.5 }}</td>
                                 <td>{{ request.6 }}</td>
-                                <td>{{ request.7 }}{% if request.7 == 'half' and request.8 %} ({{ request.8 }}){% endif %}</td>
-                                <td class="status-{{ request.9|lower }}">{{ request.9|capfirst }}</td>
+                                <td>{{ request.7 }}</td>
+                                <td>{{ request.8 }}{% if request.8 == 'half' and request.9 %} ({{ request.9 }}){% endif %}</td>
+                                <td class="status-{{ request.10|lower }}">{{ request.10|capfirst }}</td>
                                 <td>
                                     <form method="POST" action="{% url 'download_leave_pdf' %}">
                                         {% csrf_token %}
@@ -775,7 +786,7 @@
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="9" class="no-requests">
+                                <td colspan="10" class="no-requests">
                                     <i class="fas fa-inbox icon"></i> No leave requests submitted.
                                 </td>
                             </tr>
