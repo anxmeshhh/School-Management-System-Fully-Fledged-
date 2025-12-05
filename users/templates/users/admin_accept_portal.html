@@ -259,7 +259,7 @@
 
         .filters-container {
             display: flex;
-            align-items: stretch;
+            align-items: flex-end;
             gap: 1rem;
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
@@ -274,24 +274,27 @@
         }
 
         .filters-container .filter-btn {
-            padding: 0.75rem 1rem;
-            background: var(--primary-color);
-            border: none;
-            border-radius: 8px;
-            color: var(--white);
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            white-space: nowrap;
-            margin-top: 1.75rem;
-        }
+    padding: 20px 30px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 6px;
+    color: var(--white);
+    font-size: 20px;
+    cursor: pointer;
 
-        .filters-container .filter-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
+    height: 32px;
+    min-height: 32px;
+
+    transform: translateY(-25px);
+
+    display: flex;              /* ✅ CENTER TEXT */
+    align-items: center;       /* ✅ vertical center */
+    justify-content: center;   /* ✅ horizontal center */
+}
+
+
+
+
 
         .leave-cards {
             display: grid;
@@ -613,16 +616,7 @@
         </div>
 
         <div class="container">
-            <div class="messages">
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="{{ message.tags }}">
-                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
+            
 
             <!-- Leave Requests Section -->
             <div class="main-content">
