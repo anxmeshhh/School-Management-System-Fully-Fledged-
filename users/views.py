@@ -1206,6 +1206,22 @@ def admin_circular_upload(request):
             except Exception as e:
                 print(f"Error processing file {file}: {e}")
 
+    # Filter by date if parameter provided
+    date_str = request.GET.get('date')
+    date_filter = date_str
+    if date_str:
+        try:
+            filter_date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+            filtered_circulars = []
+            for circ in circulars:
+                circ_date = datetime.datetime.strptime(circ['date'], '%Y-%m-%d %H:%M:%S').date()
+                if circ_date == filter_date:
+                    filtered_circulars.append(circ)
+            circulars = filtered_circulars
+        except ValueError:
+            # Invalid date format, ignore filter
+            pass
+
     # Sort by newest first
     circulars = sorted(circulars, key=lambda x: x['date'], reverse=True)
 
@@ -1219,7 +1235,8 @@ def admin_circular_upload(request):
     return render(request, 'users/admin_circular_upload.html', {
         'circulars': circulars,
         'classes': classes,
-        'sections': sections
+        'sections': sections,
+        'date_filter': date_filter
     })
 
 # Student view of circulars

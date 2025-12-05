@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +15,8 @@
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
+            --danger-color: #dc2626;
+            --danger-hover: #ef4444;
             --sidebar-bg: #f0f9f4;
             --sidebar-border: #a8d5c2;
             --white: #ffffff;
@@ -208,10 +211,12 @@
 
         .form-group {
             margin-bottom: 1.5rem;
+            position: relative;
         }
 
         .form-group label {
-            display: block;
+            display: flex;
+            align-items: center;
             color: var(--text-color);
             font-size: 1rem;
             font-weight: 500;
@@ -229,6 +234,38 @@
             background: var(--white);
             font-size: 1rem;
             transition: var(--transition);
+        }
+
+        /* Improved date input styling for better calendar popup */
+        .form-group input[type="date"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--white);
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .form-group input[type="date"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
+        }
+
+        .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 4px;
+            opacity: 0.6;
+            filter: invert(0.3);
+        }
+
+        .form-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
         }
 
         .form-group textarea {
@@ -298,6 +335,63 @@
             background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+        }
+
+        .filters-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filters-container form {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .filters-container .form-group {
+            flex: 1;
+            min-width: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-bottom: 0;
+        }
+
+        .filters-container .filter-btn {
+            padding: 0.75rem 1rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            height: 48px;
+            min-width: 140px;
+        }
+
+        .filters-container .filter-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .filters-container .filter-btn.clear-btn {
+            background: var(--danger-color) !important;
+        }
+
+        .filters-container .filter-btn.clear-btn:hover {
+            background: var(--danger-hover) !important;
         }
 
         .circular-container {
@@ -395,6 +489,15 @@
             grid-column: 1 / -1;
         }
 
+        .icon {
+            margin-right: 0.5rem;
+            width: 1em;
+            height: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .scroll-top-btn {
             position: fixed;
             bottom: 1.5rem;
@@ -426,7 +529,6 @@
             display: flex;
         }
 
-        /* Media Queries */
         @media (max-width: 768px) {
             body {
                 padding: 100px 10px 20px 10px;
@@ -464,9 +566,9 @@
             .form-group input[type="text"],
             .form-group input[type="file"],
             .form-group select,
+            .form-group input[type="date"],
             .form-group textarea {
                 font-size: 0.9rem;
-                padding: 0.6rem;
             }
 
             .class-section-group .form-row {
@@ -479,6 +581,27 @@
                 align-self: stretch;
                 font-size: 0.9rem;
                 padding: 0.6rem;
+            }
+
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filters-container form {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .filters-container .form-group {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .filters-container .filter-btn {
+                align-self: stretch;
+                height: 44px;
+                width: 100%;
             }
 
             .circular-container {
@@ -544,14 +667,28 @@
             .form-group input[type="text"],
             .form-group input[type="file"],
             .form-group select,
+            .form-group input[type="date"],
             .form-group textarea {
                 font-size: 0.85rem;
-                padding: 0.5rem;
             }
 
             .upload-btn {
                 font-size: 0.85rem;
                 padding: 0.5rem;
+            }
+
+            .filters-container {
+                gap: 0.75rem;
+            }
+
+            .filters-container form {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .filters-container .filter-btn {
+                height: 40px;
+                width: 100%;
             }
 
             .circular-container {
@@ -598,7 +735,7 @@
             <a href="{% url 'admin_page' %}" class="back-btn">
                 <i class="fas fa-arrow-left"></i> Back To Main Dashboard
             </a>
-            <h1><i class="fas fa-file-alt"></i> Admin Circular Upload</h1>
+            <h1><i class="fas fa-file-alt"></i> School & Class Circulars Module</h1>
             <a href="{% url 'admin_page' %}">
                 <div class="logo-container">
                     <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
@@ -674,6 +811,19 @@
                 <!-- Uploaded Circulars Section -->
                 <section class="section">
                     <h2><i class="fas fa-list"></i> Uploaded Circulars</h2>
+                    
+                    <!-- Filters -->
+                    <div class="filters-container">
+                        <form method="GET">
+                            <div class="form-group">
+                                <label for="filter_date"><i class="fas fa-calendar icon"></i> Filter by Date</label>
+                                <input type="date" id="filter_date" name="date" value="{{ date_filter|default:'' }}" title="Click to open calendar picker">
+                            </div>
+                            <button type="submit" class="filter-btn"><i class="fas fa-filter icon"></i> Apply Filter</button>
+                            <button type="button" class="filter-btn clear-btn" onclick="clearFilters()"><i class="fas fa-times icon"></i> Clear</button>
+                        </form>
+                    </div>
+                    
                     <div class="circular-container">
                         {% for circular in circulars %}
                         <div class="circular">
@@ -712,6 +862,10 @@
             }
         }
 
+        function clearFilters() {
+            window.location.href = '{% url 'admin_circular_upload' %}';
+        }
+
         window.onscroll = function() {
             const btn = document.querySelector('.scroll-top-btn');
             if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
@@ -725,6 +879,24 @@
             document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0;
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('filter_date');
+            
+            // Ensure the date input is properly focused when clicked
+            if (dateInput) {
+                dateInput.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.focus();
+                    this.showPicker?.();
+                });
+                
+                // Fallback for browsers that don't support showPicker()
+                dateInput.addEventListener('focus', function() {
+                    this.click?.();
+                });
+            }
+        });
     </script>
 </body>
 </html>
