@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Admin Timetable Weekly</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
@@ -290,9 +289,23 @@
             box-shadow: var(--shadow-md);
         }
 
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-wrapper:hover {
+            box-shadow: var(--shadow-md);
+        }
+
         table {
             width: 100%;
-            min-width: 600px;
+            min-width: 800px;
             border-collapse: collapse;
             background: var(--white);
         }
@@ -302,6 +315,7 @@
             text-align: left;
             border: 1px solid var(--border-color);
             font-size: 0.9rem;
+            vertical-align: top;
         }
 
         th {
@@ -311,10 +325,12 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            min-width: 200px;
         }
 
         td {
             color: var(--text-color);
+            min-width: 200px;
         }
 
         tr:nth-child(even) {
@@ -514,6 +530,7 @@
             color: var(--text-color);
             margin-bottom: 0.5rem;
             transition: var(--transition);
+            display: block;
         }
 
         input[type="text"]:focus,
@@ -605,7 +622,7 @@
 
             th, td {
                 font-size: 0.85rem;
-                padding: 0.6rem;
+                padding: 0.6rem 0.5rem;
             }
 
             .back-btn {
@@ -625,15 +642,32 @@
                 margin-left: 0;
             }
 
+            .table-wrapper {
+                max-height: 500px;
+                overflow-y: auto;
+            }
+
             table {
+                min-width: 600px;
                 font-size: 0.9rem;
-                overflow-x: auto;
-                display: block;
-                white-space: nowrap;
             }
 
             th, td {
-                padding: 0.75rem 0.5rem;
+                padding: 0.5rem 0.4rem;
+                min-width: 150px;
+            }
+
+            input[type="text"],
+            input[type="time"],
+            select {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+                margin-bottom: 0.25rem;
+            }
+
+            th {
+                min-width: 120px;
+                font-size: 0.85rem;
             }
         }
 
@@ -650,6 +684,8 @@
 
             .header h1 {
                 font-size: 1.25rem;
+                position: static;
+                transform: none;
             }
 
             .logo-container {
@@ -686,8 +722,9 @@
             }
 
             th, td {
-                padding: 0.5rem;
+                padding: 0.5rem 0.3rem;
                 font-size: 0.8rem;
+                min-width: 120px;
             }
 
             .form-container {
@@ -705,16 +742,36 @@
             }
 
             table {
+                min-width: 500px;
                 font-size: 0.8rem;
             }
 
-            th, td {
-                padding: 0.5rem 0.25rem;
+            th {
+                min-width: 100px;
+                font-size: 0.8rem;
+            }
+
+            input[type="text"],
+            input[type="time"],
+            select {
+                padding: 0.4rem;
+                font-size: 0.8rem;
+                margin-bottom: 0.2rem;
+            }
+
+            .period-controls {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .btn-period {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
             }
         }
 
         @media (hover: none) {
-            .section:hover, .logo-container:hover, .back-btn:hover, .form-container:hover, .preview-info:hover, .preview-table:hover {
+            .section:hover, .logo-container:hover, .back-btn:hover, .form-container:hover, .preview-info:hover, .preview-table:hover, .table-wrapper:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -801,37 +858,39 @@
                                 </div>
                             </div>
                         </div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><i class="fas fa-hashtag icon"></i> Period</th>
-                                    {% for day in days %}
-                                    <th><i class="fas fa-calendar-day icon"></i> {{ day }}</th>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-hashtag icon"></i> Period</th>
+                                        {% for day in days %}
+                                        <th><i class="fas fa-calendar-day icon"></i> {{ day }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for period in periods %}
+                                    <tr>
+                                        <td><strong>Period {{ period }}</strong></td>
+                                        {% for day in days %}
+                                        <td>
+                                            <input type="text" name="subject_{{ day }}_{{ period }}" placeholder="Subject" required>
+                                            <select name="teacher_{{ day }}_{{ period }}" required>
+                                                <option value="" disabled selected>Select a teacher</option>
+                                                {% for teacher in teachers %}
+                                                <option value="{{ teacher.id }}">{{ teacher.name }} ({{ teacher.subject }})</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="time" name="start_time_{{ day }}_{{ period }}" required>
+                                            <input type="time" name="end_time_{{ day }}_{{ period }}" required>
+                                            <input type="text" name="room_{{ day }}_{{ period }}" placeholder="Room">
+                                        </td>
+                                        {% endfor %}
+                                    </tr>
                                     {% endfor %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for period in periods %}
-                                <tr>
-                                    <td><strong>Period {{ period }}</strong></td>
-                                    {% for day in days %}
-                                    <td>
-                                        <input type="text" name="subject_{{ day }}_{{ period }}" placeholder="Subject" required>
-                                        <select name="teacher_{{ day }}_{{ period }}" required>
-                                            <option value="" disabled selected>Select a teacher</option>
-                                            {% for teacher in teachers %}
-                                            <option value="{{ teacher.id }}">{{ teacher.name }} ({{ teacher.subject }})</option>
-                                            {% endfor %}
-                                        </select>
-                                        <input type="time" name="start_time_{{ day }}_{{ period }}" required>
-                                        <input type="time" name="end_time_{{ day }}_{{ period }}" required>
-                                        <input type="text" name="room_{{ day }}_{{ period }}" placeholder="Room">
-                                    </td>
-                                    {% endfor %}
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                         <input type="hidden" name="create_timetable" value="1">
                         <button type="submit" class="submit-btn">
                             <i class="fas fa-save icon"></i> Create Timetable

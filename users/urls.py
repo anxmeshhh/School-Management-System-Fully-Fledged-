@@ -158,17 +158,21 @@ urlpatterns = [
     path('scan_qr/', views.scan_qr_code, name='scan_qr_code'),
     path('download_student_pdf/', views.download_student_pdf, name='download_student_pdf'),
 
+    # Timetable URLs
     path('admin/timetable/', views.admin_timetable_view, name='admin_timetable'),
     path('admin/timetable/filter/', views.admin_timetable_filter, name='admin_timetable_filter'),
     path('admin/timetable/add/', views.admin_timetable_add, name='admin_timetable_add'),
     path('admin/timetable/edit/<int:id>/', views.admin_timetable_edit, name='admin_timetable_edit'),
     path('admin/timetable/delete/<int:id>/', views.admin_timetable_delete, name='admin_timetable_delete'),
     path('admin/timetable/weekly/', views.admin_timetable_weekly, name='admin_timetable_weekly'),
+    # Exam URLs
     path('admin/exam/add/', views.admin_exam_add, name='admin_exam_add'),
+    path('admin/exam/edit/<int:exam_id>/', views.admin_exam_edit, name='admin_exam_edit'),
     path('admin/exam/schedule/', views.admin_exam_schedule, name='admin_exam_schedule'),
-    # Add to users/urls.py in urlpatterns
     path('admin/exam/filter/', views.admin_exam_filter, name='admin_exam_filter'),
     path('admin/exam/pdf-download/', views.admin_exam_pdf_download, name='admin_exam_pdf_download'),
+    # Add this to your urls.py in the Exam URLs section
+    path('admin/exam/delete/<int:exam_id>/', views.admin_exam_delete, name='admin_exam_delete'),
     
 
 ]

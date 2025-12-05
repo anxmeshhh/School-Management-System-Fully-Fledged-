@@ -5574,77 +5574,100 @@ def parent_dashboard(request):
 
 
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
 from django.contrib import messages
+from django.http import JsonResponse
 from django.db import connection
 import json
 
 def mark_entry(request):
-    if 'teacher_id' not in request.session:
+    if 'admin_id' not in request.session:
         messages.error(request, 'Please log in to access the mark entry system.')
-        return redirect('teacher_login')
+        return redirect('admin_login')
 
     with connection.cursor() as cursor:
-        # Get teacher details
-        cursor.execute(
-            "SELECT subject, class_teacher_of, name FROM teachers WHERE id = %s",
-            [request.session['teacher_id']]
-        )
-        teacher = cursor.fetchone()
-        if not teacher:
-            messages.error(request, 'Teacher not found.')
-            return redirect('teacher_login')
+        # Verify admin exists (only id)
+        cursor.execute("SELECT id FROM admins WHERE id = %s", [request.session['admin_id']])
+        if not cursor.fetchone():
+            messages.error(request, 'Admin not found.')
+            return redirect('admin_login')
 
-        role = 'classTeacher' if teacher[1] else 'subjectTeacher'
-        teacher_subject = teacher[0] if role == 'subjectTeacher' else None
-        teacher_name = teacher[2]
+        # Safe defaults for admins (full access)
+        role = 'classTeacher'
+        teacher_subject = None
+        teacher_name = request.session.get('admin_display_name', 'Admin')  # Set in login view if possible
 
-        # Get distinct classes and sections
+        # Classes/sections
         cursor.execute("SELECT DISTINCT class FROM student_page1 ORDER BY class")
         classes = [row[0] for row in cursor.fetchall()]
         cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL ORDER BY section")
         sections = [row[0] for row in cursor.fetchall()]
 
-        # Default class and section
-        default_class = ''
-        default_section = ''
-        if teacher[1]:
-            try:
-                class_section = teacher[1].split('-')
-                if len(class_section) == 2:
-                    default_class, default_section = class_section
-                else:
-                    messages.warning(request, 'Invalid class_teacher_of format.')
-            except Exception as e:
-                messages.error(request, f'Error parsing class_teacher_of: {str(e)}')
+        selected_class = request.GET.get('class', classes[0] if classes else '')
+        selected_section = request.GET.get('section', sections[0] if sections else '')
 
-        selected_class = request.GET.get('class', default_class or (classes[0] if classes else ''))
-        selected_section = request.GET.get('section', default_section or (sections[0] if sections else ''))
-
-        # Validate class and section
-        if selected_class not in classes or selected_section not in sections:
+        # Validate
+        if selected_class not in classes:
             selected_class = classes[0] if classes else ''
+        if selected_section not in sections:
             selected_section = sections[0] if sections else ''
-            if not classes or not sections:
-                messages.warning(request, 'No classes or sections found.')
+        if not classes or not sections:
+            messages.warning(request, 'No classes or sections found.')
 
-        # Get subjects for selected class
+        # Subjects
         subjects = []
         if selected_class:
-            cursor.execute(
-                "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
-                [selected_class]
-            )
+            cursor.execute("SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name", [selected_class])
             subjects = [{'id': row[0], 'name': row[1], 'max_marks': row[2]} for row in cursor.fetchall()]
 
-        # Get students for selected class and section
+        # Students with admission_number fallback (now includes class/section for display/differentiation)
         students = []
         if selected_class and selected_section:
-            cursor.execute(
-                "SELECT id, name, roll_number FROM student_page1 WHERE class = %s AND section = %s ORDER BY name",
-                [selected_class, selected_section]
-            )
-            students = [{'id': row[0], 'name': row[1], 'roll_number': row[2]} for row in cursor.fetchall()]
+            try:
+                cursor.execute(
+                    """
+                    SELECT user_id AS id, name, roll_number, class, section, 
+                           COALESCE(admission_number, '') AS admission_number 
+                    FROM student_page1 
+                    WHERE class = %s AND section = %s 
+                    ORDER BY name
+                    """,
+                    [selected_class, selected_section]
+                )
+                students = [
+                    {
+                        'id': row[0], 
+                        'name': row[1], 
+                        'roll_number': row[2], 
+                        'class': row[3], 
+                        'section': row[4], 
+                        'admission_number': row[5]
+                    } 
+                    for row in cursor.fetchall()
+                ]
+            except Exception as col_err:
+                if "Unknown column 'admission_number'" in str(col_err):
+                    cursor.execute(
+                        """
+                        SELECT user_id AS id, name, roll_number, class, section
+                        FROM student_page1 
+                        WHERE class = %s AND section = %s 
+                        ORDER BY name
+                        """,
+                        [selected_class, selected_section]
+                    )
+                    students = [
+                        {
+                            'id': row[0], 
+                            'name': row[1], 
+                            'roll_number': row[2], 
+                            'class': row[3], 
+                            'section': row[4], 
+                            'admission_number': ''
+                        } 
+                        for row in cursor.fetchall()
+                    ]
+                else:
+                    raise col_err
 
     return render(request, 'users/mark.html', {
         'subjects': subjects,
@@ -5659,7 +5682,7 @@ def mark_entry(request):
     })
 
 def save_marks(request):
-    if 'teacher_id' not in request.session:
+    if 'admin_id' not in request.session:
         return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
 
     if request.method == 'POST':
@@ -5675,89 +5698,60 @@ def save_marks(request):
                 return JsonResponse({'success': False, 'message': 'Missing required fields.'}, status=400)
 
             with connection.cursor() as cursor:
-                # Verify teacher role
-                cursor.execute(
-                    "SELECT subject, class_teacher_of FROM teachers WHERE id = %s",
-                    [request.session['teacher_id']]
-                )
-                teacher = cursor.fetchone()
-                expected_role = 'classTeacher' if teacher[1] else 'subjectTeacher'
+                # Verify admin exists (only id)
+                cursor.execute("SELECT id FROM admins WHERE id = %s", [request.session['admin_id']])
+                if not cursor.fetchone():
+                    return JsonResponse({'success': False, 'message': 'Admin not found.'}, status=403)
+
+                # Fixed role: classTeacher
+                expected_role = 'classTeacher'
                 if role != expected_role:
                     return JsonResponse({'success': False, 'message': 'Invalid role.'}, status=403)
 
-                # Verify student, class, and section
+                # Verify student (user_id unique; admission_number for diff)
                 cursor.execute(
-                    "SELECT user_id FROM student_page1 WHERE user_id = %s AND class = %s AND section = %s",
+                    "SELECT user_id, admission_number FROM student_page1 WHERE user_id = %s AND class = %s AND section = %s",
                     [student_id, class_name, section]
                 )
                 if not cursor.fetchone():
                     return JsonResponse({'success': False, 'message': 'Invalid student, class, or section.'}, status=400)
 
-                # Store signature
+                # Signature (reuse teacher_signature)
                 signature = marks_data[0].get('signature') if isinstance(marks_data, list) else marks_data.get('signature')
                 if not signature:
                     return JsonResponse({'success': False, 'message': 'Signature is required.'}, status=400)
                 cursor.execute(
                     "INSERT INTO teacher_signature (teacher_id, signature) VALUES (%s, %s) ON DUPLICATE KEY UPDATE signature=%s",
-                    [request.session['teacher_id'], signature, signature]
+                    [request.session['admin_id'], signature, signature]
                 )
 
                 def calculate_grade(marks, max_marks):
                     percentage = (marks / max_marks * 100) if max_marks > 0 else 0
                     return 'A' if percentage >= 80 else 'B' if percentage >= 60 else 'C' if percentage >= 40 else 'D' if percentage >= 33 else 'E'
 
-                if role == 'subjectTeacher':
-                    subject_id = marks_data.get('subjectId')
-                    marks = marks_data.get('marks')
-                    max_marks = marks_data.get('maxMarks')
+                # Process all subjects (no auth checks for admin)
+                for subject in marks_data:
+                    subject_id = subject.get('subjectId')
+                    marks_val = subject.get('marks')
+                    max_marks = subject.get('maxMarks')
 
-                    if not all([subject_id, marks is not None, max_marks]):
+                    if not all([subject_id, marks_val is not None, max_marks]):
                         return JsonResponse({'success': False, 'message': 'Invalid subject or marks.'}, status=400)
 
-                    cursor.execute(
-                        "SELECT name FROM school_subjects WHERE id = %s AND class = %s",
-                        [subject_id, class_name]
-                    )
-                    subject_name = cursor.fetchone()
-                    if not subject_name or subject_name[0] != teacher[0]:
-                        return JsonResponse({'success': False, 'message': 'Unauthorized subject or class.'}, status=403)
+                    cursor.execute("SELECT name FROM school_subjects WHERE id = %s AND class = %s", [subject_id, class_name])
+                    if not cursor.fetchone():
+                        return JsonResponse({'success': False, 'message': 'Subject not found.'}, status=404)
 
-                    marks = int(marks)
+                    marks = int(marks_val)
                     max_marks = int(max_marks)
                     if marks < 0 or max_marks < 1 or marks > max_marks:
-                        return JsonResponse({'success': False, 'message': 'Invalid marks or max marks.'}, status=400)
+                        return JsonResponse({'success': False, 'message': 'Invalid marks.'}, status=400)
 
                     grade = calculate_grade(marks, max_marks)
                     cursor.execute(
                         "INSERT INTO school_marks (student_id, subject_id, marks, max_marks, grade) VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE marks=%s, max_marks=%s, grade=%s",
                         [student_id, subject_id, marks, max_marks, grade, marks, max_marks, grade]
                     )
-                else:
-                    for subject in marks_data:
-                        subject_id = subject.get('subjectId')
-                        marks = subject.get('marks')
-                        max_marks = subject.get('maxMarks')
-
-                        if not all([subject_id, marks is not None, max_marks]):
-                            return JsonResponse({'success': False, 'message': 'Invalid subject or marks.'}, status=400)
-
-                        cursor.execute(
-                            "SELECT name FROM school_subjects WHERE id = %s AND class = %s",
-                            [subject_id, class_name]
-                        )
-                        if not cursor.fetchone():
-                            return JsonResponse({'success': False, 'message': 'Subject not found for this class.'}, status=404)
-
-                        marks = int(marks)
-                        max_marks = int(max_marks)
-                        if marks < 0 or max_marks < 1 or marks > max_marks:
-                            return JsonResponse({'success': False, 'message': 'Invalid marks or max marks.'}, status=400)
-
-                        grade = calculate_grade(marks, max_marks)
-                        cursor.execute(
-                            "INSERT INTO school_marks (student_id, subject_id, marks, max_marks, grade) VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE marks=%s, max_marks=%s, grade=%s",
-                            [student_id, subject_id, marks, max_marks, grade, marks, max_marks, grade]
-                        )
 
                 connection.commit()
                 return JsonResponse({'success': True, 'message': 'Marks saved successfully.'})
@@ -5769,7 +5763,7 @@ def save_marks(request):
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
 
 def add_subject(request):
-    if 'teacher_id' not in request.session:
+    if 'admin_id' not in request.session:
         return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
 
     if request.method == 'POST':
@@ -5780,7 +5774,7 @@ def add_subject(request):
             class_name = data.get('class')
 
             if not all([subject_name, max_marks, class_name]):
-                return JsonResponse({'success': False, 'message': 'Subject name, max marks, and class required.'}, status=400)
+                return JsonResponse({'success': False, 'message': 'Missing fields.'}, status=400)
 
             max_marks = int(max_marks)
             if max_marks < 1:
@@ -5791,35 +5785,26 @@ def add_subject(request):
                 if cursor.fetchone()[0] == 0:
                     return JsonResponse({'success': False, 'message': 'Invalid class.'}, status=400)
 
-                cursor.execute(
-                    "SELECT COUNT(*) FROM school_subjects WHERE name = %s AND class = %s",
-                    [subject_name, class_name]
-                )
+                cursor.execute("SELECT COUNT(*) FROM school_subjects WHERE name = %s AND class = %s", [subject_name, class_name])
                 if cursor.fetchone()[0] > 0:
-                    return JsonResponse({'success': False, 'message': 'Subject already exists for this class.'}, status=400)
+                    return JsonResponse({'success': False, 'message': 'Subject exists.'}, status=400)
 
-                cursor.execute(
-                    "INSERT INTO school_subjects (name, max_marks, class) VALUES (%s, %s, %s)",
-                    [subject_name, max_marks, class_name]
-                )
+                cursor.execute("INSERT INTO school_subjects (name, max_marks, class) VALUES (%s, %s, %s)", [subject_name, max_marks, class_name])
                 connection.commit()
 
-                cursor.execute(
-                    "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
-                    [class_name]
-                )
+                cursor.execute("SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name", [class_name])
                 subjects = [{'id': row[0], 'name': row[1], 'max_marks': row[2]} for row in cursor.fetchall()]
 
-                return JsonResponse({'success': True, 'message': f'Subject {subject_name} added for class {class_name}.', 'subjects': subjects})
+                return JsonResponse({'success': True, 'message': f'Subject {subject_name} added.', 'subjects': subjects})
 
         except Exception as e:
             connection.rollback()
-            return JsonResponse({'success': False, 'message': f'Error adding subject: {str(e)}'}, status=500)
+            return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
 
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
+    return JsonResponse({'success': False, 'message': 'Invalid method.'}, status=405)
 
 def delete_subject(request):
-    if 'teacher_id' not in request.session:
+    if 'admin_id' not in request.session:
         return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
 
     if request.method == 'POST':
@@ -5829,45 +5814,35 @@ def delete_subject(request):
             class_name = data.get('class')
 
             if not all([subject_id, class_name]):
-                return JsonResponse({'success': False, 'message': 'Subject ID and class required.'}, status=400)
+                return JsonResponse({'success': False, 'message': 'Missing fields.'}, status=400)
 
             with connection.cursor() as cursor:
                 cursor.execute("SELECT COUNT(*) FROM student_page1 WHERE class = %s", [class_name])
                 if cursor.fetchone()[0] == 0:
                     return JsonResponse({'success': False, 'message': 'Invalid class.'}, status=400)
 
-                cursor.execute(
-                    "SELECT name FROM school_subjects WHERE id = %s AND class = %s",
-                    [subject_id, class_name]
-                )
+                cursor.execute("SELECT name FROM school_subjects WHERE id = %s AND class = %s", [subject_id, class_name])
                 subject = cursor.fetchone()
                 if not subject:
-                    return JsonResponse({'success': False, 'message': 'Subject not found for this class.'}, status=404)
+                    return JsonResponse({'success': False, 'message': 'Subject not found.'}, status=404)
 
                 cursor.execute("DELETE FROM school_marks WHERE subject_id = %s", [subject_id])
                 cursor.execute("DELETE FROM school_subjects WHERE id = %s", [subject_id])
                 connection.commit()
 
-                cursor.execute(
-                    "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
-                    [class_name]
-                )
+                cursor.execute("SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name", [class_name])
                 subjects = [{'id': row[0], 'name': row[1], 'max_marks': row[2]} for row in cursor.fetchall()]
 
-                return JsonResponse({'success': True, 'message': f'Subject {subject[0]} deleted for class {class_name}.', 'subjects': subjects})
+                return JsonResponse({'success': True, 'message': f'Subject {subject[0]} deleted.', 'subjects': subjects})
 
         except Exception as e:
             connection.rollback()
-            return JsonResponse({'success': False, 'message': f'Error deleting subject: {str(e)}'}, status=500)
+            return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
 
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
-
-from django.http import JsonResponse
-from django.db import connection
-import json
+    return JsonResponse({'success': False, 'message': 'Invalid method.'}, status=405)
 
 def progress_card(request):
-    if 'teacher_id' not in request.session:
+    if 'admin_id' not in request.session:
         return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
 
     if request.method == 'POST':
@@ -5879,60 +5854,82 @@ def progress_card(request):
                 return JsonResponse({'success': False, 'message': 'Student ID required.'}, status=400)
 
             with connection.cursor() as cursor:
-                # Fetch student details including profile picture
-                cursor.execute(
-                    """
-                    SELECT s.name, s.roll_number, s.class, s.section, p.image_path
-                    FROM student_page1 s
-                    LEFT JOIN profile_pics p ON s.user_id = p.user_id
-                    WHERE s.user_id = %s
-                    """,
-                    [student_id]
-                )
-                student = cursor.fetchone()
-                if not student:
+                # Verify admin
+                cursor.execute("SELECT id FROM admins WHERE id = %s", [request.session['admin_id']])
+                if not cursor.fetchone():
+                    return JsonResponse({'success': False, 'message': 'Admin not found.'}, status=403)
+
+                # Student with admission_number fallback
+                try:
+                    cursor.execute(
+                        """
+                        SELECT s.name, s.roll_number, s.class, s.section, COALESCE(s.admission_number, '') AS admission_number, p.image_path
+                        FROM student_page1 s LEFT JOIN profile_pics p ON s.user_id = p.user_id
+                        WHERE s.user_id = %s
+                        """,
+                        [student_id]
+                    )
+                    student_row = cursor.fetchone()
+                    if student_row:
+                        name, roll_number, class_name, section, admission_number, image_path = student_row
+                    else:
+                        name = roll_number = class_name = section = admission_number = image_path = ''
+                except Exception as col_err:
+                    if "Unknown column 'admission_number'" in str(col_err):
+                        cursor.execute(
+                            """
+                            SELECT s.name, s.roll_number, s.class, s.section, p.image_path
+                            FROM student_page1 s LEFT JOIN profile_pics p ON s.user_id = p.user_id
+                            WHERE s.user_id = %s
+                            """,
+                            [student_id]
+                        )
+                        student_row = cursor.fetchone()
+                        if student_row:
+                            name, roll_number, class_name, section, image_path = student_row
+                            admission_number = ''
+                        else:
+                            name = roll_number = class_name = section = admission_number = image_path = ''
+                    else:
+                        raise col_err
+
+                if not name:
                     return JsonResponse({'success': False, 'message': 'Student not found.'}, status=404)
 
-                # Fetch marks
+                # Marks
                 cursor.execute(
                     """
-                    SELECT s.name, m.marks, m.max_marks, m.grade
-                    FROM school_marks m
-                    JOIN school_subjects s ON m.subject_id = s.id
-                    WHERE m.student_id = %s AND s.class = %s
+                    SELECT ss.name, m.marks, m.max_marks, m.grade
+                    FROM school_marks m JOIN school_subjects ss ON m.subject_id = ss.id
+                    WHERE m.student_id = %s AND ss.class = %s
                     """,
-                    [student_id, student[2]]
+                    [student_id, class_name]
                 )
-                marks = [{'subject': row[0], 'marks': row[1], 'max_marks': row[2], 'grade': row[3]} for row in cursor.fetchall()]
+                marks = [{'subject': row[0], 'marks': row[1] or 0, 'max_marks': row[2], 'grade': row[3] or 'E'} for row in cursor.fetchall()]
 
-                # Fetch teacher signature
-                cursor.execute(
-                    "SELECT signature FROM teacher_signature WHERE teacher_id = %s",
-                    [request.session['teacher_id']]
-                )
+                # Signature
+                cursor.execute("SELECT signature FROM teacher_signature WHERE teacher_id = %s", [request.session['admin_id']])
                 signature_row = cursor.fetchone()
                 signature = signature_row[0] if signature_row else None
 
-                # Fetch teacher name
-                cursor.execute("SELECT name FROM teachers WHERE id = %s", [request.session['teacher_id']])
-                teacher_name = cursor.fetchone()[0]
+                teacher_name = request.session.get('admin_display_name', 'Admin')
 
-                # Calculate totals and grade
+                # Calculations
                 total_marks = sum(mark['marks'] for mark in marks)
                 total_max_marks = sum(mark['max_marks'] for mark in marks)
                 percentage = (total_marks / total_max_marks * 100) if total_max_marks > 0 else 0
                 grade = 'A' if percentage >= 80 else 'B' if percentage >= 60 else 'C' if percentage >= 40 else 'D' if percentage >= 33 else 'E'
-                passed = all(mark['marks'] >= 0.33 * mark['max_marks'] for mark in marks) and marks
+                passed = all(mark['marks'] >= 0.33 * mark['max_marks'] for mark in marks) if marks else False
 
-                # Prepare response
                 response_data = {
                     'success': True,
                     'student': {
-                        'name': student[0],
-                        'roll_number': student[1],
-                        'class': student[2],
-                        'section': student[3],
-                        'image_path': student[4] or 'pfpics/default_profile.jpg'  # Fallback to default
+                        'name': name,
+                        'roll_number': roll_number,
+                        'class': class_name,
+                        'section': section,
+                        'admission_number': admission_number,  # Always included
+                        'image_path': image_path or 'images/default_profile.jpg'
                     },
                     'marks': marks,
                     'total_marks': total_marks,
@@ -5947,12 +5944,12 @@ def progress_card(request):
                 return JsonResponse(response_data)
 
         except Exception as e:
-            return JsonResponse({'success': False, 'message': f'Error fetching progress card: {str(e)}'}, status=500)
+            return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
 
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
+    return JsonResponse({'success': False, 'message': 'Invalid method.'}, status=405)
 
 def get_students(request):
-    if 'teacher_id' not in request.session:
+    if 'admin_id' not in request.session:
         return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
 
     try:
@@ -5963,18 +5960,65 @@ def get_students(request):
             return JsonResponse({'success': False, 'message': 'Class and section required.'}, status=400)
 
         with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT user_id AS id, name, roll_number FROM student_page1 WHERE class = %s AND section = %s ORDER BY name",
-                [class_name, section]
-            )
-            students = [{'id': row[0], 'name': row[1], 'roll_number': row[2]} for row in cursor.fetchall()]
+            # Verify admin
+            cursor.execute("SELECT id FROM admins WHERE id = %s", [request.session['admin_id']])
+            if not cursor.fetchone():
+                return JsonResponse({'success': False, 'message': 'Admin not found.'}, status=403)
+
+            # Students with admission_number fallback (and class/section for display)
+            try:
+                cursor.execute(
+                    """
+                    SELECT user_id AS id, name, roll_number, class, section, 
+                           COALESCE(admission_number, '') AS admission_number 
+                    FROM student_page1 
+                    WHERE class = %s AND section = %s 
+                    ORDER BY name
+                    """,
+                    [class_name, section]
+                )
+                students = [
+                    {
+                        'id': row[0], 
+                        'name': row[1], 
+                        'roll_number': row[2], 
+                        'class': row[3], 
+                        'section': row[4], 
+                        'admission_number': row[5]
+                    } 
+                    for row in cursor.fetchall()
+                ]
+            except Exception as col_err:
+                if "Unknown column 'admission_number'" in str(col_err):
+                    cursor.execute(
+                        """
+                        SELECT user_id AS id, name, roll_number, class, section
+                        FROM student_page1 
+                        WHERE class = %s AND section = %s 
+                        ORDER BY name
+                        """,
+                        [class_name, section]
+                    )
+                    students = [
+                        {
+                            'id': row[0], 
+                            'name': row[1], 
+                            'roll_number': row[2], 
+                            'class': row[3], 
+                            'section': row[4], 
+                            'admission_number': ''
+                        } 
+                        for row in cursor.fetchall()
+                    ]
+                else:
+                    raise col_err
+
             return JsonResponse({'success': True, 'students': students})
     except Exception as e:
-        return JsonResponse({'success': False, 'message': f'Error fetching students: {str(e)}'}, status=500)
-
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
 
 def get_subjects(request):
-    if 'teacher_id' not in request.session:
+    if 'admin_id' not in request.session:
         return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
 
     try:
@@ -5983,24 +6027,18 @@ def get_subjects(request):
             return JsonResponse({'success': False, 'message': 'Class required.'}, status=400)
 
         with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
-                [class_name]
-            )
+            # Verify admin
+            cursor.execute("SELECT id FROM admins WHERE id = %s", [request.session['admin_id']])
+            if not cursor.fetchone():
+                return JsonResponse({'success': False, 'message': 'Admin not found.'}, status=403)
+
+            cursor.execute("SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name", [class_name])
             subjects = [{'id': row[0], 'name': row[1], 'max_marks': row[2]} for row in cursor.fetchall()]
             return JsonResponse({'success': True, 'subjects': subjects})
     except Exception as e:
-        return JsonResponse({'success': False, 'message': f'Error fetching subjects: {str(e)}'}, status=500)
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
 
 
-
-
-
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from django.contrib import messages
-from django.db import connection
-import json
 
 def teacher_mark_entry(request):
     if 'teacher_id' not in request.session:
@@ -8630,7 +8668,7 @@ def admin_exam_add(request):
             """, [class_id, subject, exam_date, start_time, end_time, room or None, invigilator_id])
         
         messages.success(request, 'Exam entry added successfully.')
-        return redirect('admin_timetable_panel')
+        return redirect('admin_timetable')
     
     with connection.cursor() as cursor:
         cursor.execute("SELECT DISTINCT class FROM student_page1")
@@ -8709,7 +8747,7 @@ def admin_exam_schedule(request):
                 """, [class_id, subject, exam_date, start_time, end_time, room or None, invigilator_id])
         
         messages.success(request, 'Exam schedule created successfully.')
-        return redirect('admin_timetable_panel')
+        return redirect('admin_timetable')
     
     # Fetch data for form
     with connection.cursor() as cursor:
@@ -8802,3 +8840,141 @@ def admin_exam_pdf_download(request):
     
     doc.build(story)
     return response
+
+
+def admin_exam_edit(request, exam_id):
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    # Fetch the exam
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT id, class_id, subject, exam_date, start_time, end_time, room, invigilator_id FROM exams WHERE id = %s", [exam_id])
+        exam_row = cursor.fetchone()
+        if not exam_row:
+            messages.error(request, 'Exam not found.')
+            return redirect('admin_timetable')
+        
+        exam = {
+            'id': exam_row[0],
+            'class_id': exam_row[1],
+            'subject': exam_row[2],
+            'exam_date': exam_row[3],
+            'start_time': exam_row[4],
+            'end_time': exam_row[5],
+            'room': exam_row[6],
+            'invigilator_id': exam_row[7],
+        }
+    
+    # Parse class_id to current_class and current_section
+    class_id = exam['class_id']
+    if len(class_id) > 1 and class_id[-1].isalpha():
+        current_class = class_id[:-1]
+        current_section = class_id[-1]
+    else:
+        current_class = class_id
+        current_section = ''
+    
+    if request.method == 'POST':
+        class_name = request.POST.get('class_id')
+        section = request.POST.get('section')
+        subject = request.POST.get('subject')
+        exam_date = request.POST.get('exam_date')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+        room = request.POST.get('room')
+        invigilator_id = request.POST.get('invigilator_id')
+
+        # Construct class_id
+        class_id_new = f"{class_name}{section}" if section else class_name
+
+        # Validate inputs
+        if not class_name or not class_id_new:
+            messages.error(request, 'Please select a valid class.')
+            return redirect('admin_exam_edit', exam_id=exam_id)
+        if not subject or not invigilator_id or not exam_date or not start_time or not end_time:
+            messages.error(request, 'Please fill in all required fields.')
+            return redirect('admin_exam_edit', exam_id=exam_id)
+
+        with connection.cursor() as cursor:
+            # Check for conflicts, excluding current exam
+            cursor.execute("""
+                SELECT id FROM exams 
+                WHERE (class_id = %s OR invigilator_id = %s)
+                AND exam_date = %s
+                AND start_time <= %s AND end_time >= %s
+                AND id != %s
+            """, [class_id_new, invigilator_id, exam_date, end_time, start_time, exam_id])
+            conflict = cursor.fetchone()
+            
+            if conflict:
+                messages.error(request, 'Scheduling conflict detected.')
+                return redirect('admin_exam_edit', exam_id=exam_id)
+            
+            # Update exams
+            cursor.execute("""
+                UPDATE exams SET class_id = %s, subject = %s, exam_date = %s, start_time = %s, 
+                                 end_time = %s, room = %s, invigilator_id = %s
+                WHERE id = %s
+            """, [class_id_new, subject, exam_date, start_time, end_time, room or None, invigilator_id, exam_id])
+        
+        messages.success(request, 'Exam entry updated successfully.')
+        return redirect('admin_timetable')
+    
+    # Fetch data for form
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT DISTINCT class FROM student_page1")
+        classes = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
+        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT id, name FROM teachers")
+        teachers = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
+    
+    return render(request, 'users/admin_exam_edit.html', {
+        'classes': classes, 'sections': sections, 'teachers': teachers,
+        'exam': exam, 'current_class': current_class, 'current_section': current_section
+    })
+
+# Add this view to your views.py
+
+# Updated admin_exam_delete view - remove the delete from non-existent table
+def admin_exam_delete(request, exam_id):
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    # Fetch the exam for confirmation
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT e.id, e.class_id, e.subject, e.exam_date, e.start_time, e.end_time, 
+                   COALESCE(e.room, 'N/A') as room, COALESCE(t.name, 'N/A') as invigilator_name
+            FROM exams e
+            LEFT JOIN teachers t ON e.invigilator_id = t.id
+            WHERE e.id = %s
+        """, [exam_id])
+        exam = cursor.fetchone()
+        
+        if not exam:
+            messages.error(request, 'Exam not found.')
+            return redirect('admin_timetable')
+    
+    if request.method == 'POST':
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM exams WHERE id = %s", [exam_id])
+            # Removed the DELETE from exam_students since the table doesn't exist
+        
+        messages.success(request, 'Exam entry deleted successfully.')
+        return redirect('admin_timetable')
+    
+    return render(request, 'users/admin_exam_delete.html', {
+        'exam': {
+            'id': exam[0],
+            'class_id': exam[1],
+            'subject': exam[2],
+            'exam_date': exam[3],
+            'start_time': exam[4],
+            'end_time': exam[5],
+            'room': exam[6],
+            'invigilator_name': exam[7],
+        }
+    })

@@ -262,19 +262,20 @@
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
+            padding: 1rem; /* Increased padding for better box size */
+            border: 2px solid var(--border-color); /* Thicker border for consistency */
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.95rem; /* Slightly larger font for better readability */
             background: var(--white);
             color: var(--text-color);
             transition: var(--transition);
+            min-height: 48px; /* Consistent height for alignment */
         }
         .form-group select {
             appearance: none;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
             background-repeat: no-repeat;
-            background-position: right 0.75rem center;
+            background-position: right 1rem center;
             background-size: 12px;
         }
         .form-group input:focus,
@@ -290,21 +291,77 @@
         .class-section > div {
             flex: 1;
         }
+        .marks-entry-container { /* New wrapper for marks entering area */
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        .marks-entry-container:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+        .marks-entry-container h3 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.75rem;
+        }
         .subject-row {
             display: flex;
             gap: 1.5rem;
             margin-bottom: 1.5rem;
-            padding: 1rem;
-            border-radius: 8px;
+            padding: 1.5rem;
+            border-radius: 12px;
             background: var(--white);
-            border: 2px solid var(--border-color);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
             transition: var(--transition);
+            align-items: flex-start;
         }
         .subject-row:hover {
             box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
         }
         .subject-row > div {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .subject-row label {
+            text-align: left; /* Ensure labels align left */
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.95rem;
+        }
+        .subject-row input {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--white);
+            color: var(--text-color);
+            transition: var(--transition);
+            min-height: 48px;
+        }
+        .subject-row input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+        }
+        .subject-row input[readonly] {
+            background: #f8f9fa;
+            color: var(--text-light);
+            cursor: not-allowed;
+            border-color: #e9ecef;
         }
         .button-group {
             display: flex;
@@ -555,9 +612,13 @@
                 flex-direction: column;
                 gap: 1rem;
             }
+            .marks-entry-container {
+                padding: 1.5rem;
+            }
             .subject-row {
                 flex-direction: column;
                 gap: 1rem;
+                padding: 1.25rem;
             }
             .button-group {
                 flex-direction: column;
@@ -590,6 +651,11 @@
             .back-btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
+            }
+            .form-group input,
+            .form-group select {
+                padding: 0.875rem;
+                min-height: 44px;
             }
         }
         @media (max-width: 480px) {
@@ -643,9 +709,20 @@
                 padding: 0.5rem 0.8rem;
                 font-size: 0.8rem;
             }
+            .marks-entry-container {
+                padding: 1.25rem;
+            }
+            .subject-row {
+                padding: 1rem;
+            }
+            .form-group input,
+            .form-group select {
+                padding: 0.75rem;
+                min-height: 40px;
+            }
         }
         @media (hover: none) {
-            .section:hover, .logo-container:hover, .back-btn:hover, .subject-row:hover {
+            .section:hover, .logo-container:hover, .back-btn:hover, .subject-row:hover, .marks-entry-container:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -697,7 +774,7 @@
                             <i class="fas fa-chart-bar icon"></i> Progress Card
                         </button>
                     </div>
-                   
+              
                 </div>
                 <div id="markEntrySection" class="section">
                     <h2><i class="fas fa-edit icon"></i> Mark Entry</h2>
@@ -708,7 +785,7 @@
                             <select id="classSelect" required>
                                 <option value="">Select Class</option>
                                 {% for class in classes %}
-                                    <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
+                                    <option value="{{ class }}">{{ class }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -717,7 +794,7 @@
                             <select id="sectionSelect" required>
                                 <option value="">Select Section</option>
                                 {% for section in sections %}
-                                    <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section }}</option>
+                                    <option value="{{ section }}">{{ section }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -892,7 +969,7 @@
             const showMarkEntry = document.getElementById('showMarkEntry');
             const showProgressCard = document.getElementById('showProgressCard');
             const loadingProgress = document.getElementById('loadingProgress');
-           
+      
             // Modal elements
             const addSubjectModal = document.getElementById('addSubjectModal');
             const newSubjectName = document.getElementById('newSubjectName');
@@ -903,7 +980,7 @@
             const deleteSubjectSelect = document.getElementById('deleteSubjectSelect');
             const confirmDeleteSubject = document.getElementById('confirmDeleteSubject');
             const cancelDeleteSubject = document.getElementById('cancelDeleteSubject');
-           
+      
             // Signature pad elements
             const signaturePad = document.getElementById('signaturePad');
             const clearSignatureBtn = document.getElementById('clearSignature');
@@ -987,7 +1064,7 @@
                 return new Promise((resolve, reject) => {
                     const img = new Image();
                     img.crossOrigin = 'anonymous';
-                   
+              
                     img.onload = function() {
                         try {
                             const canvas = document.createElement('canvas');
@@ -1002,12 +1079,12 @@
                             reject(error);
                         }
                     };
-                   
+              
                     img.onerror = function() {
                         console.error('Error loading image:', src);
                         reject(new Error('Failed to load image'));
                     };
-                   
+              
                     // Try to load the image with cache busting
                     img.src = src + (src.includes('?') ? '&' : '?') + 't=' + Date.now();
                 });
@@ -1027,15 +1104,16 @@
                     const studentResponse = await fetch(`/get_students/?class=${encodeURIComponent(classValue)}&section=${encodeURIComponent(sectionValue)}`, {
                         headers: { 'X-CSRFToken': getCsrfToken() }
                     });
-                   
+              
                     if (!studentResponse.ok) {
                         throw new Error(`HTTP error! status: ${studentResponse.status}`);
                     }
-                   
+              
                     const studentData = await studentResponse.json();
                     if (studentData.success) {
                         studentData.students.forEach(student => {
-                            studentSelect.innerHTML += `<option value="${student.id}">${student.name} (Roll: ${student.roll_number})</option>`;
+                            const admNo = student.admission_number ? `, Adm: ${student.admission_number}` : '';
+                            studentSelect.innerHTML += `<option value="${student.id}">${student.name} (${student.class} ${student.section}, Roll: ${student.roll_number}${admNo})</option>`;
                         });
                     } else {
                         showAlert(studentData.message || 'Error fetching students', 'error');
@@ -1044,11 +1122,11 @@
                     const subjectResponse = await fetch(`/get_subjects/?class=${encodeURIComponent(classValue)}`, {
                         headers: { 'X-CSRFToken': getCsrfToken() }
                     });
-                   
+              
                     if (!subjectResponse.ok) {
                         throw new Error(`HTTP error! status: ${subjectResponse.status}`);
                     }
-                   
+              
                     const subjectData = await subjectResponse.json();
                     if (subjectData.success) {
                         subjects = subjectData.subjects;
@@ -1076,14 +1154,17 @@
                             </div>
                         `;
                         marksInput.innerHTML = `
-                            <div class="subject-row">
-                                <div>
-                                    <label for="marks"><i class="fas fa-star icon"></i> Marks</label>
-                                    <input id="marks" type="number" min="0" max="${subject.max_marks}" placeholder="Enter marks" required>
-                                </div>
-                                <div>
-                                    <label for="maxMarks"><i class="fas fa-trophy icon"></i> Max Marks</label>
-                                    <input id="maxMarks" type="number" min="1" value="${subject.max_marks}" readonly>
+                            <div class="marks-entry-container">
+                                <h3><i class="fas fa-star icon"></i> Enter Marks for ${subject.name}</h3>
+                                <div class="subject-row">
+                                    <div>
+                                        <label for="marks"><i class="fas fa-star icon"></i> Marks</label>
+                                        <input id="marks" type="number" min="0" max="${subject.max_marks}" placeholder="Enter marks" required>
+                                    </div>
+                                    <div>
+                                        <label for="maxMarks"><i class="fas fa-trophy icon"></i> Max Marks</label>
+                                        <input id="maxMarks" type="number" min="1" value="${subject.max_marks}" readonly>
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -1094,8 +1175,9 @@
                     if (subjects.length === 0) {
                         marksInput.innerHTML = '<p>No subjects available for this class.</p>';
                     } else {
+                        let marksHtml = '<div class="marks-entry-container"><h3><i class="fas fa-edit icon"></i> Enter Marks for All Subjects</h3>';
                         subjects.forEach(sub => {
-                            marksInput.innerHTML += `
+                            marksHtml += `
                                 <div class="subject-row">
                                     <div>
                                         <label for="${sub.id}-marks"><i class="fas fa-star icon"></i> ${sub.name} Marks</label>
@@ -1108,6 +1190,8 @@
                                 </div>
                             `;
                         });
+                        marksHtml += '</div>';
+                        marksInput.innerHTML = marksHtml;
                     }
                 }
             }
@@ -1137,16 +1221,17 @@
                     const response = await fetch(`/get_students/?class=${encodeURIComponent(classValue)}&section=${encodeURIComponent(sectionValue)}`, {
                         headers: { 'X-CSRFToken': getCsrfToken() }
                     });
-                   
+              
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                   
+              
                     const data = await response.json();
                     if (data.success) {
                         progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
                         data.students.forEach(student => {
-                            progressStudentSelect.innerHTML += `<option value="${student.id}">${student.name} (Roll: ${student.roll_number})</option>`;
+                            const admNo = student.admission_number ? `, Adm: ${student.admission_number}` : '';
+                            progressStudentSelect.innerHTML += `<option value="${student.id}">${student.name} (${student.class} ${student.section}, Roll: ${student.roll_number}${admNo})</option>`;
                         });
                     } else {
                         showAlert(data.message || 'Error fetching students', 'error');
@@ -1159,7 +1244,7 @@
             async function fetchProgressCard(studentId) {
                 showLoading(true);
                 progressCard.style.display = 'none';
-               
+          
                 try {
                     const response = await fetch('/progress_card/', {
                         method: 'POST',
@@ -1169,11 +1254,11 @@
                         },
                         body: JSON.stringify({ studentId })
                     });
-                   
+              
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                   
+              
                     const data = await response.json();
                     if (data.success) {
                         currentProgressData = data;
@@ -1191,8 +1276,9 @@
             function displayProgressCard(data) {
                 progressCard.style.display = 'block';
                 studentNameDisplay.textContent = data.student.name;
-                studentDetails.textContent = `Roll Number: ${data.student.roll_number}, Class: ${data.student.class}, Section: ${data.student.section}`;
-               
+                const admNo = data.student.admission_number ? `, Admission No: ${data.student.admission_number}` : '';
+                studentDetails.textContent = `Roll Number: ${data.student.roll_number}${admNo}, Class: ${data.student.class}, Section: ${data.student.section}`;
+          
                 // Handle profile picture
                 if (data.student.image_path) {
                     studentProfilePic.src = `/media/${data.student.image_path}`;
@@ -1204,7 +1290,7 @@
                     studentProfilePic.src = "{% static 'users/images/default_profile.jpg' %}";
                     studentProfilePic.style.display = 'block';
                 }
-               
+          
                 // Populate marks table
                 marksTable.innerHTML = '';
                 data.marks.forEach(mark => {
@@ -1217,7 +1303,7 @@
                         </tr>
                     `;
                 });
-               
+          
                 // Display summary
                 totalMarks.textContent = `Total Marks: ${data.total_marks}/${data.total_max_marks}`;
                 percentage.textContent = `Percentage: ${data.percentage}%`;
@@ -1257,7 +1343,7 @@
                         } else {
                             imageSrc = "{% static 'users/images/default_profile.jpg' %}";
                         }
-                       
+                  
                         profileImageBase64 = await loadImageAsBase64(imageSrc);
                         doc.addImage(profileImageBase64, 'JPEG', 15, 40, 25, 25); // Left side positioning
                     } catch (error) {
@@ -1276,13 +1362,15 @@
                     doc.text(`Name: ${data.student.name}`, 45, 45);
                     doc.setFont('helvetica', 'normal');
                     doc.text(`Roll Number: ${data.student.roll_number}`, 45, 52);
-                    doc.text(`Class: ${data.student.class} - ${data.student.section}`, 45, 59);
-                    doc.text(`Date: ${new Date().toLocaleDateString()}`, 45, 66);
+                    const admNo = data.student.admission_number ? `Admission No: ${data.student.admission_number}` : 'Admission No: N/A';
+                    doc.text(admNo, 45, 59);
+                    doc.text(`Class: ${data.student.class} - ${data.student.section}`, 45, 66);
+                    doc.text(`Date: ${new Date().toLocaleDateString()}`, 45, 73);
                     // Marks Table
-                    let y = 75;
+                    let y = 80;
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'bold');
-                   
+              
                     // Table header
                     doc.setFillColor(tableHeaderColor);
                     doc.rect(15, y, 170, 8, 'F');
@@ -1291,7 +1379,7 @@
                     doc.text('Marks Obtained', 70, y + 5);
                     doc.text('Maximum Marks', 110, y + 5);
                     doc.text('Grade', 155, y + 5);
-                   
+              
                     y += 8;
                     doc.setDrawColor('#00a676');
                     doc.setLineWidth(0.5);
@@ -1306,12 +1394,12 @@
                             doc.setFillColor('#f0f9f4');
                             doc.rect(15, y - 6, 170, 8, 'F');
                         }
-                       
+                  
                         doc.text(mark.subject, 20, y);
                         doc.text(mark.marks.toString(), 80, y, { align: 'center' });
                         doc.text(mark.max_marks.toString(), 120, y, { align: 'center' });
                         doc.text(mark.grade, 160, y, { align: 'center' });
-                       
+                  
                         // Row border
                         doc.setDrawColor('#d1e7dd');
                         doc.setLineWidth(0.2);
@@ -1324,7 +1412,7 @@
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(11);
                     doc.setTextColor('#ffffff');
-                   
+              
                     doc.text(`Total Marks: ${data.total_marks}/${data.total_max_marks}`, 20, y + 8);
                     doc.text(`Percentage: ${data.percentage}%`, 20, y + 16);
                     doc.text(`Overall Grade: ${data.grade}`, 110, y + 8);
@@ -1336,7 +1424,7 @@
                     doc.setTextColor('#000000');
                     doc.text('Class Teacher:', 20, y);
                     doc.text(data.teacher_name, 50, y);
-                   
+              
                     // Add signature if available
                     if (data.signature) {
                         try {
@@ -1345,7 +1433,7 @@
                             console.warn('Could not add signature to PDF:', error);
                         }
                     }
-                   
+              
                     doc.text('Signature', 20, y + 25);
                     doc.line(20, y + 22, 70, y + 22); // Signature line
                     // Footer
@@ -1355,7 +1443,7 @@
                     // Save the PDF
                     doc.save(`${data.student.name}_ProgressCard_${new Date().toISOString().split('T')[0]}.pdf`);
                     showAlert('PDF downloaded successfully!', 'success');
-                   
+              
                 } catch (error) {
                     console.error('Error generating PDF:', error);
                     showAlert('Error generating PDF. Please try again.', 'error');
@@ -1442,11 +1530,11 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
                         body: JSON.stringify({ subjectName, maxMarks, class: classValue })
                     });
-                   
+              
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                   
+              
                     const data = await response.json();
                     if (data.success) {
                         subjects = data.subjects;
@@ -1474,11 +1562,11 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
                         body: JSON.stringify({ subjectId, class: classValue })
                     });
-                   
+              
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                   
+              
                     const data = await response.json();
                     if (data.success) {
                         subjects = data.subjects;
@@ -1512,12 +1600,12 @@
                     const subjectElement = document.getElementById('subject');
                     const marksElement = document.getElementById('marks');
                     const maxMarksElement = document.getElementById('maxMarks');
-                   
+              
                     if (!subjectElement || !marksElement || !maxMarksElement) {
                         showAlert('Form elements not found. Please refresh the page.', 'error');
                         return;
                     }
-                   
+              
                     const subjectId = subjectElement.value;
                     const marks = parseInt(marksElement.value);
                     const maxMarks = parseInt(maxMarksElement.value);
@@ -1531,15 +1619,15 @@
                     for (const sub of subjects) {
                         const marksElement = document.getElementById(`${sub.id}-marks`);
                         const maxMarksElement = document.getElementById(`${sub.id}-maxMarks`);
-                       
+                  
                         if (!marksElement || !maxMarksElement) {
                             showAlert(`Form elements for ${sub.name} not found.`, 'error');
                             return;
                         }
-                       
+                  
                         const marks = parseInt(marksElement.value);
                         const maxMarks = parseInt(maxMarksElement.value);
-                       
+                  
                         if (isNaN(marks) || isNaN(maxMarks) || marks < 0 || maxMarks < 1 || marks > maxMarks) {
                             showAlert(`Please enter valid marks for ${sub.name}. Marks cannot exceed maximum marks.`, 'error');
                             return;
@@ -1553,11 +1641,11 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
                         body: JSON.stringify({ role, studentId, class: classValue, section: sectionValue, marks: marksData })
                     });
-                   
+              
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                   
+              
                     const data = await response.json();
                     if (data.success) {
                         showAlert(data.message);
@@ -1586,3 +1674,4 @@
     </script>
 </body>
 </html>
+
