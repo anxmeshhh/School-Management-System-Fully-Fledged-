@@ -1323,7 +1323,11 @@ def student_circular(request):
     })
 
 # Teacher uploads circular
+from django.conf import settings
+import os
+
 def teacher_circular_upload(request):
+    CIRCULARS_DIR = os.path.join(settings.MEDIA_ROOT, 'circulars')
     if request.method == 'POST':
         title = request.POST.get('title')
         image = request.FILES.get('image')
@@ -1341,17 +1345,17 @@ def teacher_circular_upload(request):
 
         # Generate a unique filename to avoid conflicts
         filename = f"{uuid.uuid4().hex}_{image.name}"
-        fs = FileSystemStorage(location=UPLOAD_DIR, base_url='/static/uploads/')
+        fs = FileSystemStorage(location=CIRCULARS_DIR, base_url='/media/circulars/')
         try:
             filename = fs.save(filename, image)
-            full_path = os.path.join(UPLOAD_DIR, filename)
+            full_path = os.path.join(CIRCULARS_DIR, filename)
             if os.path.exists(full_path):
                 print(f"Image saved successfully: {full_path}")
             else:
                 print(f"Image save failed: {full_path}")
                 messages.error(request, 'Failed to save the image.')
                 return redirect('teacher_circular_upload')
-            image_url = f"/static/uploads/{filename}"  # Consistent path
+            image_url = f"/media/circulars/{filename}"  # Consistent path
             print(f"Generated image_url: {image_url}")
         except Exception as e:
             print(f"Error saving image {filename}: {e}")
@@ -1359,7 +1363,7 @@ def teacher_circular_upload(request):
             return redirect('teacher_circular_upload')
 
         # Save circular metadata (title, target, class, section) in a unique file
-        metadata_file_path = os.path.join(UPLOAD_DIR, f"{filename}.txt")
+        metadata_file_path = os.path.join(CIRCULARS_DIR, f"{filename}.txt")
         try:
             with open(metadata_file_path, 'w') as f:
                 f.write(f"{title}\nspecific\n{class_name}\n{section}")
@@ -1374,15 +1378,15 @@ def teacher_circular_upload(request):
 
     # Prepare circulars list for display
     circulars = []
-    for file in os.listdir(UPLOAD_DIR):
+    for file in os.listdir(CIRCULARS_DIR):
         if file.endswith(('.jpg', '.png', '.jpeg', '.webp', '.gif')):
-            full_path = os.path.join(UPLOAD_DIR, file)
+            full_path = os.path.join(CIRCULARS_DIR, file)
             if not os.path.exists(full_path):
                 print(f"Image file missing: {full_path}")
                 continue
 
             title_file = f"{file}.txt"
-            title_path = os.path.join(UPLOAD_DIR, title_file)
+            title_path = os.path.join(CIRCULARS_DIR, title_file)
             title = "Untitled"
             target = "All"
             class_name = ""
@@ -1403,7 +1407,7 @@ def teacher_circular_upload(request):
 
             try:
                 created_at = datetime.datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
-                image_url = f"/static/uploads/{file}"  # Consistent path
+                image_url = f"/media/circulars/{file}"  # Consistent path
                 print(f"Listing circular: {file}, image_url: {image_url}, full_path: {full_path}")
                 circulars.append({
                     'title': title,
@@ -1429,7 +1433,6 @@ def teacher_circular_upload(request):
         'classes': classes,
         'sections': sections
     })
-
 
 
 from datetime import datetime  # Add this import at the top of your file
