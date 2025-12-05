@@ -7674,7 +7674,11 @@ def parent_student_leave(request):
     })
 
 
+from django.conf import settings
+import os
+
 def parent_student_circular(request):
+    CIRCULARS_DIR = os.path.join(settings.MEDIA_ROOT, 'circulars')
     # Get the logged-in user's user_id from session and fetch class/section from student_page1
     student_class = None
     student_section = None
@@ -7708,15 +7712,15 @@ def parent_student_circular(request):
     print(f"Filter type: {filter_type}")
 
     circulars = []
-    for file in os.listdir(UPLOAD_DIR):
+    for file in os.listdir(CIRCULARS_DIR):
         if file.endswith(('.jpg', '.png', '.jpeg', '.webp', '.gif')):
-            full_path = os.path.join(UPLOAD_DIR, file)
+            full_path = os.path.join(CIRCULARS_DIR, file)
             if not os.path.exists(full_path):
                 print(f"Image file missing in parent student view: {full_path}")
                 continue
 
             title_file = f"{file}.txt"
-            title_path = os.path.join(UPLOAD_DIR, title_file)
+            title_path = os.path.join(CIRCULARS_DIR, title_file)
             title = "Untitled"
             target = "all"
             class_name = ""
@@ -7752,7 +7756,7 @@ def parent_student_circular(request):
             if include_circular:
                 try:
                     created_at = datetime.datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
-                    image_url = f"/static/uploads/{file}"  # Consistent path
+                    image_url = f"/media/circulars/{file}"  # Consistent path
                     print(f"Included circular: {file}, image_url: {image_url}, full_path: {full_path}")
                     display_target = "All" if target == "all" else f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
                     circulars.append({
@@ -7775,7 +7779,6 @@ def parent_student_circular(request):
         'filter_type': filter_type,
         'error_message': error_message
     })
-
 
 def parent_study_materials(request):
     if "user_id" not in request.session:
