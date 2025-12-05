@@ -940,6 +940,11 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.db import connection
 
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import connection
+
 def admin_login(request):
     if request.method == 'POST':
         email = request.POST.get("email", "").strip()  # Trim user input
@@ -980,16 +985,14 @@ def admin_login(request):
             # Optional: Temp success log (remove after)
             print(f"DEBUG: SUCCESS for '{clean_name}' ({clean_email})")
             
-            messages.success(request, 'Login successful!')
-            return redirect('admin_page')  # Replace with your dashboard URL
+            return HttpResponse("Success")  # Return plain text for AJAX
 
         # Optional: Temp failure log (remove after)
         print("DEBUG: No exact match found")
         
-        messages.error(request, 'Invalid email or password.')
+        return HttpResponse("Invalid credentials")  # Return plain text for AJAX
 
     return render(request, 'users/admin_login.html')
-
 def admin_change_credentials(request):
     if request.method == 'POST':
         current_email = request.POST.get('current_email')

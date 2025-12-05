@@ -739,16 +739,7 @@
 
         <div class="container">
             <div class="main-content">
-                {% if messages %}
-                    <div class="alert-message">
-                        {% for message in messages %}
-                            <div class="{{ message.tags }}">
-                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                
 
                 <!-- Section 1: Timetable Creation -->
                 <div class="section">
