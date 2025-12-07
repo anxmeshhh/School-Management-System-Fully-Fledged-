@@ -486,6 +486,13 @@
         tr:hover {
             background: var(--light-bg);
         }
+        .signature-section {
+            display: flex;
+            gap: 2rem;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
         .signature-pad {
             border: 2px solid var(--border-color);
             border-radius: 8px;
@@ -493,7 +500,7 @@
             background: var(--light-bg);
             transition: var(--transition);
             width: 100%;
-            max-width: 300px;
+            max-width: 700px;
         }
         .signature-pad:hover {
             border-color: var(--primary-color);
@@ -619,6 +626,10 @@
                 flex-direction: column;
                 gap: 1rem;
                 padding: 1.25rem;
+            }
+            .signature-section {
+                flex-direction: column;
+                gap: 1rem;
             }
             .button-group {
                 flex-direction: column;
@@ -774,7 +785,7 @@
                             <i class="fas fa-chart-bar icon"></i> Progress Card
                         </button>
                     </div>
-              
+           
                 </div>
                 <div id="markEntrySection" class="section">
                     <h2><i class="fas fa-edit icon"></i> Mark Entry</h2>
@@ -807,12 +818,21 @@
                     </div>
                     <div id="subjectSelection"></div>
                     <div id="marksInput"></div>
-                    <div class="form-group">
-                        <label for="signaturePad"><i class="fas fa-signature icon"></i> Digital Signature</label>
-                        <canvas id="signaturePad" class="signature-pad" width="300" height="100"></canvas>
-                        <button id="clearSignature" class="button button-secondary">
-                            <i class="fas fa-eraser icon"></i> Clear Signature
-                        </button>
+                    <div class="signature-section">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="signaturePad"><i class="fas fa-signature icon"></i> Teacher Digital Signature</label>
+                            <canvas id="signaturePad" class="signature-pad" width="300" height="100"></canvas>
+                            <button id="clearSignature" class="button button-secondary">
+                                <i class="fas fa-eraser icon"></i> Clear Teacher Signature
+                            </button>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="principalSignaturePad"><i class="fas fa-signature icon"></i> Principal Digital Signature</label>
+                            <canvas id="principalSignaturePad" class="signature-pad" width="300" height="100"></canvas>
+                            <button id="clearPrincipalSignature" class="button button-secondary">
+                                <i class="fas fa-eraser icon"></i> Clear Principal Signature
+                            </button>
+                        </div>
                     </div>
                     <div class="form-group button-group">
                         <button id="addSubject" class="button button-green">
@@ -969,7 +989,7 @@
             const showMarkEntry = document.getElementById('showMarkEntry');
             const showProgressCard = document.getElementById('showProgressCard');
             const loadingProgress = document.getElementById('loadingProgress');
-      
+   
             // Modal elements
             const addSubjectModal = document.getElementById('addSubjectModal');
             const newSubjectName = document.getElementById('newSubjectName');
@@ -980,15 +1000,18 @@
             const deleteSubjectSelect = document.getElementById('deleteSubjectSelect');
             const confirmDeleteSubject = document.getElementById('confirmDeleteSubject');
             const cancelDeleteSubject = document.getElementById('cancelDeleteSubject');
-      
+   
             // Signature pad elements
             const signaturePad = document.getElementById('signaturePad');
+            const principalSignaturePad = document.getElementById('principalSignaturePad');
             const clearSignatureBtn = document.getElementById('clearSignature');
+            const clearPrincipalSignatureBtn = document.getElementById('clearPrincipalSignature');
             // Variables
             const role = '{{ role }}';
             const teacherSubject = '{{ teacher_subject }}';
             let subjects = [];
             let currentSignature = null;
+            let currentPrincipalSignature = null;
             let currentProgressData = null;
             // Utility Functions
             function getCsrfToken() {
@@ -1004,12 +1027,12 @@
             function showLoading(show = true) {
                 loadingProgress.classList.toggle('show', show);
             }
-            // Signature Pad Setup
-            const ctx = signaturePad.getContext('2d');
-            let isDrawing = false;
-            let lastX = 0;
-            let lastY = 0;
-            function getEventPos(e) {
+            // Teacher Signature Pad Setup
+            const ctxTeacher = signaturePad.getContext('2d');
+            let isDrawingTeacher = false;
+            let lastXTeacher = 0;
+            let lastYTeacher = 0;
+            function getEventPosTeacher(e) {
                 const rect = signaturePad.getBoundingClientRect();
                 const clientX = e.clientX || (e.touches && e.touches[0].clientX);
                 const clientY = e.clientY || (e.touches && e.touches[0].clientY);
@@ -1018,53 +1041,108 @@
                     y: clientY - rect.top
                 };
             }
-            function startDrawing(e) {
+            function startDrawingTeacher(e) {
                 e.preventDefault();
-                isDrawing = true;
-                const pos = getEventPos(e);
-                lastX = pos.x;
-                lastY = pos.y;
+                isDrawingTeacher = true;
+                const pos = getEventPosTeacher(e);
+                lastXTeacher = pos.x;
+                lastYTeacher = pos.y;
             }
-            function draw(e) {
+            function drawTeacher(e) {
                 e.preventDefault();
-                if (!isDrawing) return;
-                const pos = getEventPos(e);
-                ctx.beginPath();
-                ctx.moveTo(lastX, lastY);
-                ctx.lineTo(pos.x, pos.y);
-                ctx.strokeStyle = '#000000';
-                ctx.lineWidth = 2;
-                ctx.lineCap = 'round';
-                ctx.stroke();
-                lastX = pos.x;
-                lastY = pos.y;
+                if (!isDrawingTeacher) return;
+                const pos = getEventPosTeacher(e);
+                ctxTeacher.beginPath();
+                ctxTeacher.moveTo(lastXTeacher, lastYTeacher);
+                ctxTeacher.lineTo(pos.x, pos.y);
+                ctxTeacher.strokeStyle = '#000000';
+                ctxTeacher.lineWidth = 2;
+                ctxTeacher.lineCap = 'round';
+                ctxTeacher.stroke();
+                lastXTeacher = pos.x;
+                lastYTeacher = pos.y;
             }
-            function stopDrawing(e) {
+            function stopDrawingTeacher(e) {
                 e.preventDefault();
-                if (isDrawing) {
-                    isDrawing = false;
+                if (isDrawingTeacher) {
+                    isDrawingTeacher = false;
                     currentSignature = signaturePad.toDataURL();
                 }
             }
-            // Mouse events
-            signaturePad.addEventListener('mousedown', startDrawing);
-            signaturePad.addEventListener('mousemove', draw);
-            signaturePad.addEventListener('mouseup', stopDrawing);
-            signaturePad.addEventListener('mouseleave', stopDrawing);
-            // Touch events
-            signaturePad.addEventListener('touchstart', startDrawing);
-            signaturePad.addEventListener('touchmove', draw);
-            signaturePad.addEventListener('touchend', stopDrawing);
+            // Mouse events for teacher
+            signaturePad.addEventListener('mousedown', startDrawingTeacher);
+            signaturePad.addEventListener('mousemove', drawTeacher);
+            signaturePad.addEventListener('mouseup', stopDrawingTeacher);
+            signaturePad.addEventListener('mouseleave', stopDrawingTeacher);
+            // Touch events for teacher
+            signaturePad.addEventListener('touchstart', startDrawingTeacher);
+            signaturePad.addEventListener('touchmove', drawTeacher);
+            signaturePad.addEventListener('touchend', stopDrawingTeacher);
             clearSignatureBtn.addEventListener('click', () => {
-                ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
+                ctxTeacher.clearRect(0, 0, signaturePad.width, signaturePad.height);
                 currentSignature = null;
+            });
+            // Principal Signature Pad Setup
+            const ctxPrincipal = principalSignaturePad.getContext('2d');
+            let isDrawingPrincipal = false;
+            let lastXPrincipal = 0;
+            let lastYPrincipal = 0;
+            function getEventPosPrincipal(e) {
+                const rect = principalSignaturePad.getBoundingClientRect();
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+            function startDrawingPrincipal(e) {
+                e.preventDefault();
+                isDrawingPrincipal = true;
+                const pos = getEventPosPrincipal(e);
+                lastXPrincipal = pos.x;
+                lastYPrincipal = pos.y;
+            }
+            function drawPrincipal(e) {
+                e.preventDefault();
+                if (!isDrawingPrincipal) return;
+                const pos = getEventPosPrincipal(e);
+                ctxPrincipal.beginPath();
+                ctxPrincipal.moveTo(lastXPrincipal, lastYPrincipal);
+                ctxPrincipal.lineTo(pos.x, pos.y);
+                ctxPrincipal.strokeStyle = '#000000';
+                ctxPrincipal.lineWidth = 2;
+                ctxPrincipal.lineCap = 'round';
+                ctxPrincipal.stroke();
+                lastXPrincipal = pos.x;
+                lastYPrincipal = pos.y;
+            }
+            function stopDrawingPrincipal(e) {
+                e.preventDefault();
+                if (isDrawingPrincipal) {
+                    isDrawingPrincipal = false;
+                    currentPrincipalSignature = principalSignaturePad.toDataURL();
+                }
+            }
+            // Mouse events for principal
+            principalSignaturePad.addEventListener('mousedown', startDrawingPrincipal);
+            principalSignaturePad.addEventListener('mousemove', drawPrincipal);
+            principalSignaturePad.addEventListener('mouseup', stopDrawingPrincipal);
+            principalSignaturePad.addEventListener('mouseleave', stopDrawingPrincipal);
+            // Touch events for principal
+            principalSignaturePad.addEventListener('touchstart', startDrawingPrincipal);
+            principalSignaturePad.addEventListener('touchmove', drawPrincipal);
+            principalSignaturePad.addEventListener('touchend', stopDrawingPrincipal);
+            clearPrincipalSignatureBtn.addEventListener('click', () => {
+                ctxPrincipal.clearRect(0, 0, principalSignaturePad.width, principalSignaturePad.height);
+                currentPrincipalSignature = null;
             });
             // Image loading utility with CORS handling
             function loadImageAsBase64(src) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
                     img.crossOrigin = 'anonymous';
-              
+           
                     img.onload = function() {
                         try {
                             const canvas = document.createElement('canvas');
@@ -1079,12 +1157,12 @@
                             reject(error);
                         }
                     };
-              
+           
                     img.onerror = function() {
                         console.error('Error loading image:', src);
                         reject(new Error('Failed to load image'));
                     };
-              
+           
                     // Try to load the image with cache busting
                     img.src = src + (src.includes('?') ? '&' : '?') + 't=' + Date.now();
                 });
@@ -1104,11 +1182,11 @@
                     const studentResponse = await fetch(`/get_students/?class=${encodeURIComponent(classValue)}&section=${encodeURIComponent(sectionValue)}`, {
                         headers: { 'X-CSRFToken': getCsrfToken() }
                     });
-              
+           
                     if (!studentResponse.ok) {
                         throw new Error(`HTTP error! status: ${studentResponse.status}`);
                     }
-              
+           
                     const studentData = await studentResponse.json();
                     if (studentData.success) {
                         studentData.students.forEach(student => {
@@ -1122,11 +1200,11 @@
                     const subjectResponse = await fetch(`/get_subjects/?class=${encodeURIComponent(classValue)}`, {
                         headers: { 'X-CSRFToken': getCsrfToken() }
                     });
-              
+           
                     if (!subjectResponse.ok) {
                         throw new Error(`HTTP error! status: ${subjectResponse.status}`);
                     }
-              
+           
                     const subjectData = await subjectResponse.json();
                     if (subjectData.success) {
                         subjects = subjectData.subjects;
@@ -1203,8 +1281,10 @@
             }
             function clearForm() {
                 studentSelect.value = '';
-                ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
+                ctxTeacher.clearRect(0, 0, signaturePad.width, signaturePad.height);
                 currentSignature = null;
+                ctxPrincipal.clearRect(0, 0, principalSignaturePad.width, principalSignaturePad.height);
+                currentPrincipalSignature = null;
                 if (role === 'subjectTeacher') {
                     const marksInput = document.getElementById('marks');
                     if (marksInput) marksInput.value = '';
@@ -1221,11 +1301,11 @@
                     const response = await fetch(`/get_students/?class=${encodeURIComponent(classValue)}&section=${encodeURIComponent(sectionValue)}`, {
                         headers: { 'X-CSRFToken': getCsrfToken() }
                     });
-              
+           
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-              
+           
                     const data = await response.json();
                     if (data.success) {
                         progressStudentSelect.innerHTML = '<option value="">Select Student</option>';
@@ -1244,7 +1324,7 @@
             async function fetchProgressCard(studentId) {
                 showLoading(true);
                 progressCard.style.display = 'none';
-          
+       
                 try {
                     const response = await fetch('/progress_card/', {
                         method: 'POST',
@@ -1254,11 +1334,11 @@
                         },
                         body: JSON.stringify({ studentId })
                     });
-              
+           
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-              
+           
                     const data = await response.json();
                     if (data.success) {
                         currentProgressData = data;
@@ -1278,7 +1358,7 @@
                 studentNameDisplay.textContent = data.student.name;
                 const admNo = data.student.admission_number ? `, Admission No: ${data.student.admission_number}` : '';
                 studentDetails.textContent = `Roll Number: ${data.student.roll_number}${admNo}, Class: ${data.student.class}, Section: ${data.student.section}`;
-          
+       
                 // Handle profile picture
                 if (data.student.image_path) {
                     studentProfilePic.src = `/media/${data.student.image_path}`;
@@ -1290,7 +1370,7 @@
                     studentProfilePic.src = "{% static 'users/images/default_profile.jpg' %}";
                     studentProfilePic.style.display = 'block';
                 }
-          
+       
                 // Populate marks table
                 marksTable.innerHTML = '';
                 data.marks.forEach(mark => {
@@ -1303,7 +1383,7 @@
                         </tr>
                     `;
                 });
-          
+       
                 // Display summary
                 totalMarks.textContent = `Total Marks: ${data.total_marks}/${data.total_max_marks}`;
                 percentage.textContent = `Percentage: ${data.percentage}%`;
@@ -1343,7 +1423,7 @@
                         } else {
                             imageSrc = "{% static 'users/images/default_profile.jpg' %}";
                         }
-                  
+               
                         profileImageBase64 = await loadImageAsBase64(imageSrc);
                         doc.addImage(profileImageBase64, 'JPEG', 15, 40, 25, 25); // Left side positioning
                     } catch (error) {
@@ -1370,7 +1450,7 @@
                     let y = 80;
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'bold');
-              
+           
                     // Table header
                     doc.setFillColor(tableHeaderColor);
                     doc.rect(15, y, 170, 8, 'F');
@@ -1379,7 +1459,7 @@
                     doc.text('Marks Obtained', 70, y + 5);
                     doc.text('Maximum Marks', 110, y + 5);
                     doc.text('Grade', 155, y + 5);
-              
+           
                     y += 8;
                     doc.setDrawColor('#00a676');
                     doc.setLineWidth(0.5);
@@ -1394,12 +1474,12 @@
                             doc.setFillColor('#f0f9f4');
                             doc.rect(15, y - 6, 170, 8, 'F');
                         }
-                  
+               
                         doc.text(mark.subject, 20, y);
                         doc.text(mark.marks.toString(), 80, y, { align: 'center' });
                         doc.text(mark.max_marks.toString(), 120, y, { align: 'center' });
                         doc.text(mark.grade, 160, y, { align: 'center' });
-                  
+               
                         // Row border
                         doc.setDrawColor('#d1e7dd');
                         doc.setLineWidth(0.2);
@@ -1412,30 +1492,50 @@
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(11);
                     doc.setTextColor('#ffffff');
-              
+           
                     doc.text(`Total Marks: ${data.total_marks}/${data.total_max_marks}`, 20, y + 8);
                     doc.text(`Percentage: ${data.percentage}%`, 20, y + 16);
                     doc.text(`Overall Grade: ${data.grade}`, 110, y + 8);
                     doc.text(`Result: ${data.status}`, 110, y + 16);
-                    // Teacher Signature Section
-                    y += 35;
+                    // Signatures Section (Side by side with increased spacing to prevent overlap)
+                    y += 30; // Increased initial spacing after summary
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(10);
                     doc.setTextColor('#000000');
-                    doc.text('Class Teacher:', 20, y);
-                    doc.text(data.teacher_name, 50, y);
-              
-                    // Add signature if available
+                    const sigHeight = 20; // Increased height for signatures
+                    const sigWidth = 60; // Slightly wider for better fit
+                    const sigGap = 10; // Gap between teacher and principal sections
+                    const sigYStart = y;
+                    // Teacher Signature (Left)
+                    doc.text('Teacher Signature', 20, y);
+                    y += 8; // Space after label
+                    // Add teacher signature if available
                     if (data.signature) {
                         try {
-                            doc.addImage(data.signature, 'PNG', 20, y + 5, 50, 15);
+                            doc.addImage(data.signature, 'PNG', 20, y, sigWidth, sigHeight);
                         } catch (error) {
-                            console.warn('Could not add signature to PDF:', error);
+                            console.warn('Could not add teacher signature to PDF:', error);
                         }
                     }
-              
-                    doc.text('Signature', 20, y + 25);
-                    doc.line(20, y + 22, 70, y + 22); // Signature line
+                    // Signature line for teacher
+                    doc.line(20, y + sigHeight + 2, 20 + sigWidth, y + sigHeight + 2);
+                    // Principal Signature (Right, with offset to prevent overlap)
+                    y = sigYStart; // Reset y for principal to align horizontally
+                    doc.text('Principal Signature', 100, y);
+                    y += 8; // Space after label
+                    // Add principal signature if available
+                    if (data.principal_signature) {
+                        try {
+                            doc.addImage(data.principal_signature, 'PNG', 100, y, sigWidth, sigHeight);
+                        } catch (error) {
+                            console.warn('Could not add principal signature to PDF:', error);
+                        }
+                    }
+                    // Signature line for principal
+                    doc.line(100, y + sigHeight + 2, 100 + sigWidth, y + sigHeight + 2);
+                    // Ensure overall y is advanced
+                    y = Math.max(y + sigHeight + 5, sigYStart + 8 + sigHeight + 5);
+           
                     // Footer
                     doc.setFontSize(8);
                     doc.setTextColor('#868e96');
@@ -1443,7 +1543,7 @@
                     // Save the PDF
                     doc.save(`${data.student.name}_ProgressCard_${new Date().toISOString().split('T')[0]}.pdf`);
                     showAlert('PDF downloaded successfully!', 'success');
-              
+           
                 } catch (error) {
                     console.error('Error generating PDF:', error);
                     showAlert('Error generating PDF. Please try again.', 'error');
@@ -1530,11 +1630,11 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
                         body: JSON.stringify({ subjectName, maxMarks, class: classValue })
                     });
-              
+           
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-              
+           
                     const data = await response.json();
                     if (data.success) {
                         subjects = data.subjects;
@@ -1562,11 +1662,11 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
                         body: JSON.stringify({ subjectId, class: classValue })
                     });
-              
+           
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-              
+           
                     const data = await response.json();
                     if (data.success) {
                         subjects = data.subjects;
@@ -1587,12 +1687,17 @@
                 const sectionValue = sectionSelect.value;
                 const studentId = studentSelect.value;
                 const signatureData = currentSignature;
+                const principalSignatureData = currentPrincipalSignature;
                 if (!classValue || !sectionValue || !studentId) {
                     showAlert('Please select class, section, and student.', 'error');
                     return;
                 }
                 if (!signatureData) {
-                    showAlert('Please provide a digital signature.', 'error');
+                    showAlert('Please provide a teacher digital signature.', 'error');
+                    return;
+                }
+                if (!principalSignatureData) {
+                    showAlert('Please provide a principal digital signature.', 'error');
                     return;
                 }
                 let marksData;
@@ -1600,12 +1705,12 @@
                     const subjectElement = document.getElementById('subject');
                     const marksElement = document.getElementById('marks');
                     const maxMarksElement = document.getElementById('maxMarks');
-              
+           
                     if (!subjectElement || !marksElement || !maxMarksElement) {
                         showAlert('Form elements not found. Please refresh the page.', 'error');
                         return;
                     }
-              
+           
                     const subjectId = subjectElement.value;
                     const marks = parseInt(marksElement.value);
                     const maxMarks = parseInt(maxMarksElement.value);
@@ -1613,21 +1718,21 @@
                         showAlert('Please enter valid marks. Marks cannot exceed maximum marks.', 'error');
                         return;
                     }
-                    marksData = { subjectId, marks, maxMarks, signature: signatureData };
+                    marksData = [{ subjectId, marks, maxMarks, signature: signatureData }];
                 } else {
                     marksData = [];
                     for (const sub of subjects) {
                         const marksElement = document.getElementById(`${sub.id}-marks`);
                         const maxMarksElement = document.getElementById(`${sub.id}-maxMarks`);
-                  
+               
                         if (!marksElement || !maxMarksElement) {
                             showAlert(`Form elements for ${sub.name} not found.`, 'error');
                             return;
                         }
-                  
+               
                         const marks = parseInt(marksElement.value);
                         const maxMarks = parseInt(maxMarksElement.value);
-                  
+               
                         if (isNaN(marks) || isNaN(maxMarks) || marks < 0 || maxMarks < 1 || marks > maxMarks) {
                             showAlert(`Please enter valid marks for ${sub.name}. Marks cannot exceed maximum marks.`, 'error');
                             return;
@@ -1639,13 +1744,14 @@
                     const response = await fetch('/save_marks/', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
-                        body: JSON.stringify({ role, studentId, class: classValue, section: sectionValue, marks: marksData })
+                        body: JSON.stringify({ role, studentId, class: classValue, section: sectionValue, marks: marksData, principalSignature: principalSignatureData })
                     });
-              
+           
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
                     }
-              
+           
                     const data = await response.json();
                     if (data.success) {
                         showAlert(data.message);
@@ -1655,7 +1761,7 @@
                     }
                 } catch (error) {
                     console.error('Error saving marks:', error);
-                    showAlert('Error saving marks. Please try again.', 'error');
+                    showAlert(error.message || 'Error saving marks. Please try again.', 'error');
                 }
             });
             clearFormBtn.addEventListener('click', clearForm);
@@ -1674,4 +1780,3 @@
     </script>
 </body>
 </html>
-
