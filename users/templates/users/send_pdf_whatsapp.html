@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Send Student PDF via WhatsApp</title>
+
+    <!-- CSRF token for JS -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+        .card {
+            max-width: 700px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        button {
+            background: #25D366;
+            border: none;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Admin – Send Student PDF via WhatsApp</h2>
+
+    <!-- Class & Section Selection -->
+    <select id="class">
+        <option value="">Select Class</option>
+        
+        <option value="11">Class 11</option>
+        <option value="12">Class 12</option>
+    </select>
+
+    <select id="section">
+        <option value="">Select Section</option>
+        <option value="A">Section A</option>
+        <option value="B">Section B</option>
+        <option value="C">Section C</option>
+    </select>
+
+    <button onclick="loadStudents()">Fetch Students</button>
+
+    <!-- Students Table -->
+    <table id="studentsTable" style="display:none;">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Admission No</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="studentsBody"></tbody>
+    </table>
+</div>
+
+<script>
+const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+function loadStudents() {
+    const cls = document.getElementById("class").value;
+    const sec = document.getElementById("section").value;
+
+    if (!cls || !sec) {
+        alert("Please select both class and section");
+        return;
+    }
+
+    fetch(`/admin/fetch-students/?class=${cls}&section=${sec}`)
+        .then(res => {
+            if (!res.ok) throw new Error("Failed to fetch students");
+            return res.json();
+        })
+        .then(data => {
+            const tbody = document.getElementById("studentsBody");
+            tbody.innerHTML = "";
+
+            if (data.students.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3">No students found</td></tr>`;
+            } else {
+                data.students.forEach(s => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${s.name}</td>
+                            <td>${s.admission_number}</td>
+                            <td>
+                                <button onclick="sendWA(
+                                    '${s.name}',
+                                    '${s.admission_number}',
+                                    '${s.contact || ""}'
+                                )">
+                                    Send WhatsApp
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            document.getElementById("studentsTable").style.display = "table";
+        })
+        .catch(err => {
+            alert("Error loading students");
+            console.error(err);
+        });
+}
+
+function sendWA(name, admission, contact) {
+    const mobile = prompt("Enter WhatsApp Number", contact || "");
+
+    if (!mobile) return;
+
+    fetch("{% url 'generate_whatsapp_link' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrfToken
+        },
+        body: new URLSearchParams({
+            mobile: mobile,
+            name: name,
+            admission_number: admission
+        })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("WhatsApp link generation failed");
+        return res.json();
+    })
+    .then(data => {
+        window.open(data.whatsapp_url, "_blank");
+    })
+    .catch(err => {
+        alert("Failed to open WhatsApp");
+        console.error(err);
+    });
+}
+</script>
+
+</body>
+</html>

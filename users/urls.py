@@ -173,6 +173,11 @@ urlpatterns = [
     path('admin/exam/pdf-download/', views.admin_exam_pdf_download, name='admin_exam_pdf_download'),
     # Add this to your urls.py in the Exam URLs section
     path('admin/exam/delete/<int:exam_id>/', views.admin_exam_delete, name='admin_exam_delete'),
+
+    path("admin/fetch-students/", views.fetch_students_by_class_section, name="fetch_students"),
+
+    path("admin/send-pdf/", views.admin_send_student_pdf, name="admin_send_student_pdf"),
+    path("admin/whatsapp-link/", views.generate_whatsapp_link, name="generate_whatsapp_link"),
     
 
 ]
