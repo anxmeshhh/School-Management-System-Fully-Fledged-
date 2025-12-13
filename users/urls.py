@@ -177,11 +177,33 @@ urlpatterns = [
 
 
 
-    path("admin/send-pdf/", views.admin_send_student_pdf, name="admin_send_student_pdf"),
-    path("admin/fetch-students/", views.fetch_students_by_class_section, name="fetch_students"),
-    path("admin/whatsapp-link/", views.generate_whatsapp_link, name="generate_whatsapp_link"),
-    path("media/student_pdfs/<str:filename>", views.serve_student_pdf, name="serve_student_pdf"),
-    
+     # Admin page to send PDFs via WhatsApp
+    path(
+        "admin/send-pdf/",
+        views.admin_send_student_pdf,
+        name="admin_send_student_pdf"
+    ),
+
+    # AJAX: fetch students by class & section
+    path(
+        "admin/fetch-students/",
+        views.fetch_students_by_class_section,
+        name="fetch_students"
+    ),
+
+    # AJAX: generate WhatsApp link (auto-generates PDF)
+    path(
+        "admin/whatsapp-link/",
+        views.generate_whatsapp_link,
+        name="generate_whatsapp_link"
+    ),
+
+    # Serve generated student PDFs
+    path(
+        "media/student_pdfs/<str:filename>",
+        views.serve_student_pdf,
+        name="serve_student_pdf"
+    ),
 
 ]
 

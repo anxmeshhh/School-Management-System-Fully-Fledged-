@@ -13,7 +13,7 @@
             background: #f4f6f8;
         }
         .card {
-            max-width: 700px;
+            max-width: 720px;
             margin: 40px auto;
             background: #ffffff;
             padding: 25px;
@@ -21,9 +21,9 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         h2 {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
-        select, input, button {
+        select, button {
             width: 100%;
             padding: 10px;
             margin-top: 10px;
@@ -39,6 +39,10 @@
         button:hover {
             opacity: 0.9;
         }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
         table {
             width: 100%;
             margin-top: 20px;
@@ -52,6 +56,11 @@
         th {
             background: #f0f0f0;
         }
+        .muted {
+            color: #777;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 
@@ -59,16 +68,20 @@
 
 <div class="card">
     <h2>Admin – Send Student PDF via WhatsApp</h2>
+    <p class="muted">
+        This tool opens WhatsApp with a pre-filled message.<br>
+        The PDF is generated <b>at the time of sending</b>.<br>
+        Admin must manually click <b>Send</b> in WhatsApp.
+    </p>
 
     <!-- Class & Section Selection -->
-    <select id="class">
+    <select id="classSelect">
         <option value="">Select Class</option>
-        
         <option value="11">Class 11</option>
         <option value="12">Class 12</option>
     </select>
 
-    <select id="section">
+    <select id="sectionSelect">
         <option value="">Select Section</option>
         <option value="A">Section A</option>
         <option value="B">Section B</option>
@@ -91,39 +104,45 @@
 </div>
 
 <script>
+const fetchStudentsUrl = "{% url 'fetch_students' %}";
+const generateWaLinkUrl = "{% url 'generate_whatsapp_link' %}";
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text || "";
+    return div.innerHTML;
+}
+
 function loadStudents() {
-    const cls = document.getElementById("class").value;
-    const sec = document.getElementById("section").value;
+    const cls = document.getElementById("classSelect").value;
+    const sec = document.getElementById("sectionSelect").value;
 
     if (!cls || !sec) {
         alert("Please select both class and section");
         return;
     }
 
-    fetch(`/admin/fetch-students/?class=${cls}&section=${sec}`)
-        .then(res => {
-            if (!res.ok) throw new Error("Failed to fetch students");
-            return res.json();
-        })
+    fetch(`${fetchStudentsUrl}?class=${encodeURIComponent(cls)}&section=${encodeURIComponent(sec)}`)
+        .then(res => res.json())
         .then(data => {
             const tbody = document.getElementById("studentsBody");
             tbody.innerHTML = "";
 
-            if (data.students.length === 0) {
+            if (!data.students || data.students.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="3">No students found</td></tr>`;
             } else {
                 data.students.forEach(s => {
                     tbody.innerHTML += `
                         <tr>
-                            <td>${s.name}</td>
-                            <td>${s.admission_number}</td>
+                            <td>${escapeHtml(s.name)}</td>
+                            <td>${escapeHtml(s.admission_number)}</td>
                             <td>
                                 <button onclick="sendWA(
-                                    '${s.name}',
-                                    '${s.admission_number}',
-                                    '${s.contact || ""}'
+                                    '${encodeURIComponent(s.name)}',
+                                    '${encodeURIComponent(s.admission_number)}',
+                                    '${encodeURIComponent(s.contact || "")}',
+                                    this
                                 )">
                                     Send WhatsApp
                                 </button>
@@ -136,17 +155,29 @@ function loadStudents() {
             document.getElementById("studentsTable").style.display = "table";
         })
         .catch(err => {
-            alert("Error loading students");
             console.error(err);
+            alert("Error loading students");
         });
 }
 
-function sendWA(name, admission, contact) {
-    const mobile = prompt("Enter WhatsApp Number", contact || "");
+function sendWA(nameEnc, admissionEnc, contactEnc, btn) {
+    const name = decodeURIComponent(nameEnc);
+    const admission = decodeURIComponent(admissionEnc);
+    const contact = decodeURIComponent(contactEnc);
 
+    let mobile = prompt("Enter WhatsApp Number", contact || "");
     if (!mobile) return;
 
-    fetch("{% url 'generate_whatsapp_link' %}", {
+    mobile = mobile.replace(/\s+/g, "");
+
+    if (!/^\d{10,15}$/.test(mobile)) {
+        alert("Please enter a valid WhatsApp number (digits only)");
+        return;
+    }
+
+    btn.disabled = true;
+
+    fetch(generateWaLinkUrl, {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -158,16 +189,19 @@ function sendWA(name, admission, contact) {
             admission_number: admission
         })
     })
-    .then(res => {
-        if (!res.ok) throw new Error("WhatsApp link generation failed");
-        return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
-        window.open(data.whatsapp_url, "_blank");
+        btn.disabled = false;
+        if (data.whatsapp_url) {
+            window.open(data.whatsapp_url, "_blank");
+        } else {
+            alert(data.error || "Failed to generate WhatsApp link");
+        }
     })
     .catch(err => {
-        alert("Failed to open WhatsApp");
+        btn.disabled = false;
         console.error(err);
+        alert("Failed to open WhatsApp");
     });
 }
 </script>
