@@ -177,11 +177,10 @@ urlpatterns = [
 
 
 
-    path("media/student_pdfs/<str:filename>",views.serve_student_pdf,name="serve_student_pdf"),
-    path("admin/fetch-students/", views.fetch_students_by_class_section, name="fetch_students"),
-
     path("admin/send-pdf/", views.admin_send_student_pdf, name="admin_send_student_pdf"),
+    path("admin/fetch-students/", views.fetch_students_by_class_section, name="fetch_students"),
     path("admin/whatsapp-link/", views.generate_whatsapp_link, name="generate_whatsapp_link"),
+    path("media/student_pdfs/<str:filename>", views.serve_student_pdf, name="serve_student_pdf"),
     
 
 ]

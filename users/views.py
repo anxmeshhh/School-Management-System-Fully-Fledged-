@@ -9158,14 +9158,36 @@ def admin_exam_delete(request, exam_id):
 
 
 
+import os
+import urllib.parse
+
+from django.conf import settings
+from django.db import connection
+from django.http import JsonResponse, FileResponse, Http404
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 
 
+def admin_send_student_pdf(request):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT user_id, name, admission_number
+            FROM student_page1
+            ORDER BY name
+        """)
+        students = cursor.fetchall()
 
+    return render(request, "users/send_pdf_whatsapp.html", {
+        "students": students
+    })
 
 
 def fetch_students_by_class_section(request):
     student_class = request.GET.get("class")
     section = request.GET.get("section")
+
+    if not student_class or not section:
+        return JsonResponse({"students": []})
 
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -9182,94 +9204,76 @@ def fetch_students_by_class_section(request):
 
         rows = cursor.fetchall()
 
-    students = []
-    for r in rows:
-        students.append({
+    students = [
+        {
             "user_id": r[0],
             "name": r[1],
             "admission_number": r[2],
-            "contact": r[3]
-        })
+            "contact": r[3] or ""
+        }
+        for r in rows
+    ]
 
     return JsonResponse({"students": students})
 
 
-def admin_send_student_pdf(request):
-    students = []
-
-    # Fetch students list for admin dropdown
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT user_id, name, admission_number
-            FROM student_page1
-            ORDER BY name
-        """)
-        students = cursor.fetchall()
-
-    selected_student = None
-
-    if request.GET.get("student_id"):
-        student_id = request.GET.get("student_id")
-
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT 
-                    s1.name,
-                    s1.admission_number,
-                    s3.contact
-                FROM student_page1 s1
-                LEFT JOIN student_page3 s3 ON s1.user_id = s3.user_id
-                WHERE s1.user_id = %s
-            """, [student_id])
-
-            selected_student = cursor.fetchone()
-
-    return render(request, "users/send_pdf_whatsapp.html", {
-        "students": students,
-        "student": selected_student
-    })
-
 @csrf_exempt
 def generate_whatsapp_link(request):
-    if request.method != "POST":
-        return JsonResponse({"error": "Invalid request"}, status=400)
+    try:
+        if request.method != "POST":
+            return JsonResponse({"error": "Invalid request"}, status=400)
 
-    mobile = request.POST.get("mobile")
-    name = request.POST.get("name")
-    admission_number = request.POST.get("admission_number")
+        mobile = request.POST.get("mobile", "").strip()
+        name = request.POST.get("name", "").strip()
+        admission_number = request.POST.get("admission_number", "").strip()
 
-    # MUST MATCH URL PATTERN
-    pdf_url = request.build_absolute_uri(
-        f"/media/student_pdfs/{admission_number}.pdf"
-    )
+        if not mobile or not name or not admission_number:
+            return JsonResponse(
+                {"error": "Missing required fields"},
+                status=400
+            )
 
-    message = f"""Hello,
+        pdf_path = os.path.join(
+            settings.MEDIA_ROOT,
+            "student_pdfs",
+            f"{admission_number}.pdf"
+        )
 
-Please find the document for the student below:
+        if not os.path.exists(pdf_path):
+            return JsonResponse(
+                {"error": "PDF file not found"},
+                status=404
+            )
 
-Name: {name}
-Admission No: {admission_number}
+        pdf_url = request.build_absolute_uri(
+            f"/media/student_pdfs/{admission_number}.pdf"
+        )
 
-Download PDF:
-{pdf_url}
+        message = (
+            "Hello,\n\n"
+            "Please find the document for the student below:\n\n"
+            f"Name: {name}\n"
+            f"Admission No: {admission_number}\n\n"
+            f"Download PDF:\n{pdf_url}\n\n"
+            "Regards,\nSchool Administration"
+        )
 
-Regards,
-School Administration
-"""
+        whatsapp_url = (
+            "https://wa.me/"
+            + mobile
+            + "?text="
+            + urllib.parse.quote(message)
+        )
 
-    whatsapp_url = "https://wa.me/{}?text={}".format(
-        mobile,
-        urllib.parse.quote(message)
-    )
+        return JsonResponse({"whatsapp_url": whatsapp_url})
 
-    return JsonResponse({"whatsapp_url": whatsapp_url})
+    except Exception as e:
+        # 👇 THIS PREVENTS 500 SILENT FAILURES
+        return JsonResponse(
+            {"error": str(e)},
+            status=500
+        )
 
-
-
-
-import os
-from django.conf import settings
-from django.http import FileResponse, Http404
 
 def serve_student_pdf(request, filename):
     file_path = os.path.join(
