@@ -174,6 +174,10 @@ urlpatterns = [
     # Add this to your urls.py in the Exam URLs section
     path('admin/exam/delete/<int:exam_id>/', views.admin_exam_delete, name='admin_exam_delete'),
 
+
+
+
+    path("media/student_pdfs/<str:filename>",views.serve_student_pdf,name="serve_student_pdf"),
     path("admin/fetch-students/", views.fetch_students_by_class_section, name="fetch_students"),
 
     path("admin/send-pdf/", views.admin_send_student_pdf, name="admin_send_student_pdf"),

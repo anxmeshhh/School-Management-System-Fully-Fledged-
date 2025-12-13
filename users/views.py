@@ -9229,12 +9229,6 @@ def admin_send_student_pdf(request):
         "student": selected_student
     })
 
-
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-import urllib.parse
-from django.conf import settings
-
 @csrf_exempt
 def generate_whatsapp_link(request):
     if request.method != "POST":
@@ -9244,8 +9238,9 @@ def generate_whatsapp_link(request):
     name = request.POST.get("name")
     admission_number = request.POST.get("admission_number")
 
+    # MUST MATCH URL PATTERN
     pdf_url = request.build_absolute_uri(
-        settings.MEDIA_URL + f"student_pdfs/{admission_number}.pdf"
+        f"/media/student_pdfs/{admission_number}.pdf"
     )
 
     message = f"""Hello,
@@ -9268,3 +9263,25 @@ School Administration
     )
 
     return JsonResponse({"whatsapp_url": whatsapp_url})
+
+
+
+
+import os
+from django.conf import settings
+from django.http import FileResponse, Http404
+
+def serve_student_pdf(request, filename):
+    file_path = os.path.join(
+        settings.MEDIA_ROOT,
+        "student_pdfs",
+        filename
+    )
+
+    if not os.path.exists(file_path):
+        raise Http404("PDF not found")
+
+    return FileResponse(
+        open(file_path, "rb"),
+        content_type="application/pdf"
+    )
