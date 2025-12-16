@@ -26,9 +26,9 @@
 
         /* CSS Variables - Green and White Theme */
         :root {
-            --primary-green: #00a651; /* Bright green */
-            --secondary-green: #008c44; /* Darker green */
-            --light-green: #e8f5e8; /* Light green */
+            --primary-green: #00a651;
+            --secondary-green: #008c44;
+            --light-green: #e8f5e8;
             --white: #ffffff;
             --border-color: #d4edda;
             --text-dark: #2c3e50;
@@ -54,23 +54,22 @@
             --radius-full: 50%;
         }
 
-        /* Smooth Scrolling */
+        /* Smooth Scrolling - DISABLED */
         html {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
+            overflow: hidden;
+            height: 100%;
         }
 
-        /* Body Styling - Light Green/White */
+        /* Body Styling - Light Green/White - NO SCROLL */
         body {
             background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 0;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         body::before {
@@ -89,10 +88,10 @@
         /* Main Container - Split Layout */
         .main-container {
             display: flex;
-            width: 100%;
+            width: 90%;
             max-width: 900px;
-            min-height: 500px;
-            height: auto;
+            height: 85vh;
+            max-height: 600px;
             border-radius: var(--radius-lg);
             overflow: hidden;
             box-shadow: var(--shadow-md), var(--shadow-glow);
@@ -117,8 +116,7 @@
             padding: var(--space-xl);
             color: var(--white);
             animation: slideInLeft 1s ease-out;
-            overflow: visible;
-            min-height: 500px;
+            overflow: hidden;
         }
 
         .left-panel::before {
@@ -261,7 +259,7 @@
             justify-content: center;
             animation: slideInRight 1s ease-out;
             position: relative;
-            min-height: 500px;
+            overflow: hidden;
         }
 
         .right-panel::after {
@@ -475,7 +473,7 @@
             border-left: 4px solid var(--error-color);
         }
 
-        /* Modal Styles */
+        /* Modal Styles - NO SCROLL */
         .modal {
             display: none;
             position: fixed;
@@ -484,14 +482,17 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
+            overflow: hidden;
             background-color: rgba(0, 0, 0, 0.4);
             animation: fadeIn 0.3s ease-out;
         }
 
         .modal-content {
             background: var(--white);
-            margin: 5% auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             padding: var(--space-xl);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md), var(--shadow-glow);
@@ -499,9 +500,33 @@
             width: 90%;
             max-width: 500px;
             max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
+            overflow: hidden;
             animation: slideInRight 0.3s ease-out;
+        }
+
+        .modal-form-container {
+            max-height: calc(90vh - 120px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 10px;
+        }
+
+        .modal-form-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-form-container::-webkit-scrollbar-track {
+            background: var(--light-green);
+            border-radius: 3px;
+        }
+
+        .modal-form-container::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 3px;
+        }
+
+        .modal-form-container::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-green);
         }
 
         .close {
@@ -620,19 +645,32 @@
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
-                min-height: auto;
-                max-width: 100%;
-                padding: 15px;
+                width: 95%;
+                height: auto;
+                max-height: 95vh;
             }
 
             .left-panel {
                 padding: var(--space-lg);
-                min-height: 250px;
+                min-height: auto;
             }
 
             .right-panel {
                 padding: var(--space-lg);
-                min-height: 400px;
+                overflow-y: auto;
+            }
+
+            .right-panel::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .right-panel::-webkit-scrollbar-track {
+                background: var(--light-green);
+            }
+
+            .right-panel::-webkit-scrollbar-thumb {
+                background: var(--primary-green);
+                border-radius: 3px;
             }
 
             .project-title {
@@ -660,15 +698,13 @@
                 height: 100px;
             }
 
-            body {
-                padding: 15px;
-            }
-
             .modal-content {
-                margin: 5% auto;
-                padding: var(--space-lg);
                 width: 95%;
                 max-height: 85vh;
+            }
+
+            .modal-form-container {
+                max-height: calc(85vh - 100px);
             }
         }
 
@@ -712,10 +748,6 @@
                 height: 80px;
             }
 
-            body {
-                padding: 10px;
-            }
-
             .close {
                 font-size: var(--font-lg);
                 right: var(--space-sm);
@@ -725,6 +757,10 @@
             .modal-content {
                 padding: var(--space-md);
                 max-height: 80vh;
+            }
+
+            .modal-form-container {
+                max-height: calc(80vh - 80px);
             }
         }
 
@@ -778,40 +814,42 @@
         <div class="modal-content">
             <span class="close" onclick="closeChangePasswordModal()">&times;</span>
             <h3>Change Your Credentials</h3>
-            <div id="modalSuccessMessage" class="modal-notification success">
-                ✅ Credentials changed successfully! Please login with your new credentials.
+            <div class="modal-form-container">
+                <div id="modalSuccessMessage" class="modal-notification success">
+                    ✅ Credentials changed successfully! Please login with your new credentials.
+                </div>
+                <div id="modalErrorMessage" class="modal-notification error">
+                    ❌ Error changing credentials. Please try again.
+                </div>
+                <form id="changePasswordForm" method="POST" data-url="{% url 'admin_change_credentials' %}" class="login-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="currentAdminEmail">Current Admin Email</label>
+                        <input type="email" id="currentAdminEmail" name="current_email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newAdminEmail">New Admin Email</label>
+                        <input type="email" id="newAdminEmail" name="new_email" required>
+                        <div id="adminEmailExists" class="admin-email-exists">Admin Email already exists!</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="new_password" maxlength="10" oninput="restrictToNumbers(this)" required>
+                        <svg class="toggle-password" onclick="togglePassword('newPassword')" viewBox="0 0 24 24">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" name="confirm_password" maxlength="10" oninput="restrictToNumbers(this)" required>
+                        <svg class="toggle-password" onclick="togglePassword('confirmPassword')" viewBox="0 0 24 24">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                        <div id="passwordMismatch" class="password-mismatch">Passwords do not match!</div>
+                    </div>
+                    <button type="submit" class="login-btn">Change Credentials</button>
+                </form>
             </div>
-            <div id="modalErrorMessage" class="modal-notification error">
-                ❌ Error changing credentials. Please try again.
-            </div>
-            <form id="changePasswordForm" method="POST" data-url="{% url 'admin_change_credentials' %}" class="login-form">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="currentAdminEmail">Current Admin Email</label>
-                    <input type="email" id="currentAdminEmail" name="current_email" required>
-                </div>
-                <div class="form-group">
-                    <label for="newAdminEmail">New Admin Email</label>
-                    <input type="email" id="newAdminEmail" name="new_email" required>
-                    <div id="adminEmailExists" class="admin-email-exists">Admin Email already exists!</div>
-                </div>
-                <div class="form-group">
-                    <label for="newPassword">New Password</label>
-                    <input type="password" id="newPassword" name="new_password" maxlength="10" oninput="restrictToNumbers(this)" required>
-                    <svg class="toggle-password" onclick="togglePassword('newPassword')" viewBox="0 0 24 24">
-                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                    </svg>
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm New Password</label>
-                    <input type="password" id="confirmPassword" name="confirm_password" maxlength="10" oninput="restrictToNumbers(this)" required>
-                    <svg class="toggle-password" onclick="togglePassword('confirmPassword')" viewBox="0 0 24 24">
-                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                    </svg>
-                    <div id="passwordMismatch" class="password-mismatch">Passwords do not match!</div>
-                </div>
-                <button type="submit" class="login-btn">Change Credentials</button>
-            </form>
         </div>
     </div>
 
@@ -843,47 +881,47 @@
         }
 
         document.getElementById("loginForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-    if (!email || !password) {
-        const errorMsg = document.getElementById("errorMessage");
-        errorMsg.style.display = "block";
-        errorMsg.classList.add("show");
-        errorMsg.textContent = "Email and password cannot be empty.";
-        return;
-    }
-    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-    const formData = new URLSearchParams();
-    formData.append("email", email);
-    formData.append("password", password);
-    const response = await fetch(this.dataset.url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-CSRFToken": csrfToken
-        },
-        body: formData
-    });
-    const result = await response.text();
-    if (result.trim() === "Success") {
-        const successMsg = document.getElementById("successMessage");
-        successMsg.style.display = "block";
-        successMsg.classList.add("show");
-        const errorMsg = document.getElementById("errorMessage");
-        errorMsg.style.display = "none";
-        setTimeout(() => {
-            window.location.href = "{% url 'admin_page' %}";  // Use your actual dashboard URL name
-        }, 2000);
-    } else {
-        const errorMsg = document.getElementById("errorMessage");
-        errorMsg.style.display = "block";
-        errorMsg.classList.add("show");
-        errorMsg.textContent = result.trim() || "❌ Invalid credentials! Try again.";
-        const successMsg = document.getElementById("successMessage");
-        successMsg.style.display = "none";
-    }
-});
+            event.preventDefault();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            if (!email || !password) {
+                const errorMsg = document.getElementById("errorMessage");
+                errorMsg.style.display = "block";
+                errorMsg.classList.add("show");
+                errorMsg.textContent = "Email and password cannot be empty.";
+                return;
+            }
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+            const formData = new URLSearchParams();
+            formData.append("email", email);
+            formData.append("password", password);
+            const response = await fetch(this.dataset.url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken
+                },
+                body: formData
+            });
+            const result = await response.text();
+            if (result.trim() === "Success") {
+                const successMsg = document.getElementById("successMessage");
+                successMsg.style.display = "block";
+                successMsg.classList.add("show");
+                const errorMsg = document.getElementById("errorMessage");
+                errorMsg.style.display = "none";
+                setTimeout(() => {
+                    window.location.href = "{% url 'admin_page' %}";
+                }, 2000);
+            } else {
+                const errorMsg = document.getElementById("errorMessage");
+                errorMsg.style.display = "block";
+                errorMsg.classList.add("show");
+                errorMsg.textContent = result.trim() || "❌ Invalid credentials! Try again.";
+                const successMsg = document.getElementById("successMessage");
+                successMsg.style.display = "none";
+            }
+        });
 
         function openChangePasswordModal() {
             document.getElementById('changePasswordModal').style.display = 'block';
@@ -898,7 +936,6 @@
             document.getElementById('changePasswordModal').style.display = 'none';
         }
 
-        // Close modal if clicked outside
         window.onclick = function(event) {
             const modal = document.getElementById('changePasswordModal');
             if (event.target == modal) {
@@ -906,7 +943,6 @@
             }
         }
 
-        // Confirm password validation
         document.getElementById('confirmPassword').addEventListener('input', function() {
             const newPass = document.getElementById('newPassword').value;
             const confirmPass = this.value;
@@ -918,7 +954,6 @@
             }
         });
 
-        // Admin Email availability check (basic client-side)
         document.getElementById('newAdminEmail').addEventListener('blur', function() {
             const newEmail = this.value;
             if (newEmail) {
@@ -956,7 +991,6 @@
                 document.getElementById("modalErrorMessage").style.display = "none";
                 setTimeout(() => {
                     closeChangePasswordModal();
-                    // Clear login form
                     document.getElementById("email").value = "";
                     document.getElementById("password").value = "";
                 }, 2000);

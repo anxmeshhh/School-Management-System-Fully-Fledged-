@@ -9,691 +9,510 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
+    body {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        background: var(--white);
+        min-height: 100vh;
+        color: var(--text-color);
+        padding-top: 100px;
+        padding-bottom: 40px;
+    }
+
+    h1, h2, h3 {
+        font-family: 'Montserrat', sans-serif;
+        text-align: center;
+    }
+
+    :root {
+        --primary-color: #00a676;
+        --primary-hover: #00b88d;
+        --sidebar-bg: #f0f9f4;
+        --sidebar-border: #a8d5c2;
+        --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --border-color: #adb5bd;
+        --text-color: #495057;
+        --text-light: #868e96;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --border-radius: 16px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .header {
+        background: var(--white);
+        color: var(--text-color);
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        text-align: center;
+        flex-grow: 1;
+        color: var(--primary-color);
+        margin: 0;
+        margin-left: -10%;  /* Shifts the title slightly left for better balance */
+    }
+
+    .back-btn {
+        padding: 0.6rem 1.2rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        background: var(--sidebar-bg);
+        color: var(--text-color);
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .back-btn:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .logo-container {
+        width: 90px;
+        height: 70px;
+        background: var(--white);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--sidebar-border);
+        flex-shrink: 0;
+    }
+
+    .logo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: var(--transition);
+    }
+
+    .logo-container:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
+    }
+
+    .main-content {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        padding: 2rem;
+        margin-top: 20px;
+    }
+
+    .alert-message {
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-message .error {
+        background: #fef2f2;
+        color: #dc3545;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid #dc3545;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .alert-message .success {
+        background: #d4edda;
+        color: var(--primary-color);
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .alert-message .warning {
+        background: #fff3cd;
+        color: #856404;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid #ffc107;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .section {
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        transition: var(--transition);
+    }
+
+    .section:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    h2 {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="date"],
+    .form-group input[type="file"],
+    .form-group input[type="time"],
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--white);
+        font-size: 0.95rem;
+        transition: var(--transition);
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="date"]:focus,
+    .form-group input[type="file"]:focus,
+    .form-group input[type="time"]:focus,
+    .form-group select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+        outline: none;
+    }
+
+    .form-group select {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 12px;
+        appearance: none;
+    }
+
+    .submit-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary-color);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--white);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .icon {
+        margin-right: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
         body {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            background: var(--white);
-            min-height: 100vh;
-            color: var(--text-color);
-            padding: 120px 20px 40px 20px;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Montserrat', sans-serif;
-            text-align: center;
-        }
-
-        :root {
-            --primary-color: #00a676;
-            --primary-hover: #00b88d;
-            --sidebar-bg: #f0f9f4;
-            --sidebar-border: #a8d5c2;
-            --white: #ffffff;
-            --light-bg: #f8f9fa;
-            --border-color: #adb5bd;
-            --text-color: #495057;
-            --text-light: #868e96;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --border-radius: 16px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        html {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
+            padding-top: 140px;
         }
 
         .header {
-            background: var(--white);
-            color: var(--text-color);
-            padding: 0.5rem 1rem 0.5rem 0.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: 0;
-            gap: 0.5rem;
+            flex-wrap: wrap;
+            padding: 0.75rem;
+            gap: 0.75rem;
         }
 
         .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            flex-grow: 1;
-            color: var(--primary-color);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            flex: none;
-            margin: 0;
-            z-index: 0;
+            font-size: 1.25rem;
+            order: 1;
+            width: 100%;
         }
 
         .back-btn {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            text-decoration: none;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .back-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .logo-container {
-            width: 100px;
-            height: 80px;
-            background: var(--white);
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
+            order: 2;
+            flex: 1;
             justify-content: center;
-            overflow: hidden;
-            transition: var(--transition);
-            box-shadow: var(--shadow-sm);
-            border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
-        }
-
-        .logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: var(--transition);
-        }
-
-        .logo-container:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
-        }
-
-        .logo-container:hover img {
-            transform: scale(1.05);
-        }
-
-        .main-content {
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            padding: 2rem;
-        }
-
-        .alert-message {
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-message .error {
-            background: #fef2f2;
-            color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #dc3545;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .alert-message .success {
-            background: #d4edda;
-            color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .alert-message .warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #ffc107;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .section {
-            background: var(--light-bg);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .section:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        h2 {
-            color: var(--primary-color);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            color: var(--text-color);
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="date"],
-        .form-group input[type="file"],
-        .form-group input[type="time"],
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--white);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .form-group input[type="text"]:focus,
-        .form-group input[type="date"]:focus,
-        .form-group input[type="file"]:focus,
-        .form-group input[type="time"]:focus,
-        .form-group select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
-            outline: none;
-        }
-
-        .form-group select {
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 12px;
-            appearance: none;
-        }
-
-        .preview-info {
-            background: var(--light-bg);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .preview-info:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .preview-info h3 {
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .preview-info p {
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-        }
-
-        .preview-table {
-            max-height: 500px;
-            overflow-y: auto;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .preview-table:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        table {
-            width: 100%;
-            min-width: 600px;
-            border-collapse: collapse;
-            background: var(--white);
-        }
-
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border: 1px solid var(--border-color);
+            padding: 0.6rem 1rem;
             font-size: 0.9rem;
         }
 
-        th {
-            background: var(--light-bg);
-            color: var(--primary-color);
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+        .logo-container {
+            order: 3;
+            width: 60px;
+            height: 50px;
         }
 
-        td {
-            color: var(--text-color);
+        .container {
+            padding: 0 15px;
         }
 
-        tr:nth-child(even) {
-            background: var(--light-bg);
+        .main-content {
+            padding: 1.5rem;
         }
 
-        tr:hover {
-            background: #f0f9f4;
+        .section {
+            padding: 1.2rem;
         }
 
-        .highlight {
-            background-color: var(--light-bg);
+        h2 {
+            font-size: 1.3rem;
         }
 
-        .error {
-            color: #dc3545;
+        .form-group label {
+            font-size: 0.9rem;
         }
 
-        button {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--primary-color);
-            border: none;
-            border-radius: 8px;
-            color: var(--white);
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        button:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-        }
-
-        .confirm-btn {
-            width: auto;
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-
-        .confirm-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .cancel-btn {
-            width: auto;
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--light-bg);
-            color: var(--text-color);
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .cancel-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .preview-btn {
-            width: auto;
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-
-        .preview-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .icon {
-            margin-right: 0.5rem;
+        .form-group input,
+        .form-group select {
+            font-size: 0.9rem;
+            padding: 0.6rem;
         }
 
         .submit-btn {
-            width: auto;
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
+            width: 100%;
             justify-content: center;
-            margin-top: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        body {
+            padding-top: 160px;
         }
 
-        .submit-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .header {
+            padding: 0.5rem;
         }
 
-        @media (max-width: 768px) {
-            body {
-                padding: 100px 10px 20px 10px;
-            }
-
-            .header {
-                padding: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .logo-container {
-                width: 80px;
-                height: 64px;
-            }
-
-            .main-content {
-                padding: 1.5rem;
-            }
-
-            .section {
-                padding: 1.2rem;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            .form-group label {
-                font-size: 0.9rem;
-            }
-
-            .form-group input[type="text"],
-            .form-group input[type="date"],
-            .form-group input[type="file"],
-            .form-group input[type="time"],
-            .form-group select {
-                font-size: 0.9rem;
-                padding: 0.6rem;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .preview-table {
-                max-height: 300px;
-            }
-
-            th, td {
-                font-size: 0.85rem;
-                padding: 0.6rem;
-            }
-
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
+        .header h1 {
+            font-size: 1.1rem;
         }
 
-        @media (max-width: 480px) {
-            body {
-                padding: 80px 5px 15px 5px;
-            }
-
-            .header {
-                padding: 0.75rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.25rem;
-            }
-
-            .logo-container {
-                width: 60px;
-                height: 48px;
-            }
-
-            .main-content {
-                padding: 1rem;
-                border-radius: 8px;
-            }
-
-            .section {
-                padding: 1rem;
-            }
-
-            h2 {
-                font-size: 1.25rem;
-            }
-
-            .form-group label {
-                font-size: 0.85rem;
-            }
-
-            .form-group input[type="text"],
-            .form-group input[type="date"],
-            .form-group input[type="file"],
-            .form-group input[type="time"],
-            .form-group select {
-                font-size: 0.85rem;
-                padding: 0.5rem;
-            }
-
-            th, td {
-                padding: 0.5rem;
-                font-size: 0.8rem;
-            }
-
-            .form-container {
-                padding: 1rem;
-            }
-
-            .back-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-            }
-
-            .submit-btn {
-                padding: 0.7rem 1rem;
-                font-size: 0.9rem;
-            }
+        .logo-container {
+            width: 50px;
+            height: 45px;
         }
 
-        @media (hover: none) {
-            .section:hover, .logo-container:hover, .back-btn:hover, .form-container:hover, .preview-info:hover, .preview-table:hover {
-                transform: none;
-                box-shadow: var(--shadow-sm);
-            }
+        .main-content {
+            padding: 1rem;
+            border-radius: 8px;
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
-            }
-
-            html {
-                scroll-behavior: auto;
-            }
+        .section {
+            padding: 1rem;
         }
-    </style>
+
+        h2 {
+            font-size: 1.15rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            font-size: 0.85rem;
+            padding: 0.6rem;
+        }
+
+        .back-btn {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .submit-btn {
+            font-size: 0.9rem;
+            padding: 0.7rem;
+        }
+    }
+
+    @media (hover: none) {
+        .section:hover, .logo-container:hover, .back-btn:hover, .submit-btn:hover {
+            transform: none;
+            box-shadow: var(--shadow-sm);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            transition: none !important;
+            animation: none !important;
+        }
+
+        html {
+            scroll-behavior: auto;
+        }
+    }
+</style>
 </head>
 <body>
     <div id="app">
-        <div class="header">
-            <a href="{% url 'admin_timetable' %}" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back to Timetable Dashboard
-            </a>
-            <h1><i class="fas fa-calendar-plus"></i> Admin Timetable Add</h1>
-            <a href="{% url 'admin_page' %}">
-                <div class="logo-container">
-                    <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
-                </div>
-            </a>
-        </div>
+    <header class="header">
+        <a href="{% url 'admin_timetable' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Timetable Dashboard
+        </a>
+        <h1><i class="fas fa-calendar-plus" style="color: #06b6d4; margin-right: 8px;"></i> Admin Timetable Add</h1>
+        <a href="{% url 'admin_page' %}">
+            <div class="logo-container">
+                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
+            </div>
+        </a>
+    </header>
 
-        <div class="container">
-            <div class="main-content">
-                
-
-                <div class="section">
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="class"><i class="fas fa-graduation-cap icon"></i> Class:</label>
-                            <select id="class" name="class" required>
-                                <option value="" disabled selected>Select a class</option>
-                                {% for cls in classes %}
-                                <option value="{{ cls }}">{{ cls }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="section"><i class="fas fa-th-large icon"></i> Section:</label>
-                            <select id="section" name="section">
-                                <option value="">None</option>
-                                {% for sec in sections %}
-                                <option value="{{ sec }}">{{ sec|capfirst }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="subject"><i class="fas fa-book icon"></i> Subject:</label>
-                            <input type="text" id="subject" name="subject" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="teacher_id"><i class="fas fa-user-tie icon"></i> Teacher:</label>
-                            <select id="teacher_id" name="teacher_id" required>
-                                <option value="" disabled selected>Select a teacher</option>
-                                {% for teacher in teachers %}
-                                <option value="{{ teacher.id }}">{{ teacher.name }} ({{ teacher.subject }})</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="day_of_week"><i class="fas fa-calendar-day icon"></i> Day:</label>
-                            <select id="day_of_week" name="day_of_week" required>
-                                <option value="" disabled selected>Select a day</option>
-                                <option value="Monday">Monday</option>
-                                <option value="Tuesday">Tuesday</option>
-                                <option value="Wednesday">Wednesday</option>
-                                <option value="Thursday">Thursday</option>
-                                <option value="Friday">Friday</option>
-                                <option value="Saturday">Saturday</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="start_time"><i class="fas fa-clock icon"></i> Start Time:</label>
-                            <input type="time" id="start_time" name="start_time" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="end_time"><i class="fas fa-clock icon"></i> End Time:</label>
-                            <input type="time" id="end_time" name="end_time" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="room"><i class="fas fa-door-open icon"></i> Room:</label>
-                            <input type="text" id="room" name="room">
-                        </div>
-                        <button type="submit" class="submit-btn">
-                            <i class="fas fa-plus icon"></i> Add Entry
-                        </button>
-                    </form>
-                </div>
+    <div class="container">
+        <div class="main-content">
+            <div class="section">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="class">
+                            <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class:
+                        </label>
+                        <select id="class" name="class" required>
+                            <option value="" disabled selected>Select a class</option>
+                            {% for cls in classes %}
+                            <option value="{{ cls }}">{{ cls }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="section">
+                            <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i> Section:
+                        </label>
+                        <select id="section" name="section">
+                            <option value="">None</option>
+                            {% for sec in sections %}
+                            <option value="{{ sec }}">{{ sec|capfirst }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">
+                            <i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Subject:
+                        </label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacher_id">
+                            <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Teacher:
+                        </label>
+                        <select id="teacher_id" name="teacher_id" required>
+                            <option value="" disabled selected>Select a teacher</option>
+                            {% for teacher in teachers %}
+                            <option value="{{ teacher.id }}">{{ teacher.name }} ({{ teacher.subject }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="day_of_week">
+                            <i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> Day:
+                        </label>
+                        <select id="day_of_week" name="day_of_week" required>
+                            <option value="" disabled selected>Select a day</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="start_time">
+                            <i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> Start Time:
+                        </label>
+                        <input type="time" id="start_time" name="start_time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end_time">
+                            <i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> End Time:
+                        </label>
+                        <input type="time" id="end_time" name="end_time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="room">
+                            <i class="fas fa-door-open" style="color: #14b8a6; margin-right: 8px;"></i> Room:
+                        </label>
+                        <input type="text" id="room" name="room">
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-plus" style="color: #ffffff; margin-right: 8px;"></i> Add Entry
+                    </button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

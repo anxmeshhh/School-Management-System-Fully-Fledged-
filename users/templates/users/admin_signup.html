@@ -26,9 +26,9 @@
 
         /* CSS Variables - Green and White Theme */
         :root {
-            --primary-green: #00a651; /* Bright green */
-            --secondary-green: #008c44; /* Darker green */
-            --light-green: #e8f5e8; /* Light green */
+            --primary-green: #00a651;
+            --secondary-green: #008c44;
+            --light-green: #e8f5e8;
             --white: #ffffff;
             --border-color: #d4edda;
             --text-dark: #2c3e50;
@@ -54,23 +54,22 @@
             --radius-full: 50%;
         }
 
-        /* Smooth Scrolling */
+        /* Smooth Scrolling - DISABLED */
         html {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
+            overflow: hidden;
+            height: 100%;
         }
 
-        /* Body Styling - Light Green/White */
+        /* Body Styling - Light Green/White - NO SCROLL */
         body {
             background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 0;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         body::before {
@@ -89,10 +88,10 @@
         /* Main Container - Split Layout */
         .main-container {
             display: flex;
-            width: 100%;
+            width: 90%;
             max-width: 900px;
-            min-height: 500px;
-            height: auto;
+            height: 85vh;
+            max-height: 600px;
             border-radius: var(--radius-lg);
             overflow: hidden;
             box-shadow: var(--shadow-md), var(--shadow-glow);
@@ -117,8 +116,7 @@
             padding: var(--space-xl);
             color: var(--white);
             animation: slideInLeft 1s ease-out;
-            overflow: visible;
-            min-height: 500px;
+            overflow: hidden;
         }
 
         .left-panel::before {
@@ -261,7 +259,7 @@
             justify-content: center;
             animation: slideInRight 1s ease-out;
             position: relative;
-            min-height: 500px;
+            overflow: hidden;
         }
 
         .right-panel::after {
@@ -533,19 +531,32 @@
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
-                min-height: auto;
-                max-width: 100%;
-                padding: 15px;
+                width: 95%;
+                height: auto;
+                max-height: 95vh;
             }
 
             .left-panel {
                 padding: var(--space-lg);
-                min-height: 250px;
+                min-height: auto;
             }
 
             .right-panel {
                 padding: var(--space-lg);
-                min-height: 400px;
+                overflow-y: auto;
+            }
+
+            .right-panel::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .right-panel::-webkit-scrollbar-track {
+                background: var(--light-green);
+            }
+
+            .right-panel::-webkit-scrollbar-thumb {
+                background: var(--primary-green);
+                border-radius: 3px;
             }
 
             .project-title {
@@ -571,10 +582,6 @@
             .project-logo {
                 width: 100px;
                 height: 100px;
-            }
-
-            body {
-                padding: 15px;
             }
         }
 
@@ -616,10 +623,6 @@
             .project-logo {
                 width: 80px;
                 height: 80px;
-            }
-
-            body {
-                padding: 10px;
             }
         }
 

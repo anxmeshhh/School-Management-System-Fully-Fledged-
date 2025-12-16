@@ -9,782 +9,831 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
-        :root {
-            --primary-color: #00a676;
-            --primary-hover: #00b88d;
-            --sidebar-bg: #f0f9f4;
-            --sidebar-border: #a8d5c2;
-            --white: #ffffff;
-            --light-bg: #f8f9fa;
-            --border-color: #adb5bd;
-            --text-color: #495057;
-            --text-light: #868e96;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --border-radius: 16px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    body {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        background: var(--white);
+        min-height: 100vh;
+        color: var(--text-color);
+        padding-top: 100px;
+        padding-bottom: 40px;
+    }
 
-        html {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
-        }
+    h1, h2, h3 {
+        font-family: 'Montserrat', sans-serif;
+        text-align: center;
+    }
 
+    :root {
+        --primary-color: #00a676;
+        --primary-hover: #00b88d;
+        --sidebar-bg: #f0f9f4;
+        --sidebar-border: #a8d5c2;
+        --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --border-color: #adb5bd;
+        --text-color: #495057;
+        --text-light: #868e96;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --border-radius: 16px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .header {
+        background: var(--white);
+        color: var(--text-color);
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        text-align: center;
+        flex-grow: 1;
+        color: var(--primary-color);
+        margin: 0;
+        margin-left: -10%;  /* Shifts the title slightly left for better balance */
+    }
+
+    .back-btn {
+        padding: 0.6rem 1.2rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        background: var(--sidebar-bg);
+        color: var(--text-color);
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .back-btn:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .logo-container {
+        width: 90px;
+        height: 70px;
+        background: var(--white);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--sidebar-border);
+        flex-shrink: 0;
+    }
+
+    .logo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: var(--transition);
+    }
+
+    .logo-container:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
+    }
+
+    .main-content {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        padding: 2rem;
+        margin-top: 20px;
+    }
+
+    .alert-message {
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-message .error {
+        background: #fef2f2;
+        color: #dc3545;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid #dc3545;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .alert-message .success {
+        background: #d4edda;
+        color: var(--primary-color);
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .section {
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        transition: var(--transition);
+    }
+
+    .section:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    h2 {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    h3 {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background: var(--white);
+        color: var(--text-color);
+        transition: var(--transition);
+    }
+
+    .form-group select {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 12px;
+        appearance: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+        outline: none;
+    }
+
+    .add-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary-color);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--white);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .add-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .teacher-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .teacher-card {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        padding: 1.5rem;
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .teacher-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .teacher-card img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .teacher-card h3 {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+    }
+
+    .teacher-card p {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-color);
+    }
+
+    .teacher-card p strong {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .teacher-card .actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .teacher-card .actions a,
+    .teacher-card .actions button {
+        flex: 1;
+        padding: 0.6rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        text-align: center;
+        background: var(--sidebar-bg);
+        color: var(--text-color);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .teacher-card .actions a:hover,
+    .teacher-card .actions button:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .teacher-card .actions .delete-btn {
+        background: var(--light-bg);
+        color: var(--text-color);
+    }
+
+    .teacher-card .actions .delete-btn:hover {
+        background: #dc3545;
+        color: var(--white);
+    }
+
+    .no-teachers {
+        color: var(--primary-color);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        text-align: center;
+        padding: 1.5rem;
+        background: var(--light-bg);
+        border-radius: 8px;
+        border: 2px solid var(--border-color);
+        grid-column: 1 / -1;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        width: 90%;
+        max-width: 500px;
+        position: relative;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .modal-content .close {
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: var(--transition);
+    }
+
+    .modal-content .close:hover {
+        color: var(--primary-color);
+    }
+
+    .modal-content h3 {
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .modal-content .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-content button {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--primary-color);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--white);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .modal-content button:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    @media (max-width: 768px) {
         body {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            background: var(--white);
-            min-height: 100vh;
-            color: var(--text-color);
-            padding: 120px 20px 40px 20px;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Montserrat', sans-serif;
-            text-align: center;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
+            padding-top: 140px;
         }
 
         .header {
-            background: var(--white);
-            color: var(--text-color);
-            padding: 0.5rem 1rem 0.5rem 0.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: 0;
-            gap: 0.5rem;
+            flex-wrap: wrap;
+            padding: 0.75rem;
+            gap: 0.75rem;
         }
 
         .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            flex-grow: 1;
-            color: var(--primary-color);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            flex: none;
-            margin: 0;
-            z-index: 0;
+            font-size: 1.25rem;
+            order: 1;
+            width: 100%;
         }
 
         .back-btn {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            text-decoration: none;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .back-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            order: 2;
+            flex: 1;
+            justify-content: center;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
         }
 
         .logo-container {
-            width: 100px;
-            height: 80px;
-            background: var(--white);
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            transition: var(--transition);
-            box-shadow: var(--shadow-sm);
-            border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
+            order: 3;
+            width: 60px;
+            height: 50px;
         }
 
-        .logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: var(--transition);
-        }
-
-        .logo-container:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
-        }
-
-        .logo-container:hover img {
-            transform: scale(1.05);
+        .container {
+            padding: 0 15px;
         }
 
         .main-content {
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            padding: 2rem;
-        }
-
-        .alert-message {
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-message .error {
-            background: #fef2f2;
-            color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #dc3545;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .alert-message .success {
-            background: #d4edda;
-            color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
+            padding: 1.5rem;
         }
 
         .section {
-            background: var(--light-bg);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .section:hover {
-            box-shadow: var(--shadow-md);
+            padding: 1.2rem;
         }
 
         h2 {
-            color: var(--primary-color);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
+            font-size: 1.3rem;
         }
 
         h3 {
-            color: var(--primary-color);
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-            display: flex;
-            flex-direction: column;
+            font-size: 1.125rem;
         }
 
         .form-group label {
-            display: block;
-            color: var(--text-color);
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
 
         .form-group input,
         .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            background: var(--white);
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-
-        .form-group select {
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 12px;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
-            outline: none;
-        }
-
-        .add-btn {
-            padding: 0.75rem 1.5rem;
-            background: var(--primary-color);
-            border: none;
-            border-radius: 8px;
-            color: var(--white);
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            justify-content: center;
-            width: 100%;
-            margin-top: 1rem;
-        }
-
-        .add-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            font-size: 0.9rem;
+            padding: 0.6rem;
         }
 
         .teacher-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .teacher-card {
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: var(--shadow-sm);
-            padding: 1.5rem;
-            transition: var(--transition);
-            text-align: center;
-        }
-
-        .teacher-card:hover {
-            box-shadow: var(--shadow-md);
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
 
         .teacher-card img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 1rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .teacher-card h3 {
-            color: var(--primary-color);
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.8rem;
-        }
-
-        .teacher-card p {
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--text-color);
-        }
-
-        .teacher-card p strong {
-            color: var(--primary-color);
-            font-weight: 600;
+            width: 60px;
+            height: 60px;
         }
 
         .teacher-card .actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            flex-direction: column;
         }
 
         .teacher-card .actions a,
         .teacher-card .actions button {
-            flex: 1;
-            padding: 0.6rem 1rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            text-align: center;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        body {
+            padding-top: 160px;
         }
 
-        .teacher-card .actions a:hover,
-        .teacher-card .actions button:hover {
-            background: var(--primary-color);
-            color: var(--white);
+        .header {
+            padding: 0.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.1rem;
+        }
+
+        .logo-container {
+            width: 50px;
+            height: 45px;
+        }
+
+        .main-content {
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .section {
+            padding: 1rem;
+        }
+
+        h2 {
+            font-size: 1.15rem;
+        }
+
+        h3 {
+            font-size: 1rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            font-size: 0.85rem;
+            padding: 0.6rem;
+        }
+
+        .back-btn {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .teacher-card {
+            padding: 1rem;
+        }
+
+        .teacher-card img {
+            width: 50px;
+            height: 50px;
+        }
+    }
+
+    @media (hover: none) {
+        .section:hover, .add-btn:hover, .teacher-card:hover, .logo-container:hover, .back-btn:hover, .teacher-card .actions a:hover, .teacher-card .actions button:hover {
+            transform: none;
             box-shadow: var(--shadow-sm);
         }
+    }
 
-        .no-teachers {
-            color: var(--primary-color);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            text-align: center;
-            padding: 1.5rem;
-            background: var(--light-bg);
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            transition: none !important;
+            animation: none !important;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+        html {
+            scroll-behavior: auto;
         }
-
-        .modal-content {
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            width: 90%;
-            max-width: 500px;
-            position: relative;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .modal-content .close {
-            position: absolute;
-            top: 1rem;
-            right: 1.5rem;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-light);
-            transition: var(--transition);
-        }
-
-        .modal-content .close:hover {
-            color: var(--primary-color);
-        }
-
-        .modal-content h3 {
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .modal-content .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-content button {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--primary-color);
-            border: none;
-            border-radius: 8px;
-            color: var(--white);
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .modal-content button:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        /* Media Queries */
-        @media (max-width: 768px) {
-            body {
-                padding: 100px 10px 20px 10px;
-            }
-
-            .header {
-                padding: 1rem 1rem 1rem 0.5rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .logo-container {
-                width: 80px;
-                height: 64px;
-            }
-
-            .main-content {
-                padding: 1.5rem;
-            }
-
-            .section {
-                padding: 1.2rem;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            h3 {
-                font-size: 1.125rem;
-            }
-
-            .form-group label {
-                font-size: 0.9rem;
-            }
-
-            .form-group input,
-            .form-group select {
-                font-size: 0.9rem;
-                padding: 0.6rem;
-            }
-
-            .teacher-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .teacher-card img {
-                width: 60px;
-                height: 60px;
-            }
-
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 80px 5px 15px 5px;
-            }
-
-            .header {
-                padding: 0.75rem 1rem 0.75rem 0.25rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.25rem;
-                position: static;
-                transform: none;
-                flex-grow: 1;
-            }
-
-            .logo-container {
-                width: 60px;
-                height: 48px;
-            }
-
-            .main-content {
-                padding: 1rem;
-                border-radius: 8px;
-            }
-
-            .section {
-                padding: 1rem;
-            }
-
-            h2 {
-                font-size: 1.25rem;
-            }
-
-            h3 {
-                font-size: 1rem;
-            }
-
-            .form-group label {
-                font-size: 0.85rem;
-            }
-
-            .form-group input,
-            .form-group select {
-                font-size: 0.85rem;
-                padding: 0.5rem;
-            }
-
-            .teacher-card {
-                padding: 1rem;
-            }
-
-            .teacher-card img {
-                width: 50px;
-                height: 50px;
-            }
-
-            .back-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-            }
-        }
-
-        @media (hover: none) {
-            .section:hover, .add-btn:hover, .teacher-card:hover, .logo-container:hover, .back-btn:hover {
-                transform: none;
-                box-shadow: var(--shadow-sm);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
-            }
-
-            html {
-                scroll-behavior: auto;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <div id="app">
-        <header class="header">
-            <a href="{% url 'admin_page' %}" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back To Main Dashboard
-            </a>
-            <h1><i class="fas fa-users"></i> Admin Teacher Panel</h1>
-            <a href="{% url 'admin_page' %}">
-                <div class="logo-container">
-                    <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
-                </div>
-            </a>
-        </header>
+    <header class="header">
+        <a href="{% url 'admin_page' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back To Main Dashboard
+        </a>
+        <h1><i class="fas fa-users" style="color: #8b5cf6; margin-right: 8px;"></i> Admin Teacher Panel</h1>
+        <a href="{% url 'admin_page' %}">
+            <div class="logo-container">
+                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
+            </div>
+        </a>
+    </header>
 
-        <div class="container">
-            <main class="main-content">
-                {% if messages %}
-                    <div class="alert-message">
-                        {% for message in messages %}
-                            <div class="{{ message.tags }}">
-                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
-                <section class="section">
-                    <h2><i class="fas fa-user-tie"></i> Manage Teachers</h2>
-
-                    <!-- Add Teacher Form -->
-                    <div class="add-teacher-form">
-                        <h3><i class="fas fa-user-plus"></i> Add New Teacher</h3>
-                        <form method="POST" action="{% url 'add_teacher' %}">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label for="name"><i class="fas fa-user"></i> Full Name</label>
-                                <input type="text" id="name" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="email"><i class="fas fa-envelope"></i> Email</label>
-                                <input type="email" id="email" name="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="subject"><i class="fas fa-book"></i> Subject</label>
-                                <input type="text" id="subject" name="subject" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="password"><i class="fas fa-lock"></i> Password</label>
-                                <input type="text" id="password" name="password" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="class_teacher_of"><i class="fas fa-graduation-cap"></i> Class Teacher Of (Optional)</label>
-                                <select id="class_teacher_of" name="class_teacher_of">
-                                    <option value="">Not Assigned</option>
-                                    <option value="Class 1-A">Class 1-A</option>
-                                    <option value="Class 1-B">Class 1-B</option>
-                                    <option value="Class 1-C">Class 1-C</option>
-                                    <option value="Class 2-A">Class 2-A</option>
-                                    <option value="Class 2-B">Class 2-B</option>
-                                    <option value="Class 2-C">Class 2-C</option>
-                                    <option value="Class 3-A">Class 3-A</option>
-                                    <option value="Class 3-B">Class 3-B</option>
-                                    <option value="Class 3-C">Class 3-C</option>
-                                    <option value="Class 4-A">Class 4-A</option>
-                                    <option value="Class 4-B">Class 4-B</option>
-                                    <option value="Class 4-C">Class 4-C</option>
-                                    <option value="Class 5-A">Class 5-A</option>
-                                    <option value="Class 5-B">Class 5-B</option>
-                                    <option value="Class 5-C">Class 5-C</option>
-                                    <option value="Class 6-A">Class 6-A</option>
-                                    <option value="Class 6-B">Class 6-B</option>
-                                    <option value="Class 6-C">Class 6-C</option>
-                                    <option value="Class 7-A">Class 7-A</option>
-                                    <option value="Class 7-B">Class 7-B</option>
-                                    <option value="Class 7-C">Class 7-C</option>
-                                    <option value="Class 8-A">Class 8-A</option>
-                                    <option value="Class 8-B">Class 8-B</option>
-                                    <option value="Class 8-C">Class 8-C</option>
-                                    <option value="Class 9-A">Class 9-A</option>
-                                    <option value="Class 9-B">Class 9-B</option>
-                                    <option value="Class 9-C">Class 9-C</option>
-                                    <option value="Class 10-A">Class 10-A</option>
-                                    <option value="Class 10-B">Class 10-B</option>
-                                    <option value="Class 10-C">Class 10-C</option>
-                                    <option value="Class 11-A">Class 11-A</option>
-                                    <option value="Class 11-B">Class 11-B</option>
-                                    <option value="Class 11-C">Class 11-C</option>
-                                    <option value="Class 12-A">Class 12-A</option>
-                                    <option value="Class 12-B">Class 12-B</option>
-                                    <option value="Class 12-C">Class 12-C</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="add-btn">
-                                <i class="fas fa-plus"></i> Add Teacher
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Teacher Grid -->
-                    <div class="teacher-grid">
-                        {% for teacher in teachers %}
-                        <div class="teacher-card">
-                            <img src="{{ teacher.profile_pic_url }}" alt="{{ teacher.name }}" onerror="this.src='{% static 'users/images/greenlogo.png' %}';">
-                            <h3><i class="fas fa-user-tie"></i> {{ teacher.name }}</h3>
-                            <p><strong>ID:</strong> {{ teacher.id }}</p>
-                            <p><strong>Email:</strong> {{ teacher.email }}</p>
-                            <p><strong>Subject:</strong> {{ teacher.subject }}</p>
-                            <p><strong>Class Teacher:</strong> {{ teacher.class_teacher_of|default:"Not Assigned" }}</p>
-                            <p><strong>Password:</strong> {{ teacher.password }}</p>
-                            <div class="actions">
-                                <button class="edit-btn" onclick="openEditModal('{{ teacher.id }}', '{{ teacher.name|escapejs }}', '{{ teacher.email|escapejs }}', '{{ teacher.subject|escapejs }}', '{{ teacher.class_teacher_of|default:''|escapejs }}', '{{ teacher.password|escapejs }}')">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <a href="{% url 'delete_teacher' teacher.id %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete {{ teacher.name|escapejs }}?')">
-                                    <i class="fas fa-trash"></i> Delete
-                                </a>
-                            </div>
+    <div class="container">
+        <main class="main-content">
+            {% if messages %}
+                <div class="alert-message">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                            {{ message }}
                         </div>
-                        {% empty %}
-                        <p class="no-teachers">
-                            <i class="fas fa-search"></i> No teachers found.
-                        </p>
-                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <section class="section">
+                <h2><i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Manage Teachers</h2>
+
+                <!-- Add Teacher Form -->
+                <div class="add-teacher-form">
+                    <form method="POST" action="{% url 'add_teacher' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="name">
+                                <i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Full Name
+                            </label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">
+                                <i class="fas fa-envelope" style="color: #ec4899; margin-right: 8px;"></i> Email
+                            </label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">
+                                <i class="fas fa-book" style="color: #f59e0b; margin-right: 8px;"></i> Subject
+                            </label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">
+                                <i class="fas fa-lock" style="color: #f97316; margin-right: 8px;"></i> Password
+                            </label>
+                            <input type="text" id="password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="class_teacher_of">
+                                <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class Teacher Of (Optional)
+                            </label>
+                            <select id="class_teacher_of" name="class_teacher_of">
+                                <option value="">Not Assigned</option>
+                                <option value="Class 1-A">Class 1-A</option>
+                                <option value="Class 1-B">Class 1-B</option>
+                                <option value="Class 1-C">Class 1-C</option>
+                                <option value="Class 2-A">Class 2-A</option>
+                                <option value="Class 2-B">Class 2-B</option>
+                                <option value="Class 2-C">Class 2-C</option>
+                                <option value="Class 3-A">Class 3-A</option>
+                                <option value="Class 3-B">Class 3-B</option>
+                                <option value="Class 3-C">Class 3-C</option>
+                                <option value="Class 4-A">Class 4-A</option>
+                                <option value="Class 4-B">Class 4-B</option>
+                                <option value="Class 4-C">Class 4-C</option>
+                                <option value="Class 5-A">Class 5-A</option>
+                                <option value="Class 5-B">Class 5-B</option>
+                                <option value="Class 5-C">Class 5-C</option>
+                                <option value="Class 6-A">Class 6-A</option>
+                                <option value="Class 6-B">Class 6-B</option>
+                                <option value="Class 6-C">Class 6-C</option>
+                                <option value="Class 7-A">Class 7-A</option>
+                                <option value="Class 7-B">Class 7-B</option>
+                                <option value="Class 7-C">Class 7-C</option>
+                                <option value="Class 8-A">Class 8-A</option>
+                                <option value="Class 8-B">Class 8-B</option>
+                                <option value="Class 8-C">Class 8-C</option>
+                                <option value="Class 9-A">Class 9-A</option>
+                                <option value="Class 9-B">Class 9-B</option>
+                                <option value="Class 9-C">Class 9-C</option>
+                                <option value="Class 10-A">Class 10-A</option>
+                                <option value="Class 10-B">Class 10-B</option>
+                                <option value="Class 10-C">Class 10-C</option>
+                                <option value="Class 11-A">Class 11-A</option>
+                                <option value="Class 11-B">Class 11-B</option>
+                                <option value="Class 11-C">Class 11-C</option>
+                                <option value="Class 12-A">Class 12-A</option>
+                                <option value="Class 12-B">Class 12-B</option>
+                                <option value="Class 12-C">Class 12-C</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="add-btn">
+                            <i class="fas fa-plus" style="color: #ffffff; margin-right: 8px;"></i> Add Teacher
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Teacher Grid -->
+                <div class="teacher-grid">
+                    {% for teacher in teachers %}
+                    <div class="teacher-card">
+                        <img src="{{ teacher.profile_pic_url }}" alt="{{ teacher.name }}" onerror="this.src='{% static 'users/images/greenlogo.png' %}';">
+                        <h3><i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> {{ teacher.name }}</h3>
+                        <p><strong>ID:</strong> {{ teacher.id }}</p>
+                        <p><strong>Email:</strong> {{ teacher.email }}</p>
+                        <p><strong>Subject:</strong> {{ teacher.subject }}</p>
+                        <p><strong>Class Teacher:</strong> {{ teacher.class_teacher_of|default:"Not Assigned" }}</p>
+                        <p><strong>Password:</strong> {{ teacher.password }}</p>
+                        <div class="actions">
+                            <button class="edit-btn" onclick="openEditModal('{{ teacher.id }}', '{{ teacher.name|escapejs }}', '{{ teacher.email|escapejs }}', '{{ teacher.subject|escapejs }}', '{{ teacher.class_teacher_of|default:''|escapejs }}', '{{ teacher.password|escapejs }}')">
+                                <i class="fas fa-edit" style="color: #10b981; margin-right: 6px;"></i> Edit
+                            </button>
+                            <a href="{% url 'delete_teacher' teacher.id %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete {{ teacher.name|escapejs }}?')">
+                                <i class="fas fa-trash" style="color: #ef4444; margin-right: 6px;"></i> Delete
+                            </a>
+                        </div>
                     </div>
-                </section>
-            </main>
-        </div>
+                    {% empty %}
+                    <p class="no-teachers">
+                        <i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> 
+                        No teachers found.
+                    </p>
+                    {% endfor %}
+                </div>
+            </section>
+        </main>
     </div>
+</div>
 
-    <!-- Edit Teacher Modal -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeEditModal()">&times;</span>
-            <h3><i class="fas fa-edit"></i> Edit Teacher</h3>
-            <form method="POST" action="{% url 'update_teacher' %}">
-                {% csrf_token %}
-                <input type="hidden" id="edit_teacher_id" name="teacher_id">
-                <div class="form-group">
-                    <label for="edit_id"><i class="fas fa-hashtag"></i> ID</label>
-                    <input type="number" id="edit_id" name="id">
-                </div>
-                <div class="form-group">
-                    <label for="edit_name"><i class="fas fa-user"></i> Full Name</label>
-                    <input type="text" id="edit_name" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_email"><i class="fas fa-envelope"></i> Email</label>
-                    <input type="email" id="edit_email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_subject"><i class="fas fa-book"></i> Subject</label>
-                    <input type="text" id="edit_subject" name="subject" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_class_teacher_of"><i class="fas fa-graduation-cap"></i> Class Teacher Of (Optional)</label>
-                    <select id="edit_class_teacher_of" name="class_teacher_of">
-                        <option value="">Not Assigned</option>
-                        <option value="Class 1-A">Class 1-A</option>
-                        <option value="Class 1-B">Class 1-B</option>
-                        <option value="Class 1-C">Class 1-C</option>
-                        <option value="Class 2-A">Class 2-A</option>
-                        <option value="Class 2-B">Class 2-B</option>
-                        <option value="Class 2-C">Class 2-C</option>
-                        <option value="Class 3-A">Class 3-A</option>
-                        <option value="Class 3-B">Class 3-B</option>
-                        <option value="Class 3-C">Class 3-C</option>
-                        <option value="Class 4-A">Class 4-A</option>
-                        <option value="Class 4-B">Class 4-B</option>
-                        <option value="Class 4-C">Class 4-C</option>
-                        <option value="Class 5-A">Class 5-A</option>
-                        <option value="Class 5-B">Class 5-B</option>
-                        <option value="Class 5-C">Class 5-C</option>
-                        <option value="Class 6-A">Class 6-A</option>
-                        <option value="Class 6-B">Class 6-B</option>
-                        <option value="Class 6-C">Class 6-C</option>
-                        <option value="Class 7-A">Class 7-A</option>
-                        <option value="Class 7-B">Class 7-B</option>
-                        <option value="Class 7-C">Class 7-C</option>
-                        <option value="Class 8-A">Class 8-A</option>
-                        <option value="Class 8-B">Class 8-B</option>
-                        <option value="Class 8-C">Class 8-C</option>
-                        <option value="Class 9-A">Class 9-A</option>
-                        <option value="Class 9-B">Class 9-B</option>
-                        <option value="Class 9-C">Class 9-C</option>
-                        <option value="Class 10-A">Class 10-A</option>
-                        <option value="Class 10-B">Class 10-B</option>
-                        <option value="Class 10-C">Class 10-C</option>
-                        <option value="Class 11-A">Class 11-A</option>
-                        <option value="Class 11-B">Class 11-B</option>
-                        <option value="Class 11-C">Class 11-C</option>
-                        <option value="Class 12-A">Class 12-A</option>
-                        <option value="Class 12-B">Class 12-B</option>
-                        <option value="Class 12-C">Class 12-C</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="edit_password"><i class="fas fa-lock"></i> Password</label>
-                    <input type="text" id="edit_password" name="password" required>
-                </div>
-                <button type="submit">
-                    <i class="fas fa-save"></i> Update Teacher
-                </button>
-            </form>
-        </div>
+<!-- Edit Teacher Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h3><i class="fas fa-edit" style="color: #10b981; margin-right: 8px;"></i> Edit Teacher</h3>
+        <form method="POST" action="{% url 'update_teacher' %}">
+            {% csrf_token %}
+            <input type="hidden" id="edit_teacher_id" name="teacher_id">
+            <div class="form-group">
+                <label for="edit_id">
+                    <i class="fas fa-hashtag" style="color: #6366f1; margin-right: 8px;"></i> ID
+                </label>
+                <input type="number" id="edit_id" name="id">
+            </div>
+            <div class="form-group">
+                <label for="edit_name">
+                    <i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Full Name
+                </label>
+                <input type="text" id="edit_name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="edit_email">
+                    <i class="fas fa-envelope" style="color: #ec4899; margin-right: 8px;"></i> Email
+                </label>
+                <input type="email" id="edit_email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="edit_subject">
+                    <i class="fas fa-book" style="color: #f59e0b; margin-right: 8px;"></i> Subject
+                </label>
+                <input type="text" id="edit_subject" name="subject" required>
+            </div>
+            <div class="form-group">
+                <label for="edit_class_teacher_of">
+                    <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class Teacher Of (Optional)
+                </label>
+                <select id="edit_class_teacher_of" name="class_teacher_of">
+                    <option value="">Not Assigned</option>
+                    <option value="Class 1-A">Class 1-A</option>
+                    <option value="Class 1-B">Class 1-B</option>
+                    <option value="Class 1-C">Class 1-C</option>
+                    <option value="Class 2-A">Class 2-A</option>
+                    <option value="Class 2-B">Class 2-B</option>
+                    <option value="Class 2-C">Class 2-C</option>
+                    <option value="Class 3-A">Class 3-A</option>
+                    <option value="Class 3-B">Class 3-B</option>
+                    <option value="Class 3-C">Class 3-C</option>
+                    <option value="Class 4-A">Class 4-A</option>
+                    <option value="Class 4-B">Class 4-B</option>
+                    <option value="Class 4-C">Class 4-C</option>
+                    <option value="Class 5-A">Class 5-A</option>
+                    <option value="Class 5-B">Class 5-B</option>
+                    <option value="Class 5-C">Class 5-C</option>
+                    <option value="Class 6-A">Class 6-A</option>
+                    <option value="Class 6-B">Class 6-B</option>
+                    <option value="Class 6-C">Class 6-C</option>
+                    <option value="Class 7-A">Class 7-A</option>
+                    <option value="Class 7-B">Class 7-B</option>
+                    <option value="Class 7-C">Class 7-C</option>
+                    <option value="Class 8-A">Class 8-A</option>
+                    <option value="Class 8-B">Class 8-B</option>
+                    <option value="Class 8-C">Class 8-C</option>
+                    <option value="Class 9-A">Class 9-A</option>
+                    <option value="Class 9-B">Class 9-B</option>
+                    <option value="Class 9-C">Class 9-C</option>
+                    <option value="Class 10-A">Class 10-A</option>
+                    <option value="Class 10-B">Class 10-B</option>
+                    <option value="Class 10-C">Class 10-C</option>
+                    <option value="Class 11-A">Class 11-A</option>
+                    <option value="Class 11-B">Class 11-B</option>
+                    <option value="Class 11-C">Class 11-C</option>
+                    <option value="Class 12-A">Class 12-A</option>
+                    <option value="Class 12-B">Class 12-B</option>
+                    <option value="Class 12-C">Class 12-C</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit_password">
+                    <i class="fas fa-lock" style="color: #f97316; margin-right: 8px;"></i> Password
+                </label>
+                <input type="text" id="edit_password" name="password" required>
+            </div>
+            <button type="submit">
+                <i class="fas fa-save" style="color: #ffffff; margin-right: 8px;"></i> Update Teacher
+            </button>
+        </form>
     </div>
-
+</div>
     <script>
         function openEditModal(id, name, email, subject, class_teacher_of, password) {
             document.getElementById('edit_teacher_id').value = id;

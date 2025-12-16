@@ -5755,6 +5755,10 @@ def save_marks(request):
                     percentage = (marks / max_marks * 100) if max_marks > 0 else 0
                     return 'A' if percentage >= 80 else 'B' if percentage >= 60 else 'C' if percentage >= 40 else 'D' if percentage >= 33 else 'E'
 
+                # Track if any marks were updated (not inserted)
+                marks_updated = False
+                marks_inserted = False
+
                 # Process all subjects (no auth checks for admin)
                 for subject in marks_data:
                     subject_id = subject.get('subjectId')
@@ -5773,14 +5777,36 @@ def save_marks(request):
                     if marks < 0 or max_marks < 1 or marks > max_marks:
                         return JsonResponse({'success': False, 'message': 'Invalid marks.'}, status=400)
 
+                    # Check if marks already exist for this student and subject
+                    cursor.execute(
+                        "SELECT id FROM school_marks WHERE student_id = %s AND subject_id = %s",
+                        [student_id, subject_id]
+                    )
+                    existing_mark = cursor.fetchone()
+
                     grade = calculate_grade(marks, max_marks)
                     cursor.execute(
                         "INSERT INTO school_marks (student_id, subject_id, marks, max_marks, grade) VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE marks=%s, max_marks=%s, grade=%s",
                         [student_id, subject_id, marks, max_marks, grade, marks, max_marks, grade]
                     )
 
+                    # Track what happened
+                    if existing_mark:
+                        marks_updated = True
+                    else:
+                        marks_inserted = True
+
                 connection.commit()
-                return JsonResponse({'success': True, 'message': 'Marks saved successfully.'})
+                
+                # Return appropriate message based on what happened
+                if marks_updated and marks_inserted:
+                    message = 'Marks saved successfully! Some marks were updated and some were newly added.'
+                elif marks_updated:
+                    message = 'Marks updated successfully! Previous marks have been overwritten.'
+                else:
+                    message = 'Marks saved successfully! New marks have been recorded.'
+                
+                return JsonResponse({'success': True, 'message': message, 'updated': marks_updated})
 
         except Exception as e:
             connection.rollback()

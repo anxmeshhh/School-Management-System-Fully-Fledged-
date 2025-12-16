@@ -10,25 +10,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        
         body {
             font-family: 'Poppins', sans-serif;
             font-weight: 400;
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 120px 20px 40px 20px;
+            padding-top: 100px;
+            padding-bottom: 40px;
         }
+        
         h1, h2, h3 {
             font-family: 'Montserrat', sans-serif;
+            text-align: center;
         }
+        
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
+            --danger-color: #dc2626;
+            --danger-hover: #ef4444;
             --sidebar-bg: #f0f9f4;
             --sidebar-border: #a8d5c2;
             --white: #ffffff;
@@ -42,50 +50,51 @@
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
         html {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
         }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 20px;
         }
+        
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem 0.5rem 0.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: var(--shadow-md);
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 10;
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: 0;
-            gap: 0.5rem;
+            gap: 1rem;
         }
+        
         .header h1 {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            flex: none;
             margin: 0;
-            z-index: 0;
+            margin-left: -10%;
         }
+        
         .back-btn {
-            padding: 0.8rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             background: var(--sidebar-bg);
@@ -95,20 +104,21 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            position: relative;
-            z-index: 1;
+            white-space: nowrap;
         }
+        
         .back-btn:hover {
             background: var(--primary-color);
             color: var(--white);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
+        
         .logo-container {
-            width: 100px;
-            height: 80px;
+            width: 90px;
+            height: 70px;
             background: var(--white);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -116,36 +126,37 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
             border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
+            flex-shrink: 0;
         }
+        
         .logo-container img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             transition: var(--transition);
         }
+        
         .logo-container:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
-        .logo-container:hover img {
-            transform: scale(1.05);
-        }
+        
         .main-content {
             background: var(--white);
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
             padding: 2rem;
-            margin-top: 80px;
+            margin-top: 20px;
             display: flex;
             flex-direction: column;
             gap: 3rem;
         }
+        
         .alert-message {
             margin-bottom: 1.5rem;
         }
+        
         .alert-message .success {
             background: #d4edda;
             color: var(--primary-color);
@@ -157,6 +168,7 @@
             gap: 0.5rem;
             border: 2px solid var(--border-color);
         }
+        
         .alert-message .error {
             background: #fef2f2;
             color: #dc3545;
@@ -168,30 +180,48 @@
             gap: 0.5rem;
             border: 2px solid var(--border-color);
         }
+        
+        .alert-message .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+        
         .section {
             background: var(--light-bg);
-            padding: 2rem;
-            border-radius: 8px;
+            padding: 1.5rem;
+            border-radius: 12px;
             border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
             transition: var(--transition);
         }
+        
         .section:hover {
             box-shadow: var(--shadow-md);
         }
+        
         h2 {
             color: var(--primary-color);
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
             text-align: center;
         }
+        
         h3 {
             color: var(--primary-color);
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 1rem;
         }
+        
         .nav-buttons {
             display: flex;
             justify-content: space-between;
@@ -200,25 +230,28 @@
             margin-bottom: 2rem;
             padding: 1rem;
             background: var(--white);
-            border-radius: 8px;
+            border-radius: 12px;
             border: 2px solid var(--border-color);
             gap: 1rem;
         }
+        
         .nav-buttons span {
             font-size: 1rem;
             font-weight: 500;
             color: var(--primary-color);
             flex-shrink: 0;
         }
+        
         .nav-buttons-right {
             display: flex;
             gap: 1rem;
             align-items: center;
         }
+        
         .nav-button {
             padding: 0.75rem 1.25rem;
             border: 2px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 8px;
             background: var(--sidebar-bg);
             color: var(--text-color);
             font-size: 0.95rem;
@@ -232,6 +265,7 @@
             box-shadow: var(--shadow-sm);
             min-height: 44px;
         }
+        
         .nav-button:hover {
             background: var(--primary-color);
             color: var(--white);
@@ -239,59 +273,57 @@
             box-shadow: var(--shadow-md);
             border-color: var(--primary-color);
         }
-        .logout-button {
-            background: var(--light-bg);
-            border-color: var(--border-color);
-        }
-        .logout-button:hover {
-            background: var(--primary-color);
-            color: var(--white);
-        }
+        
         .form-group {
             margin-bottom: 1.5rem;
-            display: flex;
-            flex-direction: column;
+            position: relative;
         }
+        
         .form-group label {
-            display: block;
+            display: flex;
+            align-items: center;
             color: var(--text-color);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
         }
+        
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 1rem; /* Increased padding for better box size */
-            border: 2px solid var(--border-color); /* Thicker border for consistency */
+            padding: 0.75rem;
             border-radius: 8px;
-            font-size: 0.95rem; /* Slightly larger font for better readability */
+            border: 1px solid var(--border-color);
             background: var(--white);
-            color: var(--text-color);
+            font-size: 0.95rem;
             transition: var(--transition);
-            min-height: 48px; /* Consistent height for alignment */
         }
-        .form-group select {
-            appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 12px;
-        }
+        
         .form-group input:focus,
         .form-group select:focus {
-            outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
         }
+        
+        .form-group select {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            appearance: none;
+        }
+        
         .class-section {
             display: flex;
             gap: 1.5rem;
         }
+        
         .class-section > div {
             flex: 1;
         }
-        .marks-entry-container { /* New wrapper for marks entering area */
+        
+        .marks-entry-container {
             background: var(--light-bg);
             border: 2px solid var(--border-color);
             border-radius: 12px;
@@ -300,10 +332,12 @@
             box-shadow: var(--shadow-sm);
             transition: var(--transition);
         }
+        
         .marks-entry-container:hover {
             box-shadow: var(--shadow-md);
             border-color: var(--primary-color);
         }
+        
         .marks-entry-container h3 {
             margin-bottom: 1.5rem;
             text-align: center;
@@ -313,6 +347,7 @@
             border-bottom: 2px solid var(--primary-color);
             padding-bottom: 0.75rem;
         }
+        
         .subject-row {
             display: flex;
             gap: 1.5rem;
@@ -325,23 +360,27 @@
             transition: var(--transition);
             align-items: flex-start;
         }
+        
         .subject-row:hover {
             box-shadow: var(--shadow-md);
             border-color: var(--primary-color);
             transform: translateY(-2px);
         }
+        
         .subject-row > div {
             flex: 1;
             display: flex;
             flex-direction: column;
         }
+        
         .subject-row label {
-            text-align: left; /* Ensure labels align left */
+            text-align: left;
             margin-bottom: 0.5rem;
             font-weight: 600;
             color: var(--primary-color);
             font-size: 0.95rem;
         }
+        
         .subject-row input {
             padding: 1rem;
             border: 1px solid var(--border-color);
@@ -352,17 +391,20 @@
             transition: var(--transition);
             min-height: 48px;
         }
+        
         .subject-row input:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
         }
+        
         .subject-row input[readonly] {
             background: #f8f9fa;
             color: var(--text-light);
             cursor: not-allowed;
             border-color: #e9ecef;
         }
+        
         .button-group {
             display: flex;
             gap: 1.5rem;
@@ -370,10 +412,11 @@
             justify-content: center;
             margin-top: 1rem;
         }
+        
         .button {
             padding: 0.75rem 1.25rem;
             border: 2px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 8px;
             background: var(--sidebar-bg);
             color: var(--text-color);
             font-size: 0.95rem;
@@ -387,10 +430,13 @@
             min-height: 44px;
             white-space: nowrap;
             justify-content: center;
+            text-decoration: none;
         }
+        
         .button i {
             font-size: 0.875rem;
         }
+        
         .button:hover {
             background: var(--primary-color);
             color: var(--white);
@@ -398,60 +444,71 @@
             box-shadow: var(--shadow-md);
             border-color: var(--primary-color);
         }
+        
         .button-primary {
             background: var(--primary-color);
             color: var(--white);
             border-color: var(--primary-color);
             box-shadow: var(--shadow-sm);
         }
+        
         .button-primary:hover {
             background: var(--primary-hover);
             border-color: var(--primary-hover);
             box-shadow: var(--shadow-md);
         }
+        
         .button-secondary {
             background: var(--light-bg);
             border-color: var(--border-color);
         }
+        
         .button-secondary:hover {
             background: var(--primary-color);
             color: var(--white);
             border-color: var(--primary-color);
         }
+        
         .button-green {
             background: var(--primary-color);
             color: var(--white);
             border-color: var(--primary-color);
             box-shadow: var(--shadow-sm);
         }
+        
         .button-green:hover {
             background: var(--primary-hover);
             border-color: var(--primary-hover);
             box-shadow: var(--shadow-md);
         }
+        
         .button-red {
-            background: #dc3545;
+            background: var(--danger-color);
             color: var(--white);
-            border-color: #dc3545;
+            border-color: var(--danger-color);
             box-shadow: var(--shadow-sm);
         }
+        
         .button-red:hover {
-            background: #c82333;
+            background: var(--danger-hover);
             color: var(--white);
-            border-color: #c82333;
+            border-color: var(--danger-hover);
             box-shadow: var(--shadow-md);
         }
+        
         .button-purple {
             background: var(--primary-color);
             color: var(--white);
             border-color: var(--primary-color);
             box-shadow: var(--shadow-sm);
         }
+        
         .button-purple:hover {
             background: var(--primary-hover);
             border-color: var(--primary-hover);
             box-shadow: var(--shadow-md);
         }
+        
         .loading {
             text-align: center;
             color: var(--primary-color);
@@ -459,9 +516,11 @@
             padding: 2rem;
             display: none;
         }
+        
         .loading.show {
             display: block;
         }
+        
         table {
             width: 100%;
             border-collapse: collapse;
@@ -472,20 +531,24 @@
             overflow: hidden;
             margin-top: 1rem;
         }
+        
         th, td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
+        
         th {
             background: var(--sidebar-bg);
             color: var(--primary-color);
             font-weight: 600;
             font-size: 0.95rem;
         }
+        
         tr:hover {
             background: var(--light-bg);
         }
+        
         .signature-section {
             display: flex;
             gap: 2rem;
@@ -493,6 +556,7 @@
             align-items: flex-start;
             margin-bottom: 1.5rem;
         }
+        
         .signature-pad {
             border: 2px solid var(--border-color);
             border-radius: 8px;
@@ -502,15 +566,18 @@
             width: 100%;
             max-width: 700px;
         }
+        
         .signature-pad:hover {
             border-color: var(--primary-color);
         }
+        
         .progress-card-header {
             display: flex;
             align-items: center;
             gap: 1rem;
             margin-bottom: 1rem;
         }
+        
         .student-profile-pic {
             width: 80px;
             height: 80px;
@@ -520,19 +587,23 @@
             object-fit: cover;
             transition: var(--transition);
         }
+        
         .student-profile-pic:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
+        
         .student-info-header {
             flex: 1;
         }
+        
         .student-info-header h3 {
             margin: 0 0 0.5rem 0;
             color: var(--primary-color);
             font-size: 1.25rem;
             font-weight: 600;
         }
+        
         .modal {
             display: none;
             position: fixed;
@@ -545,6 +616,7 @@
             justify-content: center;
             align-items: center;
         }
+        
         .modal-content {
             background: var(--white);
             border: 2px solid var(--border-color);
@@ -555,11 +627,13 @@
             position: relative;
             box-shadow: var(--shadow-lg);
         }
+        
         .modal-content h3 {
             color: var(--primary-color);
             margin-bottom: 1.5rem;
             text-align: center;
         }
+        
         .summary-section {
             margin-top: 1.5rem;
             padding: 1rem;
@@ -567,182 +641,287 @@
             border-radius: 8px;
             border: 2px solid var(--border-color);
         }
+        
         .summary-section p {
             margin-bottom: 0.5rem;
             font-weight: 600;
             color: var(--primary-color);
         }
+        
         .summary-section p:last-child {
             font-size: 1.1rem;
             font-weight: bold;
         }
+        
         .icon {
             margin-right: 0.5rem;
         }
+        
+        /* Scroll to top button */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .scroll-top-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .scroll-top-btn.show {
+            display: flex;
+        }
+        
+        /* Remove underline from all button-style links */
+        .back-btn,
+        .nav-button,
+        .button,
+        .button-primary,
+        .button-secondary,
+        .button-green,
+        .button-red,
+        .button-purple {
+            text-decoration: none !important;
+        }
+        
         @media (max-width: 768px) {
             body {
-                padding: 100px 10px 20px 10px;
+                padding-top: 140px;
             }
+            
             .header {
-                padding: 1rem;
+                flex-wrap: wrap;
+                padding: 0.75rem;
+                gap: 0.75rem;
             }
+            
             .header h1 {
-                font-size: 1.5rem;
+                font-size: 1.25rem;
+                order: 1;
+                width: 100%;
+                margin-left: 0;
             }
+            
+            .back-btn {
+                order: 2;
+                flex: 1;
+                justify-content: center;
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+            
             .logo-container {
-                width: 80px;
-                height: 64px;
+                order: 3;
+                width: 60px;
+                height: 50px;
             }
+            
+            .container {
+                padding: 0 15px;
+            }
+            
             .main-content {
                 padding: 1.5rem;
-                margin-top: 70px;
             }
+            
             .section {
-                padding: 1.5rem;
+                padding: 1.2rem;
             }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
             .nav-buttons {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 0.75rem;
                 text-align: center;
             }
+            
             .nav-buttons-right {
                 flex-direction: column;
                 width: 100%;
                 gap: 0.75rem;
             }
+            
             .nav-button {
                 justify-content: center;
                 padding: 0.75rem;
             }
+            
             .class-section {
                 flex-direction: column;
                 gap: 1rem;
             }
+            
             .marks-entry-container {
                 padding: 1.5rem;
             }
+            
             .subject-row {
                 flex-direction: column;
                 gap: 1rem;
                 padding: 1.25rem;
             }
+            
             .signature-section {
                 flex-direction: column;
                 gap: 1rem;
             }
+            
             .button-group {
                 flex-direction: column;
                 width: 100%;
                 gap: 1rem;
                 justify-content: center;
             }
+            
             .button {
                 justify-content: center;
                 padding: 0.75rem;
+                width: 100%;
             }
+            
             table {
                 font-size: 0.9rem;
                 overflow-x: auto;
                 display: block;
                 white-space: nowrap;
             }
+            
             th, td {
                 padding: 0.75rem 0.5rem;
             }
+            
             .progress-card-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 0.75rem;
             }
+            
             .student-profile-pic {
                 width: 60px;
                 height: 60px;
             }
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-            .form-group input,
-            .form-group select {
-                padding: 0.875rem;
-                min-height: 44px;
-            }
         }
+        
         @media (max-width: 480px) {
             body {
-                padding: 80px 5px 15px 5px;
+                padding-top: 160px;
             }
-            .header {
-                padding: 0.75rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
+            
             .header h1 {
-                font-size: 1.25rem;
+                font-size: 1.1rem;
             }
+            
             .logo-container {
-                width: 60px;
-                height: 48px;
+                width: 50px;
+                height: 45px;
             }
+            
             .main-content {
                 padding: 1rem;
-                margin-top: 100px;
-                border-radius: 8px;
             }
+            
             .section {
                 padding: 1rem;
             }
+            
             h2 {
-                font-size: 1.25rem;
+                font-size: 1.15rem;
             }
+            
             .nav-buttons {
                 gap: 0.75rem;
             }
+            
             .nav-buttons-right {
                 gap: 0.75rem;
             }
+            
             .nav-button {
                 padding: 0.7rem;
                 font-size: 0.9rem;
             }
+            
             .button-group .button {
                 padding: 0.7rem;
                 font-size: 0.9rem;
             }
+            
             table {
                 font-size: 0.8rem;
             }
+            
             th, td {
                 padding: 0.5rem 0.25rem;
             }
+            
             .back-btn {
                 padding: 0.5rem 0.8rem;
                 font-size: 0.8rem;
             }
+            
             .marks-entry-container {
                 padding: 1.25rem;
             }
+            
             .subject-row {
                 padding: 1rem;
             }
+            
             .form-group input,
             .form-group select {
                 padding: 0.75rem;
                 min-height: 40px;
             }
+            
+            .scroll-top-btn {
+                bottom: 0.75rem;
+                right: 0.75rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
         }
+        
         @media (hover: none) {
-            .section:hover, .logo-container:hover, .back-btn:hover, .subject-row:hover, .marks-entry-container:hover {
+            .section:hover,
+            .logo-container:hover,
+            .back-btn:hover,
+            .subject-row:hover,
+            .marks-entry-container:hover,
+            .button:hover,
+            .scroll-top-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
         }
+        
         @media (prefers-reduced-motion: reduce) {
             * {
                 transition: none !important;
                 animation: none !important;
             }
+            
             html {
                 scroll-behavior: auto;
             }
@@ -752,212 +931,212 @@
 <body>
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
     <div id="app">
-        <div class="header">
-            <a href="{% url 'admin_page' %}" class="back-btn">
-                <i class="fas fa-arrow-left icon"></i> Back to Main Dashboard
-            </a>
-            <h1><i class="fas fa-book-open icon"></i> Admin Exam Mark Entry</h1>
-            <a href="{% url 'admin_page' %}">
-                <div class="logo-container">
-                    <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
-                </div>
-            </a>
-        </div>
-        {% if messages %}
-            <div class="alert-message">
-                {% for message in messages %}
-                    <div class="{{ message.tags }}">
-                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
-                        {{ message }}
-                    </div>
-                {% endfor %}
+    <div class="header">
+        <a href="{% url 'admin_page' %}" class="back-btn">
+            <i class="fas fa-arrow-left icon"></i> Back to Main Dashboard
+        </a>
+        <h1><i class="fas fa-book-open icon" style="color: #3498db;"></i> Admin Exam Mark Entry</h1>
+        <a href="{% url 'admin_page' %}">
+            <div class="logo-container">
+                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
             </div>
-        {% endif %}
-        <div class="container">
-            <div class="main-content">
-                <div class="nav-buttons">
-                    <span><i class="fas fa-user icon"></i> Welcome, {{ teacher_name }}</span>
-                    <div class="nav-buttons-right">
-                        <button id="showMarkEntry" class="nav-button">
-                            <i class="fas fa-edit icon"></i> Mark Entry
-                        </button>
-                        <button id="showProgressCard" class="nav-button">
-                            <i class="fas fa-chart-bar icon"></i> Progress Card
-                        </button>
-                    </div>
-           
+        </a>
+    </div>
+    {% if messages %}
+        <div class="alert-message">
+            {% for message in messages %}
+                <div class="{{ message.tags }}">
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
+                    {{ message }}
                 </div>
-                <div id="markEntrySection" class="section">
-                    <h2><i class="fas fa-edit icon"></i> Mark Entry</h2>
-                    <div id="alert" class="alert-message success"></div>
-                    <div class="form-group class-section">
-                        <div>
-                            <label for="classSelect"><i class="fas fa-graduation-cap icon"></i> Class</label>
-                            <select id="classSelect" required>
-                                <option value="">Select Class</option>
-                                {% for class in classes %}
-                                    <option value="{{ class }}">{{ class }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div>
-                            <label for="sectionSelect"><i class="fas fa-th-large icon"></i> Section</label>
-                            <select id="sectionSelect" required>
-                                <option value="">Select Section</option>
-                                {% for section in sections %}
-                                    <option value="{{ section }}">{{ section }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="studentSelect"><i class="fas fa-user icon"></i> Select Student</label>
-                        <select id="studentSelect" required>
-                            <option value="">Select Student</option>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="container">
+        <div class="main-content">
+            <div class="nav-buttons">
+                <span><i class="fas fa-user icon"></i> Welcome, {{ teacher_name }}</span>
+                <div class="nav-buttons-right">
+                    <button id="showMarkEntry" class="nav-button">
+                        <i class="fas fa-edit icon"></i> Mark Entry
+                    </button>
+                    <button id="showProgressCard" class="nav-button">
+                        <i class="fas fa-chart-bar icon"></i> Progress Card
+                    </button>
+                </div>
+       
+            </div>
+            <div id="markEntrySection" class="section">
+                <h2><i class="fas fa-edit icon" style="color: #e67e22;"></i> Mark Entry</h2>
+                <div id="alert" class="alert-message success"></div>
+                <div class="form-group class-section">
+                    <div>
+                        <label for="classSelect"><i class="fas fa-graduation-cap icon" style="color: #e74c3c;"></i> Class</label>
+                        <select id="classSelect" required>
+                            <option value="">Select Class</option>
+                            {% for class in classes %}
+                                <option value="{{ class }}">{{ class }}</option>
+                            {% endfor %}
                         </select>
                     </div>
-                    <div id="subjectSelection"></div>
-                    <div id="marksInput"></div>
-                    <div class="signature-section">
-                        <div class="form-group" style="flex: 1;">
-                            <label for="signaturePad"><i class="fas fa-signature icon"></i> Teacher Digital Signature</label>
-                            <canvas id="signaturePad" class="signature-pad" width="300" height="100"></canvas>
-                            <button id="clearSignature" class="button button-secondary">
-                                <i class="fas fa-eraser icon"></i> Clear Teacher Signature
-                            </button>
-                        </div>
-                        <div class="form-group" style="flex: 1;">
-                            <label for="principalSignaturePad"><i class="fas fa-signature icon"></i> Principal Digital Signature</label>
-                            <canvas id="principalSignaturePad" class="signature-pad" width="300" height="100"></canvas>
-                            <button id="clearPrincipalSignature" class="button button-secondary">
-                                <i class="fas fa-eraser icon"></i> Clear Principal Signature
-                            </button>
+                    <div>
+                        <label for="sectionSelect"><i class="fas fa-th-large icon" style="color: #f39c12;"></i> Section</label>
+                        <select id="sectionSelect" required>
+                            <option value="">Select Section</option>
+                            {% for section in sections %}
+                                <option value="{{ section }}">{{ section }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="studentSelect"><i class="fas fa-user icon" style="color: #9b59b6;"></i> Select Student</label>
+                    <select id="studentSelect" required>
+                        <option value="">Select Student</option>
+                    </select>
+                </div>
+                <div id="subjectSelection"></div>
+                <div id="marksInput"></div>
+                <div class="signature-section">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="signaturePad"><i class="fas fa-signature icon" style="color: #3498db;"></i> Teacher Digital Signature</label>
+                        <canvas id="signaturePad" class="signature-pad" width="300" height="100"></canvas>
+                        <button id="clearSignature" class="button button-secondary">
+                            <i class="fas fa-eraser icon"></i> Clear Teacher Signature
+                        </button>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="principalSignaturePad"><i class="fas fa-signature icon" style="color: #3498db;"></i> Principal Digital Signature</label>
+                        <canvas id="principalSignaturePad" class="signature-pad" width="300" height="100"></canvas>
+                        <button id="clearPrincipalSignature" class="button button-secondary">
+                            <i class="fas fa-eraser icon"></i> Clear Principal Signature
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group button-group">
+                    <button id="addSubject" class="button button-green">
+                        <i class="fas fa-plus icon"></i> Add Subject
+                    </button>
+                    <button id="deleteSubject" class="button button-red">
+                        <i class="fas fa-trash icon"></i> Delete Subject
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="saveMarks" class="button button-primary">
+                        <i class="fas fa-save icon"></i> Save Marks
+                    </button>
+                    <button id="clearForm" class="button button-secondary">
+                        <i class="fas fa-times icon"></i> Clear Form
+                    </button>
+                </div>
+            </div>
+            <div id="progressCardSection" class="section" style="display: none;">
+                <h2><i class="fas fa-chart-bar icon" style="color: #27ae60;"></i> Digital Progress Card</h2>
+                <div class="form-group class-section">
+                    <div>
+                        <label for="progressClassSelect"><i class="fas fa-graduation-cap icon" style="color: #e74c3c;"></i> Class</label>
+                        <select id="progressClassSelect" required>
+                            <option value="">Select Class</option>
+                            {% for class in classes %}
+                                <option value="{{ class }}">{{ class }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="progressSectionSelect"><i class="fas fa-th-large icon" style="color: #f39c12;"></i> Section</label>
+                        <select id="progressSectionSelect" required>
+                            <option value="">Select Section</option>
+                            {% for section in sections %}
+                                <option value="{{ section }}">{{ section }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="progressStudentSelect"><i class="fas fa-user icon" style="color: #9b59b6;"></i> Select Student</label>
+                    <select id="progressStudentSelect">
+                        <option value="">Select Student</option>
+                    </select>
+                </div>
+                <div class="loading" id="loadingProgress">
+                    <i class="fas fa-spinner fa-spin icon"></i> Loading progress card...
+                </div>
+                <div id="progressCard" style="display: none;">
+                    <div class="progress-card-header">
+                        <img id="studentProfilePic" class="student-profile-pic" alt="Student Profile Picture" style="display: none;">
+                        <div class="student-info-header">
+                            <h3 id="studentName"></h3>
+                            <p id="studentDetails"></p>
                         </div>
                     </div>
-                    <div class="form-group button-group">
-                        <button id="addSubject" class="button button-green">
-                            <i class="fas fa-plus icon"></i> Add Subject
-                        </button>
-                        <button id="deleteSubject" class="button button-red">
-                            <i class="fas fa-trash icon"></i> Delete Subject
-                        </button>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-book icon" style="color: #3498db;"></i> Subject</th>
+                                <th><i class="fas fa-star icon" style="color: #f39c12;"></i> Marks</th>
+                                <th><i class="fas fa-trophy icon" style="color: #e67e22;"></i> Max Marks</th>
+                                <th><i class="fas fa-award icon" style="color: #27ae60;"></i> Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="marksTable"></tbody>
+                    </table>
+                    <div class="summary-section">
+                        <p id="totalMarks"></p>
+                        <p id="percentage"></p>
+                        <p id="grade"></p>
+                        <p id="status"></p>
+                    </div>
+                    <button id="downloadPDF" class="button button-purple">
+                        <i class="fas fa-download icon"></i> Download Progress Card
+                    </button>
+                </div>
+            </div>
+            <div id="addSubjectModal" class="modal">
+                <div class="modal-content">
+                    <h3><i class="fas fa-plus-circle icon" style="color: #27ae60;"></i> Add New Subject</h3>
+                    <div class="form-group">
+                        <label for="newSubjectName"><i class="fas fa-book icon" style="color: #3498db;"></i> Subject Name</label>
+                        <input id="newSubjectName" type="text" placeholder="Enter subject name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newMaxMarks"><i class="fas fa-star icon" style="color: #f39c12;"></i> Maximum Marks</label>
+                        <input id="newMaxMarks" type="number" min="1" placeholder="Enter max marks" required>
                     </div>
                     <div class="button-group">
-                        <button id="saveMarks" class="button button-primary">
-                            <i class="fas fa-save icon"></i> Save Marks
+                        <button id="submitSubject" class="button button-primary">
+                            <i class="fas fa-plus icon"></i> Add Subject
                         </button>
-                        <button id="clearForm" class="button button-secondary">
-                            <i class="fas fa-times icon"></i> Clear Form
+                        <button id="cancelSubject" class="button button-secondary">
+                            <i class="fas fa-times icon"></i> Cancel
                         </button>
                     </div>
                 </div>
-                <div id="progressCardSection" class="section" style="display: none;">
-                    <h2><i class="fas fa-chart-bar icon"></i> Digital Progress Card</h2>
-                    <div class="form-group class-section">
-                        <div>
-                            <label for="progressClassSelect"><i class="fas fa-graduation-cap icon"></i> Class</label>
-                            <select id="progressClassSelect" required>
-                                <option value="">Select Class</option>
-                                {% for class in classes %}
-                                    <option value="{{ class }}">{{ class }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div>
-                            <label for="progressSectionSelect"><i class="fas fa-th-large icon"></i> Section</label>
-                            <select id="progressSectionSelect" required>
-                                <option value="">Select Section</option>
-                                {% for section in sections %}
-                                    <option value="{{ section }}">{{ section }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
+            </div>
+            <div id="deleteSubjectModal" class="modal">
+                <div class="modal-content">
+                    <h3><i class="fas fa-trash icon" style="color: #e74c3c;"></i> Delete Subject</h3>
                     <div class="form-group">
-                        <label for="progressStudentSelect"><i class="fas fa-user icon"></i> Select Student</label>
-                        <select id="progressStudentSelect">
-                            <option value="">Select Student</option>
+                        <label for="deleteSubjectSelect"><i class="fas fa-book icon" style="color: #3498db;"></i> Select Subject to Delete</label>
+                        <select id="deleteSubjectSelect" required>
+                            <option value="">Select Subject</option>
                         </select>
                     </div>
-                    <div class="loading" id="loadingProgress">
-                        <i class="fas fa-spinner fa-spin icon"></i> Loading progress card...
-                    </div>
-                    <div id="progressCard" style="display: none;">
-                        <div class="progress-card-header">
-                            <img id="studentProfilePic" class="student-profile-pic" alt="Student Profile Picture" style="display: none;">
-                            <div class="student-info-header">
-                                <h3 id="studentName"></h3>
-                                <p id="studentDetails"></p>
-                            </div>
-                        </div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><i class="fas fa-book icon"></i> Subject</th>
-                                    <th><i class="fas fa-star icon"></i> Marks</th>
-                                    <th><i class="fas fa-trophy icon"></i> Max Marks</th>
-                                    <th><i class="fas fa-award icon"></i> Grade</th>
-                                </tr>
-                            </thead>
-                            <tbody id="marksTable"></tbody>
-                        </table>
-                        <div class="summary-section">
-                            <p id="totalMarks"></p>
-                            <p id="percentage"></p>
-                            <p id="grade"></p>
-                            <p id="status"></p>
-                        </div>
-                        <button id="downloadPDF" class="button button-purple">
-                            <i class="fas fa-download icon"></i> Download Progress Card
+                    <p style="color: #dc3545; font-size: 0.9rem; margin: 1rem 0;">
+                        <i class="fas fa-exclamation-triangle icon"></i> Warning: This will delete the subject and all associated marks. This action cannot be undone.
+                    </p>
+                    <div class="button-group">
+                        <button id="confirmDeleteSubject" class="button button-red">
+                            <i class="fas fa-trash icon"></i> Delete Subject
                         </button>
-                    </div>
-                </div>
-                <div id="addSubjectModal" class="modal">
-                    <div class="modal-content">
-                        <h3><i class="fas fa-plus-circle icon"></i> Add New Subject</h3>
-                        <div class="form-group">
-                            <label for="newSubjectName"><i class="fas fa-book icon"></i> Subject Name</label>
-                            <input id="newSubjectName" type="text" placeholder="Enter subject name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="newMaxMarks"><i class="fas fa-star icon"></i> Maximum Marks</label>
-                            <input id="newMaxMarks" type="number" min="1" placeholder="Enter max marks" required>
-                        </div>
-                        <div class="button-group">
-                            <button id="submitSubject" class="button button-primary">
-                                <i class="fas fa-plus icon"></i> Add Subject
-                            </button>
-                            <button id="cancelSubject" class="button button-secondary">
-                                <i class="fas fa-times icon"></i> Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div id="deleteSubjectModal" class="modal">
-                    <div class="modal-content">
-                        <h3><i class="fas fa-trash icon"></i> Delete Subject</h3>
-                        <div class="form-group">
-                            <label for="deleteSubjectSelect"><i class="fas fa-book icon"></i> Select Subject to Delete</label>
-                            <select id="deleteSubjectSelect" required>
-                                <option value="">Select Subject</option>
-                            </select>
-                        </div>
-                        <p style="color: #dc3545; font-size: 0.9rem; margin: 1rem 0;">
-                            <i class="fas fa-exclamation-triangle icon"></i> Warning: This will delete the subject and all associated marks. This action cannot be undone.
-                        </p>
-                        <div class="button-group">
-                            <button id="confirmDeleteSubject" class="button button-red">
-                                <i class="fas fa-trash icon"></i> Delete Subject
-                            </button>
-                            <button id="cancelDeleteSubject" class="button button-secondary">
-                                <i class="fas fa-times icon"></i> Cancel
-                            </button>
-                        </div>
+                        <button id="cancelDeleteSubject" class="button button-secondary">
+                            <i class="fas fa-times icon"></i> Cancel
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // DOM Elements
@@ -1681,13 +1860,15 @@
                     showAlert('Error deleting subject. Please try again.', 'error');
                 }
             });
-            // Save Marks
+            // Save Marks - WORKING VERSION
             saveMarksBtn.addEventListener('click', async () => {
                 const classValue = classSelect.value;
                 const sectionValue = sectionSelect.value;
                 const studentId = studentSelect.value;
                 const signatureData = currentSignature;
                 const principalSignatureData = currentPrincipalSignature;
+                
+                // Validation checks
                 if (!classValue || !sectionValue || !studentId) {
                     showAlert('Please select class, section, and student.', 'error');
                     return;
@@ -1700,6 +1881,7 @@
                     showAlert('Please provide a principal digital signature.', 'error');
                     return;
                 }
+                
                 let marksData;
                 if (role === 'subjectTeacher') {
                     const subjectElement = document.getElementById('subject');
@@ -1714,6 +1896,7 @@
                     const subjectId = subjectElement.value;
                     const marks = parseInt(marksElement.value);
                     const maxMarks = parseInt(maxMarksElement.value);
+                    
                     if (!subjectId || isNaN(marks) || isNaN(maxMarks) || marks < 0 || maxMarks < 1 || marks > maxMarks) {
                         showAlert('Please enter valid marks. Marks cannot exceed maximum marks.', 'error');
                         return;
@@ -1740,12 +1923,28 @@
                         marksData.push({ subjectId: sub.id, marks, maxMarks, signature: signatureData });
                     }
                 }
+                
+                // Save marks to server
                 try {
+                    console.log('Sending request to save marks...'); // Debug log
+                    
                     const response = await fetch('/save_marks/', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
-                        body: JSON.stringify({ role, studentId, class: classValue, section: sectionValue, marks: marksData, principalSignature: principalSignatureData })
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'X-CSRFToken': getCsrfToken() 
+                        },
+                        body: JSON.stringify({ 
+                            role, 
+                            studentId, 
+                            class: classValue, 
+                            section: sectionValue, 
+                            marks: marksData, 
+                            principalSignature: principalSignatureData 
+                        })
                     });
+                    
+                    console.log('Response status:', response.status); // Debug log
            
                     if (!response.ok) {
                         const errorData = await response.json();
@@ -1753,9 +1952,174 @@
                     }
            
                     const data = await response.json();
+                    console.log('Server response:', data); // Debug log
+                    
                     if (data.success) {
-                        showAlert(data.message);
+                        console.log('Success! Creating popup...'); // Debug log
+                        
+                        // Add animations CSS if not already present
+                        if (!document.getElementById('popupAnimations')) {
+                            const animStyle = document.createElement('style');
+                            animStyle.id = 'popupAnimations';
+                            animStyle.textContent = `
+                                @keyframes fadeIn {
+                                    from { opacity: 0; }
+                                    to { opacity: 1; }
+                                }
+                                @keyframes slideUp {
+                                    from {
+                                        transform: translateY(30px);
+                                        opacity: 0;
+                                    }
+                                    to {
+                                        transform: translateY(0);
+                                        opacity: 1;
+                                    }
+                                }
+                                @keyframes scaleIn {
+                                    0% { transform: scale(0); }
+                                    50% { transform: scale(1.1); }
+                                    100% { transform: scale(1); }
+                                }
+                            `;
+                            document.head.appendChild(animStyle);
+                        }
+
+                        // Remove any existing popup first
+                        const existingPopup = document.getElementById('marksSuccessPopup');
+                        if (existingPopup) {
+                            existingPopup.remove();
+                        }
+
+                        // === CREATE SUCCESS POPUP ===
+                        const successPopup = document.createElement('div');
+                        successPopup.id = 'marksSuccessPopup';
+                        successPopup.style.cssText = `
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: rgba(0, 0, 0, 0.6);
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            z-index: 9999;
+                            animation: fadeIn 0.3s ease;
+                        `;
+                        
+                        successPopup.innerHTML = `
+                            <div style="
+                                background: white;
+                                padding: 2.5rem 3rem;
+                                border-radius: 16px;
+                                text-align: center;
+                                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+                                max-width: 450px;
+                                width: 90%;
+                                animation: slideUp 0.3s ease;
+                            ">
+                                <div style="
+                                    font-size: 5rem;
+                                    color: #00a676;
+                                    margin-bottom: 1rem;
+                                    animation: scaleIn 0.5s ease;
+                                ">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <h3 style="
+                                    color: #00a676;
+                                    font-size: 1.8rem;
+                                    margin: 1rem 0;
+                                    font-weight: 700;
+                                ">
+                                    Marks Saved Successfully!
+                                </h3>
+                                <p style="
+                                    color: #555;
+                                    font-size: 1rem;
+                                    margin-bottom: 1rem;
+                                    line-height: 1.6;
+                                ">
+                                    ${data.message || 'The marks have been successfully saved and digitally signed.'}
+                                </p>
+                                <p style="
+                                    color: #888;
+                                    font-size: 0.9rem;
+                                    margin-bottom: 2rem;
+                                ">
+                                    <i class="fas fa-info-circle"></i> You can save/update marks multiple times
+                                </p>
+                                <button id="closeSuccessPopup" style="
+                                    padding: 0.9rem 3rem;
+                                    background: #00a676;
+                                    color: white;
+                                    border: none;
+                                    border-radius: 12px;
+                                    font-size: 1.1rem;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    transition: all 0.2s;
+                                    box-shadow: 0 4px 12px rgba(0, 166, 118, 0.3);
+                                ">
+                                    OK
+                                </button>
+                            </div>
+                        `;
+
+                        // Add popup to body
+                        document.body.appendChild(successPopup);
+                        console.log('Popup added to DOM'); // Debug log
+
+                        // Get button and setup close functionality
+                        const okButton = document.getElementById('closeSuccessPopup');
+                        
+                        const closePopup = () => {
+                            successPopup.style.opacity = '0';
+                            successPopup.style.transition = 'opacity 0.3s';
+                            setTimeout(() => {
+                                if (successPopup.parentElement) {
+                                    successPopup.remove();
+                                }
+                            }, 300);
+                        };
+
+                        // Button click event
+                        okButton.addEventListener('click', closePopup);
+
+                        // Button hover effects
+                        okButton.addEventListener('mouseover', () => {
+                            okButton.style.background = '#00b88d';
+                            okButton.style.transform = 'translateY(-2px)';
+                            okButton.style.boxShadow = '0 6px 16px rgba(0, 166, 118, 0.4)';
+                        });
+                        
+                        okButton.addEventListener('mouseout', () => {
+                            okButton.style.background = '#00a676';
+                            okButton.style.transform = 'translateY(0)';
+                            okButton.style.boxShadow = '0 4px 12px rgba(0, 166, 118, 0.3)';
+                        });
+
+                        // Close on clicking outside the modal
+                        successPopup.addEventListener('click', (e) => {
+                            if (e.target === successPopup) {
+                                closePopup();
+                            }
+                        });
+
+                        // Auto-close after 6 seconds
+                        setTimeout(() => {
+                            if (document.getElementById('marksSuccessPopup')) {
+                                closePopup();
+                            }
+                        }, 6000);
+
+                        // Also show traditional alert
+                        showAlert(data.message || 'Marks saved successfully!');
+                        
+                        // Clear form
                         clearForm();
+                        
                     } else {
                         showAlert(data.message || 'Error saving marks', 'error');
                     }

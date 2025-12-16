@@ -23,7 +23,8 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 120px 20px 40px 20px;
+            padding-top: 100px;
+            padding-bottom: 40px;
         }
 
         h1, h2, h3 {
@@ -55,47 +56,43 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 0 20px;
         }
 
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem 0.5rem 0.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: var(--shadow-md);
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 10;
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: 0;
-            gap: 0.5rem;
+            gap: 1rem;
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            flex: none;
             margin: 0;
-            z-index: 0;
+            margin-left: -10%;
         }
 
         .back-btn {
-            padding: 0.8rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             background: var(--sidebar-bg);
@@ -105,8 +102,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            position: relative;
-            z-index: 1;
+            white-space: nowrap;
         }
 
         .back-btn:hover {
@@ -117,10 +113,10 @@
         }
 
         .logo-container {
-            width: 100px;
-            height: 80px;
+            width: 90px;
+            height: 70px;
             background: var(--white);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -128,8 +124,7 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
             border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
+            flex-shrink: 0;
         }
 
         .logo-container img {
@@ -144,16 +139,13 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-container:hover img {
-            transform: scale(1.05);
-        }
-
         .main-content {
             background: var(--white);
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
             padding: 2rem;
+            margin-top: 20px;
         }
 
         .alert-message {
@@ -199,7 +191,7 @@
         .section {
             background: var(--light-bg);
             padding: 1.5rem;
-            border-radius: 8px;
+            border-radius: 12px;
             border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             margin-bottom: 2rem;
@@ -212,7 +204,7 @@
 
         h2 {
             color: var(--primary-color);
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
             text-align: center;
@@ -233,13 +225,15 @@
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 0;
+            flex: 1;
+            min-width: 150px;
         }
 
         .form-group label {
             display: block;
             color: var(--text-color);
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
         }
@@ -252,13 +246,34 @@
             border-radius: 8px;
             border: 1px solid var(--border-color);
             background: var(--white);
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: var(--transition);
         }
 
         .form-group input[type="text"]:focus,
         .form-group input[type="date"]:focus,
         .form-group input[type="file"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            appearance: none;
+        }
+
+        .form-group select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
             outline: none;
@@ -370,14 +385,16 @@
             display: flex;
             gap: 1rem;
             justify-content: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .confirm-btn {
             width: auto;
-            padding: 0.8rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             background: var(--sidebar-bg);
@@ -394,10 +411,10 @@
 
         .cancel-btn {
             width: auto;
-            padding: 0.8rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             background: var(--light-bg);
@@ -418,10 +435,10 @@
 
         .preview-btn {
             width: auto;
-            padding: 0.8rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             background: var(--sidebar-bg);
@@ -442,46 +459,19 @@
 
         .form-row {
             display: flex;
-            gap: 1.5rem;
+            gap: 1rem;
             align-items: flex-end;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
-        }
-
-        .form-group {
-            flex: 1;
-            min-width: 150px;
-            margin-bottom: 1rem;
-        }
-
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--white);
-            font-size: 1rem;
-            transition: var(--transition);
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 12px;
-            appearance: none;
-        }
-
-        .form-group select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
-            outline: none;
         }
 
         .btn,
         .filter-btn {
             width: auto;
-            padding: 0.8rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             background: var(--sidebar-bg);
@@ -491,7 +481,7 @@
             align-items: center;
             gap: 0.5rem;
             text-decoration: none;
-            transform: translateY(-15px);
+            align-self: flex-end;
         }
 
         .btn:hover,
@@ -502,19 +492,12 @@
             box-shadow: var(--shadow-md);
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            justify-content: center;
-        }
-
         .table-container {
             overflow-x: auto;
             border-radius: 8px;
             border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             transition: var(--transition);
         }
 
@@ -551,20 +534,37 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 100px 10px 20px 10px;
+                padding-top: 140px;
             }
 
             .header {
-                padding: 1rem;
+                flex-wrap: wrap;
+                padding: 0.75rem;
+                gap: 0.75rem;
             }
 
             .header h1 {
-                font-size: 1.5rem;
+                font-size: 1.25rem;
+                order: 1;
+                width: 100%;
+            }
+
+            .back-btn {
+                order: 2;
+                flex: 1;
+                justify-content: center;
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
             }
 
             .logo-container {
-                width: 80px;
-                height: 64px;
+                order: 3;
+                width: 60px;
+                height: 50px;
+            }
+
+            .container {
+                padding: 0 15px;
             }
 
             .main-content {
@@ -576,19 +576,23 @@
             }
 
             h2 {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
             }
 
-            .form-group label {
-                font-size: 0.9rem;
+            .form-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
             }
 
-            .form-group input[type="text"],
-            .form-group input[type="date"],
-            .form-group input[type="file"],
-            .form-group select {
-                font-size: 0.9rem;
-                padding: 0.6rem;
+            .form-group {
+                width: 100%;
+            }
+
+            .filter-btn,
+            .btn {
+                width: 100%;
+                justify-content: center;
             }
 
             .action-buttons {
@@ -604,48 +608,27 @@
                 padding: 0.6rem;
             }
 
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .form-row {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 1rem;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
             table {
                 font-size: 0.9rem;
-            }
-
-            th, td {
-                padding: 0.75rem 0.5rem;
             }
         }
 
         @media (max-width: 480px) {
             body {
-                padding: 80px 5px 15px 5px;
+                padding-top: 160px;
             }
 
             .header {
-                padding: 0.75rem;
-                flex-direction: column;
-                gap: 1rem;
+                padding: 0.5rem;
             }
 
             .header h1 {
-                font-size: 1.25rem;
+                font-size: 1.1rem;
             }
 
             .logo-container {
-                width: 60px;
-                height: 48px;
+                width: 50px;
+                height: 45px;
             }
 
             .main-content {
@@ -658,7 +641,7 @@
             }
 
             h2 {
-                font-size: 1.25rem;
+                font-size: 1.15rem;
             }
 
             .form-group label {
@@ -670,7 +653,7 @@
             .form-group input[type="file"],
             .form-group select {
                 font-size: 0.85rem;
-                padding: 0.5rem;
+                padding: 0.6rem;
             }
 
             th, td {
@@ -684,12 +667,12 @@
 
             .back-btn {
                 padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
 
             .action-buttons .btn,
             .filter-btn {
-                padding: 0.7rem 1rem;
+                padding: 0.65rem 1rem;
                 font-size: 0.9rem;
             }
 
@@ -725,227 +708,242 @@
     </style>
 </head>
 <body>
-    <div id="app">
-        <div class="header">
-            <a href="{% url 'admin_page' %}" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back to Main Dashboard
-            </a>
-            <h1><i class="fas fa-calendar-alt"></i> Admin Timetable Panel</h1>
-            <a href="{% url 'admin_page' %}">
-                <div class="logo-container">
-                    <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
-                </div>
-            </a>
-        </div>
+   <div id="app">
+    <header class="header">
+        <a href="{% url 'admin_page' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back To Main Dashboard
+        </a>
+        <h1><i class="fas fa-calendar-alt" style="color: #6366f1; margin-right: 8px;"></i> Admin Timetable Panel</h1>
+        <a href="{% url 'admin_page' %}">
+            <div class="logo-container">
+                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
+            </div>
+        </a>
+    </header>
 
-        <div class="container">
-            <div class="main-content">
-                
+    <div class="container">
+        <div class="main-content">
 
-                <!-- Section 1: Timetable Creation -->
-                <div class="section">
-                    <h2><i class="fas fa-calendar-week icon"></i> Timetable Creation</h2>
-                   
-                    <div class="action-buttons">
-                        <a href="{% url 'admin_timetable_add' %}" class="btn">
-                            <i class="fas fa-plus icon"></i> Add Single Entry
-                        </a>
-                        <a href="{% url 'admin_timetable_weekly' %}" class="btn">
-                            <i class="fas fa-calendar-plus icon"></i> Create Weekly Timetable
-                        </a>
-                    </div>
-
-                    <form method="get" action="{% url 'admin_timetable_filter' %}">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="class"><i class="fas fa-graduation-cap icon"></i> Select Class:</label>
-                                <select id="class" name="class">
-                                    <option value="">All Classes</option>
-                                    {% for cls in classes %}
-                                        <option value="{{ cls }}" {% if cls == selected_class %}selected{% endif %}>{{ cls }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="section"><i class="fas fa-th-large icon"></i> Select Section:</label>
-                                <select id="section" name="section">
-                                    <option value="">All Sections</option>
-                                    {% for sec in sections %}
-                                        <option value="{{ sec }}" {% if sec == selected_section %}selected{% endif %}>{{ sec|capfirst }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="teacher_id"><i class="fas fa-user-tie icon"></i> Select Teacher:</label>
-                                <select id="teacher_id" name="teacher_id">
-                                    <option value="">All Teachers</option>
-                                    {% for teacher in teachers %}
-                                        <option value="{{ teacher.id }}" {% if teacher.id == selected_teacher %}selected{% endif %}>
-                                            {{ teacher.name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="day"><i class="fas fa-calendar-day icon"></i> Select Day:</label>
-                                <select id="day" name="day">
-                                    <option value="">All Days</option>
-                                    <option value="Monday" {% if selected_day == 'Monday' %}selected{% endif %}>Monday</option>
-                                    <option value="Tuesday" {% if selected_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
-                                    <option value="Wednesday" {% if selected_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
-                                    <option value="Thursday" {% if selected_day == 'Thursday' %}selected{% endif %}>Thursday</option>
-                                    <option value="Friday" {% if selected_day == 'Friday' %}selected{% endif %}>Friday</option>
-                                    <option value="Saturday" {% if selected_day == 'Saturday' %}selected{% endif %}>Saturday</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="filter-btn">
-                                <i class="fas fa-filter icon"></i> Filter
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><i class="fas fa-graduation-cap icon"></i> Class</th>
-                                    <th><i class="fas fa-book icon"></i> Subject</th>
-                                    <th><i class="fas fa-user-tie icon"></i> Teacher</th>
-                                    <th><i class="fas fa-calendar-day icon"></i> Day</th>
-                                    <th><i class="fas fa-clock icon"></i> Time</th>
-                                    <th><i class="fas fa-door-open icon"></i> Room</th>
-                                    <th><i class="fas fa-cogs icon"></i> Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for timetable in timetables %}
-                                <tr>
-                                    <td>{{ timetable.class_id|capfirst }}</td>
-                                    <td>{{ timetable.subject }}</td>
-                                    <td>{{ timetable.teacher_name }}</td>
-                                    <td>{{ timetable.day_of_week }}</td>
-                                    <td>{{ timetable.start_time|time:"H:i" }} - {{ timetable.end_time|time:"H:i" }}</td>
-                                    <td>{{ timetable.room|default:"N/A" }}</td>
-                                    <td class="action-links">
-                                        <a href="{% url 'admin_timetable_edit' timetable.id %}">
-                                            <i class="fas fa-edit icon"></i> Edit
-                                        </a>
-                                        <a href="{% url 'admin_timetable_delete' timetable.id %}" onclick="return confirm('Are you sure?')">
-                                            <i class="fas fa-trash icon"></i> Delete
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="7" class="no-data">
-                                        <i class="fas fa-search icon"></i> No timetable entries found.
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+            <!-- Section 1: Timetable Creation -->
+            <div class="section">
+                <h2><i class="fas fa-calendar-week" style="color: #10b981; margin-right: 8px;"></i> Timetable Creation</h2>
+               
+                <div class="action-buttons">
+                    <a href="{% url 'admin_timetable_add' %}" class="btn">
+                        <i class="fas fa-plus" style="color: #10b981; margin-right: 8px;"></i> Add Single Entry
+                    </a>
+                    <a href="{% url 'admin_timetable_weekly' %}" class="btn">
+                        <i class="fas fa-calendar-plus" style="color: #06b6d4; margin-right: 8px;"></i> Create Weekly Timetable
+                    </a>
                 </div>
 
-                <!-- Section 2: Exam Scheduler -->
-                <div class="section">
-                    <h2><i class="fas fa-clipboard-list icon"></i> Exam Scheduler</h2>
-                   
-                    <div class="action-buttons">
-                        <a href="{% url 'admin_exam_add' %}" class="btn">
-                            <i class="fas fa-plus icon"></i> Add Single Exam
-                        </a>
-                        <a href="{% url 'admin_exam_schedule' %}" class="btn">
-                            <i class="fas fa-calendar-plus icon"></i> Create Exam Schedule
-                        </a>
-                    </div>
-
-                    <form method="get" action="{% url 'admin_exam_filter' %}">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="exam_class"><i class="fas fa-graduation-cap icon"></i> Select Class:</label>
-                                <select id="exam_class" name="class">
-                                    <option value="">All Classes</option>
-                                    {% for cls in classes %}
-                                        <option value="{{ cls }}" {% if cls == selected_exam_class %}selected{% endif %}>{{ cls }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="exam_subject"><i class="fas fa-book icon"></i> Select Subject:</label>
-                                <select id="exam_subject" name="subject">
-                                    <option value="">All Subjects</option>
-                                    {% for subject in subjects %}
-                                        <option value="{{ subject }}" {% if subject == selected_exam_subject %}selected{% endif %}>{{ subject }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="exam_date"><i class="fas fa-calendar icon"></i> Select Date Range:</label>
-                                <input type="date" id="exam_date" name="start_date" value="{{ selected_start_date }}">
-                                <input type="date" id="exam_end_date" name="end_date" value="{{ selected_end_date }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="invigilator"><i class="fas fa-user-tie icon"></i> Select Invigilator:</label>
-                                <select id="invigilator" name="invigilator">
-                                    <option value="">All Invigilators</option>
-                                    {% for teacher in teachers %}
-                                        <option value="{{ teacher.id }}" {% if teacher.id == selected_invigilator %}selected{% endif %}>
-                                            {{ teacher.name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <button type="submit" class="filter-btn">
-                                <i class="fas fa-filter icon"></i> Filter
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><i class="fas fa-graduation-cap icon"></i> Class</th>
-                                    <th><i class="fas fa-book icon"></i> Subject</th>
-                                    <th><i class="fas fa-calendar icon"></i> Date</th>
-                                    <th><i class="fas fa-clock icon"></i> Time</th>
-                                    <th><i class="fas fa-door-open icon"></i> Room</th>
-                                    <th><i class="fas fa-user-tie icon"></i> Invigilator</th>
-                                    <th><i class="fas fa-cogs icon"></i> Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for exam in exams %}
-                                <tr>
-                                    <td>{{ exam.class_id|capfirst }}</td>
-                                    <td>{{ exam.subject }}</td>
-                                    <td>{{ exam.exam_date|date:"Y-m-d" }}</td>
-                                    <td>{{ exam.start_time|time:"H:i" }} - {{ exam.end_time|time:"H:i" }}</td>
-                                    <td>{{ exam.room|default:"N/A" }}</td>
-                                    <td>{{ exam.invigilator_name|default:"N/A" }}</td>
-                                    <td class="action-links">
-                                        <a href="{% url 'admin_exam_edit' exam.id %}">
-                                            <i class="fas fa-edit icon"></i> Edit
-                                        </a>
-                                        <a href="{% url 'admin_exam_delete' exam.id %}" onclick="return confirm('Are you sure?')">
-                                            <i class="fas fa-trash icon"></i> Delete
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="7" class="no-data">
-                                        <i class="fas fa-search icon"></i> No exam entries found.
-                                    </td>
-                                </tr>
+                <form method="get" action="{% url 'admin_timetable_filter' %}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="class">
+                                <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Select Class:
+                            </label>
+                            <select id="class" name="class">
+                                <option value="">All Classes</option>
+                                {% for cls in classes %}
+                                    <option value="{{ cls }}" {% if cls == selected_class %}selected{% endif %}>{{ cls }}</option>
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="section">
+                                <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i> Select Section:
+                            </label>
+                            <select id="section" name="section">
+                                <option value="">All Sections</option>
+                                {% for sec in sections %}
+                                    <option value="{{ sec }}" {% if sec == selected_section %}selected{% endif %}>{{ sec|capfirst }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher_id">
+                                <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Select Teacher:
+                            </label>
+                            <select id="teacher_id" name="teacher_id">
+                                <option value="">All Teachers</option>
+                                {% for teacher in teachers %}
+                                    <option value="{{ teacher.id }}" {% if teacher.id == selected_teacher %}selected{% endif %}>
+                                        {{ teacher.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="day">
+                                <i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> Select Day:
+                            </label>
+                            <select id="day" name="day">
+                                <option value="">All Days</option>
+                                <option value="Monday" {% if selected_day == 'Monday' %}selected{% endif %}>Monday</option>
+                                <option value="Tuesday" {% if selected_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                                <option value="Wednesday" {% if selected_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                                <option value="Thursday" {% if selected_day == 'Thursday' %}selected{% endif %}>Thursday</option>
+                                <option value="Friday" {% if selected_day == 'Friday' %}selected{% endif %}>Friday</option>
+                                <option value="Saturday" {% if selected_day == 'Saturday' %}selected{% endif %}>Saturday</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="filter-btn">
+                            <i class="fas fa-filter" style="color: #ffffff;"></i> Filter
+                        </button>
                     </div>
+                </form>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class</th>
+                                <th><i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Subject</th>
+                                <th><i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Teacher</th>
+                                <th><i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> Day</th>
+                                <th><i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> Time</th>
+                                <th><i class="fas fa-door-open" style="color: #14b8a6; margin-right: 8px;"></i> Room</th>
+                                <th><i class="fas fa-cogs" style="color: #6366f1; margin-right: 8px;"></i> Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for timetable in timetables %}
+                            <tr>
+                                <td>{{ timetable.class_id|capfirst }}</td>
+                                <td>{{ timetable.subject }}</td>
+                                <td>{{ timetable.teacher_name }}</td>
+                                <td>{{ timetable.day_of_week }}</td>
+                                <td>{{ timetable.start_time|time:"H:i" }} - {{ timetable.end_time|time:"H:i" }}</td>
+                                <td>{{ timetable.room|default:"N/A" }}</td>
+                                <td class="action-links">
+                                    <a href="{% url 'admin_timetable_edit' timetable.id %}">
+                                        <i class="fas fa-edit" style="color: #10b981; margin-right: 6px;"></i> Edit
+                                    </a>
+                                    <a href="{% url 'admin_timetable_delete' timetable.id %}" onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash" style="color: #ef4444; margin-right: 6px;"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="no-data">
+                                    <i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> No timetable entries found.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section 2: Exam Scheduler -->
+            <div class="section">
+                <h2><i class="fas fa-clipboard-list" style="color: #f59e0b; margin-right: 8px;"></i> Exam Scheduler</h2>
+               
+                <div class="action-buttons">
+                    <a href="{% url 'admin_exam_add' %}" class="btn">
+                        <i class="fas fa-plus" style="color: #10b981; margin-right: 8px;"></i> Add Single Exam
+                    </a>
+                    <a href="{% url 'admin_exam_schedule' %}" class="btn">
+                        <i class="fas fa-calendar-plus" style="color: #06b6d4; margin-right: 8px;"></i> Create Exam Schedule
+                    </a>
+                </div>
+
+                <form method="get" action="{% url 'admin_exam_filter' %}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="exam_class">
+                                <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Select Class:
+                            </label>
+                            <select id="exam_class" name="class">
+                                <option value="">All Classes</option>
+                                {% for cls in classes %}
+                                    <option value="{{ cls }}" {% if cls == selected_exam_class %}selected{% endif %}>{{ cls }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exam_subject">
+                                <i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Select Subject:
+                            </label>
+                            <select id="exam_subject" name="subject">
+                                <option value="">All Subjects</option>
+                                {% for subject in subjects %}
+                                    <option value="{{ subject }}" {% if subject == selected_exam_subject %}selected{% endif %}>{{ subject }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-calendar" style="color: #06b6d4; margin-right: 8px;"></i> Select Date Range:
+                            </label>
+                            <input type="date" id="exam_date" name="start_date" value="{{ selected_start_date }}">
+                            <input type="date" id="exam_end_date" name="end_date" value="{{ selected_end_date }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="invigilator">
+                                <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Select Invigilator:
+                            </label>
+                            <select id="invigilator" name="invigilator">
+                                <option value="">All Invigilators</option>
+                                {% for teacher in teachers %}
+                                    <option value="{{ teacher.id }}" {% if teacher.id == selected_invigilator %}selected{% endif %}>
+                                        {{ teacher.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="filter-btn">
+                            <i class="fas fa-filter" style="color: #ffffff;"></i> Filter
+                        </button>
+                    </div>
+                </form>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class</th>
+                                <th><i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Subject</th>
+                                <th><i class="fas fa-calendar" style="color: #06b6d4; margin-right: 8px;"></i> Date</th>
+                                <th><i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> Time</th>
+                                <th><i class="fas fa-door-open" style="color: #14b8a6; margin-right: 8px;"></i> Room</th>
+                                <th><i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Invigilator</th>
+                                <th><i class="fas fa-cogs" style="color: #6366f1; margin-right: 8px;"></i> Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exam in exams %}
+                            <tr>
+                                <td>{{ exam.class_id|capfirst }}</td>
+                                <td>{{ exam.subject }}</td>
+                                <td>{{ exam.exam_date|date:"Y-m-d" }}</td>
+                                <td>{{ exam.start_time|time:"H:i" }} - {{ exam.end_time|time:"H:i" }}</td>
+                                <td>{{ exam.room|default:"N/A" }}</td>
+                                <td>{{ exam.invigilator_name|default:"N/A" }}</td>
+                                <td class="action-links">
+                                    <a href="{% url 'admin_exam_edit' exam.id %}">
+                                        <i class="fas fa-edit" style="color: #10b981; margin-right: 6px;"></i> Edit
+                                    </a>
+                                    <a href="{% url 'admin_exam_delete' exam.id %}" onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash" style="color: #ef4444; margin-right: 6px;"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="no-data">
+                                    <i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> No exam entries found.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

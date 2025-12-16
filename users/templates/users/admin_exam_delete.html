@@ -9,479 +9,492 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
+    body {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        background: var(--white);
+        min-height: 100vh;
+        color: var(--text-color);
+        padding-top: 100px;
+        padding-bottom: 40px;
+    }
+
+    h1, h2, h3 {
+        font-family: 'Montserrat', sans-serif;
+        text-align: center;
+    }
+
+    :root {
+        --primary-color: #00a676;
+        --primary-hover: #00b88d;
+        --danger-color: #dc3545;
+        --danger-hover: #c82333;
+        --sidebar-bg: #f0f9f4;
+        --sidebar-border: #a8d5c2;
+        --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --border-color: #adb5bd;
+        --text-color: #495057;
+        --text-light: #868e96;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --border-radius: 16px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .header {
+        background: var(--white);
+        color: var(--text-color);
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        text-align: center;
+        flex-grow: 1;
+        color: var(--danger-color);
+        margin: 0;
+        margin-left: -10%;  /* Shifts the title slightly left for better balance */
+    }
+
+    .back-btn {
+        padding: 0.6rem 1.2rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        background: var(--sidebar-bg);
+        color: var(--text-color);
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .back-btn:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .logo-container {
+        width: 90px;
+        height: 70px;
+        background: var(--white);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--sidebar-border);
+        flex-shrink: 0;
+    }
+
+    .logo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: var(--transition);
+    }
+
+    .logo-container:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
+    }
+
+    .main-content {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        padding: 2rem;
+        margin-top: 20px;
+    }
+
+    .alert-message {
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-message .error {
+        background: #fef2f2;
+        color: #dc3545;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid #dc3545;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .alert-message .success {
+        background: #d4edda;
+        color: var(--primary-color);
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .section {
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        transition: var(--transition);
+    }
+
+    .section:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    h2 {
+        color: var(--danger-color);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .confirmation-details {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        transition: var(--transition);
+    }
+
+    .confirmation-details:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-label {
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .detail-value {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .action-buttons button,
+    .action-buttons a {
+        padding: 0.75rem 1.5rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        min-width: 180px;
+    }
+
+    .delete-btn {
+        background: var(--danger-color);
+        color: var(--white);
+        border-color: var(--danger-color);
+    }
+
+    .delete-btn:hover {
+        background: var(--danger-hover);
+        border-color: var(--danger-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .cancel-btn {
+        background: var(--light-bg);
+        color: var(--text-color);
+    }
+
+    .cancel-btn:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .icon {
+        margin-right: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
         body {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            background: var(--white);
-            min-height: 100vh;
-            color: var(--text-color);
-            padding: 120px 20px 40px 20px;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Montserrat', sans-serif;
-            text-align: center;
-        }
-
-        :root {
-            --primary-color: #00a676;
-            --primary-hover: #00b88d;
-            --danger-color: #dc3545;
-            --danger-hover: #c82333;
-            --sidebar-bg: #f0f9f4;
-            --sidebar-border: #a8d5c2;
-            --white: #ffffff;
-            --light-bg: #f8f9fa;
-            --border-color: #adb5bd;
-            --text-color: #495057;
-            --text-light: #868e96;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --border-radius: 16px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        html {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+            padding-top: 140px;
         }
 
         .header {
-            background: var(--white);
-            color: var(--text-color);
-            padding: 0.5rem 1rem 0.5rem 0.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: 0;
-            gap: 0.5rem;
+            flex-wrap: wrap;
+            padding: 0.75rem;
+            gap: 0.75rem;
         }
 
         .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            flex-grow: 1;
-            color: var(--danger-color);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            flex: none;
-            margin: 0;
-            z-index: 0;
+            font-size: 1.25rem;
+            order: 1;
+            width: 100%;
         }
 
         .back-btn {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            text-decoration: none;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .back-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            order: 2;
+            flex: 1;
+            justify-content: center;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
         }
 
         .logo-container {
-            width: 100px;
-            height: 80px;
-            background: var(--white);
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            transition: var(--transition);
-            box-shadow: var(--shadow-sm);
-            border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
+            order: 3;
+            width: 60px;
+            height: 50px;
         }
 
-        .logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: var(--transition);
-        }
-
-        .logo-container:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
-        }
-
-        .logo-container:hover img {
-            transform: scale(1.05);
+        .container {
+            padding: 0 15px;
         }
 
         .main-content {
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            padding: 2rem;
-        }
-
-        .alert-message {
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-message .error {
-            background: #fef2f2;
-            color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #dc3545;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .alert-message .success {
-            background: #d4edda;
-            color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
+            padding: 1.5rem;
         }
 
         .section {
-            background: var(--light-bg);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .section:hover {
-            box-shadow: var(--shadow-md);
+            padding: 1.2rem;
         }
 
         h2 {
-            color: var(--danger-color);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .confirmation-details {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .confirmation-details:hover {
-            box-shadow: var(--shadow-md);
+            font-size: 1.3rem;
         }
 
         .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.75rem;
-            padding: 0.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .detail-label {
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        .detail-value {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .form-container {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .form-container:hover {
-            box-shadow: var(--shadow-md);
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
         .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
+            flex-direction: column;
         }
 
-        button {
-            width: auto;
-            padding: 0.8rem 1.5rem;
-            border: none;
+        .action-buttons button,
+        .action-buttons a {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        body {
+            padding-top: 160px;
+        }
+
+        .header {
+            padding: 0.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.1rem;
+        }
+
+        .logo-container {
+            width: 50px;
+            height: 45px;
+        }
+
+        .main-content {
+            padding: 1rem;
             border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            justify-content: center;
         }
 
-        .delete-btn {
-            background: var(--danger-color);
-            color: var(--white);
-            border: 2px solid var(--danger-color);
+        .section {
+            padding: 1rem;
         }
 
-        .delete-btn:hover {
-            background: var(--danger-hover);
-            border-color: var(--danger-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        h2 {
+            font-size: 1.15rem;
         }
 
-        .cancel-btn {
-            background: var(--light-bg);
-            color: var(--text-color);
-            border: 2px solid var(--border-color);
+        .back-btn {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.85rem;
         }
 
-        .cancel-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .action-buttons button,
+        .action-buttons a {
+            padding: 0.7rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (hover: none) {
+        .section:hover, .confirmation-details:hover, .logo-container:hover, .back-btn:hover, .action-buttons button:hover, .action-buttons a:hover {
+            transform: none;
+            box-shadow: var(--shadow-sm);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            transition: none !important;
+            animation: none !important;
         }
 
-        .icon {
-            margin-right: 0.5rem;
+        html {
+            scroll-behavior: auto;
         }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 100px 10px 20px 10px;
-            }
-
-            .header {
-                padding: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .logo-container {
-                width: 80px;
-                height: 64px;
-            }
-
-            .main-content {
-                padding: 1.5rem;
-            }
-
-            .section {
-                padding: 1.2rem;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            .detail-row {
-                flex-direction: column;
-                gap: 0.25rem;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            button {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 80px 5px 15px 5px;
-            }
-
-            .header {
-                padding: 0.75rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.25rem;
-            }
-
-            .logo-container {
-                width: 60px;
-                height: 48px;
-            }
-
-            .main-content {
-                padding: 1rem;
-            }
-
-            .section {
-                padding: 1rem;
-            }
-
-            h2 {
-                font-size: 1.25rem;
-            }
-
-            .action-buttons button {
-                padding: 0.7rem 1rem;
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (hover: none) {
-            .section:hover, .confirmation-details:hover, .form-container:hover {
-                transform: none;
-                box-shadow: var(--shadow-sm);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
-            }
-
-            html {
-                scroll-behavior: auto;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <div id="app">
-        <div class="header">
-            <a href="{% url 'admin_timetable' %}" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back to Timetable Panel
-            </a>
-            <h1><i class="fas fa-trash-alt"></i> Admin Exam Delete</h1>
-            <a href="{% url 'admin_page' %}">
-                <div class="logo-container">
-                    <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
+    <header class="header">
+        <a href="{% url 'admin_timetable' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Timetable Panel
+        </a>
+        <h1><i class="fas fa-trash-alt" style="color: #ef4444; margin-right: 8px;"></i> Admin Exam Delete</h1>
+        <a href="{% url 'admin_page' %}">
+            <div class="logo-container">
+                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
+            </div>
+        </a>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            {% if messages %}
+                <div class="alert-message">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
                 </div>
-            </a>
-        </div>
+            {% endif %}
 
-        <div class="container">
-            <div class="main-content">
-                {% if messages %}
-                    <div class="alert-message">
-                        {% for message in messages %}
-                            <div class="{{ message.tags }}">
-                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
+            <div class="section">
+                <h2><i class="fas fa-exclamation-triangle" style="color: #f59e0b; margin-right: 8px;"></i> Confirm Deletion</h2>
+                <div class="confirmation-details">
+                    <div class="detail-row">
+                        <span class="detail-label">
+                            <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class:
+                        </span>
+                        <span class="detail-value">{{ exam.class_id }}</span>
                     </div>
-                {% endif %}
-
-                <div class="section">
-                    <h2><i class="fas fa-exclamation-triangle icon"></i> Confirm Deletion</h2>
-                    <div class="confirmation-details">
-                        <div class="detail-row">
-                            <span class="detail-label"><i class="fas fa-graduation-cap"></i> Class:</span>
-                            <span class="detail-value">{{ exam.class_id }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label"><i class="fas fa-book"></i> Subject:</span>
-                            <span class="detail-value">{{ exam.subject }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label"><i class="fas fa-calendar"></i> Date:</span>
-                            <span class="detail-value">{{ exam.exam_date|date:'Y-m-d' }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label"><i class="fas fa-clock"></i> Time:</span>
-                            <span class="detail-value">{{ exam.start_time|time:'H:i' }} - {{ exam.end_time|time:'H:i' }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label"><i class="fas fa-door-open"></i> Room:</span>
-                            <span class="detail-value">{{ exam.room }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label"><i class="fas fa-user-tie"></i> Invigilator:</span>
-                            <span class="detail-value">{{ exam.invigilator_name }}</span>
-                        </div>
+                    <div class="detail-row">
+                        <span class="detail-label">
+                            <i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Subject:
+                        </span>
+                        <span class="detail-value">{{ exam.subject }}</span>
                     </div>
-                    <p style="text-align: center; color: var(--danger-color); font-weight: 500; margin-bottom: 2rem;">
-                        Are you sure you want to delete this exam entry? This action cannot be undone.
-                    </p>
-                    <div class="form-container">
-                        <form method="post">
-                            {% csrf_token %}
-                            <div class="action-buttons">
-                                <button type="submit" class="delete-btn">
-                                    <i class="fas fa-trash icon"></i> Yes, Delete Exam
-                                </button>
-                                <a href="{% url 'admin_timetable' %}" class="cancel-btn">
-                                    <i class="fas fa-times icon"></i> Cancel
-                                </a>
-                            </div>
-                        </form>
+                    <div class="detail-row">
+                        <span class="detail-label">
+                            <i class="fas fa-calendar" style="color: #06b6d4; margin-right: 8px;"></i> Date:
+                        </span>
+                        <span class="detail-value">{{ exam.exam_date|date:'Y-m-d' }}</span>
                     </div>
+                    <div class="detail-row">
+                        <span class="detail-label">
+                            <i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> Time:
+                        </span>
+                        <span class="detail-value">{{ exam.start_time|time:'H:i' }} - {{ exam.end_time|time:'H:i' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">
+                            <i class="fas fa-door-open" style="color: #14b8a6; margin-right: 8px;"></i> Room:
+                        </span>
+                        <span class="detail-value">{{ exam.room }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">
+                            <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Invigilator:
+                        </span>
+                        <span class="detail-value">{{ exam.invigilator_name }}</span>
+                    </div>
+                </div>
+                <p style="text-align: center; color: var(--danger-color); font-weight: 500; margin-bottom: 2rem;">
+                    Are you sure you want to delete this exam entry? This action cannot be undone.
+                </p>
+                <div class="form-container">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="action-buttons">
+                            <button type="submit" class="delete-btn">
+                                <i class="fas fa-trash" style="color: #ffffff; margin-right: 8px;"></i> Yes, Delete Exam
+                            </button>
+                            <a href="{% url 'admin_timetable' %}" class="cancel-btn">
+                                <i class="fas fa-times" style="color: #ffffff; margin-right: 8px;"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>
