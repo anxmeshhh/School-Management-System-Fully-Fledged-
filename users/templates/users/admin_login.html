@@ -253,7 +253,7 @@
         .right-panel {
             flex: 1.2;
             background: var(--white);
-            padding: var(--space-xl);
+            padding: var(--space-lg) var(--space-xl);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -274,7 +274,7 @@
 
         .form-title {
             text-align: center;
-            margin-bottom: var(--space-lg);
+            margin-bottom: var(--space-md);
             color: var(--primary-green);
             font-size: var(--font-xl);
             font-weight: 500;
@@ -290,11 +290,11 @@
             flex-direction: column;
             z-index: 1;
             position: relative;
-            gap: var(--space-sm);
+            gap: var(--space-xs);
         }
 
         .form-group {
-            margin-bottom: var(--space-md);
+            margin-bottom: var(--space-sm);
             position: relative;
         }
 
@@ -303,14 +303,14 @@
             color: var(--secondary-green);
             font-size: var(--font-sm);
             font-weight: 500;
-            margin-bottom: var(--space-xs);
+            margin-bottom: 6px;
             letter-spacing: 0.1px;
             word-break: break-word;
         }
 
         .form-group input {
             width: 100%;
-            padding: var(--space-md) var(--space-lg);
+            padding: var(--space-sm) var(--space-md);
             border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
             font-size: var(--font-md);
@@ -326,6 +326,30 @@
             border-color: var(--primary-green);
             box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.1), inset 0 1px 4px rgba(0, 0, 0, 0.03);
             transform: translateY(-1px);
+        }
+
+        /* Remember Me Checkbox */
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            margin-bottom: var(--space-sm);
+            margin-top: 4px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-green);
+        }
+
+        .remember-me label {
+            color: var(--text-dark);
+            font-size: var(--font-sm);
+            cursor: pointer;
+            user-select: none;
+            margin: 0;
         }
 
         /* Toggle Password Icon */
@@ -349,7 +373,7 @@
         /* Button Styling - Green Login Button */
         .login-btn {
             width: 100%;
-            padding: var(--space-md) var(--space-lg);
+            padding: var(--space-sm) var(--space-lg);
             background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
             border: none;
             border-radius: var(--radius-md);
@@ -357,8 +381,8 @@
             font-size: var(--font-lg);
             font-weight: 500;
             cursor: pointer;
-            margin-top: var(--space-md);
-            margin-bottom: var(--space-sm);
+            margin-top: var(--space-sm);
+            margin-bottom: 6px;
             transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
             font-family: 'Montserrat', sans-serif;
             letter-spacing: 0.3px;
@@ -391,7 +415,7 @@
         /* Secondary Buttons */
         .secondary-btn {
             width: 100%;
-            padding: var(--space-md) var(--space-lg);
+            padding: var(--space-sm) var(--space-md);
             background: var(--white);
             border: 2px solid var(--primary-green);
             border-radius: var(--radius-md);
@@ -399,7 +423,7 @@
             font-size: var(--font-md);
             font-weight: 500;
             cursor: pointer;
-            margin-top: var(--space-sm);
+            margin-top: 6px;
             transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
             font-family: 'Poppins', sans-serif;
             text-decoration: none;
@@ -656,7 +680,7 @@
             }
 
             .right-panel {
-                padding: var(--space-lg);
+                padding: var(--space-md) var(--space-lg);
                 overflow-y: auto;
             }
 
@@ -691,6 +715,7 @@
 
             .form-title {
                 font-size: var(--font-lg);
+                margin-bottom: var(--space-sm);
             }
 
             .project-logo {
@@ -802,6 +827,10 @@
                         <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                     </svg>
                 </div>
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <label for="rememberMe">Remember Me</label>
+                </div>
                 <button type="submit" class="login-btn">Log In</button>
                 <button type="button" class="secondary-btn" onclick="window.location.href='{% url 'admin_signup' %}'">New User Signup</button>
                 <button type="button" class="secondary-btn" onclick="openChangePasswordModal()">Change Credentials</button>
@@ -861,6 +890,19 @@
     </div>
 
     <script>
+        // Remember Me Functionality - Load saved credentials on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedEmail = localStorage.getItem('rememberedEmail');
+            const savedPassword = localStorage.getItem('rememberedPassword');
+            const rememberMeChecked = localStorage.getItem('rememberMe') === 'true';
+
+            if (rememberMeChecked && savedEmail && savedPassword) {
+                document.getElementById('email').value = savedEmail;
+                document.getElementById('password').value = savedPassword;
+                document.getElementById('rememberMe').checked = true;
+            }
+        });
+
         function restrictToNumbers(input) {
             input.value = input.value.replace(/[^0-9]/g, '');
             if (input.value.length > 10) {
@@ -884,6 +926,8 @@
             event.preventDefault();
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value.trim();
+            const rememberMe = document.getElementById("rememberMe").checked;
+
             if (!email || !password) {
                 const errorMsg = document.getElementById("errorMessage");
                 errorMsg.style.display = "block";
@@ -891,6 +935,19 @@
                 errorMsg.textContent = "Email and password cannot be empty.";
                 return;
             }
+
+            // Save credentials if Remember Me is checked
+            if (rememberMe) {
+                localStorage.setItem('rememberedEmail', email);
+                localStorage.setItem('rememberedPassword', password);
+                localStorage.setItem('rememberMe', 'true');
+            } else {
+                // Clear saved credentials if Remember Me is unchecked
+                localStorage.removeItem('rememberedEmail');
+                localStorage.removeItem('rememberedPassword');
+                localStorage.removeItem('rememberMe');
+            }
+
             const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
             const formData = new URLSearchParams();
             formData.append("email", email);
@@ -989,10 +1046,17 @@
             if (result.trim() === "Success") {
                 document.getElementById("modalSuccessMessage").style.display = "block";
                 document.getElementById("modalErrorMessage").style.display = "none";
+                
+                // Clear saved credentials when password is changed
+                localStorage.removeItem('rememberedEmail');
+                localStorage.removeItem('rememberedPassword');
+                localStorage.removeItem('rememberMe');
+                
                 setTimeout(() => {
                     closeChangePasswordModal();
                     document.getElementById("email").value = "";
                     document.getElementById("password").value = "";
+                    document.getElementById("rememberMe").checked = false;
                 }, 2000);
             } else {
                 document.getElementById("modalErrorMessage").style.display = "block";

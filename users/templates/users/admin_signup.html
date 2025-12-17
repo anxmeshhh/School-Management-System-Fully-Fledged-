@@ -253,7 +253,7 @@
         .right-panel {
             flex: 1.2;
             background: var(--white);
-            padding: var(--space-xl);
+            padding: var(--space-lg) var(--space-xl);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -274,7 +274,7 @@
 
         .form-title {
             text-align: center;
-            margin-bottom: var(--space-lg);
+            margin-bottom: var(--space-md);
             color: var(--primary-green);
             font-size: var(--font-xl);
             font-weight: 500;
@@ -290,11 +290,11 @@
             flex-direction: column;
             z-index: 1;
             position: relative;
-            gap: var(--space-sm);
+            gap: var(--space-xs);
         }
 
         .form-group {
-            margin-bottom: var(--space-md);
+            margin-bottom: var(--space-sm);
             position: relative;
         }
 
@@ -303,14 +303,14 @@
             color: var(--secondary-green);
             font-size: var(--font-sm);
             font-weight: 500;
-            margin-bottom: var(--space-xs);
+            margin-bottom: 6px;
             letter-spacing: 0.1px;
             word-break: break-word;
         }
 
         .form-group input {
             width: 100%;
-            padding: var(--space-md) var(--space-lg);
+            padding: var(--space-sm) var(--space-md);
             border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
             font-size: var(--font-md);
@@ -346,10 +346,10 @@
             transform: translateY(-50%) scale(1.05);
         }
 
-        /* Button Styling - Green Login Button */
+        /* Button Styling - Green Sign Up Button */
         .login-btn {
             width: 100%;
-            padding: var(--space-md) var(--space-lg);
+            padding: var(--space-sm) var(--space-lg);
             background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
             border: none;
             border-radius: var(--radius-md);
@@ -357,8 +357,8 @@
             font-size: var(--font-lg);
             font-weight: 500;
             cursor: pointer;
-            margin-top: var(--space-md);
-            margin-bottom: var(--space-sm);
+            margin-top: var(--space-sm);
+            margin-bottom: 6px;
             transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
             font-family: 'Montserrat', sans-serif;
             letter-spacing: 0.3px;
@@ -391,7 +391,7 @@
         /* Secondary Buttons */
         .secondary-btn {
             width: 100%;
-            padding: var(--space-md) var(--space-lg);
+            padding: var(--space-sm) var(--space-md);
             background: var(--white);
             border: 2px solid var(--primary-green);
             border-radius: var(--radius-md);
@@ -399,7 +399,7 @@
             font-size: var(--font-md);
             font-weight: 500;
             cursor: pointer;
-            margin-top: var(--space-sm);
+            margin-top: 6px;
             transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
             font-family: 'Poppins', sans-serif;
             text-decoration: none;
@@ -542,7 +542,7 @@
             }
 
             .right-panel {
-                padding: var(--space-lg);
+                padding: var(--space-md) var(--space-lg);
                 overflow-y: auto;
             }
 
@@ -577,6 +577,7 @@
 
             .form-title {
                 font-size: var(--font-lg);
+                margin-bottom: var(--space-sm);
             }
 
             .project-logo {
@@ -648,7 +649,7 @@
             </p>
         </div>
 
-        <!-- Right Panel - Login Form Side -->
+        <!-- Right Panel - Sign Up Form Side -->
         <div class="right-panel">
             <h2 class="form-title">Admin Sign Up</h2>
             {% if messages %}
