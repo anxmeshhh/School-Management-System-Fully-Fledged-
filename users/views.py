@@ -750,18 +750,29 @@ def qr_page(request):
 
 
 
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-import PIL.Image
-import PIL.ImageDraw
-import PIL.ImageFont
 from io import BytesIO
-from django.db import connection
-import qrcode
-from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from PIL import Image as PILImage, ImageDraw, ImageFont
 import os
+import qrcode
+from django.db import connection
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.conf import settings
+import datetime
+
+def calculate_age(dob):
+    """Calculate age from DOB string in 'YYYY-MM-DD' format."""
+    if not dob:
+        return "N/A"
+    try:
+        birth_date = datetime.datetime.strptime(dob, '%Y-%m-%d').date()
+        today = datetime.date.today()
+        age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+        return str(age)
+    except:
+        return "N/A"
 
 def bulk_id_card(request):
     if not request.session.get('admin_id'):
@@ -771,165 +782,265 @@ def bulk_id_card(request):
         student_class = request.POST.get('class')
         section = request.POST.get('section')
 
-        # Fetch students data based on class and section, including user_id for profile picture lookup
+        # Fetch students data including roll_number and DOB for age calculation
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT 
-                    sp1.user_id, 
-                    sp1.name, 
-                    sp1.class, 
-                    sp1.admission_number, 
-                    sp3.address
-                FROM 
-                    student_page1 sp1
-                JOIN 
-                    student_page3 sp3 ON sp1.user_id = sp3.user_id
-                WHERE 
-                    sp1.class = %s AND sp1.section = %s
-            """, [student_class, section])
+    SELECT
+        sp1.user_id,
+        sp1.name,
+        sp1.class,
+        sp1.admission_number,
+        sp1.roll_number,
+        sp3.address,
+        sp4.father_name,
+        sp4.father_contact,
+        sp4.father_email,
+        sp4.mother_name,
+        sp4.mother_contact,
+        sp4.mother_email,
+        sp2.dob
+    FROM
+        student_page1 sp1
+    JOIN
+        student_page3 sp3 ON sp1.user_id = sp3.user_id
+    LEFT JOIN
+        student_page2 sp2 ON sp1.user_id = sp2.user_id
+    LEFT JOIN
+        student_page4 sp4 ON sp1.user_id = sp4.user_id
+    WHERE
+        sp1.class = %s AND sp1.section = %s
+""", [student_class, section])
             students_data = cursor.fetchall()
 
         if not students_data:
             return render(request, "users/bulk_id_card.html", {"error": "No students found for the selected class and section."})
 
-        # Create PDF buffer to store all ID cards
+        # Create PDF buffer
         pdf_buffer = BytesIO()
         c = canvas.Canvas(pdf_buffer, pagesize=letter)
 
         for student_data in students_data:
-            student_user_id, name, student_class, admission_number, address = student_data
+            (
+                user_id, name, student_class, admission_number, roll_number,
+                address, father_name, father_contact, father_email,
+                mother_name, mother_contact, mother_email, dob
+            ) = student_data
 
-            # Fetch profile picture for the current student
+            # Fetch profile picture
             profile_picture = None
             try:
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT image_path FROM profile_pics WHERE user_id = %s", [student_user_id])
+                    cursor.execute("SELECT image_path FROM profile_pics WHERE user_id = %s", [user_id])
                     profile_picture_result = cursor.fetchone()
                     if profile_picture_result:
                         profile_picture_path = os.path.join(settings.MEDIA_ROOT, profile_picture_result[0])
                         if os.path.exists(profile_picture_path):
-                            profile_picture = PIL.Image.open(profile_picture_path).convert("RGB")
+                            profile_picture = PILImage.open(profile_picture_path).convert("RGB")
                         else:
                             print(f"Profile picture file not found at: {profile_picture_path}")
             except Exception as e:
-                print(f"Error fetching profile picture for user {student_user_id}: {e}")
+                print(f"Error fetching profile picture for user {user_id}: {e}")
 
-            # Load ID card template
+            # Load ID card template (same for front and back)
             template_path = "users/static/users/images/id_card.jpg"
-            template_image = PIL.Image.open(template_path).convert("RGB")
-            draw = PIL.ImageDraw.Draw(template_image)
+            template_image = PILImage.open(template_path).convert("RGB")
+            draw = ImageDraw.Draw(template_image)
 
             # Get image dimensions for centering
             img_width, img_height = template_image.size
 
-            # Place profile picture on the ID card (if available)
+            # --- FRONT SIDE ---
+            # Place profile picture (if available)
             if profile_picture:
-                # Resize profile picture to fit the placeholder
                 photo_size = (250, 250)
-                profile_picture = profile_picture.resize(photo_size, PIL.Image.Resampling.LANCZOS)
-                photo_x = (img_width - photo_size[0]) // 2  # Center horizontally
-                photo_y = 251  # Same Y position as in generate_id_card
+                profile_picture = profile_picture.resize(photo_size, PILImage.Resampling.LANCZOS)
+                photo_x = (img_width - photo_size[0]) // 2
+                photo_y = 251
                 template_image.paste(profile_picture, (photo_x, photo_y))
-                start_y = 569  # Adjusted Y position below the photo if image is present
+                start_y = 569
             else:
-                start_y = 569  # Adjusted Y position if no image is present (start earlier)
+                start_y = 569
 
-            # Load fonts with larger sizes
+            # Load fonts
             font_path = os.path.join("users", "static", "users", "fonts", "arial.ttf")
             try:
-                title_font = PIL.ImageFont.truetype(font_path, 36)  # For "IDENTITY CARD" text
-                name_font = PIL.ImageFont.truetype(font_path, 32)  # For student name
-                detail_font = PIL.ImageFont.truetype(font_path, 28)  # For other details
+                title_font = ImageFont.truetype(font_path, 36)
+                name_font = ImageFont.truetype(font_path, 32)
+                detail_font = ImageFont.truetype(font_path, 28)
             except Exception as e:
                 print(f"Font loading error: {e}")
-                title_font = PIL.ImageFont.load_default()
-                name_font = PIL.ImageFont.load_default()
-                detail_font = PIL.ImageFont.load_default()
+                title_font = ImageFont.load_default()
+                name_font = ImageFont.load_default()
+                detail_font = ImageFont.load_default()
 
-            # Function to calculate centered text position (pass img_width as parameter)
             def get_centered_x(text, font, img_width):
                 text_width = draw.textlength(text, font=font)
                 return (img_width - text_width) / 2
 
-            # Position parameters
-            line_spacing = 40  # Space between lines
-
-            # Draw centered text, handle None values by defaulting to empty string
+            line_spacing = 40
             current_y = start_y
-            
-            # Name (larger font)
-            name_text = f"NAME: {(name or '').upper()}"  # Default to empty string if None
-            draw.text((get_centered_x(name_text, name_font, img_width), current_y), 
+
+            # Draw "IDENTITY CARD" title (assuming it's already in template; if not, add it here)
+            # draw.text((get_centered_x("IDENTITY CARD", title_font, img_width), 50), "IDENTITY CARD", font=title_font, fill="black")
+
+            # Name
+            name_text = f"NAME: {(name or '').upper()}"
+            draw.text((get_centered_x(name_text, name_font, img_width), current_y),
                       name_text, font=name_font, fill="black")
             current_y += line_spacing + 10
-            
+
             # Class
-            class_text = f"CLASS: {(student_class or '').upper()}"  # Default to empty string if None
-            draw.text((get_centered_x(class_text, detail_font, img_width), current_y), 
+            class_text = f"CLASS: {(student_class or '').upper()}"
+            draw.text((get_centered_x(class_text, detail_font, img_width), current_y),
                       class_text, font=detail_font, fill="black")
             current_y += line_spacing + 10
-            
+
             # Admission Number
-            adm_text = f"ADMISSION NO: {(admission_number or '').upper()}"  # Default to empty string if None
-            draw.text((get_centered_x(adm_text, detail_font, img_width), current_y), 
+            adm_text = f"ADMISSION NO: {(admission_number or '').upper()}"
+            draw.text((get_centered_x(adm_text, detail_font, img_width), current_y),
                       adm_text, font=detail_font, fill="black")
             current_y += line_spacing + 10
-            
-            # Address (might need to handle multiline if too long)
-            addr_text = f"ADDRESS: {(address or '').upper()}"  # Default to empty string if None
-            draw.text((get_centered_x(addr_text, detail_font, img_width), current_y), 
-                      addr_text, font=detail_font, fill="black")
+
+            # Roll Number (NEW)
+            roll_text = f"ROLL NO: {(roll_number or 'N/A')}"
+            draw.text((get_centered_x(roll_text, detail_font, img_width), current_y),
+                      roll_text, font=detail_font, fill="black")
+            current_y += line_spacing + 10
+
+            # Address (moved to back side, so not on front anymore)
+            # If you want to keep a short address on front, you can add it back here
 
             # Generate QR code
-            qr = qrcode.make(f"http://yourdomain.com/id_card/{admission_number or 'unknown'}/")  # Fallback for None
+            qr = qrcode.make(f"http://yourdomain.com/id_card/{admission_number or 'unknown'}/")
             qr_buffer = BytesIO()
             qr.save(qr_buffer, format="PNG")
             qr_buffer.seek(0)
-            qr_image = PIL.Image.open(qr_buffer)
-
-            # Resize QR code
+            qr_image = PILImage.open(qr_buffer)
             qr_size = (175, 175)
-            qr_image = qr_image.resize(qr_size, PIL.Image.Resampling.LANCZOS)
-
-            # Position QR code at the top center
-            qr_x = (img_width - qr_size[0]) // 2  # Center horizontally
-            qr_y = 800  # Adjusted to top center as in the attached image
+            qr_image = qr_image.resize(qr_size, PILImage.Resampling.LANCZOS)
+            qr_x = (img_width - qr_size[0]) // 2
+            qr_y = 800  # Your original top-center position
             template_image.paste(qr_image, (qr_x, qr_y))
 
-            # Save image to memory buffer
-            id_card_buffer = BytesIO()
-            template_image.save(id_card_buffer, format="JPEG")
-            id_card_buffer.seek(0)
+            # Save front side image to buffer
+            front_buffer = BytesIO()
+            template_image.save(front_buffer, format="JPEG")
+            front_buffer.seek(0)
+            front_image = PILImage.open(front_buffer)
+            orig_width, orig_height = front_image.size
 
-            # Get original dimensions of the ID card
-            id_image = PIL.Image.open(id_card_buffer)
-            orig_width, orig_height = id_image.size
-
-            # Calculate available space on PDF
+            # Scale and center front side on PDF page
             margin = 50
             max_width = 612 - 2 * margin
             max_height = 792 - 2 * margin
-
-            # Calculate scaling factor while maintaining aspect ratio
             scale = min(max_width / orig_width, max_height / orig_height)
             scaled_width = orig_width * scale
             scaled_height = orig_height * scale
-
-            # Center the image on the page
             x_pos = (612 - scaled_width) / 2
             y_pos = (792 - scaled_height) / 2
+            c.drawInlineImage(front_image, x_pos, y_pos, width=scaled_width, height=scaled_height)
+            c.showPage()  # End front page
 
-            # Draw ID card with original aspect ratio
-            c.drawInlineImage(id_image, x_pos, y_pos, width=scaled_width, height=scaled_height)
+            # --- BACK SIDE (NEW PAGE) ---
+            # Reset template for back side
+            template_image = PILImage.open(template_path).convert("RGB")
+            draw = ImageDraw.Draw(template_image)
 
-            c.showPage()
+            # Clear any unwanted elements (optional: you can paste a plain template if needed)
+            # For simplicity, we reuse the same template but draw text in a clean area
+
+            # Back side start Y (adjust as per your template layout)
+            back_start_y = 500  # Start higher on back to leave space for title or logo if any
+
+            current_y = back_start_y
+
+            # Title for back side
+            back_title = "STUDENT DETAILS"
+            draw.text((get_centered_x(back_title, title_font, img_width), current_y),
+                      back_title, font=title_font, fill="black")
+            current_y += line_spacing + 20
+
+           
+
+            # Father's Name
+            father_text = f"FATHER'S NAME: {(father_name or 'N/A').upper()}"
+            draw.text((get_centered_x(father_text, detail_font, img_width), current_y),
+                      father_text, font=detail_font, fill="black")
+            current_y += line_spacing
+
+            # Father's Contact & Email
+            father_contact_text = f"FATHER'S CONTACT: {(father_contact or 'N/A')}"
+            draw.text((get_centered_x(father_contact_text, detail_font, img_width), current_y),
+                      father_contact_text, font=detail_font, fill="black")
+            current_y += line_spacing
+
+            father_email_text = f"FATHER'S EMAIL: {(father_email or 'N/A')}"
+            draw.text((get_centered_x(father_email_text, detail_font, img_width), current_y),
+                      father_email_text, font=detail_font, fill="black")
+            current_y += line_spacing + 10
+
+            # Mother's Name
+            mother_text = f"MOTHER'S NAME: {(mother_name or 'N/A').upper()}"
+            draw.text((get_centered_x(mother_text, detail_font, img_width), current_y),
+                      mother_text, font=detail_font, fill="black")
+            current_y += line_spacing
+
+            # Mother's Contact & Email
+            mother_contact_text = f"MOTHER'S CONTACT: {(mother_contact or 'N/A')}"
+            draw.text((get_centered_x(mother_contact_text, detail_font, img_width), current_y),
+                      mother_contact_text, font=detail_font, fill="black")
+            current_y += line_spacing
+
+            mother_email_text = f"MOTHER'S EMAIL: {(mother_email or 'N/A')}"
+            draw.text((get_centered_x(mother_email_text, detail_font, img_width), current_y),
+                      mother_email_text, font=detail_font, fill="black")
+            current_y += line_spacing + 10
+
+            # Address
+            addr_text = f"ADDRESS: {(address or 'N/A').upper()}"
+            draw.text((get_centered_x(addr_text, detail_font, img_width), current_y),
+                      addr_text, font=detail_font, fill="black")
+            current_y += line_spacing + 10
+
+            
+            qr = qrcode.make(f"http://yourdomain.com/id_card/{admission_number or 'unknown'}/")
+            qr_buffer_back = BytesIO()
+            qr.save(qr_buffer_back, format="PNG")
+            qr_buffer_back.seek(0)
+            qr_image_back = PILImage.open(qr_buffer_back)
+            qr_size_back = (175, 175)
+            qr_image_back = qr_image_back.resize(qr_size_back, PILImage.Resampling.LANCZOS)
+            qr_x_back = (img_width - qr_size_back[0]) // 2
+            qr_y_back = 850  # Adjust if needed (e.g., 750 for higher, 850 for lower)
+            template_image.paste(qr_image_back, (qr_x_back, qr_y_back))
+            # === ADD THIS BLOCK END ===
+
+            # Save back side to buffer
+            back_buffer = BytesIO()
+            template_image.save(back_buffer, format="JPEG")
+
+            # Save back side to buffer
+            back_buffer = BytesIO()
+            template_image.save(back_buffer, format="JPEG")
+            back_buffer.seek(0)
+            back_image = PILImage.open(back_buffer)
+
+            # Reuse same scaling and positioning as front
+            back_orig_width, back_orig_height = back_image.size
+            back_scale = min(max_width / back_orig_width, max_height / back_orig_height)
+            back_scaled_width = back_orig_width * back_scale
+            back_scaled_height = back_orig_height * back_scale
+            back_x_pos = (612 - back_scaled_width) / 2
+            back_y_pos = (792 - back_scaled_height) / 2
+
+            c.drawInlineImage(back_image, back_x_pos, back_y_pos, width=back_scaled_width, height=back_scaled_height)
+            c.showPage()  # End back page
 
         c.save()
         pdf_buffer.seek(0)
 
-        # Return the generated PDF as an HttpResponse
         response = HttpResponse(pdf_buffer, content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="bulk_id_cards.pdf"'
+        response['Content-Disposition'] = 'attachment; filename="bulk_id_cards_front_back.pdf"'
         return response
 
     return render(request, "users/bulk_id_card.html")
