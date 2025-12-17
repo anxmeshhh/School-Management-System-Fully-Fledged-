@@ -545,7 +545,7 @@
                     </div>
                     <div class="form-group">
                         <label>Date of Birth</label>
-                        <input type="date" name="dob" value="{{ dob|default:'' }}">
+                        <input type="date" name="dob" value="{{ dob|default:'' }}" required>
                     </div>
                     <div class="form-group">
                         <label>Nationality</label>
@@ -594,15 +594,15 @@
                     </div>
                     <div class="form-group">
                         <label>Admission Class</label>
-                        <input type="text" name="admission_class" value="{{ admission_class|default:'' }}">
+                        <input type="text" name="admission_class" value="{{ admission_class|default:'' }}" required>
                     </div>
                     <div class="form-group">
                         <label>Admission Year</label>
-                        <input type="text" name="admission_year" value="{{ admission_year|default:'' }}">
+                        <input type="text" name="admission_year" value="{{ admission_year|default:'' }}" required>
                     </div>
                     <div class="form-group">
                         <label>Admission Date</label>
-                        <input type="date" name="admission_date" value="{{ admission_date|default:'' }}">
+                        <input type="date" name="admission_date" value="{{ admission_date|default:'' }}" required>
                     </div>
                 </div>
             </div>
