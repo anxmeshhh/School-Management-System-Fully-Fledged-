@@ -37,6 +37,8 @@
         --primary-hover: #00b88d;
         --danger-color: #dc2626;
         --danger-hover: #ef4444;
+        --warning-color: #f59e0b;
+        --warning-bg: #fef3c7;
         --sidebar-bg: #f0f9f4;
         --sidebar-border: #a8d5c2;
         --white: #ffffff;
@@ -169,6 +171,18 @@
         border: 2px solid var(--border-color);
     }
 
+    .messages .warning {
+        background: var(--warning-bg);
+        color: #92400e;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--warning-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid var(--border-color);
+    }
+
     .back-buttons {
         display: flex;
         gap: 1rem;
@@ -253,6 +267,27 @@
         margin-bottom: 0.5rem;
     }
 
+    /* Field-level error/warning styling */
+    .form-group.has-error input,
+    .form-group.has-error select,
+    .form-group.has-error textarea {
+        border-color: var(--danger-color);
+        background-color: #fef2f2;
+    }
+
+    .field-error {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--danger-color);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    .field-error i {
+        font-size: 0.75rem;
+    }
+
     input, select, textarea {
         width: 100%;
         padding: 0.75rem;
@@ -267,6 +302,14 @@
         border-color: var(--primary-color);
         box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
         outline: none;
+    }
+
+    /* Override focus style for error fields */
+    .form-group.has-error input:focus,
+    .form-group.has-error select:focus,
+    .form-group.has-error textarea:focus {
+        border-color: var(--danger-color);
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
 
     select {
@@ -475,44 +518,68 @@
         <div class="messages">
             {% if messages %}
                 {% for message in messages %}
-                    <div class="{% if message.tags == 'success' %}success{% else %}error{% endif %}">
-                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} icon"></i>
+                    <div class="{% if message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}error{% endif %}">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-exclamation-circle{% endif %} icon"></i>
                         {{ message }}
                     </div>
                 {% endfor %}
             {% endif %}
         </div>
 
-        <form method="POST">
+        <form method="POST" id="studentForm">
             {% csrf_token %}
             <div class="section">
                 <div class="subheading">
                     <h3><i class="fas fa-user"></i> Basic Information</h3>
                 </div>
                 <div class="grid">
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="name">
                         <label>Full Name</label>
                         <input type="text" name="name" value="{{ name|default:'' }}" required>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please enter full name</span>
+                        </div>
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="admission_number">
                         <label>Admission Number</label>
                         <input type="text" name="admission_number" value="{{ admission_number|default:'' }}" required>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please enter admission number</span>
+                        </div>
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="class_section">
                         <label>Class-Section (e.g., 2-A)</label>
                         <input type="text" name="class_section" value="{{ class_section|default:'' }}" required>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please enter class-section</span>
+                        </div>
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="roll_number">
                         <label>Roll Number</label>
                         <input type="text" name="roll_number" value="{{ roll_number|default:'' }}" required>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please enter roll number</span>
+                        </div>
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="emis">
                         <label>EMIS Number</label>
                         <input type="text" name="emis" value="{{ emis|default:'' }}" required>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please enter EMIS number</span>
+                        </div>
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="email">
                         <label>Email</label>
                         <input type="email" name="email" value="{{ email|default:'' }}" required>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please enter a valid email</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -543,9 +610,13 @@
                         <label>Tamil Name</label>
                         <input type="text" name="tamil_name" value="{{ tamil_name|default:'' }}">
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="dob">
                         <label>Date of Birth</label>
                         <input type="date" name="dob" value="{{ dob|default:'' }}" required>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please enter date of birth</span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Nationality</label>
@@ -592,17 +663,29 @@
                         <label>Identification Mark 2</label>
                         <input type="text" name="id_mark2" value="{{ id_mark2|default:'' }}">
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="admission_class">
                         <label>Admission Class</label>
                         <input type="text" name="admission_class" value="{{ admission_class|default:'' }}" required>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please enter admission class</span>
+                        </div>
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="admission_year">
                         <label>Admission Year</label>
                         <input type="text" name="admission_year" value="{{ admission_year|default:'' }}" required>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please enter admission year</span>
+                        </div>
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="admission_date">
                         <label>Admission Date</label>
                         <input type="date" name="admission_date" value="{{ admission_date|default:'' }}" required>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please enter admission date</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -647,32 +730,44 @@
                         <label>House</label>
                         <input type="text" name="house" value="{{ house|default:'' }}">
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="teacher_ward">
                         <label>Teacher Ward</label>
-                        <select name="teacher_ward">
+                        <select name="teacher_ward" required>
                             <option value="">Select Option</option>
                             {% for option in teacher_ward_options %}
                                 <option value="{{ option }}" {% if teacher_ward == option %}selected{% endif %}>{{ option|capfirst }}</option>
                             {% endfor %}
                         </select>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please select teacher ward option</span>
+                        </div>
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="rte">
                         <label>RTE</label>
-                        <select name="rte">
+                        <select name="rte" required>
                             <option value="">Select Option</option>
                             {% for option in rte_options %}
                                 <option value="{{ option }}" {% if rte == option %}selected{% endif %}>{{ option|capfirst }}</option>
                             {% endfor %}
                         </select>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please select RTE option</span>
+                        </div>
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" data-field="sports_quota">
                         <label>Sports Quota</label>
-                        <select name="sports_quota">
+                        <select name="sports_quota" required>
                             <option value="">Select Option</option>
                             {% for option in sports_quota_options %}
                                 <option value="{{ option }}" {% if sports_quota == option %}selected{% endif %}>{{ option|capfirst }}</option>
                             {% endfor %}
                         </select>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please select sports quota option</span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Previous School</label>
@@ -827,6 +922,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Restore form values
             {% for field, value in request.POST.items %}
                 {% if value %}
                     const field = document.querySelector('[name="{{ field }}"]');
@@ -835,6 +931,90 @@
                     }
                 {% endif %}
             {% endfor %}
+
+            // Form validation
+            const form = document.getElementById('studentForm');
+            
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                let firstError = null;
+
+                // Get all required fields
+                const requiredFields = form.querySelectorAll('.form-group.required');
+                
+                requiredFields.forEach(function(formGroup) {
+                    const input = formGroup.querySelector('input, select, textarea');
+                    const errorDiv = formGroup.querySelector('.field-error');
+                    
+                    if (input) {
+                        // Check if field is empty
+                        if (!input.value || input.value.trim() === '') {
+                            // Show error
+                            formGroup.classList.add('has-error');
+                            if (errorDiv) {
+                                errorDiv.style.display = 'flex';
+                            }
+                            isValid = false;
+                            
+                            // Track first error for scrolling
+                            if (!firstError) {
+                                firstError = formGroup;
+                            }
+                        } else {
+                            // Clear error if field is filled
+                            formGroup.classList.remove('has-error');
+                            if (errorDiv) {
+                                errorDiv.style.display = 'none';
+                            }
+                        }
+                    }
+                });
+
+                // If validation fails
+                if (!isValid) {
+                    e.preventDefault();
+                    
+                    // Scroll to first error
+                    if (firstError) {
+                        firstError.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                    }
+                    
+                    // Show a general warning message
+                    const messagesDiv = document.querySelector('.messages');
+                    if (messagesDiv) {
+                        const existingWarning = messagesDiv.querySelector('.warning');
+                        if (!existingWarning) {
+                            const warningDiv = document.createElement('div');
+                            warningDiv.className = 'warning';
+                            warningDiv.innerHTML = '<i class="fas fa-exclamation-triangle icon"></i>Please fill in all required fields marked with *';
+                            messagesDiv.appendChild(warningDiv);
+                            
+                            // Scroll to top to show message
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                    }
+                }
+            });
+
+            // Real-time validation - clear error when user starts typing
+            const requiredInputs = form.querySelectorAll('.form-group.required input, .form-group.required select, .form-group.required textarea');
+            
+            requiredInputs.forEach(function(input) {
+                input.addEventListener('input', function() {
+                    const formGroup = input.closest('.form-group');
+                    const errorDiv = formGroup.querySelector('.field-error');
+                    
+                    if (input.value && input.value.trim() !== '') {
+                        formGroup.classList.remove('has-error');
+                        if (errorDiv) {
+                            errorDiv.style.display = 'none';
+                        }
+                    }
+                });
+            });
         });
     </script>
 </body>
