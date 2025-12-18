@@ -1725,52 +1725,97 @@ def download_leave_pdf(request):
 
 
 
+from django.http import JsonResponse
+from django.db import connection
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.db import connection
+
 
 def admin_accept_portal(request):
+    """
+    Main view for Admin Leave Request Portal.
+    Handles viewing all leave requests, approving/rejecting them,
+    and rendering the template.
+    """
     if not request.session.get('admin_id'):
         messages.error(request, 'You must be logged in to access this page.')
-        return redirect('admin_login')  # Redirect to login page if not logged in
+        return redirect('admin_login')
 
     if request.method == 'POST':
         action = request.POST.get('action')
         leave_id = request.POST.get('leave_id')
 
         if action and leave_id:
-            # Update leave status based on action
             if action == 'approve':
                 new_status = 'Approved'
             elif action == 'reject':
                 new_status = 'Rejected'
             else:
                 messages.error(request, 'Invalid action')
-                return redirect('admin_accept_portal')  # Redirect back to the portal if action is invalid
+                return redirect('admin_accept_portal')
 
-            with connection.cursor() as cursor:
-                # Update the leave request status
-                cursor.execute("""
-                    UPDATE student_leave_requests
-                    SET status = %s
-                    WHERE id = %s
-                """, [new_status, leave_id])
-
-            messages.success(request, f'Leave request {new_status.lower()} successfully.')
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                        UPDATE student_leave_requests
+                        SET status = %s
+                        WHERE id = %s
+                    """, [new_status, leave_id])
+                messages.success(request, f'Leave request {new_status.lower()} successfully.')
+            except Exception as e:
+                messages.error(request, 'Error updating leave request.')
         else:
             messages.error(request, 'Leave ID or action missing.')
 
-        return redirect('admin_accept_portal')  # Redirect back to the leave requests page
+        return redirect('admin_accept_portal')
 
-    # Fetch all leave requests to display on the page
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT id, student_name, reg_number, class_number, section, leave_reason, leave_start_date, leave_end_date, leave_duration, status
-            FROM student_leave_requests
-        """)
-        leave_requests = cursor.fetchall()
+    # Fetch all leave requests for display
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT id, student_name, reg_number, class_number, section,
+                       leave_reason, leave_start_date, leave_end_date, leave_duration, status
+                FROM student_leave_requests
+                ORDER BY leave_start_date DESC
+            """)
+            leave_requests = cursor.fetchall()
+    except Exception as e:
+        messages.error(request, 'Error fetching leave requests.')
+        leave_requests = []
 
-    return render(request, 'users/admin_accept_portal.html', {'leave_requests': leave_requests})
+    return render(request, 'users/admin_accept_portal.html', {
+        'leave_requests': leave_requests
+    })
+
+
+def leave_get_students(request):
+    if not request.session.get('admin_id'):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    class_num = request.GET.get('class')
+    section = request.GET.get('section')
+
+    if not class_num or not section:
+        return JsonResponse({'students': []})
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT DISTINCT name 
+                FROM student_page1 
+                WHERE class = %s 
+                  AND section = %s 
+                  AND name IS NOT NULL
+                ORDER BY name
+            """, [class_num, section])
+            
+            students = [row[0] for row in cursor.fetchall()]
+            
+        return JsonResponse({'students': students})
+        
+    except Exception as e:
+        print("leave_get_students error:", str(e))
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 
@@ -5214,6 +5259,42 @@ def admin_attendance_portal(request):
         'selected_date': selected_date,
         'students': students,
     })
+
+
+def attendance_get_students(request):
+    """
+    AJAX endpoint specifically for Admin Attendance Portal.
+    Returns list of student names for selected class and section.
+    """
+    if not request.session.get('admin_id'):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    class_num = request.GET.get('class')
+    section = request.GET.get('section')
+
+    if not class_num or not section:
+        return JsonResponse({'students': []})
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT DISTINCT name 
+                FROM student_page1 
+                WHERE class = %s 
+                  AND section = %s 
+                  AND name IS NOT NULL
+                ORDER BY name ASC
+            """, [class_num, section])
+            
+            students = [row[0] for row in cursor.fetchall()]
+        
+        return JsonResponse({'students': students})
+    
+    except Exception as e:
+        print("Error in attendance_get_students:", str(e))
+        return JsonResponse({'error': 'Database error'}, status=500)
+    
+    
 
 def admin_mark_attendance(request):
     if not request.session.get('admin_id'):

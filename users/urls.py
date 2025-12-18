@@ -53,6 +53,7 @@ urlpatterns = [
     path('admin_signup/', views.admin_signup, name='admin_signup'),
     path('admin_page/', views.admin_page, name='admin_page'),
     path('admin_portal/', views.admin_accept_portal, name='admin_accept_portal'),
+    path('admin/leave-get-students/', views.leave_get_students, name='leave_get_students'),
     path('admin_study_materials_upload/', views.admin_study_materials_upload, name='admin_study_materials_upload'),  # Updated path
     path('teacher_study_materials_upload/', views.teacher_study_materials_upload, name='teacher_study_materials_upload'),  # Updated path
     path('media/<path:file_path>', views.serve_pdf, name='serve_pdf'),
@@ -118,6 +119,7 @@ urlpatterns = [
     
     path('student_portal/', views.student_portal, name='student_portal'),
     path('admin_attendance/', views.admin_attendance_portal, name='admin_attendance_portal'),
+    path('admin/attendance-get-students/', views.attendance_get_students, name='attendance_get_students'),
     path('admin_mark_attendance/', views.admin_mark_attendance, name='admin_mark_attendance'),
     path('admin_generate_attendance_pdf/', views.admin_generate_attendance_pdf, name='admin_generate_attendance_pdf'),
     # urls.py snippet for rendering admin_master.html (assuming app_name='admin')

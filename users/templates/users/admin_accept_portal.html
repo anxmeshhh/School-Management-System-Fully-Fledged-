@@ -552,7 +552,7 @@
                 <section class="section">
                     <h2><i class="fas fa-list"></i> Leave Requests</h2>
 
-                    <!-- Filters -->
+                    <!-- Updated Filters with Student Name Dropdown -->
                     <div class="filters-container">
                         <div class="form-group">
                             <label for="filter_class"><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Filter by Class</label>
@@ -572,6 +572,7 @@
                                 <option value="12">Class 12</option>
                             </select>
                         </div>
+
                         <div class="form-group">
                             <label for="filter_section"><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> Filter by Section</label>
                             <select id="filter_section">
@@ -581,10 +582,19 @@
                                 <option value="C">C</option>
                             </select>
                         </div>
+
+                        <div class="form-group">
+                            <label for="filter_student"><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Filter by Student Name</label>
+                            <select id="filter_student">
+                                <option value="">All Students</option>
+                            </select>
+                        </div>
+
                         <div class="form-group">
                             <label for="filter_date"><i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Filter by Date</label>
                             <input type="date" id="filter_date">
                         </div>
+
                         <button type="button" class="filter-btn" onclick="filterCards()">
                             <i class="fas fa-filter"></i> Apply Filter
                         </button>
@@ -595,7 +605,11 @@
 
                     <div class="leave-cards">
                         {% for request in leave_requests %}
-                        <div class="leave-card" data-class="{{ request.3 }}" data-section="{{ request.4 }}" data-start-date="{{ request.6|date:'Y-m-d' }}">
+                        <div class="leave-card" 
+                             data-class="{{ request.3 }}" 
+                             data-section="{{ request.4 }}" 
+                             data-start-date="{{ request.6|date:'Y-m-d' }}"
+                             data-student="{{ request.1 }}">
                             <p><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> <strong>Student Name:</strong> {{ request.1 }}</p>
                             <p><i class="fas fa-id-card" style="color: #8b5cf6; margin-right: 8px;"></i> <strong>Reg Number:</strong> {{ request.2 }}</p>
                             <p><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> <strong>Class:</strong> {{ request.3 }}</p>
@@ -637,7 +651,7 @@
     </div>
 
     <script>
-        // Sidebar toggle functionality (same as first page)
+        // Sidebar toggle (unchanged)
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
@@ -671,19 +685,7 @@
                 });
             });
 
-            let resizeTimer;
-            window.addEventListener('resize', function() {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(function() {
-                    if (window.innerWidth > 768) {
-                        sidebar.classList.remove('active');
-                        sidebarOverlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                }, 250);
-            });
-
-            // Hover animation for nav icons
+            // Hover effects (unchanged)
             navLinks.forEach(item => {
                 item.addEventListener('mouseenter', function() {
                     const icon = this.querySelector('img');
@@ -700,25 +702,63 @@
             });
         });
 
-        // Existing filter and scroll-to-top scripts
+        // Load students when class or section changes
+        function loadStudents() {
+            const classVal = document.getElementById('filter_class').value;
+            const sectionVal = document.getElementById('filter_section').value;
+            const studentSelect = document.getElementById('filter_student');
+
+            studentSelect.innerHTML = '<option value="">All Students</option>';
+
+            if (!classVal || !sectionVal) {
+                return;
+            }
+
+            fetch(`/admin/leave-get-students/?class=${classVal}&section=${sectionVal}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.students) {
+                        data.students.forEach(student => {
+                            const option = document.createElement('option');
+                            option.value = student;
+                            option.textContent = student;
+                            studentSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching students:', err);
+                });
+        }
+
+        // Attach event listeners
+        document.getElementById('filter_class').addEventListener('change', loadStudents);
+        document.getElementById('filter_section').addEventListener('change', loadStudents);
+
+        // Updated filter function with student name support
         function filterCards() {
             const classFilter = document.getElementById('filter_class').value;
             const sectionFilter = document.getElementById('filter_section').value;
+            const studentFilter = document.getElementById('filter_student').value;
             const dateFilter = document.getElementById('filter_date').value;
+
             const cards = document.querySelectorAll('.leave-card');
             let visibleCount = 0;
 
             cards.forEach(function(card) {
                 const cardClass = card.getAttribute('data-class');
                 const cardSection = card.getAttribute('data-section');
+                const cardStudent = card.getAttribute('data-student');
                 const cardDate = card.getAttribute('data-start-date');
+
                 let show = true;
 
                 if (classFilter && cardClass !== classFilter) show = false;
                 if (sectionFilter && cardSection !== sectionFilter) show = false;
+                if (studentFilter && cardStudent !== studentFilter) show = false;
                 if (dateFilter && cardDate !== dateFilter) show = false;
 
-                card.style.display = show ? 'block' : 'none';
+                card.style.display = show ? 'flex' : 'none';
                 if (show) visibleCount++;
             });
 
@@ -735,7 +775,7 @@
                 }
                 if (initialNoRequests) initialNoRequests.style.display = 'none';
             } else {
-                if (noResults && noResults.parentNode) noResults.parentNode.removeChild(noResults);
+                if (noResults && noResults.parentNode) noResults.remove();
                 if (initialNoRequests) initialNoRequests.style.display = 'block';
             }
         }
@@ -743,10 +783,12 @@
         function clearFilters() {
             document.getElementById('filter_class').value = '';
             document.getElementById('filter_section').value = '';
+            document.getElementById('filter_student').innerHTML = '<option value="">All Students</option>';
             document.getElementById('filter_date').value = '';
             filterCards();
         }
 
+        // Initial filter on page load
         document.addEventListener('DOMContentLoaded', function() {
             filterCards();
         });

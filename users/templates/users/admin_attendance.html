@@ -625,248 +625,302 @@
     </aside>
 
     <!-- Main Content Wrapper -->
-    <div class="page-wrapper">
-        <div class="container">
-            <header class="header">
-                <h1><i class="fas fa-table"></i> Admin Attendance Portal</h1>
-            </header>
+   <div class="page-wrapper">
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-table"></i> Admin Attendance Portal</h1>
+        </header>
 
-            <main class="main-content">
-                {% if messages %}
-                    <div class="alert-message">
-                        {% for message in messages %}
-                            <div class="{{ message.tags }}">
-                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
+        <main class="main-content">
+            {% if messages %}
+                <div class="alert-message">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <section class="section">
+                <h2><i class="fas fa-search" style="color: #6366f1; margin-right: 8px;"></i> Select Attendance Details</h2>
+                <form id="classSelectForm" method="GET" action="{% url 'admin_attendance_portal' %}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="class">
+                                <i class="fas fa-chalkboard" style="color: #10b981; margin-right: 8px;"></i> Select Class
+                            </label>
+                            <select id="class" name="class" required onchange="updateSections()">
+                                <option value="">Select a Class</option>
+                                {% for class in classes %}
+                                    <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="section">
+                                <i class="fas fa-chalkboard-teacher" style="color: #f59e0b; margin-right: 8px;"></i> Select Section
+                            </label>
+                            <select id="section" name="section" required onchange="loadStudents()">
+                                <option value="">Select a Section</option>
+                            </select>
+                            <div id="no-sections-message" class="no-sections" style="display: none;">No sections available for this class.</div>
+                        </div>
+
+                        <!-- New: Student Name Filter -->
+                        <div class="form-group">
+                            <label for="filter_student">
+                                <i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Filter by Student Name
+                            </label>
+                            <select id="filter_student" onchange="filterTable()">
+                                <option value="">All Students</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date">
+                                <i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Select Date
+                            </label>
+                            <input type="date" id="date" name="date" value="{{ selected_date }}" required>
+                        </div>
+
+                        <button type="submit" class="load-btn">
+                            <i class="fas fa-search" style="color: #ffffff;"></i> Load
+                        </button>
                     </div>
-                {% endif %}
+                </form>
 
-                <section class="section">
-                    <h2><i class="fas fa-search" style="color: #6366f1; margin-right: 8px;"></i> Select Attendance Details</h2>
-                    <form id="classSelectForm" method="GET" action="{% url 'admin_attendance_portal' %}">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="class">
-                                    <i class="fas fa-chalkboard" style="color: #10b981; margin-right: 8px;"></i> Select Class
-                                </label>
-                                <select id="class" name="class" required onchange="updateSections()">
-                                    <option value="">Select a Class</option>
-                                    {% for class in classes %}
-                                        <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
+                {% if students %}
+                    <form id="attendanceForm" method="POST" action="{% url 'admin_mark_attendance' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="class" value="{{ selected_class }}">
+                        <input type="hidden" name="section" value="{{ selected_section }}">
+                        <input type="hidden" name="date" value="{{ selected_date }}">
+
+                        <h2><i class="fas fa-table" style="color: #8b5cf6; margin-right: 8px;"></i> 
+                            Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}
+                        </h2>
+
+                        <div class="table-container">
+                            <table class="attendance-table">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-hashtag" style="color: #94a3b8;"></i> Student ID</th>
+                                        <th><i class="fas fa-user" style="color: #3b82f6;"></i> Name</th>
+                                        <th><i class="fas fa-id-card" style="color: #8b5cf6;"></i> Admission Number</th>
+                                        <th><i class="fas fa-graduation-cap" style="color: #10b981;"></i> Class</th>
+                                        <th><i class="fas fa-layer-group" style="color: #f59e0b;"></i> Section</th>
+                                        <th><i class="fas fa-check-square" style="color: #6366f1;"></i> Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceTableBody">
+                                    {% for student in students %}
+                                        <tr data-student="{{ student.name }}">
+                                            <td>{{ student.user_id }}</td>
+                                            <td>{{ student.name }}</td>
+                                            <td>{{ student.admission_number }}</td>
+                                            <td>{{ student.class }}</td>
+                                            <td>{{ student.section|default:"N/A" }}</td>
+                                            <td>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="present" 
+                                                        class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">
+                                                    <i class="fas fa-check-circle" style="color: #10b981;"></i> Present
+                                                </button>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="absent" 
+                                                        class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">
+                                                    <i class="fas fa-times-circle" style="color: #ef4444;"></i> Absent
+                                                </button>
+                                                <button type="submit" name="student_{{ student.user_id }}" value="leave" 
+                                                        class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">
+                                                    <i class="fas fa-calendar-times" style="color: #f59e0b;"></i> Leave
+                                                </button>
+                                            </td>
+                                        </tr>
                                     {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="section">
-                                    <i class="fas fa-chalkboard-teacher" style="color: #f59e0b; margin-right: 8px;"></i> Select Section
-                                </label>
-                                <select id="section" name="section" required>
-                                    <option value="">Select a Section</option>
-                                </select>
-                                <div id="no-sections-message" class="no-sections" style="display: none;">No sections available for this class.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="date">
-                                    <i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Select Date
-                                </label>
-                                <input type="date" id="date" name="date" value="{{ selected_date }}" required>
-                            </div>
-                            <button type="submit" class="load-btn">
-                                <i class="fas fa-search" style="color: #ffffff;"></i> Load
-                            </button>
+                                </tbody>
+                            </table>
                         </div>
                     </form>
 
-                    {% if students %}
-                        <form id="attendanceForm" method="POST" action="{% url 'admin_mark_attendance' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="class" value="{{ selected_class }}">
-                            <input type="hidden" name="section" value="{{ selected_section }}">
-                            <input type="hidden" name="date" value="{{ selected_date }}">
-                            <h2><i class="fas fa-table" style="color: #8b5cf6; margin-right: 8px;"></i> 
-                                Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}
-                            </h2>
-                            <div class="table-container">
-                                <table class="attendance-table">
-                                    <thead>
-                                        <tr>
-                                            <th><i class="fas fa-hashtag" style="color: #94a3b8;"></i> Student ID</th>
-                                            <th><i class="fas fa-user" style="color: #3b82f6;"></i> Name</th>
-                                            <th><i class="fas fa-id-card" style="color: #8b5cf6;"></i> Admission Number</th>
-                                            <th><i class="fas fa-graduation-cap" style="color: #10b981;"></i> Class</th>
-                                            <th><i class="fas fa-layer-group" style="color: #f59e0b;"></i> Section</th>
-                                            <th><i class="fas fa-check-square" style="color: #6366f1;"></i> Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for student in students %}
-                                            <tr>
-                                                <td>{{ student.user_id }}</td>
-                                                <td>{{ student.name }}</td>
-                                                <td>{{ student.admission_number }}</td>
-                                                <td>{{ student.class }}</td>
-                                                <td>{{ student.section|default:"N/A" }}</td>
-                                                <td>
-                                                    <button type="submit" name="student_{{ student.user_id }}" value="present" class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">
-                                                        <i class="fas fa-check-circle" style="color: #10b981;"></i> Present
-                                                    </button>
-                                                    <button type="submit" name="student_{{ student.user_id }}" value="absent" class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">
-                                                        <i class="fas fa-times-circle" style="color: #ef4444;"></i> Absent
-                                                    </button>
-                                                    <button type="submit" name="student_{{ student.user_id }}" value="leave" class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">
-                                                        <i class="fas fa-calendar-times" style="color: #f59e0b;"></i> Leave
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </form>
-                        <a href="{% url 'admin_generate_attendance_pdf' %}?class={{ selected_class|urlencode }}&section={{ selected_section|urlencode }}&date={{ selected_date|urlencode }}" class="pdf-button">
-                            <i class="fas fa-file-pdf" style="color: #ef4444;"></i> Generate PDF Report
-                        </a>
-                    {% else %}
-                        <p class="no-requests">
-                            <i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> 
-                            No students found for the selected criteria.
-                        </p>
-                    {% endif %}
-                </section>
-            </main>
-        </div>
+                    <a href="{% url 'admin_generate_attendance_pdf' %}?class={{ selected_class|urlencode }}&section={{ selected_section|urlencode }}&date={{ selected_date|urlencode }}" 
+                       class="pdf-button">
+                        <i class="fas fa-file-pdf" style="color: #ef4444;"></i> Generate PDF Report
+                    </a>
+                {% else %}
+                    <p class="no-requests">
+                        <i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> 
+                        No students found for the selected criteria.
+                    </p>
+                {% endif %}
+            </section>
+        </main>
     </div>
+</div>
 
     <script>
-        // Sidebar toggle functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebarOverlay');
-            const navLinks = document.querySelectorAll('.sidebar-nav a');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sidebar toggle (keep your existing code)
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const navLinks = document.querySelectorAll('.sidebar-nav a');
 
-            if (menuToggle) {
-                menuToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    sidebar.classList.toggle('active');
-                    sidebarOverlay.classList.toggle('active');
-                    document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-                });
-            }
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                sidebar.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+                document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+            });
+        }
 
-            if (sidebarOverlay) {
-                sidebarOverlay.addEventListener('click', function() {
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
                     sidebar.classList.remove('active');
                     sidebarOverlay.classList.remove('active');
                     document.body.style.overflow = '';
-                });
-            }
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    if (window.innerWidth <= 768) {
-                        sidebar.classList.remove('active');
-                        sidebarOverlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                });
-            });
-
-            let resizeTimer;
-            window.addEventListener('resize', function() {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(function() {
-                    if (window.innerWidth > 768) {
-                        sidebar.classList.remove('active');
-                        sidebarOverlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                }, 250);
-            });
-
-            // Hover animation for nav icons
-            navLinks.forEach(item => {
-                item.addEventListener('mouseenter', function() {
-                    const icon = this.querySelector('img');
-                    if (icon && window.innerWidth > 768) {
-                        icon.style.transform = 'scale(1.1) rotate(5deg)';
-                    }
-                });
-                item.addEventListener('mouseleave', function() {
-                    const icon = this.querySelector('img');
-                    if (icon) {
-                        icon.style.transform = 'none';
-                    }
-                });
-            });
-
-            // Existing attendance page scripts (unchanged)
-            const table = document.querySelector('.attendance-table');
-            if (table) {
-                table.addEventListener('mouseover', function(e) {
-                    if (e.target.tagName === 'TD') {
-                        e.target.closest('tr').style.backgroundColor = '#f0f9f4';
-                    }
-                });
-                table.addEventListener('mouseout', function(e) {
-                    if (e.target.tagName === 'TD') {
-                        const row = e.target.closest('tr');
-                        const rows = Array.from(table.querySelectorAll('tbody tr'));
-                        const index = rows.indexOf(row);
-                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f8f9fa';
-                    }
-                });
-            }
-
-            function updateSections() {
-                const classSelect = document.getElementById('class');
-                const sectionSelect = document.getElementById('section');
-                const noSectionsMessage = document.getElementById('no-sections-message');
-                const selectedClass = classSelect.value;
-
-                sectionSelect.innerHTML = '<option value="">Select a Section</option>';
-
-                if (!selectedClass) {
-                    sectionSelect.disabled = true;
-                    if (noSectionsMessage) noSectionsMessage.style.display = 'none';
-                    return;
                 }
-
-                sectionSelect.disabled = false;
-                let classSections = [];
-                try {
-                    classSections = JSON.parse('{{ class_sections|escapejs }}');
-                } catch (e) {
-                    console.error('Failed to parse class_sections:', e);
-                }
-
-                const availableSections = classSections
-                    .filter(([cls, section]) => cls === selectedClass && section && section.trim() !== '')
-                    .map(([_, section]) => section);
-
-                const uniqueSections = [...new Set(availableSections)].sort();
-
-                if (uniqueSections.length > 0) {
-                    uniqueSections.forEach(section => {
-                        const option = document.createElement('option');
-                        option.value = section;
-                        option.textContent = section;
-                        if (section === '{{ selected_section|escapejs }}') {
-                            option.selected = true;
-                        }
-                        sectionSelect.appendChild(option);
-                    });
-                    if (noSectionsMessage) noSectionsMessage.style.display = 'none';
-                } else {
-                    if (noSectionsMessage) noSectionsMessage.style.display = 'block';
-                }
-            }
-
-            updateSections();
-            document.getElementById('class').addEventListener('change', updateSections);
+            });
         });
-    </script>
+
+        // Hover effects
+        navLinks.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('img');
+                if (icon && window.innerWidth > 768) {
+                    icon.style.transform = 'scale(1.1) rotate(5deg)';
+                }
+            });
+            item.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('img');
+                if (icon) {
+                    icon.style.transform = 'none';
+                }
+            });
+        });
+
+        // === NEW: Dynamic Student Filter Logic ===
+
+        function updateSections() {
+            const classSelect = document.getElementById('class');
+            const sectionSelect = document.getElementById('section');
+            const studentSelect = document.getElementById('filter_student');
+            const noSectionsMessage = document.getElementById('no-sections-message');
+            const selectedClass = classSelect.value;
+
+            // Reset sections and students
+            sectionSelect.innerHTML = '<option value="">Select a Section</option>';
+            studentSelect.innerHTML = '<option value="">All Students</option>';
+
+            if (!selectedClass) {
+                sectionSelect.disabled = true;
+                studentSelect.disabled = true;
+                if (noSectionsMessage) noSectionsMessage.style.display = 'none';
+                return;
+            }
+
+            sectionSelect.disabled = false;
+            studentSelect.disabled = true;
+
+            let classSections = [];
+            try {
+                classSections = JSON.parse('{{ class_sections|escapejs }}');
+            } catch (e) {
+                console.error('Failed to parse class_sections:', e);
+            }
+
+            const availableSections = [...new Set(
+                classSections
+                    .filter(([cls, sec]) => cls === selectedClass && sec && sec.trim() !== '')
+                    .map(([_, sec]) => sec)
+            )].sort();
+
+            if (availableSections.length > 0) {
+                availableSections.forEach(sec => {
+                    const opt = document.createElement('option');
+                    opt.value = sec;
+                    opt.textContent = sec;
+                    if (sec === '{{ selected_section|escapejs }}') opt.selected = true;
+                    sectionSelect.appendChild(opt);
+                });
+                if (noSectionsMessage) noSectionsMessage.style.display = 'none';
+            } else {
+                if (noSectionsMessage) noSectionsMessage.style.display = 'block';
+            }
+
+            // If section was pre-selected (page reload), load students
+            if (sectionSelect.value) {
+                loadStudents();
+            }
+        }
+
+        function loadStudents() {
+            const classVal = document.getElementById('class').value;
+            const sectionVal = document.getElementById('section').value;
+            const studentSelect = document.getElementById('filter_student');
+
+            studentSelect.innerHTML = '<option value="">All Students</option>';
+
+            if (!classVal || !sectionVal) {
+                studentSelect.disabled = true;
+                filterTable();
+                return;
+            }
+
+            studentSelect.disabled = false;
+
+            fetch(`/admin/attendance-get-students/?class=${classVal}&section=${sectionVal}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.students && data.students.length > 0) {
+                        data.students.forEach(name => {
+                            const opt = document.createElement('option');
+                            opt.value = name;
+                            opt.textContent = name;
+                            studentSelect.appendChild(opt);
+                        });
+                    }
+                    filterTable();
+                })
+                .catch(err => {
+                    console.error('Error loading students:', err);
+                    filterTable();
+                });
+        }
+
+        function filterTable() {
+            const selectedStudent = document.getElementById('filter_student').value;
+            const rows = document.querySelectorAll('.attendance-table tbody tr');
+
+            rows.forEach(row => {
+                const studentName = row.getAttribute('data-student');
+                if (!selectedStudent || studentName === selectedStudent) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Event Listeners
+        document.getElementById('class').addEventListener('change', updateSections);
+        document.getElementById('section').addEventListener('change', loadStudents);
+        document.getElementById('filter_student').addEventListener('change', filterTable);
+
+        // Initial load
+        updateSections();
+    });
+</script>
 </body>
 </html>
