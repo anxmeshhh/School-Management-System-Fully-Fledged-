@@ -199,18 +199,13 @@
     }
 
     .page-wrapper {
-
-    margin-left: 280px;
-
-    min-height: 100vh;
-
-    transition: var(--transition);
-
-    height: 100vh;             
-
-    overflow-y: auto;          
-
-}
+        margin-left: 280px;
+        min-height: 100vh;
+        transition: var(--transition);
+        height: 100vh;
+        overflow-y: auto;          /* ← Add this line */
+        overflow-x: hidden;
+    }
 
     .container {
         max-width: 1200px;
@@ -663,7 +658,7 @@
                     e.stopPropagation();
                     sidebar.classList.toggle('active');
                     sidebarOverlay.classList.toggle('active');
-                    document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+                    
                 });
             }
 
@@ -671,7 +666,7 @@
                 sidebarOverlay.addEventListener('click', function() {
                     sidebar.classList.remove('active');
                     sidebarOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
+                    
                 });
             }
 
@@ -680,7 +675,7 @@
                     if (window.innerWidth <= 768) {
                         sidebar.classList.remove('active');
                         sidebarOverlay.classList.remove('active');
-                        document.body.style.overflow = '';
+                        
                     }
                 });
             });
