@@ -642,20 +642,28 @@
 }
 
 .admin-button {
+  position: relative;
   background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-  border: none;
+  border: 1px solid #6ee7b7;
   padding: 10px;
   border-radius: 50%;
   cursor: pointer;
 
-  box-shadow: 0 6px 14px rgba(16, 185, 129, 0.25);
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  /* premium static depth */
+  box-shadow:
+    0 8px 18px rgba(16, 185, 129, 0.30),      /* outer lift */
+    inset 0 2px 4px rgba(255, 255, 255, 0.85),/* top light */
+    inset 0 -3px 6px rgba(16, 185, 129, 0.20);/* bottom depth */
 }
 
+/* keep hover but NO motion */
 .admin-button:hover {
-  transform: scale(1.08);
-  box-shadow: 0 10px 22px rgba(16, 185, 129, 0.35);
+  box-shadow:
+    0 10px 22px rgba(16, 185, 129, 0.35),
+    inset 0 2px 5px rgba(255, 255, 255, 0.9),
+    inset 0 -3px 6px rgba(16, 185, 129, 0.25);
 }
+
 
 
 
