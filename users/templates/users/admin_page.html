@@ -626,6 +626,33 @@
 .profile-button svg {
   display: block;
 }
+.bell-button {
+  background: linear-gradient(135deg, #ecfeff, #cffafe);
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(56, 189, 248, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.bell-button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 22px rgba(56, 189, 248, 0.35);
+}
+
+.profile-button {
+  background: #fee2e2;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.profile-button:hover {
+  transform: scale(1.08);
+}
 
     </style>
 </head>
@@ -700,29 +727,36 @@
                 </div>
                 <div class="header-right">
                     <button class="bell-button" id="notificationBell" aria-label="Notifications">
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
-    <defs>
-      <linearGradient id="bellGradient" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#6366f1"/>
-        <stop offset="100%" stop-color="#3b82f6"/>
-      </linearGradient>
-    </defs>
-
+  <svg viewBox="0 0 64 64" width="28" height="28">
+    <!-- Bell body -->
     <path
-      d="M15 17H9m8-2V11a5 5 0 0 0-10 0v4l-2 2h14l-2-2Z"
-      stroke="url(#bellGradient)"
-      stroke-width="1.9"
-      stroke-linecap="round"
+      d="M32 6
+         C22 6 16 14 16 24
+         V38
+         L10 44
+         H54
+         L48 38
+         V24
+         C48 14 42 6 32 6Z"
+      fill="#8bd3dd"
+      stroke="#1f2937"
+      stroke-width="2"
       stroke-linejoin="round"
     />
-    <path
-      d="M10 19a2 2 0 0 0 4 0"
-      stroke="url(#bellGradient)"
-      stroke-width="1.9"
-      stroke-linecap="round"
-    />
+
+    <!-- Bell top ring -->
+    <circle cx="32" cy="6" r="3" fill="#8bd3dd" stroke="#1f2937" stroke-width="2"/>
+
+    <!-- Bell clapper -->
+    <circle cx="32" cy="46" r="4" fill="#1f2937"/>
+
+    <!-- Ringing lines -->
+    <line x1="24" y1="54" x2="22" y2="58" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
+    <line x1="32" y1="55" x2="32" y2="60" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
+    <line x1="40" y1="54" x2="42" y2="58" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
   </svg>
 </button>
+
 
                     <div id="notificationPanel" class="notification-panel">
                         <h3>Notifications</h3>
@@ -735,25 +769,23 @@
                     </div>
                     <span class="header-text">Welcome</span>
                     <span class="username-box">{{ admin_name }}</span>
-                    <button class="profile-button" aria-label="Admin Settings">
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
-    <defs>
-      <linearGradient id="adminGreen" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#14532d"/>
-        <stop offset="100%" stop-color="#16a34a"/>
-      </linearGradient>
-    </defs>
+                    <button class="profile-button" aria-label="Profile">
+  <svg viewBox="0 0 24 24" width="26" height="26">
+    <!-- Head -->
+    <circle cx="12" cy="7" r="4" fill="#dc2626"/>
 
-    <!-- User -->
-    <circle cx="8" cy="7" r="3" stroke="url(#adminGreen)" stroke-width="1.8"/>
-    <path d="M2 20c2-4 8-4 10 0" stroke="url(#adminGreen)" stroke-width="1.8"/>
-
-    <!-- Gear -->
-    <circle cx="17" cy="17" r="3" stroke="url(#adminGreen)" stroke-width="1.8"/>
-    <path d="M17 12v2M17 20v2M12 17h2M20 17h2"
-          stroke="url(#adminGreen)" stroke-width="1.8"/>
+    <!-- Body -->
+    <path
+      d="M4 20
+         c0-10.5 18-10.5 18 0Z"
+      fill="#dc2626"
+    />
   </svg>
 </button>
+
+
+
+
 
 
 
