@@ -550,24 +550,28 @@
     }
 
     .view-btn,
-    .download-btn {
-        flex: 1;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.65rem 1rem;
-        text-decoration: none;
-        border-radius: 8px;
-        font-size: 0.95rem;
-        font-weight: 500;
-        transition: var(--transition);
-        border: none;
-        cursor: pointer;
-    }
+.download-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;              /* 🔥 space between icon & text */
+    padding: 0.65rem 1rem;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: inherit;     /* 🔥 forces same font */
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+}
+
 
     .view-btn {
         background: var(--info-color);
         color: var(--white);
+        
     }
 
     .view-btn:hover {

@@ -608,6 +608,25 @@
                 scroll-behavior: auto;
             }
         }
+        .profile-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  color: #374151; /* slate gray */
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.profile-button:hover {
+  background: #f3f4f6;
+  transform: scale(1.05);
+}
+
+.profile-button svg {
+  display: block;
+}
+
     </style>
 </head>
 <body>
@@ -680,7 +699,31 @@
                     <span class="header-text">Manavargal School Management System v1.0</span>
                 </div>
                 <div class="header-right">
-                    <button class="bell-button" id="notificationBell">🔔</button>
+                    <button class="bell-button" id="notificationBell" aria-label="Notifications">
+  <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
+    <defs>
+      <linearGradient id="bellGradient" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#6366f1"/>
+        <stop offset="100%" stop-color="#3b82f6"/>
+      </linearGradient>
+    </defs>
+
+    <path
+      d="M15 17H9m8-2V11a5 5 0 0 0-10 0v4l-2 2h14l-2-2Z"
+      stroke="url(#bellGradient)"
+      stroke-width="1.9"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M10 19a2 2 0 0 0 4 0"
+      stroke="url(#bellGradient)"
+      stroke-width="1.9"
+      stroke-linecap="round"
+    />
+  </svg>
+</button>
+
                     <div id="notificationPanel" class="notification-panel">
                         <h3>Notifications</h3>
                         <ul>
@@ -692,7 +735,28 @@
                     </div>
                     <span class="header-text">Welcome</span>
                     <span class="username-box">{{ admin_name }}</span>
-                    <button class="profile-button">👤</button>
+                    <button class="profile-button" aria-label="Admin Settings">
+  <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
+    <defs>
+      <linearGradient id="adminGreen" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#14532d"/>
+        <stop offset="100%" stop-color="#16a34a"/>
+      </linearGradient>
+    </defs>
+
+    <!-- User -->
+    <circle cx="8" cy="7" r="3" stroke="url(#adminGreen)" stroke-width="1.8"/>
+    <path d="M2 20c2-4 8-4 10 0" stroke="url(#adminGreen)" stroke-width="1.8"/>
+
+    <!-- Gear -->
+    <circle cx="17" cy="17" r="3" stroke="url(#adminGreen)" stroke-width="1.8"/>
+    <path d="M17 12v2M17 20v2M12 17h2M20 17h2"
+          stroke="url(#adminGreen)" stroke-width="1.8"/>
+  </svg>
+</button>
+
+
+
                 </div>
             </header>
 
@@ -702,7 +766,7 @@
             <!-- Content Section -->
             <div id="contentSection">
                 <div class="card-container">
-                    <h2>Welcome, {{ admin_name }}!</h2>
+                    <h2>Hello, {{ admin_name }}!</h2>
                     <p id="quote" class="quote"></p>
                 </div>
             </div>
