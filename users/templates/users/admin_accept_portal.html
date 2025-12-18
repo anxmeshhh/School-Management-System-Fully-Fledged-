@@ -22,7 +22,7 @@
         background: var(--white);
         min-height: 100vh;
         color: var(--text-color);
-        overflow: hidden;
+        overflow: hidden; /* Background never scrolls */
     }
 
     h1, h2, h3 {
@@ -55,7 +55,7 @@
         overflow-x: hidden;
     }
 
-    /* Sidebar Styles */
+    /* Sidebar */
     .sidebar {
         width: 280px;
         height: 100vh;
@@ -69,6 +69,7 @@
         z-index: 1000;
         transition: var(--transition);
         border-right: 2px solid var(--sidebar-border);
+        transform: translateX(0);
     }
 
     .sidebar-header {
@@ -153,7 +154,7 @@
         transform: scale(1.1);
     }
 
-    /* Menu Toggle Button */
+    /* Menu Toggle */
     .menu-toggle {
         display: none;
         font-size: 1.5rem;
@@ -168,7 +169,6 @@
         padding: 0.75rem;
         border-radius: var(--border-radius);
         box-shadow: var(--shadow-md);
-        transition: var(--transition);
         width: 50px;
         height: 50px;
         align-items: center;
@@ -192,19 +192,22 @@
         z-index: 999;
         opacity: 0;
         transition: var(--transition);
+        pointer-events: none;
     }
 
     .sidebar-overlay.active {
+        display: block;
         opacity: 1;
+        pointer-events: all;
     }
 
+    /* Main Content — This is what scrolls */
     .page-wrapper {
         margin-left: 280px;
-        min-height: 100vh;
-        transition: var(--transition);
         height: 100vh;
-        overflow-y: auto;          /* ← Add this line */
+        overflow-y: auto;
         overflow-x: hidden;
+        transition: var(--transition);
     }
 
     .container {
@@ -260,7 +263,7 @@
         text-align: center;
     }
 
-    /* Your existing styles for filters, cards, buttons, etc. */
+    /* Filters */
     .filters-container {
         display: flex;
         align-items: flex-end;
@@ -429,10 +432,21 @@
 
     @media (max-width: 768px) {
         .menu-toggle { display: flex; }
-        .sidebar { transform: translateX(-100%); }
-        .sidebar.active { transform: translateX(0); }
+
+        .sidebar {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
         .sidebar-overlay { display: block; }
-        .page-wrapper { margin-left: 0; }
+
+        .page-wrapper {
+            margin-left: 0;
+        }
+
         .container { padding: 1.5rem 15px; }
         .header h1 { font-size: 1.5rem; }
         .main-content { padding: 1.5rem; }
@@ -455,12 +469,10 @@
     }
 
     @media (hover: none) {
-        .section:hover, .leave-card:hover, .card:hover, .logo-container:hover {
+        .section:hover, .leave-card:hover, .card:hover, .logo-container:hover, .sidebar-nav a:hover, .menu-toggle:hover {
             transform: none;
             box-shadow: var(--shadow-sm);
         }
-        .sidebar-nav a:hover { transform: none; }
-        .menu-toggle:hover { transform: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -547,7 +559,7 @@
                 <section class="section">
                     <h2><i class="fas fa-list"></i> Leave Requests</h2>
 
-                    <!-- Updated Filters with Student Name Dropdown -->
+                    <!-- Filters -->
                     <div class="filters-container">
                         <div class="form-group">
                             <label for="filter_class"><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Filter by Class</label>
@@ -646,58 +658,63 @@
     </div>
 
     <script>
-        // Sidebar toggle (unchanged)
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
             const navLinks = document.querySelectorAll('.sidebar-nav a');
 
+            function openSidebar() {
+                sidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+
             if (menuToggle) {
                 menuToggle.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    sidebar.classList.toggle('active');
-                    sidebarOverlay.classList.toggle('active');
-                    
+                    sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
                 });
             }
 
             if (sidebarOverlay) {
-                sidebarOverlay.addEventListener('click', function() {
-                    sidebar.classList.remove('active');
-                    sidebarOverlay.classList.remove('active');
-                    
-                });
+                sidebarOverlay.addEventListener('click', closeSidebar);
             }
 
             navLinks.forEach(link => {
                 link.addEventListener('click', function() {
                     if (window.innerWidth <= 768) {
-                        sidebar.classList.remove('active');
-                        sidebarOverlay.classList.remove('active');
-                        
+                        closeSidebar();
                     }
                 });
             });
 
-            // Hover effects (unchanged)
-            navLinks.forEach(item => {
-                item.addEventListener('mouseenter', function() {
-                    const icon = this.querySelector('img');
-                    if (icon && window.innerWidth > 768) {
-                        icon.style.transform = 'scale(1.1) rotate(5deg)';
-                    }
-                });
-                item.addEventListener('mouseleave', function() {
-                    const icon = this.querySelector('img');
-                    if (icon) {
-                        icon.style.transform = 'none';
-                    }
-                });
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
+                }
             });
+
+            // Hover only on desktop
+            if (window.innerWidth > 768) {
+                navLinks.forEach(item => {
+                    item.addEventListener('mouseenter', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) icon.style.transform = 'scale(1.1) rotate(5deg)';
+                    });
+                    item.addEventListener('mouseleave', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) icon.style.transform = 'none';
+                    });
+                });
+            }
         });
 
-        // Load students when class or section changes
+        // Student filter logic
         function loadStudents() {
             const classVal = document.getElementById('filter_class').value;
             const sectionVal = document.getElementById('filter_section').value;
@@ -705,9 +722,7 @@
 
             studentSelect.innerHTML = '<option value="">All Students</option>';
 
-            if (!classVal || !sectionVal) {
-                return;
-            }
+            if (!classVal || !sectionVal) return;
 
             fetch(`/admin/leave-get-students/?class=${classVal}&section=${sectionVal}`)
                 .then(response => response.json())
@@ -721,16 +736,12 @@
                         });
                     }
                 })
-                .catch(err => {
-                    console.error('Error fetching students:', err);
-                });
+                .catch(err => console.error('Error:', err));
         }
 
-        // Attach event listeners
         document.getElementById('filter_class').addEventListener('change', loadStudents);
         document.getElementById('filter_section').addEventListener('change', loadStudents);
 
-        // Updated filter function with student name support
         function filterCards() {
             const classFilter = document.getElementById('filter_class').value;
             const sectionFilter = document.getElementById('filter_section').value;
@@ -740,7 +751,7 @@
             const cards = document.querySelectorAll('.leave-card');
             let visibleCount = 0;
 
-            cards.forEach(function(card) {
+            cards.forEach(card => {
                 const cardClass = card.getAttribute('data-class');
                 const cardSection = card.getAttribute('data-section');
                 const cardStudent = card.getAttribute('data-student');
@@ -757,20 +768,20 @@
                 if (show) visibleCount++;
             });
 
-            let noResults = document.querySelector('.no-results');
+            const noResults = document.querySelector('.no-results');
             const cardsDiv = document.querySelector('.leave-cards');
             const initialNoRequests = document.querySelector('.no-requests:not(.no-results)');
 
             if (visibleCount === 0) {
                 if (!noResults) {
-                    noResults = document.createElement('p');
-                    noResults.className = 'no-requests no-results';
-                    noResults.innerHTML = '<i class="fas fa-search"></i> No matching leave requests found.';
-                    cardsDiv.appendChild(noResults);
+                    const msg = document.createElement('p');
+                    msg.className = 'no-requests no-results';
+                    msg.innerHTML = '<i class="fas fa-search"></i> No matching leave requests found.';
+                    cardsDiv.appendChild(msg);
                 }
                 if (initialNoRequests) initialNoRequests.style.display = 'none';
             } else {
-                if (noResults && noResults.parentNode) noResults.remove();
+                if (noResults) noResults.remove();
                 if (initialNoRequests) initialNoRequests.style.display = 'block';
             }
         }
@@ -783,10 +794,7 @@
             filterCards();
         }
 
-        // Initial filter on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            filterCards();
-        });
+        filterCards(); // Initial filter
     </script>
 </body>
 </html>

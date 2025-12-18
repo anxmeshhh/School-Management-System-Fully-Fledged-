@@ -184,21 +184,24 @@
     }
 
     .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        transition: var(--transition);
-    }
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: var(--transition);
+    pointer-events: none;      /* ← NEW */
+}
 
-    .sidebar-overlay.active {
-        opacity: 1;
-    }
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+    pointer-events: all;       /* ← NEW: Allows clicks when open */
+}
 
     /* Page Wrapper - Independent scroll */
     .page-wrapper {
@@ -207,6 +210,7 @@
         transition: var(--transition);
         height: 100vh;
         overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .container {
@@ -701,7 +705,7 @@
                     e.stopPropagation();
                     sidebar.classList.toggle('active');
                     sidebarOverlay.classList.toggle('active');
-                    document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+                    
                 });
             }
 
@@ -709,7 +713,7 @@
                 sidebarOverlay.addEventListener('click', function() {
                     sidebar.classList.remove('active');
                     sidebarOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
+                    
                 });
             }
 
@@ -718,7 +722,7 @@
                     if (window.innerWidth <= 768) {
                         sidebar.classList.remove('active');
                         sidebarOverlay.classList.remove('active');
-                        document.body.style.overflow = '';
+                        
                     }
                 });
             });
@@ -730,7 +734,7 @@
                     if (window.innerWidth > 768) {
                         sidebar.classList.remove('active');
                         sidebarOverlay.classList.remove('active');
-                        document.body.style.overflow = '';
+                        
                     }
                 }, 250);
             });

@@ -180,21 +180,24 @@
     }
 
     .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        transition: var(--transition);
-    }
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: var(--transition);
+    pointer-events: none;      /* ← NEW */
+}
 
-    .sidebar-overlay.active {
-        opacity: 1;
-    }
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+    pointer-events: all;       /* ← NEW: Allows clicks when open */
+}
 
     /* Main Content Area */
     .page-wrapper {
@@ -207,7 +210,8 @@
 
     height: 100vh;             
 
-    overflow-y: auto;          
+    overflow-y: auto;   
+    overflow-x: hidden;       
 
 }
     .container {
@@ -519,10 +523,21 @@
 
     @media (max-width: 768px) {
         .menu-toggle { display: flex; }
-        .sidebar { transform: translateX(-100%); }
-        .sidebar.active { transform: translateX(0); }
-        .sidebar-overlay { display: block; }
-        .page-wrapper { margin-left: 0; }
+        .sidebar {
+        transform: translateX(-100%);   /* ← NEW: Hide sidebar off-screen */
+    }
+
+    .sidebar.active {
+        transform: translateX(0);       /* ← NEW: Slide in when active */
+    }
+
+    .sidebar-overlay {
+        display: block;                 /* ← Changed from 'none' to 'block' (JS controls visibility) */
+    }
+
+    .page-wrapper {
+        margin-left: 0;                 /* ← NEW: Full width on mobile */
+    }
         .container { padding: 1.5rem 15px; }
         .header h1 { font-size: 1.5rem; }
         .main-content { padding: 1.5rem; }
@@ -772,7 +787,7 @@
                 e.stopPropagation();
                 sidebar.classList.toggle('active');
                 sidebarOverlay.classList.toggle('active');
-                document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+                
             });
         }
 
@@ -780,7 +795,7 @@
             sidebarOverlay.addEventListener('click', function() {
                 sidebar.classList.remove('active');
                 sidebarOverlay.classList.remove('active');
-                document.body.style.overflow = '';
+                
             });
         }
 
@@ -789,7 +804,7 @@
                 if (window.innerWidth <= 768) {
                     sidebar.classList.remove('active');
                     sidebarOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
+                    
                 }
             });
         });
