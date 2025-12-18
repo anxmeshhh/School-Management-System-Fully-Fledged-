@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,6 +23,7 @@
         background: var(--white);
         min-height: 100vh;
         color: var(--text-color);
+        overflow: hidden; /* Prevent double scrollbars */
     }
 
     h1, h2, h3 {
@@ -34,8 +34,6 @@
     :root {
         --primary-color: #00a676;
         --primary-hover: #00b88d;
-        --danger-color: #dc2626;
-        --danger-hover: #ef4444;
         --info-color: #3b82f6;
         --info-hover: #2563eb;
         --sidebar-bg: #f0f9f4;
@@ -59,7 +57,7 @@
         overflow-x: hidden;
     }
 
-    /* Sidebar Styles */
+    /* Sidebar - Independent scroll */
     .sidebar {
         width: 280px;
         height: 100vh;
@@ -157,7 +155,7 @@
         transform: scale(1.1);
     }
 
-    /* Menu Toggle Button */
+    /* Menu Toggle */
     .menu-toggle {
         display: none;
         font-size: 1.5rem;
@@ -202,11 +200,13 @@
         opacity: 1;
     }
 
-    /* Page Wrapper */
+    /* Page Wrapper - Independent scroll */
     .page-wrapper {
         margin-left: 280px;
         min-height: 100vh;
         transition: var(--transition);
+        height: 100vh;
+        overflow-y: auto;
     }
 
     .container {
@@ -338,32 +338,34 @@
         gap: 1.5rem;
         align-items: flex-end;
         margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .form-row .form-group {
+        flex: 1;
+        min-width: 200px;
     }
 
     .upload-btn,
     .filter-btn {
-        width: auto;
         padding: 0.8rem 1.5rem;
-        border: 2px solid var(--border-color);
+        background: var(--primary-color);
+        border: none;
         border-radius: 8px;
+        color: var(--white);
         font-size: 1rem;
         font-weight: 500;
         cursor: pointer;
-        background: var(--sidebar-bg);
-        color: var(--text-color);
         transition: var(--transition);
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        justify-content: center;
-        transform: translateY(-15px);
     }
 
     .upload-btn:hover,
     .filter-btn:hover {
-        background: var(--primary-color);
-        color: var(--white);
-       
+        background: var(--primary-hover);
+        transform: translateY(-2px);
         box-shadow: var(--shadow-md);
     }
 
@@ -374,16 +376,17 @@
     }
 
     .material-card {
-        background: var(--light-bg);
-        border-radius: 8px;
+        background: var(--white);
         border: 2px solid var(--border-color);
+        border-radius: 8px;
         box-shadow: var(--shadow-sm);
         padding: 1.5rem;
         transition: var(--transition);
+        display: flex;
+        flex-direction: column;
     }
 
     .material-card:hover {
-        transform: translateY(-2px);
         box-shadow: var(--shadow-md);
     }
 
@@ -395,28 +398,49 @@
         text-align: left;
     }
 
-    .file-preview a {
+    /* Updated View & Download Buttons - Matching Circular Page */
+    .file-preview {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: auto;
+    }
+
+    .view-btn,
+    .download-btn {
         flex: 1;
-        padding: 0.8rem 1.5rem;
-        border: 2px solid var(--border-color);
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: var(--transition);
-        text-decoration: none;
-        text-align: center;
-        background: var(--sidebar-bg);
-        color: var(--text-color);
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: 0.45rem;
+        padding: 0.65rem 1rem;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        font-family: inherit;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
     }
 
-    .file-preview a:hover {
+    .view-btn {
+        background: var(--info-color);
+        color: var(--white);
+    }
+
+    .view-btn:hover {
+        background: var(--info-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .download-btn {
         background: var(--primary-color);
         color: var(--white);
+    }
+
+    .download-btn:hover {
+        background: var(--primary-hover);
         transform: translateY(-2px);
         box-shadow: var(--shadow-md);
     }
@@ -434,7 +458,7 @@
         grid-column: 1 / -1;
     }
 
-    /* Responsive adjustments */
+    /* Responsive Styles */
     @media (max-width: 1024px) {
         .sidebar { width: 250px; }
         .page-wrapper { margin-left: 250px; }
@@ -451,20 +475,32 @@
         .header h1 { font-size: 1.5rem; }
         .main-content { padding: 1.5rem; }
         .form-row { flex-direction: column; }
+        .form-row .form-group { min-width: auto; }
         .material-grid { grid-template-columns: 1fr; }
+        .file-preview { flex-direction: column; }
     }
 
     @media (max-width: 480px) {
         .container { padding: 1rem; }
+        .header { padding: 1rem; }
         .header h1 { font-size: 1.25rem; }
         .main-content { padding: 1rem; }
+        .section { padding: 1rem; }
+        h2 { font-size: 1.4rem; }
     }
 
     @media (hover: none) {
-        .section:hover, .upload-btn:hover, .material-card:hover {
+        .section:hover, .upload-btn:hover, .filter-btn:hover, .material-card:hover, .view-btn:hover, .download-btn:hover {
             transform: none;
             box-shadow: var(--shadow-sm);
         }
+        .sidebar-nav a:hover { transform: none; }
+        .menu-toggle:hover { transform: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        * { transition: none !important; animation: none !important; }
+        html { scroll-behavior: auto; }
     }
     </style>
 </head>
@@ -620,14 +656,16 @@
                             <p><strong><i class="fas fa-calendar-alt" style="color: #27ae60; font-size: 0.9em;"></i> Uploaded on:</strong> {{ material.upload_date }}</p>
                             <div class="file-preview">
                                 {% if material.file_path %}
-                                    <a href="{% url 'serve_pdf' material.file_path %}" target="_blank">
-                                        <i class="fas fa-eye" style="color: #3498db;"></i> View PDF
+                                    <a href="{% url 'serve_pdf' material.file_path %}" target="_blank" class="view-btn">
+                                        <i class="fas fa-eye"></i> View PDF
                                     </a>
-                                    <a href="{% url 'serve_pdf' material.file_path %}?download=true" target="_blank">
-                                        <i class="fas fa-download" style="color: #27ae60;"></i> Download PDF
+                                    <a href="{% url 'serve_pdf' material.file_path %}?download=true" class="download-btn">
+                                        <i class="fas fa-download"></i> Download PDF
                                     </a>
                                 {% else %}
-                                    <p><i class="fas fa-exclamation-triangle" style="color: #e67e22;"></i> No file available.</p>
+                                    <p style="grid-column: 1 / -1; text-align: center; color: #e67e22;">
+                                        <i class="fas fa-exclamation-triangle"></i> No file available.
+                                    </p>
                                 {% endif %}
                             </div>
                         </div>
@@ -651,7 +689,7 @@
     </div>
 
     <script>
-        // Sidebar functionality (same as in circular page)
+        // Sidebar functionality
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
@@ -685,7 +723,6 @@
                 });
             });
 
-            // Handle resize
             let resizeTimer;
             window.addEventListener('resize', function() {
                 clearTimeout(resizeTimer);
@@ -698,7 +735,6 @@
                 }, 250);
             });
 
-            // Hover icon animation
             navLinks.forEach(item => {
                 item.addEventListener('mouseenter', function() {
                     const icon = this.querySelector('img');

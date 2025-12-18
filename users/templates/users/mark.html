@@ -23,6 +23,7 @@
         background: var(--white);
         min-height: 100vh;
         color: var(--text-color);
+        overflow: hidden;
     }
 
     h1, h2, h3 {
@@ -201,10 +202,18 @@
 
     /* Page Wrapper */
     .page-wrapper {
-        margin-left: 280px;
-        min-height: 100vh;
-        transition: var(--transition);
-    }
+
+    margin-left: 280px;
+
+    min-height: 100vh;
+
+    transition: var(--transition);
+
+    height: 100vh;             
+
+    overflow-y: auto;          
+
+}
 
     .container {
         max-width: 1200px;
@@ -1048,7 +1057,7 @@
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
         <div class="container">
             <header class="header">
-                <h1><i class="fas fa-book-open" ></i> Admin Exam Mark Entry</h1>
+                <h1><i class="fas fa-book-open" ></i> Examinations Mark Entry </h1>
             </header>
 
             {% if messages %}
