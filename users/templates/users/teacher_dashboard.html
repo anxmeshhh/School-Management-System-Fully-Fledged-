@@ -718,7 +718,7 @@
                         </ul>
                     </div>
                     <span class="header-text">Welcome</span>
-                    <span class="username-box">verrgroup</span>
+                    <span class="username-box">{{ username }}</span>
                     <button class="teacher-button" aria-label="Teacher Profile">
                         <svg viewBox="0 0 64 64" width="28" height="28">
                             <circle cx="32" cy="18" r="8" fill="#fde68a" stroke="#d97706" stroke-width="3"/>
@@ -735,12 +735,10 @@
             <h1 class="title">Teacher Dashboard</h1>
 
             <!-- Content Section -->
-            <div id="contentSection">
-                <div class="card-container">
-                    <h2>Welcome, verrgroup!</h2>
-                    <p id="quote" class="quote"></p>
-                </div>
-            </div>
+            <div class="card-container">
+    <h2>Hello, {{ username }}!</h2>  <!-- Changed here -->
+    <p id="quote" class="quote"></p>
+</div>
         </div>
     </div>
 
