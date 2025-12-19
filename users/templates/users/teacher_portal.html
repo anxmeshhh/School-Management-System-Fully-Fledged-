@@ -710,8 +710,15 @@
 
                         <div class="form-group">
                             <label for="filter_section"><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> Section</label>
-                            <select id="filter_section">
+                            <select id="filter_section" onchange="loadStudentFilter()">
                                 <option value="">Select Section</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="filter_student"><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Student Name</label>
+                            <select id="filter_student">
+                                <option value="">All Students</option>
                             </select>
                         </div>
 
@@ -750,6 +757,7 @@
     <script>
         // Track attendance status locally
         let attendanceStatus = {};
+        let allStudents = [];
         
         document.addEventListener('DOMContentLoaded', function() {
             // Sidebar toggle
@@ -781,6 +789,9 @@
             const sectionSelect = document.getElementById('filter_section');
             sectionSelect.innerHTML = '<option value="">Select Section</option>';
             
+            // Reset student filter
+            document.getElementById('filter_student').innerHTML = '<option value="">All Students</option>';
+            
             // Hardcoded sections (you can make this dynamic via API if needed)
             const sections = ['A', 'B', 'C'];
             sections.forEach(sec => {
@@ -789,6 +800,31 @@
                 opt.textContent = sec;
                 sectionSelect.appendChild(opt);
             });
+        };
+
+        // Load student filter when class and section are selected
+        window.loadStudentFilter = function() {
+            const classVal = document.getElementById('filter_class').value;
+            const sectionVal = document.getElementById('filter_section').value;
+            const studentSelect = document.getElementById('filter_student');
+
+            studentSelect.innerHTML = '<option value="">All Students</option>';
+
+            if (!classVal || !sectionVal) return;
+
+            fetch(`/teacher/leave-get-students/?class=${classVal}&section=${sectionVal}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.students) {
+                        data.students.forEach(student => {
+                            const option = document.createElement('option');
+                            option.value = student;
+                            option.textContent = student;
+                            studentSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(err => console.error('Error loading students:', err));
         };
 
         // Show alert message
@@ -965,6 +1001,21 @@
             card.classList.add('locked');
         }
 
+        // Filter displayed cards by student name
+        window.filterCardsByStudent = function() {
+            const studentFilter = document.getElementById('filter_student').value;
+            const cards = document.querySelectorAll('.attendance-card');
+            
+            cards.forEach(card => {
+                const studentName = card.getAttribute('data-student-name');
+                if (!studentFilter || studentName === studentFilter) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        };
+
         // Load attendance
         window.loadAttendance = function() {
             const classVal = document.getElementById('filter_class').value;
@@ -979,6 +1030,7 @@
 
             // Reset status
             attendanceStatus = {};
+            allStudents = [];
 
             // Show loading
             container.innerHTML = '<div class="loading-spinner active"><div class="spinner"></div><p style="margin-top: 1rem; color: var(--primary-color);">Loading students...</p></div>';
@@ -991,6 +1043,8 @@
                         container.innerHTML = '<p class="no-students"><i class="fas fa-users-slash"></i> No students found.</p>';
                         return;
                     }
+
+                    allStudents = data.students;
 
                     // Fetch existing attendance
                     return fetch(`/teacher/get-attendance/?class=${classVal}&section=${sectionVal}&date=${dateVal}`)
@@ -1012,7 +1066,7 @@
                                 };
 
                                 cardsHTML += `
-                                <div class="attendance-card ${isLocked ? 'locked' : ''}" data-student="${safeName}">
+                                <div class="attendance-card ${isLocked ? 'locked' : ''}" data-student="${safeName}" data-student-name="${name}">
                                     ${isLocked ? '<div class="locked-badge"><i class="fas fa-lock"></i> Attendance Marked</div>' : ''}
                                     <p><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> <strong>Student:</strong> ${name}</p>
                                     <p><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> <strong>Class:</strong> ${classVal}</p>
@@ -1048,6 +1102,9 @@
 
                             container.innerHTML = cardsHTML;
                             
+                            // Apply student filter if selected
+                            filterCardsByStudent();
+                            
                             const markedCount = Object.keys(existingRecords).length;
                             if (markedCount > 0) {
                                 showAlert(`Loaded ${data.students.length} students. ${markedCount} already have attendance marked.`, 'warning');
@@ -1062,12 +1119,17 @@
                 });
         };
 
+        // Add event listener to student filter
+        document.getElementById('filter_student').addEventListener('change', filterCardsByStudent);
+
         window.clearFilters = function() {
             document.getElementById('filter_class').value = '';
             document.getElementById('filter_section').innerHTML = '<option value="">Select Section</option>';
+            document.getElementById('filter_student').innerHTML = '<option value="">All Students</option>';
             document.getElementById('filter_date').value = new Date().toISOString().split('T')[0];
             document.getElementById('attendanceCards').innerHTML = '<p class="no-students"><i class="fas fa-info-circle"></i> Select class, section, and date above to load students.</p>';
             attendanceStatus = {};
+            allStudents = [];
             document.getElementById('alertContainer').style.display = 'none';
         };
     </script>
