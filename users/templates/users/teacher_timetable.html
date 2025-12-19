@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Teacher Timetable</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
@@ -23,17 +22,20 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 120px 20px 40px 20px;
+            overflow: hidden;
         }
 
         h1, h2, h3 {
             font-family: 'Montserrat', sans-serif;
-            text-align: center;
         }
 
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
+            --danger-color: #dc2626;
+            --danger-hover: #ef4444;
+            --info-color: #3b82f6;
+            --info-hover: #2563eb;
             --sidebar-bg: #f0f9f4;
             --sidebar-border: #a8d5c2;
             --white: #ffffff;
@@ -46,6 +48,7 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --dull-highlighter: #d4edda;
         }
 
         html {
@@ -54,61 +57,37 @@
             overflow-x: hidden;
         }
 
-        .header {
-            background: var(--white);
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
             color: var(--text-color);
-            padding: 0.5rem 1rem 0.5rem 0.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: 0;
-            gap: 0.5rem;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            flex-grow: 1;
-            color: var(--primary-color);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            flex: none;
-            margin: 0;
-            z-index: 0;
-        }
-
-        .back-btn {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            text-decoration: none;
+            z-index: 1000;
             transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 1;
+            border-right: 2px solid var(--sidebar-border);
+            transform: translateX(0);
         }
 
-        .back-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            background: var(--white);
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid var(--sidebar-border);
         }
 
         .logo-container {
@@ -123,8 +102,6 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
             border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
         }
 
         .logo-container img {
@@ -139,13 +116,117 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-container:hover img {
+        .sidebar-header:hover {
+            background: var(--light-bg);
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: var(--dull-highlighter);
+            border-left: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav a img {
+            margin-right: 1rem;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .sidebar-nav a:hover img {
+            transform: scale(1.1);
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            background: var(--white);
+            border: 2px solid var(--sidebar-border);
+            cursor: pointer;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            width: 50px;
+            height: 50px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-color);
+            color: var(--white);
             transform: scale(1.05);
         }
 
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .page-wrapper {
+            margin-left: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 2rem 20px;
+        }
+
+        .header {
+            background: var(--white);
+            padding: 1.5rem;
+            border: 2px solid #495057;
+            box-shadow: var(--shadow-md);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--primary-color);
+            margin: 0;
         }
 
         .main-content {
@@ -156,10 +237,43 @@
             padding: 2rem;
         }
 
+        .alert-message {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-message .error,
+        .alert-message .success,
+        .alert-message .warning {
+            padding: 0.75rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .alert-message .error {
+            background: #fef2f2;
+            color: #dc3545;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-message .success {
+            background: #d4edda;
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .alert-message .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
         .section {
             background: var(--light-bg);
             padding: 1.5rem;
-            border-radius: 8px;
+            border-radius: 12px;
             border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             margin-bottom: 2rem;
@@ -170,38 +284,73 @@
             box-shadow: var(--shadow-md);
         }
 
-        .timetable-header {
+        h2 {
             color: var(--primary-color);
             font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
             text-align: center;
+        }
+
+        .action-buttons {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
-            gap: 1rem;
         }
 
-        .actions-bar {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .filter-form {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .filter-form select {
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
-            background: var(--white);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--sidebar-bg);
             color: var(--text-color);
-            font-size: 1rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 0.95rem;
             transition: var(--transition);
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
             background-repeat: no-repeat;
@@ -210,79 +359,31 @@
             appearance: none;
         }
 
-        .filter-form select:focus {
+        .form-group select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
             outline: none;
         }
 
-        .filter-form button {
-            padding: 0.8rem 1.5rem;
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
             background: var(--primary-color);
-            color: var(--white);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-
-        .filter-form button:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn {
-            padding: 0.8rem 1.5rem;
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1rem;
+            color: var(--white);
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
-            text-decoration: none;
         }
 
-        .btn-primary {
-            background: var(--primary-color);
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
+        .filter-btn:hover {
             background: var(--primary-hover);
-            transform: translateY(-2px);
             box-shadow: var(--shadow-md);
-        }
-
-        .btn-secondary {
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .day-header {
-            color: var(--primary-color);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin: 2rem 0 1rem 0;
-            text-align: center;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
         }
 
         .table-container {
@@ -290,7 +391,7 @@
             border-radius: 8px;
             border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             transition: var(--transition);
         }
 
@@ -298,23 +399,21 @@
             box-shadow: var(--shadow-md);
         }
 
-        .timetable-table {
+        table {
             width: 100%;
+            min-width: 600px;
             border-collapse: collapse;
             background: var(--white);
-            margin-bottom: 2rem;
-            transition: var(--transition);
         }
 
-        .timetable-table th,
-        .timetable-table td {
+        th, td {
             padding: 0.75rem;
             text-align: left;
             border: 1px solid var(--border-color);
             font-size: 0.9rem;
         }
 
-        .timetable-table th {
+        th {
             background: var(--light-bg);
             color: var(--primary-color);
             font-weight: 600;
@@ -323,143 +422,12 @@
             z-index: 10;
         }
 
-        .timetable-table td {
-            color: var(--text-color);
-        }
-
-        .timetable-table tr:nth-child(even) {
+        tr:nth-child(even) {
             background: var(--light-bg);
         }
 
-        .timetable-table tr:hover {
+        tr:hover {
             background: #f0f9f4;
-        }
-
-        .action-btn {
-            padding: 0.5rem;
-            margin: 0 0.25rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.9rem;
-            width: 35px;
-            height: 35px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: var(--white);
-        }
-
-        .edit-btn {
-            background: #007bff;
-        }
-
-        .edit-btn:hover {
-            background: #0056b3;
-            transform: translateY(-1px);
-        }
-
-        .delete-btn {
-            background: #dc3545;
-        }
-
-        .delete-btn:hover {
-            background: #c82333;
-            transform: translateY(-1px);
-        }
-
-        .no-timetable {
-            text-align: center;
-            color: var(--primary-color);
-            font-size: 1.1rem;
-            padding: 2rem;
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .no-timetable:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .alert-message {
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-message .error {
-            background: #fef2f2;
-            color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #dc3545;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .alert-message .success {
-            background: #d4edda;
-            color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .alert-message .warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #ffc107;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .icon {
-            margin-right: 0.5rem;
-        }
-
-        .scroll-top-btn {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: var(--primary-color);
-            color: var(--white);
-            padding: 1rem;
-            border-radius: 50px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            width: 50px;
-            height: 50px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .scroll-top-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .scroll-top-btn.show {
-            display: flex;
         }
 
         .action-links a {
@@ -478,7 +446,6 @@
         .action-links a:hover {
             background: var(--primary-color);
             color: var(--white);
-            text-decoration: none;
             transform: translateY(-1px);
         }
 
@@ -489,318 +456,270 @@
             font-style: italic;
         }
 
+        @media (max-width: 1024px) {
+            .sidebar { width: 250px; }
+            .page-wrapper { margin-left: 250px; }
+            .logo-container { width: 80px; height: 64px; }
+        }
+
         @media (max-width: 768px) {
-            body {
-                padding: 100px 10px 20px 10px;
-            }
-
-            .header {
-                padding: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .logo-container {
-                width: 80px;
-                height: 64px;
-            }
-
-            .main-content {
-                padding: 1.5rem;
-            }
-
-            .section {
-                padding: 1.2rem;
-            }
-
-            .timetable-header {
-                font-size: 1.5rem;
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .actions-bar {
-                justify-content: center;
-            }
-
-            .filter-form {
-                justify-content: center;
-            }
-
-            .day-header {
-                font-size: 1.25rem;
-                margin: 1.5rem 0 0.75rem 0;
-            }
-
-            .timetable-table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-                font-size: 0.9rem;
-            }
-
-            .timetable-table th,
-            .timetable-table td {
-                padding: 0.6rem;
-                font-size: 0.85rem;
-                min-width: 100px;
-            }
-
-            .action-btn {
-                width: 30px;
-                height: 30px;
-                font-size: 0.8rem;
-            }
-
-            .no-timetable {
-                font-size: 0.9rem;
-                padding: 1.5rem;
-            }
-
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .scroll-top-btn {
-                bottom: 1rem;
-                right: 1rem;
-                width: 45px;
-                height: 45px;
-                font-size: 1.1rem;
-                padding: 0.9rem;
-            }
+            .menu-toggle { display: flex; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .sidebar-overlay { display: block; }
+            .page-wrapper { margin-left: 0; }
+            .container { padding: 1.5rem 15px; }
+            .header h1 { font-size: 1.5rem; }
+            .main-content { padding: 1.5rem; }
+            .section { padding: 1.2rem; }
+            h2 { font-size: 1.3rem; }
+            .form-row { flex-direction: column; align-items: stretch; gap: 1rem; }
+            .action-buttons { flex-direction: column; }
+            .filter-btn { width: 100%; justify-content: center; }
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 80px 5px 15px 5px;
-            }
-
-            .header {
-                padding: 0.75rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.25rem;
-            }
-
-            .logo-container {
-                width: 60px;
-                height: 48px;
-            }
-
-            .main-content {
-                padding: 1rem;
-                border-radius: 8px;
-            }
-
-            .section {
-                padding: 1rem;
-            }
-
-            .timetable-header {
-                font-size: 1.3rem;
-            }
-
-            .day-header {
-                font-size: 1.1rem;
-                margin: 1.25rem 0 0.5rem 0;
-            }
-
-            .timetable-table th,
-            .timetable-table td {
-                padding: 0.5rem;
-                font-size: 0.8rem;
-                min-width: 80px;
-            }
-
-            .action-btn {
-                width: 28px;
-                height: 28px;
-                font-size: 0.7rem;
-            }
-
-            .no-timetable {
-                font-size: 0.85rem;
-                padding: 1rem;
-            }
-
-            .back-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-            }
-
-            .btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-                width: 100%;
-                justify-content: center;
-                margin-bottom: 0.5rem;
-            }
-
-            .scroll-top-btn {
-                bottom: 0.75rem;
-                right: 0.75rem;
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-                padding: 0.8rem;
-            }
+            .sidebar { width: 100%; max-width: 320px; }
+            .container { padding: 1rem; }
+            .header { padding: 1rem; }
+            .header h1 { font-size: 1.25rem; }
+            .main-content { padding: 1rem; }
+            .section { padding: 1rem; }
+            h2 { font-size: 1.15rem; }
+            th, td { padding: 0.5rem; font-size: 0.8rem; }
         }
 
         @media (hover: none) {
-            .timetable-table:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover, .btn:hover, .action-btn:hover, .section:hover {
+            .section:hover, .btn:hover, .filter-btn:hover, .table-container:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
-            }
-
-            html {
-                scroll-behavior: auto;
-            }
+            * { transition: none !important; animation: none !important; }
+            html { scroll-behavior: auto; }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <a href="{% url 'teacher_dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Main Dashboard
-        </a>
-        <h1><i class="fas fa-clock"></i> Teacher Timetable</h1>
-        <a href="{% url 'teacher_dashboard' %}">
-            <div class="logo-container">
-                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
-            </div>
-        </a>
-    </header>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
 
-    <div class="container">
-        <div class="main-content">
-            <div class="section">
-                <div class="timetable-header">
-                    
-                    <div class="actions-bar">
-                        <a href="{% url 'teacher_timetable_add' %}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Add Single Entry
-                        </a>
-                        <a href="{% url 'teacher_timetable_weekly' %}" class="btn btn-secondary">
-                            <i class="fas fa-calendar-week"></i> Create Weekly Timetable
-                        </a>
-                        
-                        <form method="get" action="{% url 'teacher_timetable' %}" class="filter-form">
-                            
-                            <select name="day">
-                                
-                                <option value="">All Days</option>
-                                
-                                <option value="Monday" {% if selected_day == 'Monday' %}selected{% endif %}>Monday</option>
-                                <option value="Tuesday" {% if selected_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
-                                <option value="Wednesday" {% if selected_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
-                                <option value="Thursday" {% if selected_day == 'Thursday' %}selected{% endif %}>Thursday</option>
-                                <option value="Friday" {% if selected_day == 'Friday' %}selected{% endif %}>Friday</option>
-                                <option value="Saturday" {% if selected_day == 'Saturday' %}selected{% endif %}>Saturday</option>
-                            </select>
-                            <button type="submit"><i class="fas fa-filter"></i> Filter</button>
-                        </form>
-                    </div>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'teacher_dashboard' %}" style="text-decoration: none; color: inherit;">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
                 </div>
+            </a>
+            <span>Manavargal SMS</span>
+        </div>
+        <nav class="sidebar-nav">
+            
+            <a href="{% url 'teacher_profile' %}">
+                <img src="https://img.icons8.com/color/24/user.png" alt="Profile">
+                <span>My Profile</span>
+            </a>
+            <a href="{% url 'teacher_portal' %}">
+                <img src="https://img.icons8.com/color/24/calendar--v1.png" alt="Attendance">
+                <span>Mark Attendance</span>
+            </a>
+            <a href="{% url 'teacher_homework_panel' %}">
+                <img src="https://img.icons8.com/color/24/homework.png" alt="Homework">
+                <span>Homework Panel</span>
+            </a>
+            <a href="{% url 'teacher_study_materials_upload' %}">
+                <img src="https://img.icons8.com/color/24/book.png" alt="Study Materials">
+                <span>Upload Study Materials</span>
+            </a>
+            <a href="{% url 'teacher_circular_upload' %}">
+                <img src="https://img.icons8.com/color/24/megaphone.png" alt="Circular">
+                <span>Upload Circulars</span>
+            </a>
+            <a href="{% url 'teacher_accept_portal' %}">
+                <img src="https://img.icons8.com/color/24/checked.png" alt="Leave">
+                <span>Student Leave Requests</span>
+            </a>
+            <a href="{% url 'teacher_timetable' %}" class="active">
+                <img src="https://img.icons8.com/color/24/clock.png" alt="Timetable">
+                <span>Timetable</span>
+            </a>
+            <a href="{% url 'teacher_mark_entry' %}">
+                <img src="https://img.icons8.com/color/24/pencil.png" alt="Marks">
+                <span>Mark Entry</span>
+            </a>
+        </nav>
+    </aside>
 
-                <div class="alert-message">
-                    {% if messages %}
+    <!-- Main Content Wrapper -->
+    <div class="page-wrapper">
+        <div class="container">
+            <header class="header">
+                <h1><i class="fas fa-calendar-alt"></i> Teacher Timetable</h1>
+            </header>
+
+            <main class="main-content">
+                {% if messages %}
+                    <div class="alert-message">
                         {% for message in messages %}
                             <div class="{{ message.tags }}">
-                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
                                 {{ message }}
                             </div>
                         {% endfor %}
-                    {% endif %}
-                </div>
-
-                {% if timetable_data %}
-                    {% for day, entries in timetable_data %}
-                        <h3 class="day-header">
-                            <i class="fas fa-calendar-day icon"></i> {{ day }}
-                        </h3>
-                        <div class="table-container">
-                            <table class="timetable-table">
-                                <thead>
-                                    <tr>
-                                        <th>Class</th>
-                                        <th>Subject</th>
-                                        <th>Time</th>
-                                        <th>Room</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for entry in entries %}
-                                        <tr>
-                                            <td>{{ entry.class_id }}</td>
-                                            <td>{{ entry.subject }}</td>
-                                            <td>{{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }}</td>
-                                            <td>{{ entry.room|default:"N/A" }}</td>
-                                            <td class="action-links">
-                                                <a href="{% url 'teacher_timetable_edit' entry.id %}" class="action-btn edit-btn" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="{% url 'teacher_timetable_delete' entry.id %}" class="action-btn delete-btn" title="Delete" onclick="return confirm('Are you sure you want to delete this entry?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    {% empty %}
-                                        <tr>
-                                            <td colspan="5" class="no-data">No classes scheduled for this day.</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="no-timetable">
-                        <i class="fas fa-inbox icon"></i> No timetable entries assigned to you yet. <a href="{% url 'teacher_timetable_add' %}">Add your first entry</a>.
                     </div>
                 {% endif %}
-            </div>
+
+                <section class="section">
+                    <h2><i class="fas fa-calendar-week" style="color: #10b981; margin-right: 8px;"></i> My Timetable</h2>
+
+                    <div class="action-buttons">
+                        <a href="{% url 'teacher_timetable_add' %}" class="btn">
+                            <i class="fas fa-plus" style="color: #10b981;"></i> Add Single Entry
+                        </a>
+                        <a href="{% url 'teacher_timetable_weekly' %}" class="btn">
+                            <i class="fas fa-calendar-plus" style="color: #06b6d4;"></i> Create Weekly Timetable
+                        </a>
+                    </div>
+
+                    <form method="get" action="{% url 'teacher_timetable' %}">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="day">
+                                    <i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> Select Day:
+                                </label>
+                                <select id="day" name="day">
+                                    <option value="">All Days</option>
+                                    <option value="Monday" {% if selected_day == 'Monday' %}selected{% endif %}>Monday</option>
+                                    <option value="Tuesday" {% if selected_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                                    <option value="Wednesday" {% if selected_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                                    <option value="Thursday" {% if selected_day == 'Thursday' %}selected{% endif %}>Thursday</option>
+                                    <option value="Friday" {% if selected_day == 'Friday' %}selected{% endif %}>Friday</option>
+                                    <option value="Saturday" {% if selected_day == 'Saturday' %}selected{% endif %}>Saturday</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="filter-btn">
+                                <i class="fas fa-filter" style="color: #ffffff;"></i> Filter
+                            </button>
+                        </div>
+                    </form>
+
+                    {% if timetable_data %}
+                        {% for day, entries in timetable_data %}
+                            <h3 style="color: var(--primary-color); font-size: 1.5rem; font-weight: 600; margin: 2rem 0 1rem 0; text-align: center; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
+                                <i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> {{ day }}
+                            </h3>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class</th>
+                                            <th><i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Subject</th>
+                                            <th><i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> Time</th>
+                                            <th><i class="fas fa-door-open" style="color: #14b8a6; margin-right: 8px;"></i> Room</th>
+                                            <th><i class="fas fa-cogs" style="color: #6366f1; margin-right: 8px;"></i> Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for entry in entries %}
+                                            <tr>
+                                                <td>{{ entry.class_id }}</td>
+                                                <td>{{ entry.subject }}</td>
+                                                <td>{{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }}</td>
+                                                <td>{{ entry.room|default:"N/A" }}</td>
+                                                <td class="action-links">
+                                                    <a href="{% url 'teacher_timetable_edit' entry.id %}">
+                                                        <i class="fas fa-edit" style="color: #10b981; margin-right: 6px;"></i> Edit
+                                                    </a>
+                                                    <a href="{% url 'teacher_timetable_delete' entry.id %}" onclick="return confirm('Are you sure you want to delete this entry?')">
+                                                        <i class="fas fa-trash" style="color: #ef4444; margin-right: 6px;"></i> Delete
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="5" class="no-data">
+                                                    No classes scheduled for this day.
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-data" style="padding: 2rem; text-align: center; background: var(--light-bg); border-radius: 8px; border: 2px solid var(--border-color);">
+                            <i class="fas fa-inbox" style="color: #94a3b8; margin-right: 8px;"></i>
+                            No timetable entries assigned to you yet. <a href="{% url 'teacher_timetable_add' %}" style="color: var(--primary-color); text-decoration: underline;">Add your first entry</a>.
+                        </div>
+                    {% endif %}
+                </section>
+            </main>
         </div>
     </div>
 
-    <button class="scroll-top-btn" onclick="scrollToTop()">
-        <i class="fas fa-chevron-up"></i>
-    </button>
-
     <script>
-        window.onscroll = function() {
-            const btn = document.querySelector('.scroll-top-btn');
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                btn.classList.add('show');
-            } else {
-                btn.classList.remove('show');
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+            function openSidebar() {
+                sidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
             }
-        };
 
+            function closeSidebar() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
 
-        function scrollToTop() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        }
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
+                });
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        closeSidebar();
+                    }
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
+                }
+            });
+
+            if (window.innerWidth > 768) {
+                navLinks.forEach(item => {
+                    item.addEventListener('mouseenter', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) icon.style.transform = 'scale(1.1) rotate(5deg)';
+                    });
+                    item.addEventListener('mouseleave', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) icon.style.transform = 'none';
+                    });
+                });
+            }
+        });
     </script>
 </body>
 </html>
