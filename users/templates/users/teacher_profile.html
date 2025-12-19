@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Profile - Manavargal School Management System</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
@@ -23,10 +22,7 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 120px 20px 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            overflow: hidden; /* Prevents background scroll */
         }
 
         h1, h2, h3 {
@@ -48,6 +44,7 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --dull-highlighter: #d4edda;
         }
 
         html {
@@ -56,61 +53,37 @@
             overflow-x: hidden;
         }
 
-        .header {
-            background: var(--white);
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
             color: var(--text-color);
-            padding: 0.5rem 1rem 0.5rem 0.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: 0;
-            gap: 0.5rem;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            flex-grow: 1;
-            color: var(--primary-color);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            flex: none;
-            margin: 0;
-            z-index: 0;
-        }
-
-        .back-btn {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            text-decoration: none;
+            z-index: 1000;
             transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 1;
+            border-right: 2px solid var(--sidebar-border);
+            transform: translateX(0);
         }
 
-        .back-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            background: var(--white);
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid var(--sidebar-border);
         }
 
         .logo-container {
@@ -125,8 +98,6 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
             border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
         }
 
         .logo-container img {
@@ -141,51 +112,170 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-container:hover img {
+        .sidebar-header:hover {
+            background: var(--light-bg);
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: var(--dull-highlighter);
+            border-left: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav a img {
+            margin-right: 1rem;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .sidebar-nav a:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Menu Toggle */
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            background: var(--white);
+            border: 2px solid var(--sidebar-border);
+            cursor: pointer;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            width: 50px;
+            height: 50px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-color);
+            color: var(--white);
             transform: scale(1.05);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Main Content */
+        .page-wrapper {
+            margin-left: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: var(--transition);
         }
 
         .container {
             max-width: 1000px;
-            width: 100%;
             margin: 0 auto;
+            padding: 2rem 20px;
+        }
+
+        .header {
+            background: var(--white);
+            color: var(--text-color);
+            padding: 1.5rem;
+            border: 2px solid #495057;
+            box-shadow: var(--shadow-md);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .main-content {
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 2.5rem;
+        }
+
+        .section {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .profile-content {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .profile-header {
-            text-align: center;
-            margin-bottom: 0;
-        }
-
-        .profile-header h2 {
-            color: var(--primary-color);
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            align-items: center;
+            gap: 2rem;
         }
 
         .profile-pic-container {
             text-align: center;
-            transition: var(--transition);
-            width: 100%;
-        }
-
-        .profile-pic-container:hover {
-            transform: translateY(-2px);
         }
 
         .profile-pic, .preview-pic {
-            width: min(200px, 25vw);
-            height: min(200px, 25vw);
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid var(--primary-color);
+            border: 5px solid var(--primary-color);
             box-shadow: var(--shadow-md);
             transition: var(--transition);
-            display: block;
-            margin: 0 auto;
         }
 
         .profile-pic:hover, .preview-pic:hover {
@@ -198,15 +288,14 @@
         }
 
         .profile-details {
+            width: 100%;
+            max-width: 600px;
             background: var(--white);
-            border: 2px solid var(--border-color);
             padding: 2rem;
-            border-radius: 8px;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
         }
 
         .profile-details:hover {
@@ -215,79 +304,51 @@
 
         .profile-details h3 {
             color: var(--primary-color);
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0;
+            font-size: 1.8rem;
             text-align: center;
+            margin-bottom: 1.5rem;
         }
 
-        .profile-details .details-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .profile-details p {
-            margin-bottom: 0;
+        .details-list p {
             font-size: 1.1rem;
+            margin-bottom: 0.8rem;
             color: var(--text-color);
-            word-wrap: break-word;
-            overflow-wrap: break-word;
         }
 
-        .profile-details strong {
+        .details-list strong {
             color: var(--primary-color);
             font-weight: 500;
         }
 
         .upload-form {
-            margin-top: 1.5rem;
+            margin-top: 2rem;
             text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 1rem;
         }
 
         .upload-form label {
-            display: block;
-            color: var(--text-color);
-            font-size: 1rem;
             font-weight: 500;
-            margin-bottom: 0;
+            font-size: 1.1rem;
         }
 
         .upload-form input[type="file"] {
-            width: 100%;
-            max-width: 300px;
             padding: 0.75rem;
-            border-radius: 8px;
             border: 1px solid var(--border-color);
+            border-radius: 8px;
             background: var(--white);
-            font-size: 1rem;
-            margin-bottom: 0;
-            transition: var(--transition);
-            align-self: center;
-        }
-
-        .upload-form input[type="file"]:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
-            outline: none;
         }
 
         .upload-form button {
-            width: 100%;
-            max-width: 200px;
-            padding: 0.75rem;
+            padding: 0.8rem 2rem;
             background: var(--primary-color);
+            color: white;
             border: none;
             border-radius: 8px;
-            color: var(--white);
-            font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
-            align-self: center;
         }
 
         .upload-form button:hover {
@@ -296,281 +357,205 @@
             box-shadow: var(--shadow-md);
         }
 
-        .scroll-top-btn {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: var(--primary-color);
-            color: var(--white);
-            padding: 1rem;
-            border-radius: 50px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            width: 50px;
-            height: 50px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .scroll-top-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .scroll-top-btn.show {
-            display: flex;
-        }
-
-        .icon {
-            margin-right: 0.5rem;
-        }
-
+        /* Responsive */
         @media (max-width: 1024px) {
-            .container {
-                gap: 1.25rem;
-                padding: 0 10px;
-            }
-
-            .profile-details {
-                padding: 1.75rem;
-                gap: 0.875rem;
-            }
-
-            .profile-details .details-list {
-                gap: 0.625rem;
-            }
-
-            .profile-details p {
-                font-size: 1rem;
-            }
-
-            .profile-header h2 {
-                font-size: 2.25rem;
-            }
+            .sidebar { width: 250px; }
+            .page-wrapper { margin-left: 250px; }
+            .logo-container { width: 80px; height: 64px; }
         }
 
         @media (max-width: 768px) {
-            body {
-                padding: 100px 10px 20px 10px;
-            }
-
-            .header {
-                padding: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .logo-container {
-                width: 80px;
-                height: 64px;
-            }
-
-            .profile-header h2 {
-                font-size: 2rem;
-            }
-
-            .profile-pic, .preview-pic {
-                width: min(150px, 30vw);
-                height: min(150px, 30vw);
-            }
-
-            .profile-details {
-                padding: 1.5rem;
-                gap: 0.75rem;
-            }
-
-            .profile-details h3 {
-                font-size: 1.25rem;
-            }
-
-            .profile-details .details-list {
-                gap: 0.5rem;
-            }
-
-            .profile-details p {
-                font-size: 0.95rem;
-            }
-
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .upload-form {
-                gap: 0.5rem;
-            }
-
-            .upload-form input[type="file"] {
-                max-width: 100%;
-            }
-
-            .upload-form button {
-                max-width: 180px;
-                font-size: 0.95rem;
-            }
-
-            .scroll-top-btn {
-                bottom: 1rem;
-                right: 1rem;
-                width: 45px;
-                height: 45px;
-                font-size: 1.1rem;
-                padding: 0.9rem;
-            }
+            .menu-toggle { display: flex; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .sidebar-overlay { display: block; }
+            .page-wrapper { margin-left: 0; }
+            .container { padding: 1.5rem 15px; }
+            .header h1 { font-size: 1.5rem; }
+            .main-content { padding: 2rem; }
+            .section { padding: 1.5rem; }
+            h2 { font-size: 1.6rem; }
+            .profile-pic, .preview-pic { width: 150px; height: 150px; }
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 80px 5px 15px 5px;
-            }
-
-            .header {
-                padding: 0.75rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.25rem;
-            }
-
-            .logo-container {
-                width: 60px;
-                height: 48px;
-            }
-
-            .profile-header h2 {
-                font-size: 1.75rem;
-            }
-
-            .profile-pic, .preview-pic {
-                width: min(120px, 35vw);
-                height: min(120px, 35vw);
-            }
-
-            .profile-details {
-                padding: 1rem;
-                gap: 0.625rem;
-            }
-
-            .profile-details h3 {
-                font-size: 1.125rem;
-            }
-
-            .profile-details .details-list {
-                gap: 0.375rem;
-            }
-
-            .profile-details p {
-                font-size: 0.9rem;
-            }
-
-            .back-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-            }
-
-            .upload-form {
-                gap: 0.375rem;
-                margin-top: 1rem;
-            }
-
-            .upload-form input[type="file"] {
-                padding: 0.625rem;
-                font-size: 0.9rem;
-                max-width: 100%;
-            }
-
-            .upload-form button {
-                max-width: 160px;
-                padding: 0.625rem;
-                font-size: 0.9rem;
-            }
-
-            .scroll-top-btn {
-                bottom: 0.75rem;
-                right: 0.75rem;
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-                padding: 0.8rem;
-            }
+            .sidebar { width: 100%; max-width: 320px; }
+            .container { padding: 1rem; }
+            .header { padding: 1rem; }
+            .header h1 { font-size: 1.25rem; }
+            .main-content { padding: 1.5rem; }
+            .section { padding: 1.2rem; }
+            h2 { font-size: 1.4rem; }
+            .profile-pic, .preview-pic { width: 120px; height: 120px; }
+            .profile-details h3 { font-size: 1.5rem; }
+            .details-list p { font-size: 1rem; }
         }
 
         @media (hover: none) {
-            .profile-details:hover, .profile-pic-container:hover, .profile-pic:hover, .preview-pic:hover, .upload-form button:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover {
+            .section:hover, .profile-details:hover, .profile-pic:hover, .preview-pic:hover, .upload-form button:hover, .logo-container:hover, .sidebar-nav a:hover, .menu-toggle:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
-            }
-
-            html {
-                scroll-behavior: auto;
-            }
+            * { transition: none !important; animation: none !important; }
+            html { scroll-behavior: auto; }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <a href="{% url 'teacher_dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back To Main Dashboard
-        </a>
-        <h1><i class="fas fa-user icon"></i> Teacher Profile</h1>
-        <a href="{% url 'teacher_dashboard' %}">
-            <div class="logo-container">
-                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
-            </div>
-        </a>
-    </header>
+    <!-- Mobile Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
 
-    <div class="container">
-        <div class="profile-header">
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar Navigation (Teacher Menu) -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'teacher_dashboard' %}" style="text-decoration: none; color: inherit;">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
+                </div>
+            </a>
+            <span>Manavargal SMS</span>
+        </div>
+        <nav class="sidebar-nav">
             
-        </div>
+            <a href="{% url 'teacher_profile' %}" class="active">
+                <img src="https://img.icons8.com/color/24/user.png" alt="Profile">
+                <span>My Profile</span>
+            </a>
+            <a href="{% url 'teacher_portal' %}">
+                <img src="https://img.icons8.com/color/24/calendar--v1.png" alt="Attendance">
+                <span>Mark Attendance</span>
+            </a>
+            <a href="{% url 'teacher_homework_panel' %}">
+                <img src="https://img.icons8.com/color/24/homework.png" alt="Homework">
+                <span>Assign Homework</span>
+            </a>
+            <a href="{% url 'teacher_study_materials_upload' %}">
+                <img src="https://img.icons8.com/color/24/book.png" alt="Study Materials">
+                <span>Upload Study Materials</span>
+            </a>
+            <a href="{% url 'teacher_circular_upload' %}">
+                <img src="https://img.icons8.com/color/24/megaphone.png" alt="Circular">
+                <span>Upload Circulars</span>
+            </a>
+            <a href="{% url 'teacher_accept_portal' %}">
+                <img src="https://img.icons8.com/color/24/checked.png" alt="Leave">
+                <span>Student Leave Requests</span>
+            </a>
+            <a href="{% url 'teacher_timetable' %}">
+                <img src="https://img.icons8.com/color/24/clock.png" alt="Timetable">
+                <span>Timetable</span>
+            </a>
+            <a href="{% url 'teacher_mark_entry' %}">
+                <img src="https://img.icons8.com/color/24/pencil.png" alt="Marks">
+                <span>Mark Entry</span>
+            </a>
+        </nav>
+    </aside>
 
-        <div class="profile-pic-container">
-            <img src="{{ profile_pic_url|default:'/static/users/images/default-profile.png' }}" alt="Profile Picture" class="profile-pic" id="current-pic">
-            <img src="" alt="Preview" class="preview-pic" id="preview-pic">
-        </div>
+    <!-- Main Content Wrapper -->
+    <div class="page-wrapper">
+        <div class="container">
+            <header class="header">
+                <h1><i class="fas fa-user-tie"></i> Teacher Profile</h1>
+            </header>
 
-        <div class="profile-details">
-            <h3>{{ teacher.name|default:"N/A" }}</h3>
-            <div class="details-list">
-                <p><strong>Email:</strong> {{ teacher.email|default:"N/A" }}</p>
-                <p><strong>Subject:</strong> {{ teacher.subject|default:"N/A" }}</p>
-                <p><strong>Class Teacher Of:</strong> {{ teacher.class_teacher_of|default:"N/A" }}</p>
-                <p><strong>Joined On:</strong> {{ teacher.created_at|default:"N/A" }}</p>
-            </div>
+            <main class="main-content">
+                <section class="section">
+                    <h2><i class="fas fa-id-card"></i> My Profile Details</h2>
+                    <div class="profile-content">
+                        <div class="profile-pic-container">
+                            <img src="{{ profile_pic_url|default:'/static/users/images/default-profile.png' }}" alt="Profile Picture" class="profile-pic" id="current-pic">
+                            <img src="" alt="Preview" class="preview-pic" id="preview-pic">
+                        </div>
 
-            <form method="post" enctype="multipart/form-data" class="upload-form">
-                {% csrf_token %}
-                <label for="profile_pic"><i class="fas fa-camera icon"></i> Update Profile Picture</label>
-                <input type="file" id="profile_pic" name="profile_pic" accept="image/*">
-                <button type="submit"><i class="fas fa-upload icon"></i> Upload</button>
-            </form>
+                        <div class="profile-details">
+                            <h3>{{ teacher.name|default:"N/A" }}</h3>
+                            <div class="details-list">
+                                <p><strong>Email:</strong> {{ teacher.email|default:"N/A" }}</p>
+                                <p><strong>Subject:</strong> {{ teacher.subject|default:"N/A" }}</p>
+                                <p><strong>Class Teacher Of:</strong> {{ teacher.class_teacher_of|default:"None" }}</p>
+                                <p><strong>Joined On:</strong> {{ teacher.created_at|date:"d M Y"|default:"N/A" }}</p>
+                            </div>
+
+                            <form method="post" enctype="multipart/form-data" class="upload-form">
+                                {% csrf_token %}
+                                <label for="profile_pic"><i class="fas fa-camera"></i> Update Profile Picture</label>
+                                <input type="file" id="profile_pic" name="profile_pic" accept="image/*">
+                                <button type="submit"><i class="fas fa-upload"></i> Upload Picture</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
     </div>
 
-    <button class="scroll-top-btn" onclick="scrollToTop()">
-        <i class="fas fa-chevron-up"></i>
-    </button>
-
     <script>
-        // JavaScript for image preview
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+            function openSidebar() {
+                sidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
+                });
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        closeSidebar();
+                    }
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
+                }
+            });
+
+            // Desktop hover effect on sidebar icons
+            if (window.innerWidth > 768) {
+                navLinks.forEach(item => {
+                    item.addEventListener('mouseenter', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) icon.style.transform = 'scale(1.1) rotate(5deg)';
+                    });
+                    item.addEventListener('mouseleave', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) icon.style.transform = 'none';
+                    });
+                });
+            }
+        });
+
+        // Image preview for profile picture upload
         document.getElementById('profile_pic').addEventListener('change', function(event) {
             const file = event.target.files[0];
             const preview = document.getElementById('preview-pic');
@@ -589,20 +574,6 @@
                 current.style.display = 'block';
             }
         });
-
-        window.onscroll = function() {
-            const btn = document.querySelector('.scroll-top-btn');
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                btn.classList.add('show');
-            } else {
-                btn.classList.remove('show');
-            }
-        };
-
-        function scrollToTop() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        }
     </script>
 </body>
 </html>

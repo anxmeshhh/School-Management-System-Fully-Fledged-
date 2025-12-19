@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Teacher Circulars</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
@@ -23,17 +22,20 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 120px 20px 40px 20px;
+            overflow: hidden;
         }
 
         h1, h2, h3 {
             font-family: 'Montserrat', sans-serif;
-            text-align: center;
         }
 
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
+            --danger-color: #dc2626;
+            --danger-hover: #ef4444;
+            --info-color: #3b82f6;
+            --info-hover: #2563eb;
             --sidebar-bg: #f0f9f4;
             --sidebar-border: #a8d5c2;
             --white: #ffffff;
@@ -46,6 +48,7 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --dull-highlighter: #d4edda;
         }
 
         html {
@@ -54,61 +57,37 @@
             overflow-x: hidden;
         }
 
-        .header {
-            background: var(--white);
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
             color: var(--text-color);
-            padding: 0.5rem 1rem 0.5rem 0.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: 0;
-            gap: 0.5rem;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            flex-grow: 1;
-            color: var(--primary-color);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            flex: none;
-            margin: 0;
-            z-index: 0;
-        }
-
-        .back-btn {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            text-decoration: none;
+            z-index: 1000;
             transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 1;
+            border-right: 2px solid var(--sidebar-border);
+            transform: translateX(0);
         }
 
-        .back-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            background: var(--white);
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid var(--sidebar-border);
         }
 
         .logo-container {
@@ -123,8 +102,6 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
             border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
         }
 
         .logo-container img {
@@ -139,92 +116,254 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-container:hover img {
+        .sidebar-header:hover {
+            background: var(--light-bg);
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: var(--dull-highlighter);
+            border-left: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav a img {
+            margin-right: 1rem;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .sidebar-nav a:hover img {
+            transform: scale(1.1);
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            background: var(--white);
+            border: 2px solid var(--sidebar-border);
+            cursor: pointer;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            width: 50px;
+            height: 50px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-color);
+            color: var(--white);
             transform: scale(1.05);
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
         }
 
-        .messages {
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .page-wrapper {
+            margin-left: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+
+        .header {
+            background: var(--white);
+            padding: 1.5rem;
+            border: 2px solid #495057;
+            box-shadow: var(--shadow-md);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .main-content {
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 2rem;
+        }
+
+        .alert-message {
             margin-bottom: 1.5rem;
         }
 
-        .messages .success {
-            background: #d4edda;
-            color: var(--primary-color);
+        .alert-message .error,
+        .alert-message .success,
+        .alert-message .warning {
             padding: 0.75rem;
             border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
             display: flex;
             align-items: center;
             gap: 0.5rem;
             border: 2px solid var(--border-color);
         }
 
-        .messages .error {
+        .alert-message .error {
             background: #fef2f2;
             color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 8px;
             border-left: 4px solid #dc3545;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
         }
 
-        .upload-form {
+        .alert-message .success {
+            background: #d4edda;
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .alert-message .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .section {
             background: var(--light-bg);
-            border: 2px solid var(--border-color);
             padding: 1.5rem;
-            border-radius: 8px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             margin-bottom: 2rem;
             transition: var(--transition);
         }
 
-        .upload-form:hover {
+        .section:hover {
             box-shadow: var(--shadow-md);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
         }
 
         .form-group {
             margin-bottom: 1.5rem;
         }
 
-        .upload-form label {
-            display: block;
+        .form-group label {
+            display: flex;
+            align-items: center;
             color: var(--text-color);
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
         }
 
-        .upload-form input[type="text"],
-        .upload-form select,
-        .upload-form input[type="file"] {
+        .form-group input[type="text"],
+        .form-group input[type="file"],
+        .form-group select {
             width: 100%;
             padding: 0.75rem;
             border-radius: 8px;
             border: 1px solid var(--border-color);
             background: var(--white);
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: var(--transition);
         }
 
-        .upload-form input[type="text"]:focus,
-        .upload-form select:focus,
-        .upload-form input[type="file"]:focus {
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group input[type="file"]:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
             outline: none;
         }
 
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 0.5rem;
+            width: auto;
+            height: 1.2rem;
+        }
+
+        .class-section-group {
+            display: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .class-section-group .form-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .class-section-group .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
         .upload-btn {
-            width: 100%;
-            padding: 0.75rem;
+            padding: 0.75rem 1.5rem;
             background: var(--primary-color);
             border: none;
             border-radius: 8px;
@@ -233,20 +372,15 @@
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .upload-btn:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
-        }
-
-        .form-header {
-            color: var(--primary-color);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
         }
 
         .circular-container {
@@ -259,7 +393,7 @@
             background: var(--white);
             border: 2px solid var(--border-color);
             padding: 1.5rem;
-            border-radius: 10px;
+            border-radius: 8px;
             box-shadow: var(--shadow-sm);
             transition: var(--transition);
             display: flex;
@@ -267,7 +401,6 @@
         }
 
         .circular:hover {
-            transform: translateY(-4px);
             box-shadow: var(--shadow-md);
         }
 
@@ -306,32 +439,57 @@
             margin-top: 1rem;
             flex-grow: 1;
             transition: var(--transition);
+            cursor: pointer;
         }
 
         .circular img:hover {
             transform: scale(1.03);
         }
 
+        .circular-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .view-btn,
         .download-btn {
+            flex: 1;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.5rem 1rem;
+            gap: 0.45rem;
+            padding: 0.65rem 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: inherit;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .view-btn {
+            background: var(--info-color);
+            color: var(--white);
+        }
+
+        .view-btn:hover {
+            background: var(--info-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .download-btn {
             background: var(--primary-color);
             color: var(--white);
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 1rem;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: var(--transition);
-            border: 1px solid var(--border-color);
         }
 
         .download-btn:hover {
             background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .no-circulars {
@@ -339,342 +497,396 @@
             color: var(--primary-color);
             font-size: 1.1rem;
             padding: 2rem;
-            background: var(--white);
-            border: 2px solid var(--border-color);
+            background: var(--light-bg);
             border-radius: 8px;
+            border: 2px solid var(--border-color);
             grid-column: 1 / -1;
         }
 
-        .icon {
-            margin-right: 0.5rem;
-        }
-
-        .scroll-top-btn {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: var(--primary-color);
-            color: var(--white);
-            padding: 1rem;
-            border-radius: 50px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            z-index: 1000;
+        /* Modal */
+        .modal {
             display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            width: 50px;
-            height: 50px;
-            border: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow: auto;
+        }
+
+        .modal-content {
+            position: relative;
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            margin-top: 2%;
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
             cursor: pointer;
+            transition: var(--transition);
         }
 
-        .scroll-top-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+        .close-modal:hover {
+            color: var(--primary-color);
         }
 
-        .scroll-top-btn.show {
-            display: flex;
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { width: 250px; }
+            .page-wrapper { margin-left: 250px; }
+            .logo-container { width: 80px; height: 64px; }
         }
 
         @media (max-width: 768px) {
-            body {
-                padding: 100px 10px 20px 10px;
-            }
-
-            .header {
-                padding: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .logo-container {
-                width: 80px;
-                height: 64px;
-            }
-
-            .upload-form {
-                padding: 1.2rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .upload-form label,
-            .upload-form input[type="text"],
-            .upload-form select,
-            .upload-form input[type="file"],
-            .upload-btn {
-                font-size: 0.9rem;
-            }
-
-            .form-header {
-                font-size: 1.5rem;
-                margin-bottom: 1.25rem;
-            }
-
-            .circular-container {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .circular {
-                padding: 1.2rem;
-            }
-
-            .circular h3 {
-                font-size: 1.25rem;
-            }
-
-            .circular small {
-                font-size: 0.8rem;
-            }
-
-            .no-circulars {
-                font-size: 0.9rem;
-                padding: 1.5rem;
-            }
-
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .circular-type {
-                font-size: 0.75rem;
-                padding: 0.2rem 0.5rem;
-            }
-
-            .scroll-top-btn {
-                bottom: 1rem;
-                right: 1rem;
-                width: 45px;
-                height: 45px;
-                font-size: 1.1rem;
-                padding: 0.9rem;
-            }
+            .menu-toggle { display: flex; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .sidebar-overlay { display: block; }
+            .page-wrapper { margin-left: 0; }
+            .container { padding: 1.5rem 15px; }
+            .header h1 { font-size: 1.5rem; }
+            .main-content { padding: 1.5rem; }
+            .section { padding: 1.2rem; }
+            h2 { font-size: 1.3rem; }
+            .class-section-group .form-row { flex-direction: column; }
+            .circular-container { grid-template-columns: 1fr; }
+            .circular-actions { flex-direction: column; }
+            .close-modal { top: 10px; right: 20px; font-size: 30px; }
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 80px 5px 15px 5px;
-            }
-
-            .header {
-                padding: 0.75rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.25rem;
-            }
-
-            .logo-container {
-                width: 60px;
-                height: 48px;
-            }
-
-            .upload-form {
-                padding: 1rem;
-                margin-bottom: 1.25rem;
-            }
-
-            .form-group {
-                margin-bottom: 1.25rem;
-            }
-
-            .upload-form label,
-            .upload-form input[type="text"],
-            .upload-form select,
-            .upload-form input[type="file"],
-            .upload-btn {
-                font-size: 0.85rem;
-            }
-
-            .form-header {
-                font-size: 1.3rem;
-                margin-bottom: 1rem;
-            }
-
-            .circular-container {
-                gap: 0.75rem;
-            }
-
-            .circular {
-                padding: 1rem;
-            }
-
-            .circular h3 {
-                font-size: 1.1rem;
-            }
-
-            .circular small {
-                font-size: 0.75rem;
-            }
-
-            .no-circulars {
-                font-size: 0.85rem;
-                padding: 1.25rem;
-            }
-
-            .back-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-            }
-
-            .download-btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.85rem;
-            }
-
-            .circular-type {
-                font-size: 0.7rem;
-                padding: 0.15rem 0.4rem;
-            }
-
-            .scroll-top-btn {
-                bottom: 0.75rem;
-                right: 0.75rem;
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-                padding: 0.8rem;
-            }
+            .sidebar { width: 100%; max-width: 320px; }
+            .container { padding: 1rem; }
+            .header { padding: 1rem; }
+            .header h1 { font-size: 1.25rem; }
+            .main-content { padding: 1rem; }
+            .section { padding: 1rem; }
+            h2 { font-size: 1.15rem; }
+            .form-group label { font-size: 0.85rem; }
+            .form-group input, .form-group select { font-size: 0.85rem; padding: 0.6rem; }
+            .circular { padding: 1rem; }
+            .view-btn, .download-btn { padding: 0.6rem 1rem; font-size: 0.9rem; }
         }
 
         @media (hover: none) {
-            .upload-form:hover, .circular:hover, .upload-btn:hover, .logo-container:hover, .back-btn:hover, .download-btn:hover, .scroll-top-btn:hover {
+            .section:hover, .upload-btn:hover, .circular:hover, .view-btn:hover, .download-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
-            }
-
-            html {
-                scroll-behavior: auto;
-            }
+            * { transition: none !important; animation: none !important; }
+            html { scroll-behavior: auto; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <a href="{% url 'teacher_dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Main Dashboard
-        </a>
-        <h1><i class="fas fa-file-alt"></i> Teacher Circulars</h1>
-        <a href="{% url 'teacher_dashboard' %}">
-            <div class="logo-container">
-                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
-            </div>
-        </a>
-    </div>
-
-    <div class="container">
-        <div class="messages">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">
-                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-
-        <div class="upload-form">
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="title">
-                        <i class="fas fa-heading icon"></i> Title
-                    </label>
-                    <input type="text" id="title" name="title" required>
-                </div>
-                <div class="form-group">
-                    <label for="class">
-                        <i class="fas fa-chalkboard icon"></i> Class
-                    </label>
-                    <select id="class" name="class" required>
-                        <option value="" disabled selected>Select Class</option>
-                        {% for class in classes %}
-                            <option value="{{ class }}">{{ class }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="section">
-                        <i class="fas fa-layer-group icon"></i> Section
-                    </label>
-                    <select id="section" name="section" required>
-                        <option value="" disabled selected>Select Section</option>
-                        {% for section in sections %}
-                            <option value="{{ section }}">{{ section }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="image">
-                        <i class="fas fa-image icon"></i> Upload Image
-                    </label>
-                    <input type="file" id="image" name="image" accept="image/*" required>
-                </div>
-                <button type="submit" class="upload-btn">
-                    <i class="fas fa-cloud-upload-alt icon"></i> Upload Circular
-                </button>
-            </form>
-        </div>
-
-        <h2 class="form-header">
-            <i class="fas fa-list"></i> Uploaded Circulars
-        </h2>
-
-        <div class="circular-container">
-            {% for circular in circulars %}
-                <div class="circular">
-                    <div class="circular-type">Uploaded Circular</div>
-                    <h3>{{ circular.title }}</h3>
-                    <small>Posted on: {{ circular.date }}</small>
-                    <small>Target: {{ circular.target }}</small>
-                    <img src="{{ circular.image_url }}" alt="Circular Image">
-                    <a href="{{ circular.image_url }}" download="{{ circular.title|slugify }}.jpg" class="download-btn">
-                        <i class="fas fa-download icon"></i> Download Circular
-                    </a>
-                </div>
-            {% empty %}
-                <p class="no-circulars">
-                    <i class="fas fa-inbox"></i> No circulars available right now. Please check back later.
-                </p>
-            {% endfor %}
-        </div>
-    </div>
-
-    <button class="scroll-top-btn" onclick="scrollToTop()">
-        <i class="fas fa-chevron-up"></i>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
     </button>
 
-    <script>
-        window.onscroll = function() {
-            const btn = document.querySelector('.scroll-top-btn');
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                btn.classList.add('show');
-            } else {
-                btn.classList.remove('show');
-            }
-        };
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        function scrollToTop() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'teacher_dashboard' %}" style="text-decoration: none; color: inherit;">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
+                </div>
+            </a>
+            <span>Manavargal SMS</span>
+        </div>
+        <nav class="sidebar-nav">
+            
+            <a href="{% url 'teacher_profile' %}">
+                <img src="https://img.icons8.com/color/24/user.png" alt="Profile">
+                <span>My Profile</span>
+            </a>
+            <a href="{% url 'teacher_portal' %}">
+                <img src="https://img.icons8.com/color/24/calendar--v1.png" alt="Attendance">
+                <span>Mark Attendance</span>
+            </a>
+            <a href="{% url 'teacher_homework_panel' %}">
+                <img src="https://img.icons8.com/color/24/homework.png" alt="Homework">
+                <span>Homework Panel</span>
+            </a>
+            <a href="{% url 'teacher_study_materials_upload' %}">
+                <img src="https://img.icons8.com/color/24/book.png" alt="Study Materials">
+                <span>Upload Study Materials</span>
+            </a>
+            <a href="{% url 'teacher_circular_upload' %}" class="active">
+                <img src="https://img.icons8.com/color/24/megaphone.png" alt="Circular">
+                <span>Upload Circulars</span>
+            </a>
+            <a href="{% url 'teacher_accept_portal' %}">
+                <img src="https://img.icons8.com/color/24/checked.png" alt="Leave">
+                <span>Student Leave Requests</span>
+            </a>
+            <a href="{% url 'teacher_timetable' %}">
+                <img src="https://img.icons8.com/color/24/clock.png" alt="Timetable">
+                <span>Timetable</span>
+            </a>
+            <a href="{% url 'teacher_mark_entry' %}">
+                <img src="https://img.icons8.com/color/24/pencil.png" alt="Marks">
+                <span>Mark Entry</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="page-wrapper">
+        <div class="container">
+            <header class="header">
+                <h1><i class="fas fa-file-alt"></i> School & Class Circulars Module</h1>
+            </header>
+
+            <main class="main-content">
+                {% if messages %}
+                    <div class="alert-message">
+                        {% for message in messages %}
+                            <div class="{{ message.tags }}">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Upload Section -->
+                <section class="section">
+                    <h2><i class="fas fa-upload" style="color: #f59e0b;"></i> Upload New Circular</h2>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="title">
+                                <span style="color: #3b82f6; margin-right: 8px;">
+                                    <i class="fas fa-file-signature"></i>
+                                </span>
+                                Circular Title:
+                            </label>
+                            <input type="text" name="title" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <span style="color: #8b5cf6; margin-right: 8px;">
+                                    <i class="fas fa-user-friends"></i>
+                                </span>
+                                Target Audience:
+                            </label>
+                            <div class="radio-group">
+                                <label>
+                                    <input type="radio" name="target" value="all" id="target-all" checked onclick="toggleClassSection()">
+                                    <span style="color: #10b981; margin-left: 4px; margin-right: 4px;">
+                                        <i class="fas fa-users"></i>
+                                    </span>
+                                    All
+                                </label>
+                                <label>
+                                    <input type="radio" name="target" value="specific" id="target-specific" onclick="toggleClassSection()">
+                                    <span style="color: #f59e0b; margin-left: 4px; margin-right: 4px;">
+                                        <i class="fas fa-user-graduate"></i>
+                                    </span>
+                                    Specific Class/Section
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="class-section-group">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="class">
+                                        <span style="color: #ec4899; margin-right: 8px;">
+                                            <i class="fas fa-chalkboard"></i>
+                                        </span>
+                                        Class:
+                                    </label>
+                                    <select name="class" id="class">
+                                        <option value="">Select Class</option>
+                                        {% for cls in classes %}
+                                        <option value="{{ cls }}">{{ cls }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="section">
+                                        <span style="color: #14b8a6; margin-right: 8px;">
+                                            <i class="fas fa-layer-group"></i>
+                                        </span>
+                                        Section:
+                                    </label>
+                                    <select name="section" id="section">
+                                        <option value="">Select Section</option>
+                                        {% for sec in sections %}
+                                        <option value="{{ sec }}">{{ sec|capfirst }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="image">
+                                <span style="color: #ef4444; margin-right: 8px;">
+                                    <i class="fas fa-file-image"></i>
+                                </span>
+                                Image (Max File Size: 25MB):
+                            </label>
+                            <input type="file" name="image" accept="image/*" required>
+                        </div>
+
+                        <button type="submit" class="upload-btn">
+                            <i class="fas fa-upload"></i> Upload
+                        </button>
+                    </form>
+                </section>
+
+                <!-- Uploaded Circulars Section -->
+                <section class="section">
+                    <h2><i class="fas fa-list" style="color: #06b6d4;"></i> Uploaded Circulars</h2>
+
+                    <div class="circular-container">
+                        {% for circular in circulars %}
+                        <div class="circular">
+                            <div class="circular-type">Uploaded Circular</div>
+                            <h3>
+                                <span style="color: #ef4444; margin-right: 8px;">
+                                    <i class="fas fa-bullhorn"></i>
+                                </span>
+                                {{ circular.title }}
+                            </h3>
+                            <small><i class="fas fa-calendar"></i> Posted on: {{ circular.date }}</small>
+                            <small><i class="fas fa-bullseye"></i> Target: {{ circular.target }}</small>
+                            <img src="{{ circular.image_url }}" alt="{{ circular.title }}" onclick="openModal('{{ circular.image_url }}', '{{ circular.title }}')">
+
+                            <div class="circular-actions">
+                                <button class="view-btn" onclick="openModal('{{ circular.image_url }}', '{{ circular.title }}')">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <a href="{{ circular.image_url }}" download="{{ circular.title|slugify }}.jpg" class="download-btn">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="no-circulars">
+                            <i class="fas fa-inbox" style="color: #94a3b8; margin-right: 8px;"></i>
+                            No circulars uploaded yet.
+                        </p>
+                        {% endfor %}
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="modalImage" src="" alt="">
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+            function openSidebar() {
+                sidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
+                });
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        closeSidebar();
+                    }
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
+                }
+            });
+
+            if (window.innerWidth > 768) {
+                navLinks.forEach(item => {
+                    item.addEventListener('mouseenter', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) icon.style.transform = 'scale(1.1) rotate(5deg)';
+                    });
+                    item.addEventListener('mouseleave', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) icon.style.transform = 'none';
+                    });
+                });
+            }
+        });
+
+        function toggleClassSection() {
+            const specificRadio = document.getElementById('target-specific');
+            const classSectionGroup = document.querySelector('.class-section-group');
+            classSectionGroup.style.display = specificRadio.checked ? 'block' : 'none';
         }
+
+        function openModal(imageUrl, title) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = imageUrl;
+            modalImg.alt = title;
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>
