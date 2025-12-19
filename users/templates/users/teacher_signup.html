@@ -8,439 +8,438 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #fff0f5 0%, #fce4ec 100%),
-                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(219,112,147,0.1)"/></svg>') repeat;
-            background-size: 200%, 20px 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2vmin;
-            position: relative;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url("{% static 'users/images/teacher.jpg' %}?v=3") no-repeat center center fixed;
-            background-size: cover;
-            opacity: 0.1;
-            z-index: 1;
-            animation: subtlePulse 12s ease-in-out infinite;
-            filter: brightness(1.1);
-        }
-
-        body > * {
-            position: relative;
-            z-index: 2;
-        }
-
-        .logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            overflow: hidden;
-            z-index: 3;
-            transition: transform 0.6s ease-in-out;
-        }
-
-
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            animation: bounceIn 1.2s ease-out;
-        }
-
-        .logo:hover {
-            transform: scale(1.15) rotate(5deg);
-        }
-
-        .welcome-header {
-            position: fixed;
-            top: clamp(2vmin, 20px, 3vmin);
-            text-align: center;
-            color: #db7093;
-            font-size: clamp(1.2rem, 3vw, 1.8rem);
-            font-weight: 600;
-            letter-spacing: 1px;
-            width: 100%;
-            padding: 0 2vmin;
-            z-index: 3;
-            animation: slideInDown 1.2s ease-in-out;
-        }
-
-        .welcome-header span {
-            display: block;
-            font-size: clamp(0.9rem, 2vw, 1.2rem);
-            font-weight: normal;
-            color: #170d0d;
-            margin-top: 5px;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(8px);
-            padding: clamp(1.2rem, 3vmin, 2rem);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            width: 100%;
-            max-width: clamp(280px, 90%, 400px);
-            margin-top: clamp(80px, 15vh, 120px);
-            z-index: 3;
-            animation: slideInRight 1.2s ease-in-out;
-            transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-        }
-
-        .container:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        h2 {
-            color: #db7093;
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: clamp(1.3rem, 3vw, 1.8rem);
-            font-weight: 600;
-            animation: fadeIn 1.5s ease-in-out;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-            animation: fadeInUp 1s ease-in-out;
-        }
-
-        .form-group label {
-            display: block;
-            color: #db7093;
-            font-size: clamp(0.85rem, 2vw, 1rem);
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: clamp(0.6rem, 2vmin, 0.8rem) clamp(30px, 8vmin, 40px) clamp(0.6rem, 2vmin, 0.8rem) clamp(0.6rem, 2vmin, 0.8rem);
-            border: 2px solid transparent;
-            background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #ffb6c1, #db7093) border-box;
-            border-radius: 8px;
-            font-size: clamp(0.85rem, 2vw, 1rem);
-            transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            box-shadow: 0 0 8px rgba(219, 112, 147, 0.3);
-            transform: scale(1.02);
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: clamp(8px, 2vmin, 10px);
-            top: 60%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            width: clamp(20px, 5vmin, 24px);
-            height: clamp(20px, 5vmin, 24px);
-            fill: #db7093;
-            transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
-        }
-
-        .toggle-password:hover {
-            fill: #c71585;
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        button {
-            width: 100%;
-            padding: clamp(0.7rem, 2vmin, 1rem);
-            background: #db7093;
-            border: none;
-            border-radius: 25px;
-            color: white;
-            font-size: clamp(0.85rem, 2vw, 1rem);
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 10px;
-            transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-        }
-
-        button:hover {
-            background: #c71585;
-            transform: scale(1.08);
-            box-shadow: 0 4px 15px rgba(199, 21, 133, 0.4);
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 1rem;
-            font-size: clamp(0.8rem, 2vw, 0.9rem);
-            color: #374151;
-        }
-
-        .login-link a {
-            color: #db7093;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-
-        .login-link a:hover {
-            text-decoration: underline;
-            color: #c71585;
-        }
-
-        .messages p {
-            text-align: center;
-            margin: 1rem 0;
-            font-size: clamp(0.8rem, 2vw, 0.9rem);
-            color: #dc2626;
-            background: rgba(255, 75, 75, 0.1);
-            padding: 0.6rem;
-            border-radius: 6px;
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideInDown {
-            0% { transform: translateY(-50px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes slideInRight {
-            0% { transform: translateX(50px); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes subtlePulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 0.25; }
-            100% { opacity: 0.5; }
-        }
-
-        /* Large Desktop Screens (1440px and above) */
-        @media (min-width: 1440px) {
-            .welcome-header {
-                font-size: 2rem;
-            }
-
-            .welcome-header span {
-                font-size: 1.4rem;
-            }
-
-            .container {
-                max-width: 450px;
-                padding: 2.5rem;
-            }
-
-            .logo {
-                width: 140px;
-                height: 140px;
-            }
-        }
-
-        /* Tablet Screens (768px - 1024px) */
-        @media (max-width: 1024px) {
-            .welcome-header {
-                font-size: 1.6rem;
-                padding: 0 5vmin;
-            }
-
-            .welcome-header span {
-                font-size: 1.1rem;
-            }
-
-            .container {
-                max-width: 85%;
-                margin-top: 12vh;
-                padding: 1.8rem;
-            }
-
-            .logo {
-                width: clamp(80px, 9vmin, 100px);
-                height: clamp(80px, 9vmin, 100px);
-            }
-        }
-
-        /* Mobile Screens (up to 768px) */
-        @media (max-width: 768px) {
-            .welcome-header {
-                font-size: 1.4rem;
-                top: 10vmin;
-            }
-
-            .welcome-header span {
-                font-size: 1rem;
-            }
-
-            .container {
-                max-width: 90%;
-                margin-top: 15vh;
-                padding: 1.5rem;
-            }
-
-            .logo {
-                width: clamp(80px, 8vmin, 90px);
-                height: clamp(80px, 8vmin, 90px);
-                top: 1.5vmin;
-                left: 1.5vmin;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            .form-group label {
-                font-size: 0.9rem;
-            }
-
-            .form-group input {
-                font-size: 0.9rem;
-                padding: clamp(0.6rem, 2vmin, 0.7rem) clamp(30px, 7vmin, 35px) clamp(0.6rem, 2vmin, 0.7rem) clamp(0.6rem, 2vmin, 0.7rem);
-            }
-
-            .toggle-password {
-                width: clamp(18px, 4vmin, 22px);
-                height: clamp(18px, 4vmin, 22px);
-            }
-
-            button {
-                padding: 0.8rem;
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Small Mobile Screens (up to 480px) */
-        @media (max-width: 480px) {
-            .welcome-header {
-                font-size: 1.2rem;
-                top: 12vmin;
-            }
-
-            .welcome-header span {
-                font-size: 0.9rem;
-            }
-
-            .container {
-                max-width: 95%;
-                padding: 1.2rem;
-                margin-top: 18vh;
-            }
-
-            .logo {
-                width: clamp(60px, 7vmin, 80px);
-                height: clamp(60px, 7vmin, 80px);
-                top: 1vmin;
-                left: 1vmin;
-            }
-
-            h2 {
-                font-size: 1.3rem;
-            }
-
-            .form-group input {
-                font-size: 0.85rem;
-                padding: clamp(0.5rem, 1.5vmin, 0.6rem) clamp(25px, 6vmin, 30px) clamp(0.5rem, 1.5vmin, 0.6rem) clamp(0.5rem, 1.5vmin, 0.6rem);
-            }
-
-            .toggle-password {
-                width: clamp(16px, 4vmin, 20px);
-                height: clamp(16px, 4vmin, 20px);
-                right: clamp(6px, 1.5vmin, 8px);
-            }
-
-            button {
-                padding: 0.7rem;
-                font-size: 0.85rem;
-            }
-        }
-
-        /* Ultra-Wide Screens and High Aspect Ratios */
-        @media (min-aspect-ratio: 2/1) {
-            .container {
-                max-width: 35vw;
-            }
-
-            .welcome-header {
-                font-size: 1.5vw;
-            }
-
-            .welcome-header span {
-                font-size: 1vw;
-            }
-        }
-
-        /* Portrait Orientation on Mobile */
-        @media (max-width: 480px) and (orientation: portrait) {
-            body {
-                padding: 1vmin;
-            }
-
-            .container {
-                margin-top: 20vh;
-                padding: 1rem;
-            }
-
-            .welcome-header {
-                top: 15vmin;
-            }
-        }
-
-        /* Landscape Orientation on Mobile */
-        @media (max-width: 768px) and (orientation: landscape) {
-            body {
-                padding: 1vmin;
-            }
-
-            .container {
-                max-width: 70%;
-                margin-top: 10vh;
-            }
-
-            .welcome-header {
-                font-size: 1.3rem;
-                top: 5vmin;
-            }
-
-            .welcome-header span {
-                font-size: 0.95rem;
-            }
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #fff0f5 0%, #fce4ec 100%),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(219,112,147,0.1)"/></svg>') repeat;
+    background-size: 200%, 20px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2vmin;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("{% static 'users/images/teacher.jpg' %}?v=3") no-repeat center center fixed;
+    background-size: cover;
+    opacity: 0.1;
+    z-index: 1;
+    animation: subtlePulse 12s ease-in-out infinite;
+    filter: brightness(1.1);
+}
+
+body > * {
+    position: relative;
+    z-index: 2;
+}
+
+.logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    z-index: 3;
+    transition: transform 0.6s ease-in-out;
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: bounceIn 1.2s ease-out;
+}
+
+.logo:hover {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.welcome-header {
+    position: fixed;
+    top: clamp(2vmin, 20px, 3vmin);
+    text-align: center;
+    color: #db7093;
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    font-weight: 600;
+    letter-spacing: 1px;
+    width: 100%;
+    padding: 0 2vmin;
+    z-index: 3;
+    animation: slideInDown 1.2s ease-in-out;
+}
+
+.welcome-header span {
+    display: block;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: normal;
+    color: #170d0d;
+    margin-top: 5px;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    padding: clamp(1.2rem, 3vmin, 2rem);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    width: 100%;
+    max-width: clamp(280px, 90%, 400px);
+    margin-top: clamp(80px, 15vh, 120px);
+    z-index: 3;
+    animation: slideInRight 1.2s ease-in-out;
+    transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+}
+
+.container:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+    color: #db7093;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    font-weight: 600;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+    animation: fadeInUp 1s ease-in-out;
+}
+
+.form-group label {
+    display: block;
+    color: #db7093;
+    font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: clamp(0.7rem, 2.2vmin, 0.9rem) clamp(30px, 8vmin, 40px) clamp(0.7rem, 2.2vmin, 0.9rem) clamp(0.7rem, 2.2vmin, 0.9rem);
+    border: 2px solid transparent;
+    background: linear-gradient(white, white) padding-box, linear-gradient(90deg, #ffb6c1, #db7093) border-box;
+    border-radius: 8px;
+    font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+    transition: border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.form-group input:focus {
+    outline: none;
+    box-shadow: 0 0 8px rgba(219, 112, 147, 0.3);
+    transform: scale(1.02);
+}
+
+.toggle-password {
+    position: absolute;
+    right: clamp(8px, 2vmin, 10px);
+    top: 60%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    width: clamp(22px, 5.5vmin, 26px);
+    height: clamp(22px, 5.5vmin, 26px);
+    fill: #db7093;
+    transition: fill 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.toggle-password:hover {
+    fill: #c71585;
+    transform: translateY(-50%) scale(1.1);
+}
+
+button {
+    width: 100%;
+    padding: clamp(0.8rem, 2.2vmin, 1.1rem);
+    background: #db7093;
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background 0.6s ease-in-out, transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+}
+
+button:hover {
+    background: #c71585;
+    transform: scale(1.08);
+    box-shadow: 0 4px 15px rgba(199, 21, 133, 0.4);
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: clamp(0.9rem, 2.2vw, 1rem);
+    color: #374151;
+}
+
+.login-link a {
+    color: #db7093;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+    color: #c71585;
+}
+
+.messages p {
+    text-align: center;
+    margin: 1rem 0;
+    font-size: clamp(0.9rem, 2.2vw, 1rem);
+    color: #dc2626;
+    background: rgba(255, 75, 75, 0.1);
+    padding: 0.6rem;
+    border-radius: 6px;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+    0% { transform: translateY(-50px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+    0% { transform: translateX(50px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes subtlePulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 0.25; }
+    100% { opacity: 0.5; }
+}
+
+/* Large Desktop Screens (1440px and above) */
+@media (min-width: 1440px) {
+    .welcome-header {
+        font-size: 2.2rem;
+    }
+
+    .welcome-header span {
+        font-size: 1.6rem;
+    }
+
+    .container {
+        max-width: 450px;
+        padding: 2.5rem;
+    }
+
+    .logo {
+        width: 140px;
+        height: 140px;
+    }
+}
+
+/* Tablet Screens (768px - 1024px) */
+@media (max-width: 1024px) {
+    .welcome-header {
+        font-size: 1.8rem;
+        padding: 0 5vmin;
+    }
+
+    .welcome-header span {
+        font-size: 1.3rem;
+    }
+
+    .container {
+        max-width: 85%;
+        margin-top: 12vh;
+        padding: 1.8rem;
+    }
+
+    .logo {
+        width: clamp(80px, 9vmin, 100px);
+        height: clamp(80px, 9vmin, 100px);
+    }
+}
+
+/* Mobile Screens (up to 768px) */
+@media (max-width: 768px) {
+    .welcome-header {
+        font-size: 1.6rem;
+        top: 10vmin;
+    }
+
+    .welcome-header span {
+        font-size: 1.1rem;
+    }
+
+    .container {
+        max-width: 90%;
+        margin-top: 15vh;
+        padding: 1.5rem;
+    }
+
+    .logo {
+        width: clamp(80px, 8vmin, 90px);
+        height: clamp(80px, 8vmin, 90px);
+        top: 1.5vmin;
+        left: 1.5vmin;
+    }
+
+    h2 {
+        font-size: 1.7rem;
+    }
+
+    .form-group label {
+        font-size: 1rem;
+    }
+
+    .form-group input {
+        font-size: 1rem;
+        padding: clamp(0.7rem, 2.2vmin, 0.8rem) clamp(30px, 7vmin, 35px) clamp(0.7rem, 2.2vmin, 0.8rem) clamp(0.7rem, 2.2vmin, 0.8rem);
+    }
+
+    .toggle-password {
+        width: clamp(20px, 4.5vmin, 24px);
+        height: clamp(20px, 4.5vmin, 24px);
+    }
+
+    button {
+        padding: 0.9rem;
+        font-size: 1rem;
+    }
+}
+
+/* Small Mobile Screens (up to 480px) */
+@media (max-width: 480px) {
+    .welcome-header {
+        font-size: 1.4rem;
+        top: 12vmin;
+    }
+
+    .welcome-header span {
+        font-size: 1rem;
+    }
+
+    .container {
+        max-width: 95%;
+        padding: 1.2rem;
+        margin-top: 18vh;
+    }
+
+    .logo {
+        width: clamp(60px, 7vmin, 80px);
+        height: clamp(60px, 7vmin, 80px);
+        top: 1vmin;
+        left: 1vmin;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-group input {
+        font-size: 0.95rem;
+        padding: clamp(0.6rem, 1.8vmin, 0.7rem) clamp(25px, 6vmin, 30px) clamp(0.6rem, 1.8vmin, 0.7rem) clamp(0.6rem, 1.8vmin, 0.7rem);
+    }
+
+    .toggle-password {
+        width: clamp(18px, 4.5vmin, 22px);
+        height: clamp(18px, 4.5vmin, 22px);
+        right: clamp(6px, 1.5vmin, 8px);
+    }
+
+    button {
+        padding: 0.8rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Ultra-Wide Screens and High Aspect Ratios */
+@media (min-aspect-ratio: 2/1) {
+    .container {
+        max-width: 35vw;
+    }
+
+    .welcome-header {
+        font-size: 1.7vw;
+    }
+
+    .welcome-header span {
+        font-size: 1.2vw;
+    }
+}
+
+/* Portrait Orientation on Mobile */
+@media (max-width: 480px) and (orientation: portrait) {
+    body {
+        padding: 1vmin;
+    }
+
+    .container {
+        margin-top: 20vh;
+        padding: 1rem;
+    }
+
+    .welcome-header {
+        top: 15vmin;
+    }
+}
+
+/* Landscape Orientation on Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    body {
+        padding: 1vmin;
+    }
+
+    .container {
+        max-width: 70%;
+        margin-top: 10vh;
+    }
+
+    .welcome-header {
+        font-size: 1.5rem;
+        top: 5vmin;
+    }
+
+    .welcome-header span {
+        font-size: 1.05rem;
+    }
+}
     </style>
 </head>
 <body>

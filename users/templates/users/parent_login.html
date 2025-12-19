@@ -9,558 +9,558 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap');
 
-        /* Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        h1, h2 {
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        /* CSS Variables - Green and White Theme */
-        :root {
-            --primary-green: #00a651; /* Bright green */
-            --secondary-green: #008c44; /* Darker green */
-            --light-green: #e8f5e8; /* Light green */
-            --white: #ffffff;
-            --border-color: #d4edda;
-            --text-dark: #2c3e50;
-            --text-light: #7f8c8d;
-            --error-color: #e74c3c;
-            --success-color: #27ae60;
-            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --shadow-glow: 0 0 20px rgba(0, 166, 81, 0.2);
-            --space-xs: 8px;
-            --space-sm: 12px;
-            --space-md: 16px;
-            --space-lg: 24px;
-            --space-xl: 32px;
-            --font-xs: 12px;
-            --font-sm: 14px;
-            --font-md: 16px;
-            --font-lg: 18px;
-            --font-xl: 20px;
-            --font-xxl: 24px;
-            --radius-sm: 4px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --radius-full: 50%;
-        }
-
-        /* Smooth Scrolling */
-        html {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
-        }
-
-        /* Body Styling - Light Green/White */
-        body {
-            background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 80%, rgba(0, 166, 81, 0.04) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(0, 166, 81, 0.02) 0%, transparent 50%);
-            z-index: -1;
-            animation: subtleGlow 8s ease-in-out infinite alternate;
-        }
-
-        /* Main Container - Split Layout */
-        .main-container {
-            display: flex;
-            width: 100%;
-            max-width: 800px;
-            height: 450px;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow-md), var(--shadow-glow);
-            position: relative;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-
-        .main-container:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 25px rgba(0, 166, 81, 0.25);
-        }
-
-        /* Left Panel - Green Side with Logo and Content */
-        .left-panel {
-            flex: 1;
-            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding: var(--space-lg);
-            color: var(--white);
-            animation: slideInLeft 1s ease-out;
-            overflow: hidden;
-        }
-
-        .left-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><path d="M0 0h60v60H0z" fill="rgba(255,255,255,0.06)"/><circle cx="30" cy="30" r="3" fill="rgba(255,255,255,0.2)"/></svg>') repeat;
-            opacity: 0.3;
-            animation: gentleWave 15s linear infinite;
-        }
-
-        .project-logo {
-            width: 120px;
-            height: 120px;
-            margin-bottom: var(--space-md);
-            border-radius: var(--radius-full);
-            overflow: hidden;
-            border: none;
-            box-shadow: 
-                inset 0 4px 8px rgba(0, 0, 0, 0.15), 
-                inset 0 -4px 8px rgba(0, 0, 0, 0.1),
-                0 4px 12px rgba(0, 0, 0, 0.2),
-                0 0 0 1px rgba(255, 255, 255, 0.1);
-            z-index: 1;
-            position: relative;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            animation: logoSubmerge 4s ease-in-out infinite alternate;
-            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
-        }
-
-        .project-logo::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            border-radius: var(--radius-full);
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .project-logo:hover {
-            transform: scale(1.02);
-            box-shadow: 
-                inset 0 3px 6px rgba(0, 0, 0, 0.2), 
-                inset 0 -3px 6px rgba(0, 0, 0, 0.15),
-                0 6px 18px rgba(0, 0, 0, 0.25),
-                0 0 0 1px rgba(255, 255, 255, 0.15);
-        }
-
-        .project-logo:hover::before {
-            opacity: 1;
-        }
-
-        .project-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-        }
-
-        .project-title {
-            font-size: var(--font-xxl);
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: var(--space-sm);
-            z-index: 1;
-            position: relative;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-            letter-spacing: 0.5px;
-            line-height: 1.2;
-            animation: titlePulse 3s ease-in-out infinite alternate;
-        }
-
-        .project-motto {
-            font-size: var(--font-lg);
-            text-align: center;
-            opacity: 0.9;
-            z-index: 1;
-            position: relative;
-            line-height: 1.4;
-            font-weight: 400;
-            font-style: italic;
-            letter-spacing: 0.5px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2), 0 0 8px rgba(255,255,255,0.4);
-            font-family: 'Noto Sans Tamil', 'Poppins', sans-serif;
-            position: relative;
-            margin-top: var(--space-sm);
-        }
-
-        .project-motto .english {
-            font-weight: 600;
-            color: var(--white);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: block;
-            margin-bottom: var(--space-xs);
-        }
-
-        .project-motto .tamil {
-            font-weight: 500;
-            color: rgba(255,255,255,0.95);
-            font-size: var(--font-md);
-            display: block;
-        }
-
-        .project-motto::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-            border-radius: 1px;
-        }
-
-        /* Right Panel - White Form Side */
-        .right-panel {
-            flex: 1.2;
-            background: var(--white);
-            padding: var(--space-lg);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            animation: slideInRight 1s ease-out;
-            position: relative;
-        }
-
-        .right-panel::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent 0%, rgba(0, 166, 81, 0.01) 100%);
-        }
-
-        .form-title {
-            text-align: center;
-            margin-bottom: var(--space-lg);
-            color: var(--primary-green);
-            font-size: var(--font-xl);
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.05);
-            animation: fadeInUp 1.2s ease-out;
-        }
-
-        /* Form Styling */
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            z-index: 1;
-            position: relative;
-        }
-
-        .form-group {
-            margin-bottom: var(--space-md);
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            color: var(--secondary-green);
-            font-size: var(--font-sm);
-            font-weight: 500;
-            margin-bottom: var(--space-xs);
-            letter-spacing: 0.1px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: var(--space-md) var(--space-lg);
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-md);
-            font-size: var(--font-md);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-            outline: none;
-            background: var(--white);
-            font-family: 'Poppins', sans-serif;
-            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.03);
-        }
-
-        .form-group input:focus {
-            border-color: var(--primary-green);
-            box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.1), inset 0 1px 4px rgba(0, 0, 0, 0.03);
-            transform: translateY(-1px);
-        }
-
-        /* Toggle Password Icon */
-        .toggle-password {
-            position: absolute;
-            right: var(--space-md);
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            width: 20px;
-            height: 20px;
-            fill: var(--text-light);
-            transition: fill 0.3s ease, transform 0.3s ease;
-        }
-
-        .toggle-password:hover {
-            fill: var(--primary-green);
-            transform: translateY(-50%) scale(1.05);
-        }
-
-        /* Button Styling - Green Login Button */
-        .login-btn {
-            width: 100%;
-            padding: var(--space-md) var(--space-lg);
-            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
-            border: none;
-            border-radius: var(--radius-md);
-            color: var(--white);
-            font-size: var(--font-lg);
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: var(--space-md);
-            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-            font-family: 'Montserrat', sans-serif;
-            letter-spacing: 0.3px;
-            box-shadow: 0 4px 15px rgba(0, 166, 81, 0.25);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .login-btn:hover {
-            background: linear-gradient(135deg, var(--secondary-green), var(--primary-green));
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 166, 81, 0.3);
-        }
-
-        .login-btn:hover::before {
-            left: 100%;
-        }
-
-        /* Notification Box Styling */
-        .notification-box {
-            position: fixed;
-            top: var(--space-md);
-            right: var(--space-md);
-            z-index: 1000;
-            padding: var(--space-sm) var(--space-md);
-            border-radius: var(--radius-md);
-            font-size: var(--font-sm);
-            font-weight: 500;
-            box-shadow: var(--shadow-md), var(--shadow-glow);
-            opacity: 0.95;
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-            max-width: 90%;
-            display: none;
-            text-align: center;
-            border: 2px solid transparent;
-            font-family: 'Poppins', sans-serif;
-            transform: translateX(100%);
-        }
-
-        .notification-box.show {
-            display: block;
-            transform: translateX(0);
-        }
-
-        .notification-box.success {
-            background: linear-gradient(135deg, #d4edda, #c8e6c9);
-            color: var(--success-color);
-            border-left: 4px solid var(--success-color);
-        }
-
-        .notification-box.error {
-            background: linear-gradient(135deg, #f8d7da, #ffcdd2);
-            color: var(--error-color);
-            border-left: 4px solid var(--error-color);
-        }
-
-        /* Animations */
-        @keyframes slideInLeft {
-            0% { transform: translateX(-40px); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideInRight {
-            0% { transform: translateX(40px); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes subtleGlow {
-            0% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes gentleWave {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(60px); }
-        }
-
-        @keyframes logoSubmerge {
-            0% { 
-                transform: translateY(0px) scale(1);
-                box-shadow: 
-                    inset 0 4px 8px rgba(0, 0, 0, 0.15), 
-                    inset 0 -4px 8px rgba(0, 0, 0, 0.1),
-                    0 4px 12px rgba(0, 0, 0, 0.2),
-                    0 0 0 1px rgba(255, 255, 255, 0.1);
-            }
-            100% { 
-                transform: translateY(-1px) scale(1.01);
-                box-shadow: 
-                    inset 0 3px 6px rgba(0, 0, 0, 0.18), 
-                    inset 0 -3px 6px rgba(0, 0, 0, 0.12),
-                    0 3px 10px rgba(0, 0, 0, 0.18),
-                    0 0 0 1px rgba(255, 255, 255, 0.12);
-            }
-        }
-
-        @keyframes titlePulse {
-            0% { text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
-            100% { text-shadow: 1px 1px 10px rgba(255,255,255,0.3); }
-        }
-
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(15px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-                height: auto;
-                max-width: 100%;
-                padding: 15px;
-            }
-
-            .left-panel {
-                padding: var(--space-md);
-                min-height: 200px;
-            }
-
-            .right-panel {
-                padding: var(--space-md);
-            }
-
-            .project-title {
-                font-size: var(--font-xl);
-            }
-
-            .project-motto {
-                font-size: var(--font-md);
-            }
-
-            .project-motto .english {
-                font-size: var(--font-md);
-            }
-
-            .project-motto .tamil {
-                font-size: var(--font-sm);
-            }
-
-            .form-title {
-                font-size: var(--font-lg);
-            }
-
-            .project-logo {
-                width: 100px;
-                height: 100px;
-            }
-
-            body {
-                padding: 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .left-panel, .right-panel {
-                padding: var(--space-sm);
-            }
-
-            .project-title {
-                font-size: var(--font-lg);
-            }
-
-            .project-motto {
-                font-size: var(--font-md);
-            }
-
-            .project-motto .english {
-                font-size: var(--font-sm);
-            }
-
-            .project-motto .tamil {
-                font-size: var(--font-xs);
-            }
-
-            .form-title {
-                font-size: var(--font-md);
-            }
-
-            .form-group input {
-                padding: var(--space-sm) var(--space-md);
-                font-size: var(--font-sm);
-            }
-
-            .login-btn {
-                padding: var(--space-sm) var(--space-md);
-                font-size: var(--font-md);
-            }
-
-            .project-logo {
-                width: 80px;
-                height: 80px;
-            }
-
-            body {
-                padding: 10px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
-            }
-        }
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+h1, h2 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* CSS Variables - Green and White Theme */
+:root {
+    --primary-green: #00a651; /* Bright green */
+    --secondary-green: #008c44; /* Darker green */
+    --light-green: #e8f5e8; /* Light green */
+    --white: #ffffff;
+    --border-color: #d4edda;
+    --text-dark: #2c3e50;
+    --text-light: #7f8c8d;
+    --error-color: #e74c3c;
+    --success-color: #27ae60;
+    --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --shadow-glow: 0 0 20px rgba(0, 166, 81, 0.2);
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --font-xs: 14px;
+    --font-sm: 16px;
+    --font-md: 18px;
+    --font-lg: 20px;
+    --font-xl: 24px;
+    --font-xxl: 28px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-full: 50%;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+}
+
+/* Body Styling - Light Green/White */
+body {
+    background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 80%, rgba(0, 166, 81, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 166, 81, 0.02) 0%, transparent 50%);
+    z-index: -1;
+    animation: subtleGlow 8s ease-in-out infinite alternate;
+}
+
+/* Main Container - Split Layout */
+.main-container {
+    display: flex;
+    width: 100%;
+    max-width: 800px;
+    height: 450px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md), var(--shadow-glow);
+    position: relative;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.main-container:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 25px rgba(0, 166, 81, 0.25);
+}
+
+/* Left Panel - Green Side with Logo and Content */
+.left-panel {
+    flex: 1;
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: var(--space-lg);
+    color: var(--white);
+    animation: slideInLeft 1s ease-out;
+    overflow: hidden;
+}
+
+.left-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><path d="M0 0h60v60H0z" fill="rgba(255,255,255,0.06)"/><circle cx="30" cy="30" r="3" fill="rgba(255,255,255,0.2)"/></svg>') repeat;
+    opacity: 0.3;
+    animation: gentleWave 15s linear infinite;
+}
+
+.project-logo {
+    width: 120px;
+    height: 120px;
+    margin-bottom: var(--space-md);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    border: none;
+    box-shadow: 
+        inset 0 4px 8px rgba(0, 0, 0, 0.15), 
+        inset 0 -4px 8px rgba(0, 0, 0, 0.1),
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    z-index: 1;
+    position: relative;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    animation: logoSubmerge 4s ease-in-out infinite alternate;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+}
+
+.project-logo::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.project-logo:hover {
+    transform: scale(1.02);
+    box-shadow: 
+        inset 0 3px 6px rgba(0, 0, 0, 0.2), 
+        inset 0 -3px 6px rgba(0, 0, 0, 0.15),
+        0 6px 18px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.project-logo:hover::before {
+    opacity: 1;
+}
+
+.project-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.project-title {
+    font-size: var(--font-xxl);
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: var(--space-sm);
+    z-index: 1;
+    position: relative;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    animation: titlePulse 3s ease-in-out infinite alternate;
+}
+
+.project-motto {
+    font-size: var(--font-lg);
+    text-align: center;
+    opacity: 0.9;
+    z-index: 1;
+    position: relative;
+    line-height: 1.4;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2), 0 0 8px rgba(255,255,255,0.4);
+    font-family: 'Noto Sans Tamil', 'Poppins', sans-serif;
+    position: relative;
+    margin-top: var(--space-sm);
+}
+
+.project-motto .english {
+    font-weight: 600;
+    color: var(--white);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: var(--space-xs);
+}
+
+.project-motto .tamil {
+    font-weight: 500;
+    color: rgba(255,255,255,0.95);
+    font-size: var(--font-md);
+    display: block;
+}
+
+.project-motto::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+    border-radius: 1px;
+}
+
+/* Right Panel - White Form Side */
+.right-panel {
+    flex: 1.2;
+    background: var(--white);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    animation: slideInRight 1s ease-out;
+    position: relative;
+}
+
+.right-panel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 166, 81, 0.01) 100%);
+}
+
+.form-title {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    color: var(--primary-green);
+    font-size: var(--font-xl);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.05);
+    animation: fadeInUp 1.2s ease-out;
+}
+
+/* Form Styling */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    position: relative;
+}
+
+.form-group {
+    margin-bottom: var(--space-md);
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    color: var(--secondary-green);
+    font-size: var(--font-sm);
+    font-weight: 500;
+    margin-bottom: var(--space-xs);
+    letter-spacing: 0.1px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: var(--space-md) var(--space-lg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: var(--font-md);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    outline: none;
+    background: var(--white);
+    font-family: 'Poppins', sans-serif;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.form-group input:focus {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.1), inset 0 1px 4px rgba(0, 0, 0, 0.03);
+    transform: translateY(-1px);
+}
+
+/* Toggle Password Icon */
+.toggle-password {
+    position: absolute;
+    right: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    fill: var(--text-light);
+    transition: fill 0.3s ease, transform 0.3s ease;
+}
+
+.toggle-password:hover {
+    fill: var(--primary-green);
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* Button Styling - Green Login Button */
+.login-btn {
+    width: 100%;
+    padding: var(--space-md) var(--space-lg);
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--white);
+    font-size: var(--font-lg);
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: var(--space-md);
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 15px rgba(0, 166, 81, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.5s ease;
+}
+
+.login-btn:hover {
+    background: linear-gradient(135deg, var(--secondary-green), var(--primary-green));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 166, 81, 0.3);
+}
+
+.login-btn:hover::before {
+    left: 100%;
+}
+
+/* Notification Box Styling */
+.notification-box {
+    position: fixed;
+    top: var(--space-md);
+    right: var(--space-md);
+    z-index: 1000;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    font-weight: 500;
+    box-shadow: var(--shadow-md), var(--shadow-glow);
+    opacity: 0.95;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    max-width: 90%;
+    display: none;
+    text-align: center;
+    border: 2px solid transparent;
+    font-family: 'Poppins', sans-serif;
+    transform: translateX(100%);
+}
+
+.notification-box.show {
+    display: block;
+    transform: translateX(0);
+}
+
+.notification-box.success {
+    background: linear-gradient(135deg, #d4edda, #c8e6c9);
+    color: var(--success-color);
+    border-left: 4px solid var(--success-color);
+}
+
+.notification-box.error {
+    background: linear-gradient(135deg, #f8d7da, #ffcdd2);
+    color: var(--error-color);
+    border-left: 4px solid var(--error-color);
+}
+
+/* Animations */
+@keyframes slideInLeft {
+    0% { transform: translateX(-40px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+    0% { transform: translateX(40px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes subtleGlow {
+    0% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+@keyframes gentleWave {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(60px); }
+}
+
+@keyframes logoSubmerge {
+    0% { 
+        transform: translateY(0px) scale(1);
+        box-shadow: 
+            inset 0 4px 8px rgba(0, 0, 0, 0.15), 
+            inset 0 -4px 8px rgba(0, 0, 0, 0.1),
+            0 4px 12px rgba(0, 0, 0, 0.2),
+            0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+    100% { 
+        transform: translateY(-1px) scale(1.01);
+        box-shadow: 
+            inset 0 3px 6px rgba(0, 0, 0, 0.18), 
+            inset 0 -3px 6px rgba(0, 0, 0, 0.12),
+            0 3px 10px rgba(0, 0, 0, 0.18),
+            0 0 0 1px rgba(255, 255, 255, 0.12);
+    }
+}
+
+@keyframes titlePulse {
+    0% { text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+    100% { text-shadow: 1px 1px 10px rgba(255,255,255,0.3); }
+}
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(15px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        height: auto;
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    .left-panel {
+        padding: var(--space-md);
+        min-height: 200px;
+    }
+
+    .right-panel {
+        padding: var(--space-md);
+    }
+
+    .project-title {
+        font-size: 22px;
+    }
+
+    .project-motto {
+        font-size: var(--font-md);
+    }
+
+    .project-motto .english {
+        font-size: var(--font-md);
+    }
+
+    .project-motto .tamil {
+        font-size: var(--font-sm);
+    }
+
+    .form-title {
+        font-size: var(--font-lg);
+    }
+
+    .project-logo {
+        width: 100px;
+        height: 100px;
+    }
+
+    body {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .left-panel, .right-panel {
+        padding: var(--space-sm);
+    }
+
+    .project-title {
+        font-size: 18px;
+    }
+
+    .project-motto {
+        font-size: var(--font-sm);
+    }
+
+    .project-motto .english {
+        font-size: var(--font-sm);
+    }
+
+    .project-motto .tamil {
+        font-size: var(--font-xs);
+    }
+
+    .form-title {
+        font-size: var(--font-md);
+    }
+
+    .form-group input {
+        padding: var(--space-sm) var(--space-md);
+        font-size: var(--font-sm);
+    }
+
+    .login-btn {
+        padding: var(--space-sm) var(--space-md);
+        font-size: var(--font-md);
+    }
+
+    .project-logo {
+        width: 80px;
+        height: 80px;
+    }
+
+    body {
+        padding: 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
     </style>
 </head>
 <body>
