@@ -325,28 +325,7 @@
             outline: none;
         }
 
-        .radio-group {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            color: var(--text-color);
-            font-size: 0.95rem;
-            cursor: pointer;
-        }
-
-        .radio-group input[type="radio"] {
-            margin-right: 0.5rem;
-            width: auto;
-            height: 1.2rem;
-        }
-
         .class-section-group {
-            display: none;
             margin-bottom: 1.5rem;
         }
 
@@ -689,27 +668,11 @@
 
                         <div class="form-group">
                             <label>
-                                <span style="color: #8b5cf6; margin-right: 8px;">
-                                    <i class="fas fa-user-friends"></i>
+                                <span style="color: #f59e0b; margin-right: 8px;">
+                                    <i class="fas fa-user-graduate"></i>
                                 </span>
-                                Target Audience:
+                                Class/Section Selection:
                             </label>
-                            <div class="radio-group">
-                                <label>
-                                    <input type="radio" name="target" value="all" id="target-all" checked onclick="toggleClassSection()">
-                                    <span style="color: #10b981; margin-left: 4px; margin-right: 4px;">
-                                        <i class="fas fa-users"></i>
-                                    </span>
-                                    All
-                                </label>
-                                <label>
-                                    <input type="radio" name="target" value="specific" id="target-specific" onclick="toggleClassSection()">
-                                    <span style="color: #f59e0b; margin-left: 4px; margin-right: 4px;">
-                                        <i class="fas fa-user-graduate"></i>
-                                    </span>
-                                    Specific Class/Section
-                                </label>
-                            </div>
                         </div>
 
                         <div class="class-section-group">
@@ -721,7 +684,7 @@
                                         </span>
                                         Class:
                                     </label>
-                                    <select name="class" id="class">
+                                    <select name="class" id="class" required>
                                         <option value="">Select Class</option>
                                         {% for cls in classes %}
                                         <option value="{{ cls }}">{{ cls }}</option>
@@ -735,7 +698,7 @@
                                         </span>
                                         Section:
                                     </label>
-                                    <select name="section" id="section">
+                                    <select name="section" id="section" required>
                                         <option value="">Select Section</option>
                                         {% for sec in sections %}
                                         <option value="{{ sec }}">{{ sec|capfirst }}</option>
@@ -863,12 +826,6 @@
                 });
             }
         });
-
-        function toggleClassSection() {
-            const specificRadio = document.getElementById('target-specific');
-            const classSectionGroup = document.querySelector('.class-section-group');
-            classSectionGroup.style.display = specificRadio.checked ? 'block' : 'none';
-        }
 
         function openModal(imageUrl, title) {
             const modal = document.getElementById('imageModal');

@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Create Weekly Timetable</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
@@ -23,7 +22,8 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 120px 20px 40px 20px;
+            padding-top: 100px;
+            padding-bottom: 40px;
         }
 
         h1, h2, h3 {
@@ -53,43 +53,44 @@
             overflow-x: hidden;
         }
 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 0.5rem 1rem 0.5rem 0.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: var(--shadow-md);
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 10;
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: 0;
-            gap: 0.5rem;
+            gap: 1rem;
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            flex: none;
             margin: 0;
-            z-index: 0;
+            margin-left: -10%;
         }
 
         .back-btn {
-            padding: 0.8rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             background: var(--sidebar-bg);
@@ -99,8 +100,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            position: relative;
-            z-index: 1;
+            white-space: nowrap;
         }
 
         .back-btn:hover {
@@ -111,10 +111,10 @@
         }
 
         .logo-container {
-            width: 100px;
-            height: 80px;
+            width: 90px;
+            height: 70px;
             background: var(--white);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -122,8 +122,7 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
             border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
+            flex-shrink: 0;
         }
 
         .logo-container img {
@@ -138,203 +137,20 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-container:hover img {
-            transform: scale(1.05);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .form-header {
-            color: var(--primary-color);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .form-container {
+        .main-content {
             background: var(--white);
             border: 2px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
             padding: 2rem;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
+            margin-top: 20px;
         }
 
-        .form-container:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .form-group {
+        .alert-message {
             margin-bottom: 1.5rem;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: var(--transition);
-            background: var(--light-bg);
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background: var(--white);
-            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
-        }
-
-        .btn {
-            padding: 0.75rem 2rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            margin-right: 1rem;
-        }
-
-        .btn-primary {
-            background: var(--primary-color);
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-secondary {
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            border: 2px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: var(--white);
-            border: 2px solid #dc3545;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-            border-color: #c82333;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .period-controls {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .period-info {
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        .weekly-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .weekly-table:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .weekly-table th,
-        .weekly-table td {
-            padding: 0.75rem;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
-
-        .weekly-table th {
-            background-color: var(--primary-color);
-            color: var(--white);
-            font-weight: 500;
-        }
-
-        .weekly-table tr:hover {
-            background-color: var(--light-bg);
-        }
-
-        .weekly-table input,
-        .weekly-table select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 0.85rem;
-            background: var(--light-bg);
-            transition: var(--transition);
-        }
-
-        .weekly-table input:focus,
-        .weekly-table select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background: var(--white);
-            box-shadow: 0 0 0 2px rgba(0, 166, 118, 0.1);
-        }
-
-        .messages {
-            margin-bottom: 1.5rem;
-        }
-
-        .messages .success {
-            background: #d4edda;
-            color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .messages .error {
+        .alert-message .error {
             background: #fef2f2;
             color: #dc3545;
             padding: 0.75rem;
@@ -346,186 +162,400 @@
             border: 2px solid var(--border-color);
         }
 
-        .icon {
-            margin-right: 0.5rem;
+        .alert-message .success {
+            background: #d4edda;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
         }
 
-        .scroll-top-btn {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
+        .section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 150px;
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            appearance: none;
+        }
+
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
+        }
+
+        .period-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .period-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-period {
+            padding: 0.75rem 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-period:hover:not(:disabled) {
             background: var(--primary-color);
             color: var(--white);
-            padding: 1rem;
-            border-radius: 50px;
+            transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+        }
+
+        .btn-period:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
             transition: var(--transition);
-            z-index: 1000;
-            display: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-wrapper:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        table {
+            width: 100%;
+            min-width: 800px;
+            border-collapse: collapse;
+            background: var(--white);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--light-bg);
+            color: var(--primary-color);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            min-width: 200px;
+        }
+
+        td {
+            color: var(--text-color);
+            min-width: 200px;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        tr:hover {
+            background: #f0f9f4;
+        }
+
+        input[type="text"],
+        input[type="time"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--white);
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+            display: block;
+        }
+
+        input[type="text"]:focus,
+        input[type="time"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+        }
+
+        .submit-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            width: 50px;
-            height: 50px;
-            border: none;
-            cursor: pointer;
+            gap: 0.5rem;
+            width: 100%;
+            margin-top: 1rem;
         }
 
-        .scroll-top-btn:hover {
+        .submit-btn:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-md);
         }
 
-        .scroll-top-btn.show {
-            display: flex;
+        .cancel-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--sidebar-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            margin-top: 0.5rem;
+            text-decoration: none;
+        }
+
+        .cancel-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         @media (max-width: 768px) {
             body {
-                padding: 100px 10px 20px 10px;
+                padding-top: 140px;
             }
 
             .header {
-                padding: 1rem;
+                flex-wrap: wrap;
+                padding: 0.75rem;
+                gap: 0.75rem;
             }
 
             .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .logo-container {
-                width: 80px;
-                height: 64px;
-            }
-
-            .form-header {
-                font-size: 1.5rem;
-                margin-bottom: 1.25rem;
-            }
-
-            .form-container {
-                padding: 1.5rem;
-            }
-
-            .form-group input,
-            .form-group select {
-                padding: 0.75rem;
-                font-size: 0.9rem;
-            }
-
-            .btn {
-                padding: 0.75rem 1.5rem;
-                font-size: 0.9rem;
-                margin-right: 0.5rem;
-            }
-
-            .period-controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .weekly-table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-                font-size: 0.9rem;
-            }
-
-            .weekly-table th,
-            .weekly-table td {
-                padding: 0.5rem;
-                min-width: 120px;
+                font-size: 1.25rem;
+                order: 1;
+                width: 100%;
             }
 
             .back-btn {
+                order: 2;
+                flex: 1;
+                justify-content: center;
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
 
-            .scroll-top-btn {
-                bottom: 1rem;
-                right: 1rem;
-                width: 45px;
-                height: 45px;
-                font-size: 1.1rem;
-                padding: 0.9rem;
+            .logo-container {
+                order: 3;
+                width: 60px;
+                height: 50px;
+            }
+
+            .container {
+                padding: 0 15px;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .section {
+                padding: 1.2rem;
+            }
+
+            .form-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .form-group {
+                min-width: auto;
+            }
+
+            .period-info {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .period-controls {
+                flex-direction: row;
+            }
+
+            .btn-period {
+                flex: 1;
+            }
+
+            .table-wrapper {
+                max-height: 500px;
+                overflow-y: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            th, td {
+                padding: 0.6rem 0.5rem;
+                font-size: 0.85rem;
+                min-width: 150px;
+            }
+
+            input[type="text"],
+            input[type="time"] {
+                padding: 0.6rem;
+                font-size: 0.85rem;
+            }
+
+            .submit-btn, .cancel-btn {
+                width: 100%;
             }
         }
 
         @media (max-width: 480px) {
             body {
-                padding: 80px 5px 15px 5px;
+                padding-top: 160px;
             }
 
             .header {
-                padding: 0.75rem;
-                flex-direction: column;
-                gap: 1rem;
+                padding: 0.5rem;
             }
 
             .header h1 {
-                font-size: 1.25rem;
+                font-size: 1.1rem;
             }
 
             .logo-container {
-                width: 60px;
-                height: 48px;
+                width: 50px;
+                height: 45px;
             }
 
-            .form-header {
-                font-size: 1.3rem;
-                margin-bottom: 1rem;
+            .main-content {
+                padding: 1rem;
+                border-radius: 8px;
             }
 
-            .form-container {
+            .section {
                 padding: 1rem;
             }
 
-            .form-group input,
-            .form-group select {
-                padding: 0.5rem;
-                font-size: 0.85rem;
-            }
-
-            .btn {
-                padding: 0.5rem 1rem;
+            th, td {
+                padding: 0.5rem 0.4rem;
                 font-size: 0.8rem;
-                margin-right: 0;
-                margin-bottom: 0.5rem;
-                width: 100%;
-                justify-content: center;
-            }
-
-            .period-controls {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .weekly-table th,
-            .weekly-table td {
-                padding: 0.25rem;
-                min-width: 80px;
-                font-size: 0.75rem;
+                min-width: 120px;
             }
 
             .back-btn {
                 padding: 0.5rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .period-controls {
+                flex-direction: column;
+            }
+
+            .btn-period {
+                width: 100%;
+                justify-content: center;
+            }
+
+            input[type="text"],
+            input[type="time"] {
+                padding: 0.5rem;
                 font-size: 0.8rem;
             }
 
-            .scroll-top-btn {
-                bottom: 0.75rem;
-                right: 0.75rem;
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-                padding: 0.8rem;
+            .submit-btn, .cancel-btn {
+                font-size: 0.9rem;
+                padding: 0.7rem;
             }
         }
 
         @media (hover: none) {
-            .form-container:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover, .btn:hover {
+            .section:hover, .logo-container:hover, .back-btn:hover, .table-wrapper:hover, .btn-period:hover, .submit-btn:hover, .cancel-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -542,13 +572,30 @@
             }
         }
     </style>
+
+    <script>
+        function updatePeriods(action) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = window.location.href;
+            const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]').cloneNode(true);
+            form.appendChild(csrfInput);
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = action;
+            form.appendChild(actionInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
 </head>
 <body>
     <header class="header">
         <a href="{% url 'teacher_timetable' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Timetable
         </a>
-        <h1><i class="fas fa-calendar-plus"></i> Create Weekly Timetable</h1>
+        <h1><i class="fas fa-calendar-week" style="color: #06b6d4; margin-right: 8px;"></i> Create Weekly Timetable</h1>
         <a href="{% url 'teacher_dashboard' %}">
             <div class="logo-container">
                 <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
@@ -557,130 +604,97 @@
     </header>
 
     <div class="container">
-        <h2 class="form-header">
-            
-        </h2>
-
-        <div class="messages">
+        <div class="main-content">
             {% if messages %}
-                {% for message in messages %}
-                    <div class="{{ message.tags }}">
-                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
-                        {{ message }}
-                    </div>
-                {% endfor %}
+                <div class="alert-message">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
             {% endif %}
-        </div>
 
-        <div class="form-container">
-            <form method="post" action="{% url 'teacher_timetable_weekly' %}">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="class">Class:</label>
-                    <select name="class" id="class" required>
-                        <option value="">Select Class</option>
-                        {% for cls in classes %}
-                            <option value="{{ cls }}">{{ cls }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="section">Section (Optional):</label>
-                    <select name="section" id="section">
-                        <option value="">No Section</option>
-                        {% for sec in sections %}
-                            <option value="{{ sec }}">{{ sec|capfirst }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <button type="submit" name="create_timetable" class="btn btn-primary">
+            <div class="section">
+                <h2>Create Weekly Timetable</h2>
+                <form method="post" action="{% url 'teacher_timetable_weekly' %}">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="class">
+                                <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class:
+                            </label>
+                            <select id="class" name="class" required>
+                                <option value="" disabled selected>Select a class</option>
+                                {% for cls in classes %}
+                                <option value="{{ cls }}">{{ cls }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="section">
+                                <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i> Section (Optional):
+                            </label>
+                            <select id="section" name="section">
+                                <option value="" selected>No Section</option>
+                                {% for sec in sections %}
+                                <option value="{{ sec }}">{{ sec|capfirst }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="period-info">
+                            <label>
+                                <i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> Periods: {{ num_periods }}
+                            </label>
+                            <div class="period-controls">
+                                <button type="button" class="btn-period" onclick="updatePeriods('add')" {% if num_periods >= 10 %}disabled{% endif %}>
+                                    <i class="fas fa-plus" style="color: #10b981;"></i> Add Period
+                                </button>
+                                <button type="button" class="btn-period" onclick="updatePeriods('delete')" {% if num_periods <= 1 %}disabled{% endif %}>
+                                    <i class="fas fa-minus" style="color: #ef4444;"></i> Delete Period
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-hashtag" style="color: #6366f1; margin-right: 8px;"></i> Period</th>
+                                    {% for day in days %}
+                                    <th><i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> {{ day }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for period in periods %}
+                                <tr>
+                                    <td><strong>Period {{ period }}</strong></td>
+                                    {% for day in days %}
+                                    <td>
+                                        <input type="text" name="subject_{{ day }}_{{ period }}" placeholder="Subject">
+                                        <input type="time" name="start_time_{{ day }}_{{ period }}">
+                                        <input type="time" name="end_time_{{ day }}_{{ period }}">
+                                        <input type="text" name="room_{{ day }}_{{ period }}" placeholder="Room">
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="submit" name="create_timetable" class="submit-btn">
                         <i class="fas fa-save"></i> Create Timetable
                     </button>
-                    <a href="{% url 'teacher_timetable' %}" class="btn btn-secondary">
+                    <a href="{% url 'teacher_timetable' %}" class="cancel-btn">
                         <i class="fas fa-times"></i> Cancel
                     </a>
-                </div>
-
-                <div class="period-controls">
-                    <div class="period-info">
-                        <strong>Number of Periods:</strong> {{ num_periods }}
-                    </div>
-                    <form method="post" style="display: inline;">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="add">
-                        <button type="submit" class="btn btn-primary" {% if num_periods >= 10 %}disabled{% endif %}>
-                            <i class="fas fa-plus"></i> Add Period
-                        </button>
-                    </form>
-                    <form method="post" style="display: inline;">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="delete">
-                        <button type="submit" class="btn btn-danger" {% if num_periods <= 1 %}disabled{% endif %}>
-                            <i class="fas fa-minus"></i> Remove Period
-                        </button>
-                    </form>
-                </div>
-
-                <table class="weekly-table">
-                    <thead>
-                        <tr>
-                            <th>Period</th>
-                            {% for day in days %}
-                                <th>{{ day }}</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for period in periods %}
-                        <tr>
-                            <td><strong>Period {{ period }}</strong></td>
-                            {% for day in days %}
-                            <td>
-                                <div class="form-group" style="margin-bottom: 0.5rem;">
-                                    <label for="subject_{{ day }}_{{ period }}">Subject:</label>
-                                    <input type="text" name="subject_{{ day }}_{{ period }}" id="subject_{{ day }}_{{ period }}" placeholder="Subject">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 0.5rem;">
-                                    <label for="start_time_{{ day }}_{{ period }}">Start Time:</label>
-                                    <input type="time" name="start_time_{{ day }}_{{ period }}" id="start_time_{{ day }}_{{ period }}">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 0.5rem;">
-                                    <label for="end_time_{{ day }}_{{ period }}">End Time:</label>
-                                    <input type="time" name="end_time_{{ day }}_{{ period }}" id="end_time_{{ day }}_{{ period }}">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label for="room_{{ day }}_{{ period }}">Room:</label>
-                                    <input type="text" name="room_{{ day }}_{{ period }}" id="room_{{ day }}_{{ period }}" placeholder="Room">
-                                </div>
-                            </td>
-                            {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-
-    <button class="scroll-top-btn" onclick="scrollToTop()">
-        <i class="fas fa-chevron-up"></i>
-    </button>
-
-    <script>
-        window.onscroll = function() {
-            const btn = document.querySelector('.scroll-top-btn');
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                btn.classList.add('show');
-            } else {
-                btn.classList.remove('show');
-            }
-        };
-
-        function scrollToTop() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        }
-    </script>
 </body>
 </html>

@@ -188,24 +188,24 @@
     }
 
     .sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    opacity: 0;
-    transition: var(--transition);
-    pointer-events: none;      /* ← NEW */
-}
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: var(--transition);
+        pointer-events: none;
+    }
 
-.sidebar-overlay.active {
-    display: block;
-    opacity: 1;
-    pointer-events: all;       /* ← NEW: Allows clicks when open */
-}
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+        pointer-events: all;
+    }
 
     /* Page Wrapper */
     .page-wrapper {
@@ -559,28 +559,26 @@
     }
 
     .view-btn,
-.download-btn {
-    flex: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;              /* 🔥 space between icon & text */
-    padding: 0.65rem 1rem;
-    text-decoration: none;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    font-family: inherit;     /* 🔥 forces same font */
-    transition: var(--transition);
-    border: none;
-    cursor: pointer;
-}
-
+    .download-btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        padding: 0.65rem 1rem;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        font-family: inherit;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+    }
 
     .view-btn {
         background: var(--info-color);
         color: var(--white);
-        
     }
 
     .view-btn:hover {
@@ -972,7 +970,7 @@
 
                 <!-- Upload Section -->
                 <section class="section">
-                    <h2><i class="fas fa-upload"></i> Upload New Circular</h2>
+                    <h2><i class="fas fa-upload" style="color: #f59e0b;"></i> Upload New Circular</h2>
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-group">
@@ -1061,7 +1059,7 @@
 
                 <!-- Uploaded Circulars Section -->
                 <section class="section">
-                    <h2><i class="fas fa-list"></i> Uploaded Circulars</h2>
+                    <h2><i class="fas fa-list" style="color: #06b6d4;"></i> Uploaded Circulars</h2>
                     
                     <!-- Filters -->
                     <div class="filters-container">
@@ -1084,7 +1082,12 @@
                         {% for circular in circulars %}
                         <div class="circular">
                             <div class="circular-type">Uploaded Circular</div>
-                            <h3>{{ circular.title }}</h3>
+                            <h3>
+                                <span style="color: #ef4444; margin-right: 8px;">
+                                    <i class="fas fa-bullhorn"></i>
+                                </span>
+                                {{ circular.title }}
+                            </h3>
                             <small><i class="fas fa-calendar"></i> Posted on: {{ circular.date }}</small>
                             <small><i class="fas fa-bullseye"></i> Target: {{ circular.target }}</small>
                             <img src="{{ circular.image_url }}" alt="{{ circular.title }}" onclick="openModal('{{ circular.image_url }}', '{{ circular.title }}')">
@@ -1101,7 +1104,7 @@
                         </div>
                         {% empty %}
                         <p class="no-circulars">
-                            <i class="fas fa-inbox"></i> No circulars available right now. Please check back later.
+                            <i class="fas fa-inbox" style="color: #94a3b8; margin-right: 8px;"></i> No circulars available right now. Please check back later.
                         </p>
                         {% endfor %}
                     </div>
@@ -1137,7 +1140,6 @@
                     e.stopPropagation();
                     sidebar.classList.toggle('active');
                     sidebarOverlay.classList.toggle('active');
-                    
                 });
             }
 
@@ -1146,7 +1148,6 @@
                 sidebarOverlay.addEventListener('click', function() {
                     sidebar.classList.remove('active');
                     sidebarOverlay.classList.remove('active');
-                    
                 });
             }
 
@@ -1156,7 +1157,6 @@
                     if (window.innerWidth <= 768) {
                         sidebar.classList.remove('active');
                         sidebarOverlay.classList.remove('active');
-                        
                     }
                 });
             });
@@ -1169,7 +1169,6 @@
                     if (window.innerWidth > 768) {
                         sidebar.classList.remove('active');
                         sidebarOverlay.classList.remove('active');
-                        
                     }
                 }, 250);
             });

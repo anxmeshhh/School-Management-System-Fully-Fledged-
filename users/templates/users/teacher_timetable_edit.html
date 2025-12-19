@@ -22,8 +22,8 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            line-height: 1.6;
-            padding: 120px 20px 40px 20px;
+            padding-top: 100px;
+            padding-bottom: 40px;
         }
 
         h1, h2, h3 {
@@ -53,39 +53,44 @@
             overflow-x: hidden;
         }
 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
         .header {
             background: var(--white);
             color: var(--text-color);
-            padding: 1rem 1.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: var(--shadow-md);
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 10;
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: 0;
             gap: 1rem;
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
             text-align: center;
             flex-grow: 1;
             color: var(--primary-color);
             margin: 0;
-            white-space: nowrap;
+            margin-left: -10%;
         }
 
         .back-btn {
-            padding: 0.8rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             background: var(--sidebar-bg);
@@ -95,8 +100,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            position: relative;
-            z-index: 1;
+            white-space: nowrap;
         }
 
         .back-btn:hover {
@@ -107,10 +111,10 @@
         }
 
         .logo-container {
-            width: 100px;
-            height: 80px;
+            width: 90px;
+            height: 70px;
             background: var(--white);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -118,8 +122,7 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
             border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
+            flex-shrink: 0;
         }
 
         .logo-container img {
@@ -134,323 +137,262 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-container:hover img {
-            transform: scale(1.05);
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .form-header {
-            color: var(--primary-color);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            text-align: center;
-            padding: 1rem 0;
-        }
-
-        .form-container {
+        .main-content {
             background: var(--white);
             border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: 2.5rem;
+            border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            margin-bottom: 2rem;
+            padding: 2rem;
+            margin-top: 20px;
         }
 
-        .form-container:hover {
+        .alert-message {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-message .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .alert-message .success {
+            background: #d4edda;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .section:hover {
             box-shadow: var(--shadow-md);
         }
 
-        .form-group {
-            margin-bottom: 1.75rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: var(--transition);
-            background: var(--light-bg);
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background: var(--white);
-            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
         }
 
         .form-row {
             display: flex;
-            gap: 1.5rem;
+            gap: 1rem;
             align-items: flex-end;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
         }
 
-        .form-row .form-group {
+        .form-group {
             flex: 1;
             min-width: 200px;
+            margin-bottom: 0;
         }
 
-        .btn {
-            padding: 0.75rem 2rem;
-            border: none;
+        .form-group label {
+            display: block;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="time"],
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
             border-radius: 8px;
-            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="time"]:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
+        }
+
+        .form-group select {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            appearance: none;
+        }
+
+        .submit-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
-            text-decoration: none;
-            margin-right: 1rem;
+            width: 100%;
+            margin-top: 1rem;
         }
 
-        .btn-primary {
-            background: var(--primary-color);
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
+        .submit-btn:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
 
-        .btn-secondary {
+        .cancel-btn {
+            padding: 0.75rem 1.5rem;
             background: var(--sidebar-bg);
-            color: var(--text-color);
             border: 2px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .messages {
-            margin-bottom: 2rem;
-            max-width: 600px;
-        }
-
-        .messages .success,
-        .messages .error {
-            padding: 1rem;
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            border: 2px solid var(--border-color);
-            margin-bottom: 1rem;
-        }
-
-        .messages .success {
-            background: #d4edda;
-            color: var(--primary-color);
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .messages .error {
-            background: #fef2f2;
-            color: #dc3545;
-            border-left: 4px solid #dc3545;
-        }
-
-        .icon {
-            margin-right: 0.5rem;
-            font-size: 1.1rem;
-        }
-
-        .scroll-top-btn {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: var(--primary-color);
-            color: var(--white);
-            padding: 1rem;
-            border-radius: 50px;
-            box-shadow: var(--shadow-md);
+            color: var(--text-color);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
             transition: var(--transition);
-            z-index: 1000;
-            display: none;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            width: 50px;
-            height: 50px;
-            border: none;
-            cursor: pointer;
+            gap: 0.5rem;
+            width: 100%;
+            margin-top: 0.5rem;
+            text-decoration: none;
         }
 
-        .scroll-top-btn:hover {
-            background: var(--primary-hover);
+        .cancel-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .scroll-top-btn.show {
-            display: flex;
+            box-shadow: var(--shadow-md);
         }
 
         @media (max-width: 768px) {
             body {
-                padding: 100px 10px 20px 10px;
+                padding-top: 140px;
             }
 
             .header {
-                padding: 1rem;
                 flex-wrap: wrap;
-                gap: 0.5rem;
+                padding: 0.75rem;
+                gap: 0.75rem;
             }
 
             .header h1 {
-                font-size: 1.5rem;
-                position: static;
-                transform: none;
-                flex-grow: 1;
-                text-align: center;
+                font-size: 1.25rem;
+                order: 1;
+                width: 100%;
+            }
+
+            .back-btn {
+                order: 2;
+                flex: 1;
+                justify-content: center;
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
             }
 
             .logo-container {
-                width: 80px;
-                height: 64px;
+                order: 3;
+                width: 60px;
+                height: 50px;
             }
 
-            .form-header {
-                font-size: 1.5rem;
-                margin-bottom: 1.5rem;
+            .container {
+                padding: 0 15px;
             }
 
-            .form-container {
+            .main-content {
                 padding: 1.5rem;
             }
 
-            .form-group input,
-            .form-group select {
-                padding: 0.75rem;
-                font-size: 0.9rem;
+            .section {
+                padding: 1.2rem;
             }
 
             .form-row {
                 flex-direction: column;
+                align-items: stretch;
                 gap: 1rem;
             }
 
-            .form-row .form-group {
+            .form-group {
                 min-width: auto;
             }
 
-            .btn {
-                padding: 0.75rem 1.5rem;
-                font-size: 0.9rem;
-                margin-right: 0.5rem;
+            .submit-btn, .cancel-btn {
                 width: 100%;
-                justify-content: center;
-            }
-
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-                width: 100%;
-                justify-content: center;
-            }
-
-            .scroll-top-btn {
-                bottom: 1rem;
-                right: 1rem;
-                width: 45px;
-                height: 45px;
-                font-size: 1.1rem;
-                padding: 0.9rem;
             }
         }
 
         @media (max-width: 480px) {
             body {
-                padding: 80px 5px 15px 5px;
+                padding-top: 160px;
             }
 
             .header {
-                padding: 0.75rem;
-                flex-direction: column;
-                gap: 1rem;
+                padding: 0.5rem;
             }
 
             .header h1 {
-                font-size: 1.25rem;
+                font-size: 1.1rem;
             }
 
             .logo-container {
-                width: 60px;
-                height: 48px;
+                width: 50px;
+                height: 45px;
             }
 
-            .form-header {
-                font-size: 1.3rem;
-                margin-bottom: 1rem;
-            }
-
-            .form-container {
+            .main-content {
                 padding: 1rem;
+                border-radius: 8px;
             }
 
-            .form-group input,
-            .form-group select {
-                padding: 0.5rem;
-                font-size: 0.85rem;
-            }
-
-            .form-row {
-                gap: 0.75rem;
-            }
-
-            .btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.8rem;
-                margin-right: 0;
-                margin-bottom: 0.5rem;
-                width: 100%;
-                justify-content: center;
+            .section {
+                padding: 1rem;
             }
 
             .back-btn {
                 padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
 
-            .scroll-top-btn {
-                bottom: 0.75rem;
-                right: 0.75rem;
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-                padding: 0.8rem;
+            .submit-btn, .cancel-btn {
+                font-size: 0.9rem;
+                padding: 0.7rem;
             }
         }
 
         @media (hover: none) {
-            .form-container:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover, .btn:hover {
+            .section:hover, .logo-container:hover, .back-btn:hover, .submit-btn:hover, .cancel-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -473,7 +415,7 @@
         <a href="{% url 'teacher_timetable' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Timetable
         </a>
-        <h1><i class="fas fa-edit"></i> Edit Timetable Entry</h1>
+        <h1><i class="fas fa-edit" style="color: var(--primary-color); margin-right: 8px;"></i> Edit Timetable Entry</h1>
         <a href="{% url 'teacher_dashboard' %}">
             <div class="logo-container">
                 <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
@@ -482,107 +424,102 @@
     </header>
 
     <div class="container">
-        <h2 class="form-header">
-            
-        </h2>
-
-        <div class="messages">
+        <div class="main-content">
             {% if messages %}
-                {% for message in messages %}
-                    <div class="{{ message.tags }}">
-                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
-                        {{ message }}
-                    </div>
-                {% endfor %}
+                <div class="alert-message">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
             {% endif %}
-        </div>
 
-        <div class="form-container">
-            <form method="post" action="{% url 'teacher_timetable_edit' timetable.id %}">
-                {% csrf_token %}
-                <input type="hidden" name="id" value="{{ timetable.id }}">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="class"><i class="fas fa-graduation-cap"></i> Class:</label>
-                        <select id="class" name="class" required>
-                            <option value="">Select Class</option>
-                            {% for cls in classes %}
-                                <option value="{{ cls }}" {% if cls == timetable.class %}selected{% endif %}>{{ cls }}</option>
-                            {% endfor %}
-                        </select>
+            <div class="section">
+                <h2>Edit Timetable Entry</h2>
+                <form method="post" action="{% url 'teacher_timetable_edit' timetable.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{ timetable.id }}">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="class">
+                                <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class:
+                            </label>
+                            <select id="class" name="class" required>
+                                <option value="" disabled>Select Class</option>
+                                {% for cls in classes %}
+                                    <option value="{{ cls }}" {% if cls == timetable.class %}selected{% endif %}>{{ cls }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="section">
+                                <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i> Section (Optional):
+                            </label>
+                            <select id="section" name="section">
+                                <option value="" {% if not timetable.section %}selected{% endif %}>No Section</option>
+                                {% for sec in sections %}
+                                    <option value="{{ sec }}" {% if sec == timetable.section %}selected{% endif %}>{{ sec|capfirst }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">
+                                <i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Subject:
+                            </label>
+                            <input type="text" id="subject" name="subject" value="{{ timetable.subject }}" required placeholder="e.g., Mathematics">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="section"><i class="fas fa-th-large"></i> Section:</label>
-                        <select id="section" name="section">
-                            <option value="">No Section</option>
-                            {% for sec in sections %}
-                                <option value="{{ sec }}" {% if sec == timetable.section %}selected{% endif %}>{{ sec|capfirst }}</option>
-                            {% endfor %}
-                        </select>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="day_of_week">
+                                <i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> Day of Week:
+                            </label>
+                            <select id="day_of_week" name="day_of_week" required>
+                                <option value="" disabled>Select Day</option>
+                                <option value="Monday" {% if timetable.day_of_week == 'Monday' %}selected{% endif %}>Monday</option>
+                                <option value="Tuesday" {% if timetable.day_of_week == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                                <option value="Wednesday" {% if timetable.day_of_week == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                                <option value="Thursday" {% if timetable.day_of_week == 'Thursday' %}selected{% endif %}>Thursday</option>
+                                <option value="Friday" {% if timetable.day_of_week == 'Friday' %}selected{% endif %}>Friday</option>
+                                <option value="Saturday" {% if timetable.day_of_week == 'Saturday' %}selected{% endif %}>Saturday</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="start_time">
+                                <i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> Start Time:
+                            </label>
+                            <input type="time" id="start_time" name="start_time" value="{{ timetable.start_time|time:'H:i' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_time">
+                                <i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> End Time:
+                            </label>
+                            <input type="time" id="end_time" name="end_time" value="{{ timetable.end_time|time:'H:i' }}" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="subject"><i class="fas fa-book"></i> Subject:</label>
-                        <input type="text" id="subject" name="subject" value="{{ timetable.subject }}" required placeholder="e.g., Mathematics">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="room">
+                                <i class="fas fa-door-open" style="color: #14b8a6; margin-right: 8px;"></i> Room (Optional):
+                            </label>
+                            <input type="text" id="room" name="room" value="{{ timetable.room|default:'' }}" placeholder="e.g., Room 101">
+                        </div>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="day_of_week"><i class="fas fa-calendar-day"></i> Day of Week:</label>
-                        <select id="day_of_week" name="day_of_week" required>
-                            <option value="">Select Day</option>
-                            <option value="Monday" {% if timetable.day_of_week == 'Monday' %}selected{% endif %}>Monday</option>
-                            <option value="Tuesday" {% if timetable.day_of_week == 'Tuesday' %}selected{% endif %}>Tuesday</option>
-                            <option value="Wednesday" {% if timetable.day_of_week == 'Wednesday' %}selected{% endif %}>Wednesday</option>
-                            <option value="Thursday" {% if timetable.day_of_week == 'Thursday' %}selected{% endif %}>Thursday</option>
-                            <option value="Friday" {% if timetable.day_of_week == 'Friday' %}selected{% endif %}>Friday</option>
-                            <option value="Saturday" {% if timetable.day_of_week == 'Saturday' %}selected{% endif %}>Saturday</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="start_time"><i class="fas fa-clock"></i> Start Time:</label>
-                        <input type="time" id="start_time" name="start_time" value="{{ timetable.start_time|time:'H:i' }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="end_time"><i class="fas fa-clock"></i> End Time:</label>
-                        <input type="time" id="end_time" name="end_time" value="{{ timetable.end_time|time:'H:i' }}" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="room"><i class="fas fa-door-open"></i> Room (Optional):</label>
-                        <input type="text" id="room" name="room" value="{{ timetable.room|default:'' }}" placeholder="e.g., Room 101">
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Update Entry
-                        </button>
-                        <a href="{% url 'teacher_timetable' %}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Cancel
-                        </a>
-                    </div>
-                </div>
-            </form>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i> Update Entry
+                    </button>
+                    <a href="{% url 'teacher_timetable' %}" class="cancel-btn">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </form>
+            </div>
         </div>
     </div>
-
-    <button class="scroll-top-btn" onclick="scrollToTop()">
-        <i class="fas fa-chevron-up"></i>
-    </button>
-
-    <script>
-        window.onscroll = function() {
-            const btn = document.querySelector('.scroll-top-btn');
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                btn.classList.add('show');
-            } else {
-                btn.classList.remove('show');
-            }
-        };
-
-        function scrollToTop() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        }
-    </script>
 </body>
 </html>
