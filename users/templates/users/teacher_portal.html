@@ -4,481 +4,642 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Attendance Portal</title>
+    <title>Manavargal School Management System - Mark Attendance</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            background: var(--white);
-            min-height: 100vh;
-            color: var(--text-color);
-            overflow: hidden;
-        }
+    body {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        background: var(--white);
+        min-height: 100vh;
+        color: var(--text-color);
+        overflow: hidden;
+    }
 
-        h1, h2, h3 {
-            font-family: 'Montserrat', sans-serif;
-        }
+    h1, h2, h3 {
+        font-family: 'Montserrat', sans-serif;
+    }
 
-        :root {
-            --primary-color: #00a676;
-            --primary-hover: #00b88d;
-            --sidebar-bg: #f0f9f4;
-            --sidebar-border: #a8d5c2;
-            --white: #ffffff;
-            --light-bg: #f8f9fa;
-            --border-color: #adb5bd;
-            --text-color: #495057;
-            --text-light: #868e96;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --border-radius: 16px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --dull-highlighter: #d4edda;
-        }
+    :root {
+        --primary-color: #00a676;
+        --primary-hover: #00b88d;
+        --danger-color: #dc2626;
+        --danger-hover: #ef4444;
+        --sidebar-bg: #f0f9f4;
+        --sidebar-border: #a8d5c2;
+        --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --border-color: #adb5bd;
+        --text-color: #495057;
+        --text-light: #868e96;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --border-radius: 16px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --dull-highlighter: #d4edda;
+    }
 
-        html {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
-        }
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        overflow-x: hidden;
+    }
 
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            height: 100vh;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            overflow-y: auto;
-            box-shadow: var(--shadow-md);
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            transition: var(--transition);
-            border-right: 2px solid var(--sidebar-border);
-            transform: translateX(0);
-        }
+    /* Sidebar styles */
+    .sidebar {
+        width: 280px;
+        height: 100vh;
+        background: var(--sidebar-bg);
+        color: var(--text-color);
+        overflow-y: auto;
+        box-shadow: var(--shadow-md);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        transition: var(--transition);
+        border-right: 2px solid var(--sidebar-border);
+        transform: translateX(0);
+    }
 
-        .sidebar-header {
-            padding: 2rem 1.5rem;
-            background: var(--white);
-            text-align: center;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            border-bottom: 2px solid var(--sidebar-border);
-        }
+    .sidebar-header {
+        padding: 2rem 1.5rem;
+        background: var(--white);
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 2px solid var(--sidebar-border);
+    }
 
-        .logo-container {
-            width: 100px;
-            height: 80px;
-            background: var(--white);
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            transition: var(--transition);
-            box-shadow: var(--shadow-sm);
-            border: 2px solid var(--sidebar-border);
-        }
+    .logo-container {
+        width: 100px;
+        height: 80px;
+        background: var(--white);
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--sidebar-border);
+    }
 
-        .logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: var(--transition);
-        }
+    .logo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: var(--transition);
+    }
 
-        .logo-container:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
-        }
+    .sidebar-nav {
+        padding: 1rem 0;
+    }
 
-        .sidebar-header:hover {
-            background: var(--light-bg);
-        }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: var(--transition);
+        font-size: 1.05rem;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+    }
 
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            color: var(--text-color);
-            text-decoration: none;
-            transition: var(--transition);
-            font-size: 1.05rem;
-            font-weight: 500;
-            border-left: 3px solid transparent;
-        }
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+        background: var(--dull-highlighter);
+        border-left: 3px solid var(--primary-color);
+        color: var(--primary-color);
+        transform: translateX(4px);
+    }
 
-        .sidebar-nav a:hover,
-        .sidebar-nav a.active {
-            background: var(--dull-highlighter);
-            border-left: 3px solid var(--primary-color);
-            color: var(--primary-color);
-            transform: translateX(4px);
-        }
+    .sidebar-nav a img {
+        margin-right: 1rem;
+        transition: var(--transition);
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
 
-        .sidebar-nav a img {
-            margin-right: 1rem;
-            width: 24px;
-            height: 24px;
-            flex-shrink: 0;
-            transition: var(--transition);
-        }
+    .menu-toggle {
+        display: none;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        background: var(--white);
+        border: 2px solid var(--sidebar-border);
+        cursor: pointer;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1001;
+        padding: 0.75rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        width: 50px;
+        height: 50px;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .sidebar-nav a:hover img {
-            transform: scale(1.1);
-        }
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: var(--transition);
+        pointer-events: none;
+    }
 
-        /* Menu Toggle */
-        .menu-toggle {
-            display: none;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            background: var(--white);
-            border: 2px solid var(--sidebar-border);
-            cursor: pointer;
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            z-index: 1001;
-            padding: 0.75rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            width: 50px;
-            height: 50px;
-            align-items: center;
-            justify-content: center;
-        }
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+        pointer-events: all;
+    }
 
-        .menu-toggle:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: scale(1.05);
-        }
+    .page-wrapper {
+        margin-left: 280px;
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        transition: var(--transition);
+    }
 
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 20px;
+    }
+
+    .header {
+        background: var(--white);
+        color: var(--text-color);
+        padding: 1.5rem;
+        border: 2px solid #495057;
+        box-shadow: var(--shadow-md);
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: center;
+        color: var(--primary-color);
+        margin: 0;
+    }
+
+    .main-content {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        padding: 2rem;
+    }
+
+    .section {
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        margin-bottom: 2rem;
+    }
+
+    h2 {
+        color: var(--primary-color);
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    /* Alert Messages */
+    .alert-message {
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-box {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
             opacity: 0;
-            transition: var(--transition);
-            pointer-events: none;
+            transform: translateY(-10px);
         }
-
-        .sidebar-overlay.active {
-            display: block;
+        to {
             opacity: 1;
-            pointer-events: all;
+            transform: translateY(0);
         }
+    }
 
-        /* Main Content */
-        .page-wrapper {
-            margin-left: 280px;
-            height: 100vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-            transition: var(--transition);
+    .alert-success {
+        background: #d1fae5;
+        border: 2px solid #10b981;
+        color: #065f46;
+    }
+
+    .alert-error {
+        background: #fee2e2;
+        border: 2px solid #ef4444;
+        color: #991b1b;
+    }
+
+    .alert-warning {
+        background: #fef3c7;
+        border: 2px solid #f59e0b;
+        color: #92400e;
+    }
+
+    /* Filters */
+    .filters-container {
+        display: flex;
+        align-items: flex-end;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filters-container .form-group {
+        flex: 1;
+        min-width: 150px;
+        margin-bottom: 0;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group select,
+    .form-group input[type="date"] {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--white);
+        font-size: 0.95rem;
+        transition: var(--transition);
+    }
+
+    .filter-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary-color);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--white);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .filter-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .filter-btn.clear {
+        background: var(--danger-color);
+    }
+
+    .filter-btn.clear:hover {
+        background: var(--danger-hover);
+    }
+
+    .attendance-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .attendance-card {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .attendance-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .attendance-card.locked {
+        opacity: 0.9;
+        background: #f9fafb;
+        border-color: #d1d5db;
+    }
+
+    .attendance-card p {
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+        color: var(--text-color);
+    }
+
+    .attendance-card p strong {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .locked-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #fef3c7;
+        color: #92400e;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        border: 1px solid #fbbf24;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: auto;
+        flex-wrap: wrap;
+    }
+
+    .status-btn {
+        padding: 0.75rem 1rem;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        flex: 1;
+        min-width: 90px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        opacity: 0.7;
+        position: relative;
+    }
+
+    .status-btn:not(:disabled):hover {
+        opacity: 1;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .status-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+    }
+
+    .status-btn.active {
+        opacity: 1 !important;
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25) !important;
+        font-weight: 700;
+        z-index: 1;
+    }
+
+    .present-btn {
+        background: #16a34a;
+        color: var(--white);
+    }
+
+    .present-btn:not(:disabled):hover {
+        background: #22c55e;
+    }
+
+    .present-btn.active {
+        background: #22c55e !important;
+        border-color: #16a34a !important;
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3) !important;
+    }
+
+    .absent-btn {
+        background: var(--primary-color);
+        color: var(--white);
+    }
+
+    .absent-btn:not(:disabled):hover {
+        background: var(--primary-hover);
+    }
+
+    .absent-btn.active {
+        background: var(--primary-hover) !important;
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 4px rgba(0, 166, 118, 0.3) !important;
+    }
+
+    .leave-btn {
+        background: #eab308;
+        color: #000;
+    }
+
+    .leave-btn:not(:disabled):hover {
+        background: #facc15;
+    }
+
+    .leave-btn.active {
+        background: #facc15 !important;
+        color: #000 !important;
+        border-color: #eab308 !important;
+        box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.3) !important;
+    }
+
+    .no-students {
+        text-align: center;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        padding: 2rem;
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        grid-column: 1 / -1;
+    }
+
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 1rem;
+        grid-column: 1 / -1;
+    }
+
+    .loading-spinner.active {
+        display: block;
+    }
+
+    .spinner {
+        border: 4px solid #f3f4f6;
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 768px) {
+        .menu-toggle { 
+            display: flex; 
+        }
+        
+        .sidebar { 
+            transform: translateX(-100%); 
+        }
+        
+        .sidebar.active { 
+            transform: translateX(0); 
+        }
+        
+        .page-wrapper { 
+            margin-left: 0; 
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 20px;
+            padding: 1rem 10px;
         }
 
         .header {
-            background: var(--white);
-            padding: 1.5rem;
-            border: 2px solid #495057;
-            box-shadow: var(--shadow-md);
-            border-radius: var(--border-radius);
-            margin-bottom: 2rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
 
         .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            color: var(--primary-color);
-            margin: 0;
-        }
-
-        .main-content {
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            padding: 2rem;
-        }
-
-        .alert-message {
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-message .error {
-            background: #fef2f2;
-            color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #dc3545;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .alert-message .success {
-            background: #d4edda;
-            color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .section {
-            background: var(--light-bg);
-            padding: 2rem;
-            border-radius: 12px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .section:hover {
-            box-shadow: var(--shadow-md);
+            font-size: 1.5rem;
         }
 
         h2 {
-            color: var(--primary-color);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
+            font-size: 1.4rem;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
+        .main-content {
+            padding: 1rem;
         }
 
-        .form-group label {
-            display: block;
-            color: var(--text-color);
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+        .section {
+            padding: 1rem;
         }
 
-        .form-group input[type="text"],
-        .form-group input[type="date"],
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--white);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
-            outline: none;
-        }
-
-        .form-row {
-            display: flex;
-            align-items: end;
+        .attendance-cards { 
+            grid-template-columns: 1fr;
             gap: 1rem;
         }
 
-        .form-row .form-group {
-            flex: 1;
+        .attendance-card {
+            padding: 1rem;
         }
 
-        .load-btn {
-            padding: 0.75rem 1.5rem;
-            background: var(--primary-color);
-            border: none;
-            border-radius: 8px;
-            color: var(--white);
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            align-self: flex-end;
-            transform: translateY(-25px);
+        .filters-container { 
+            flex-direction: column; 
+            align-items: stretch;
+            gap: 0.75rem;
         }
 
-        .load-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .filters-container .form-group {
+            min-width: 100%;
         }
 
-        .table-container {
-            overflow-x: auto;
-        }
-
-        .attendance-table {
+        .filter-btn {
             width: 100%;
-            min-width: 600px;
-            border-collapse: collapse;
-            border: 2px solid var(--border-color);
-            background: var(--white);
+            padding: 0.875rem 1rem;
         }
 
-        .attendance-table th,
-        .attendance-table td {
-            padding: 0.75rem;
-            text-align: left;
-            border: 1px solid var(--border-color);
-            font-size: 0.9rem;
+        .action-buttons {
+            gap: 0.5rem;
         }
 
-        .attendance-table th {
-            background: var(--light-bg);
-            color: var(--primary-color);
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .attendance-table tr:nth-child(even) {
-            background: var(--light-bg);
-        }
-
-        .attendance-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            color: var(--white);
+        .status-btn {
+            padding: 0.625rem 0.75rem;
             font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            margin: 0 0.25rem;
-            min-width: 70px;
+            min-width: 80px;
         }
 
-        .attendance-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .present { background: #16a34a; }
-        .present:hover { background: #22c55e; }
-        .absent { background: var(--primary-color); }
-        .absent:hover { background: var(--primary-hover); }
-        .leave { background: #eab308; }
-        .leave:hover { background: #facc15; color: #000; }
-
-        .selected {
-            border: 2px solid var(--primary-color);
-            box-shadow: 0 0 5px rgba(0, 166, 118, 0.5);
-        }
-
-        .no-sections {
-            color: var(--primary-color);
+        .alert-box {
+            padding: 0.75rem;
             font-size: 0.9rem;
-            margin-top: 0.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header h1 {
+            font-size: 1.25rem;
         }
 
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .sidebar { width: 250px; }
-            .page-wrapper { margin-left: 250px; }
-            .logo-container { width: 80px; height: 64px; }
+        h2 {
+            font-size: 1.2rem;
         }
 
-        @media (max-width: 768px) {
-            .menu-toggle { display: flex; }
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.active { transform: translateX(0); }
-            .sidebar-overlay { display: block; }
-            .page-wrapper { margin-left: 0; }
-            .container { padding: 1.5rem 15px; }
-            .header h1 { font-size: 1.5rem; }
-            .main-content { padding: 1.5rem; }
-            .section { padding: 1.5rem; }
-            h2 { font-size: 1.5rem; }
-            .form-row { flex-direction: column; align-items: stretch; }
-            .load-btn { align-self: stretch; }
+        .status-btn {
+            flex: 1 1 calc(50% - 0.25rem);
+            min-width: 0;
         }
 
-        @media (max-width: 480px) {
-            .sidebar { width: 100%; max-width: 320px; }
-            .container { padding: 1rem; }
-            .header { padding: 1rem; }
-            .header h1 { font-size: 1.25rem; }
-            .main-content { padding: 1rem; }
-            .section { padding: 1rem; }
-            h2 { font-size: 1.3rem; }
-            .attendance-table th,
-            .attendance-table td { font-size: 0.8rem; padding: 0.6rem; }
-            .attendance-btn { font-size: 0.75rem; padding: 0.4rem; min-width: 60px; }
+        .status-btn:last-child {
+            flex: 1 1 100%;
         }
-
-        @media (hover: none) {
-            .section:hover, .load-btn:hover, .attendance-btn:hover, .logo-container:hover, .sidebar-nav a:hover, .menu-toggle:hover {
-                transform: none;
-                box-shadow: var(--shadow-sm);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * { transition: none !important; animation: none !important; }
-            html { scroll-behavior: auto; }
-        }
+    }
     </style>
 </head>
 <body>
-    <!-- Mobile Menu Toggle -->
     <button class="menu-toggle" id="menuToggle">
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="{% url 'teacher_dashboard' %}" style="text-decoration: none; color: inherit;">
@@ -489,7 +650,6 @@
             <span>Manavargal SMS</span>
         </div>
         <nav class="sidebar-nav">
-            
             <a href="{% url 'teacher_profile' %}">
                 <img src="https://img.icons8.com/color/24/user.png" alt="Profile">
                 <span>My Profile</span>
@@ -525,247 +685,391 @@
         </nav>
     </aside>
 
-    <!-- Main Content Wrapper -->
-<div class="page-wrapper">
-    <div class="container">
-        <header class="header">
-            <h1><i class="fas fa-clipboard-check"></i> Attendance Portal</h1>
-        </header>
+    <div class="page-wrapper">
+        <div class="container">
+            <header class="header">
+                <h1><i class="fas fa-clipboard-check"></i> Mark Attendance</h1>
+            </header>
 
-        <main class="main-content">
-            {% if messages %}
-                <div class="alert-message">
-                    {% for message in messages %}
-                        <div class="{{ message.tags }}">
-                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <main class="main-content">
+                <div class="alert-message" id="alertContainer" style="display: none;"></div>
 
-            <section class="section">
-                <h2><i class="fas fa-search" style="color: #6366f1; margin-right: 8px;"></i> Select Attendance Details</h2>
-                <form method="GET" action="{% url 'teacher_portal' %}">
-                    <div class="form-row">
+                <section class="section">
+                    <h2><i class="fas fa-search"></i> Select Class, Section & Date</h2>
+
+                    <div class="filters-container">
                         <div class="form-group">
-                            <label for="class">
-                                <i class="fas fa-chalkboard" style="color: #10b981; margin-right: 8px;"></i> Select Class
-                            </label>
-                            <select id="class" name="class" required onchange="updateSections()">
-                                <option value="">Select a Class</option>
-                                {% for class in classes %}
-                                    <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
+                            <label for="filter_class"><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class</label>
+                            <select id="filter_class" onchange="loadSections()">
+                                <option value="">Select Class</option>
+                                {% for cls in classes %}
+                                    <option value="{{ cls }}">{{ cls }}</option>
                                 {% endfor %}
                             </select>
                         </div>
+
                         <div class="form-group">
-                            <label for="section">
-                                <i class="fas fa-chalkboard-teacher" style="color: #f59e0b; margin-right: 8px;"></i> Select Section
-                            </label>
-                            <select id="section" name="section" required>
-                                <option value="">Select a Section</option>
+                            <label for="filter_section"><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> Section</label>
+                            <select id="filter_section">
+                                <option value="">Select Section</option>
                             </select>
-                            <div id="no-sections-message" class="no-sections" style="display: none;">No sections available for this class.</div>
                         </div>
+
                         <div class="form-group">
-                            <label for="date">
-                                <i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Select Date
-                            </label>
-                            <input type="date" id="date" name="date" value="{{ selected_date }}" required>
+                            <label for="filter_date"><i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Date</label>
+                            <input type="date" id="filter_date" value="{{ selected_date }}">
                         </div>
-                        <button type="submit" class="load-btn">
-                            <i class="fas fa-search" style="color: #ffffff;"></i> Load
+
+                        <button type="button" class="filter-btn" onclick="loadAttendance()">
+                            <i class="fas fa-search"></i> Load Students
+                        </button>
+                        <button type="button" class="filter-btn clear" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear
                         </button>
                     </div>
-                </form>
-            </section>
-
-            {% if students %}
-                <section class="section">
-                    <h2><i class="fas fa-table" style="color: #8b5cf6; margin-right: 8px;"></i> 
-                        Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}
-                    </h2>
-                    <form method="POST" action="{% url 'mark_attendance' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="class" value="{{ selected_class }}">
-                        <input type="hidden" name="section" value="{{ selected_section }}">
-                        <input type="hidden" name="date" value="{{ selected_date }}">
-                        <div class="table-container">
-                            <table class="attendance-table">
-                                <thead>
-                                    <tr>
-                                        <th><i class="fas fa-hashtag" style="color: #94a3b8;"></i> Student ID</th>
-                                        <th><i class="fas fa-user" style="color: #3b82f6;"></i> Name</th>
-                                        <th><i class="fas fa-id-card" style="color: #8b5cf6;"></i> Admission Number</th>
-                                        <th><i class="fas fa-graduation-cap" style="color: #10b981;"></i> Class</th>
-                                        <th><i class="fas fa-layer-group" style="color: #f59e0b;"></i> Section</th>
-                                        <th><i class="fas fa-check-square" style="color: #6366f1;"></i> Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for student in students %}
-                                        <tr>
-                                            <td>{{ student.user_id }}</td>
-                                            <td>{{ student.name }}</td>
-                                            <td>{{ student.admission_number }}</td>
-                                            <td>{{ student.class }}</td>
-                                            <td>{{ student.section|default:"N/A" }}</td>
-                                            <td>
-                                                <button type="submit" name="student_{{ student.user_id }}" value="present" 
-                                                        class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">
-                                                    <i class="fas fa-check-circle" style="color: #10b981;"></i> Present
-                                                </button>
-                                                <button type="submit" name="student_{{ student.user_id }}" value="absent" 
-                                                        class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">
-                                                    <i class="fas fa-times-circle" style="color: #ef4444;"></i> Absent
-                                                </button>
-                                                <button type="submit" name="student_{{ student.user_id }}" value="leave" 
-                                                        class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">
-                                                    <i class="fas fa-calendar-times" style="color: #f59e0b;"></i> Leave
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </form>
                 </section>
-            {% else %}
-                {% if selected_class or selected_date %}
-                    <p class="no-requests" style="text-align: center; color: var(--text-color); font-size: 1.1rem; margin-top: 2rem; padding: 1.5rem; background: var(--light-bg); border-radius: 12px;">
-                        <i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> 
-                        No students found for the selected criteria.
-                    </p>
-                {% endif %}
-            {% endif %}
-        </main>
+
+                <section class="section">
+                    <h2><i class="fas fa-users"></i> Students Attendance</h2>
+
+                    <div class="attendance-cards" id="attendanceCards">
+                        <p class="no-students">
+                            <i class="fas fa-info-circle"></i> Select class, section, and date above to load students.
+                        </p>
+                    </div>
+
+                    <div class="loading-spinner" id="loadingSpinner">
+                        <div class="spinner"></div>
+                        <p style="margin-top: 1rem; color: var(--primary-color);">Saving attendance...</p>
+                    </div>
+                </section>
+            </main>
+        </div>
     </div>
-</div>
 
     <script>
+        // Track attendance status locally
+        let attendanceStatus = {};
+        
         document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
-            const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-            function openSidebar() {
-                sidebar.classList.add('active');
-                sidebarOverlay.classList.add('active');
-            }
-
-            function closeSidebar() {
-                sidebar.classList.remove('active');
-                sidebarOverlay.classList.remove('active');
-            }
 
             if (menuToggle) {
-                menuToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
+                menuToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                    sidebarOverlay.classList.toggle('active');
                 });
             }
 
             if (sidebarOverlay) {
-                sidebarOverlay.addEventListener('click', closeSidebar);
-            }
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    if (window.innerWidth <= 768) {
-                        closeSidebar();
-                    }
-                });
-            });
-
-            window.addEventListener('resize', function() {
-                if (window.innerWidth > 768) {
-                    closeSidebar();
-                }
-            });
-
-            // Desktop hover effect on sidebar icons
-            if (window.innerWidth > 768) {
-                navLinks.forEach(item => {
-                    item.addEventListener('mouseenter', function() {
-                        const icon = this.querySelector('img');
-                        if (icon) icon.style.transform = 'scale(1.1) rotate(5deg)';
-                    });
-                    item.addEventListener('mouseleave', function() {
-                        const icon = this.querySelector('img');
-                        if (icon) icon.style.transform = 'none';
-                    });
+                sidebarOverlay.addEventListener('click', function() {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
                 });
             }
 
-            // Table row hover
-            const table = document.querySelector('.attendance-table');
-            if (table) {
-                table.addEventListener('mouseover', function(e) {
-                    if (e.target.tagName === 'TD') {
-                        e.target.closest('tr').style.backgroundColor = '#f0f9f4';
-                    }
-                });
-                table.addEventListener('mouseout', function(e) {
-                    if (e.target.tagName === 'TD') {
-                        const row = e.target.closest('tr');
-                        const rows = Array.from(table.querySelectorAll('tbody tr'));
-                        const index = rows.indexOf(row);
-                        row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f8f9fa';
-                    }
-                });
-            }
-
-            // Update sections dynamically
-            function updateSections() {
-                const classSelect = document.getElementById('class');
-                const sectionSelect = document.getElementById('section');
-                const noSectionsMessage = document.getElementById('no-sections-message');
-                const selectedClass = classSelect.value;
-
-                sectionSelect.innerHTML = '<option value="">Select a Section</option>';
-
-                if (!selectedClass) {
-                    sectionSelect.disabled = true;
-                    if (noSectionsMessage) noSectionsMessage.style.display = 'none';
-                    return;
-                }
-
-                sectionSelect.disabled = false;
-                let classSections = [];
-                try {
-                    classSections = JSON.parse('{{ class_sections|escapejs }}');
-                } catch (e) {
-                    console.error('Failed to parse class_sections:', e);
-                }
-
-                const availableSections = classSections
-                    .filter(([cls, section]) => cls === selectedClass && section && section.trim() !== '')
-                    .map(([_, section]) => section);
-
-                const uniqueSections = [...new Set(availableSections)].sort();
-
-                if (uniqueSections.length > 0) {
-                    uniqueSections.forEach(section => {
-                        const option = document.createElement('option');
-                        option.value = section;
-                        option.textContent = section;
-                        if (section === '{{ selected_section|escapejs }}') {
-                            option.selected = true;
-                        }
-                        sectionSelect.appendChild(option);
-                    });
-                    if (noSectionsMessage) noSectionsMessage.style.display = 'none';
-                } else {
-                    if (noSectionsMessage) noSectionsMessage.style.display = 'block';
-                }
-            }
-
-            updateSections();
-            document.getElementById('class').addEventListener('change', updateSections);
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('filter_date').value = today;
         });
+
+        // Load sections when class is selected
+        window.loadSections = function() {
+            const sectionSelect = document.getElementById('filter_section');
+            sectionSelect.innerHTML = '<option value="">Select Section</option>';
+            
+            // Hardcoded sections (you can make this dynamic via API if needed)
+            const sections = ['A', 'B', 'C'];
+            sections.forEach(sec => {
+                const opt = document.createElement('option');
+                opt.value = sec;
+                opt.textContent = sec;
+                sectionSelect.appendChild(opt);
+            });
+        };
+
+        // Show alert message
+        window.showAlert = function(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const iconClass = type === 'error' || type === 'warning' ? 'fa-exclamation-circle' : 'fa-check-circle';
+            
+            alertContainer.innerHTML = `
+                <div class="alert-box alert-${type}">
+                    <i class="fas ${iconClass}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            alertContainer.style.display = 'block';
+            
+            setTimeout(() => {
+                alertContainer.style.display = 'none';
+            }, 5000);
+        };
+
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Get button HTML based on status
+        function getButtonHTML(status) {
+            const icons = {
+                'present': '<i class="fas fa-check"></i> Present',
+                'absent': '<i class="fas fa-times"></i> Absent',
+                'leave': '<i class="fas fa-calendar-times"></i> Leave'
+            };
+            return icons[status] || status;
+        }
+
+        // Mark attendance for single student
+        window.markStudentAttendance = function(studentName, status, button) {
+            const classVal = document.getElementById('filter_class').value;
+            const sectionVal = document.getElementById('filter_section').value;
+            const dateVal = document.getElementById('filter_date').value;
+
+            // Check if already marked
+            if (attendanceStatus[studentName]) {
+                showAlert(`Attendance for ${studentName} is already marked as ${attendanceStatus[studentName].toUpperCase()}. Cannot change.`, 'warning');
+                return;
+            }
+
+            // Disable all buttons for this student immediately
+            const safeName = studentName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+            const card = document.querySelector(`[data-student="${safeName}"]`);
+            const allButtons = card.querySelectorAll('.status-btn');
+            
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+            });
+
+            // Show saving state on clicked button
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            const csrfToken = getCookie('csrftoken');
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', csrfToken);
+            formData.append('class', classVal);
+            formData.append('section', sectionVal);
+            formData.append('date', dateVal);
+            formData.append('student_name', studentName);
+            formData.append('status', status);
+
+            fetch('/teacher/mark-single-attendance/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mark as saved locally
+                    attendanceStatus[studentName] = status;
+                    
+                    // Update UI with a slight delay for better UX
+                    setTimeout(() => {
+                        updateStudentCardUI(studentName, status);
+                        showAlert(data.message, 'success');
+                        
+                        // If all students marked, show completion message
+                        if (data.all_marked) {
+                            showAlert(`✓ Attendance completed for all ${data.total_count} students in ${classVal}-${sectionVal}!`, 'success');
+                        }
+                    }, 300);
+                } else {
+                    showAlert(data.message, 'error');
+                    // Re-enable buttons if failed
+                    allButtons.forEach(btn => {
+                        btn.disabled = false;
+                    });
+                    button.innerHTML = originalHTML;
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                showAlert('Network error. Please try again.', 'error');
+                // Re-enable buttons on error
+                allButtons.forEach(btn => {
+                    btn.disabled = false;
+                });
+                button.innerHTML = originalHTML;
+            });
+        };
+
+        // Update student card UI after marking
+        function updateStudentCardUI(studentName, status) {
+            const safeName = studentName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+            const card = document.querySelector(`[data-student="${safeName}"]`);
+            
+            if (!card) return;
+
+            // Add locked badge
+            if (!card.querySelector('.locked-badge')) {
+                const badge = document.createElement('div');
+                badge.className = 'locked-badge';
+                badge.innerHTML = '<i class="fas fa-lock"></i> Attendance Marked';
+                card.insertBefore(badge, card.firstChild);
+            }
+
+            // Add status display
+            const statusColors = {
+                'present': '#16a34a',
+                'absent': '#00a676',
+                'leave': '#eab308'
+            };
+            
+            let statusDisplay = card.querySelector('.current-status');
+            if (!statusDisplay) {
+                statusDisplay = document.createElement('p');
+                statusDisplay.className = 'current-status';
+                const actionButtons = card.querySelector('.action-buttons');
+                actionButtons.parentNode.insertBefore(statusDisplay, actionButtons);
+            }
+            
+            statusDisplay.innerHTML = `
+                <i class="fas fa-clipboard-check" style="color: #8b5cf6; margin-right: 8px;"></i> 
+                <strong>Status:</strong> 
+                <span style="text-transform: uppercase; font-weight: 700; color: ${statusColors[status]};">
+                    ${status}
+                </span>
+            `;
+
+            // Update buttons - highlight active, keep all disabled
+            const buttons = card.querySelectorAll('.status-btn');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.remove('active');
+                if (btn.dataset.status === status) {
+                    btn.classList.add('active');
+                    btn.innerHTML = getButtonHTML(status);
+                }
+            });
+
+            // Add locked styling
+            card.classList.add('locked');
+        }
+
+        // Load attendance
+        window.loadAttendance = function() {
+            const classVal = document.getElementById('filter_class').value;
+            const sectionVal = document.getElementById('filter_section').value;
+            const dateVal = document.getElementById('filter_date').value;
+            const container = document.getElementById('attendanceCards');
+
+            if (!classVal || !sectionVal || !dateVal) {
+                showAlert('Please select Class, Section, and Date.', 'warning');
+                return;
+            }
+
+            // Reset status
+            attendanceStatus = {};
+
+            // Show loading
+            container.innerHTML = '<div class="loading-spinner active"><div class="spinner"></div><p style="margin-top: 1rem; color: var(--primary-color);">Loading students...</p></div>';
+
+            // Fetch students
+            fetch(`/teacher/leave-get-students/?class=${classVal}&section=${sectionVal}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.students || data.students.length === 0) {
+                        container.innerHTML = '<p class="no-students"><i class="fas fa-users-slash"></i> No students found.</p>';
+                        return;
+                    }
+
+                    // Fetch existing attendance
+                    return fetch(`/teacher/get-attendance/?class=${classVal}&section=${sectionVal}&date=${dateVal}`)
+                        .then(response => response.json())
+                        .then(attendanceData => {
+                            const existingRecords = attendanceData.attendance || {};
+                            attendanceStatus = { ...existingRecords };
+                            
+                            let cardsHTML = '';
+                            data.students.forEach((name) => {
+                                const safeName = name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+                                const currentStatus = existingRecords[name] || '';
+                                const isLocked = !!currentStatus;
+
+                                const statusColors = {
+                                    'present': '#16a34a',
+                                    'absent': '#00a676',
+                                    'leave': '#eab308'
+                                };
+
+                                cardsHTML += `
+                                <div class="attendance-card ${isLocked ? 'locked' : ''}" data-student="${safeName}">
+                                    ${isLocked ? '<div class="locked-badge"><i class="fas fa-lock"></i> Attendance Marked</div>' : ''}
+                                    <p><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> <strong>Student:</strong> ${name}</p>
+                                    <p><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> <strong>Class:</strong> ${classVal}</p>
+                                    <p><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> <strong>Section:</strong> ${sectionVal}</p>
+                                    <p><i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> <strong>Date:</strong> ${dateVal}</p>
+                                    ${currentStatus ? `<p class="current-status"><i class="fas fa-clipboard-check" style="color: #8b5cf6; margin-right: 8px;"></i> <strong>Status:</strong> <span style="text-transform: uppercase; font-weight: 700; color: ${statusColors[currentStatus]};">${currentStatus}</span></p>` : ''}
+
+                                    <div class="action-buttons">
+                                        <button type="button" 
+                                                onclick="markStudentAttendance('${name}', 'present', this)" 
+                                                data-status="present"
+                                                class="status-btn present-btn ${currentStatus === 'present' ? 'active' : ''}" 
+                                                ${isLocked ? 'disabled' : ''}>
+                                            <i class="fas fa-check"></i> Present
+                                        </button>
+                                        <button type="button" 
+                                                onclick="markStudentAttendance('${name}', 'absent', this)" 
+                                                data-status="absent"
+                                                class="status-btn absent-btn ${currentStatus === 'absent' ? 'active' : ''}" 
+                                                ${isLocked ? 'disabled' : ''}>
+                                            <i class="fas fa-times"></i> Absent
+                                        </button>
+                                        <button type="button" 
+                                                onclick="markStudentAttendance('${name}', 'leave', this)" 
+                                                data-status="leave"
+                                                class="status-btn leave-btn ${currentStatus === 'leave' ? 'active' : ''}" 
+                                                ${isLocked ? 'disabled' : ''}>
+                                            <i class="fas fa-calendar-times"></i> Leave
+                                        </button>
+                                    </div>
+                                </div>`;
+                            });
+
+                            container.innerHTML = cardsHTML;
+                            
+                            const markedCount = Object.keys(existingRecords).length;
+                            if (markedCount > 0) {
+                                showAlert(`Loaded ${data.students.length} students. ${markedCount} already have attendance marked.`, 'warning');
+                            } else {
+                                showAlert(`Loaded ${data.students.length} students. Ready to mark attendance.`, 'success');
+                            }
+                        });
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    container.innerHTML = '<p class="no-students" style="color: #dc2626;"><i class="fas fa-exclamation-triangle"></i> Error loading students.</p>';
+                });
+        };
+
+        window.clearFilters = function() {
+            document.getElementById('filter_class').value = '';
+            document.getElementById('filter_section').innerHTML = '<option value="">Select Section</option>';
+            document.getElementById('filter_date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('attendanceCards').innerHTML = '<p class="no-students"><i class="fas fa-info-circle"></i> Select class, section, and date above to load students.</p>';
+            attendanceStatus = {};
+            document.getElementById('alertContainer').style.display = 'none';
+        };
     </script>
 </body>
 </html>

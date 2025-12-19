@@ -115,7 +115,10 @@ urlpatterns = [
 
    
     path('teacher_portal/', views.teacher_portal, name='teacher_portal'),
-    path('mark_attendance/', views.mark_attendance, name='mark_attendance'),
+    path('teacher/leave-get-students/', views.teacher_leave_get_students, name='teacher_leave_get_students'),
+    path('teacher/mark-single-attendance/', views.mark_single_attendance, name='mark_single_attendance'),
+    path('teacher/get-attendance/', views.get_attendance, name='get_attendance'),
+    
     
     path('student_portal/', views.student_portal, name='student_portal'),
     path('admin_attendance/', views.admin_attendance_portal, name='admin_attendance_portal'),

@@ -4,442 +4,473 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Teacher Accept Portal</title>
+    <title>Manavargal School Management System - Teacher Leave Requests</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            background: var(--white);
-            min-height: 100vh;
-            color: var(--text-color);
-            overflow: hidden;
-        }
+    body {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        background: var(--white);
+        min-height: 100vh;
+        color: var(--text-color);
+        overflow: hidden;
+    }
 
-        h1, h2, h3 {
-            font-family: 'Montserrat', sans-serif;
-        }
+    h1, h2, h3 {
+        font-family: 'Montserrat', sans-serif;
+    }
 
-        :root {
-            --primary-color: #00a676;
-            --primary-hover: #00b88d;
-            --danger-color: #dc2626;
-            --danger-hover: #ef4444;
-            --info-color: #3b82f6;
-            --info-hover: #2563eb;
-            --sidebar-bg: #f0f9f4;
-            --sidebar-border: #a8d5c2;
-            --white: #ffffff;
-            --light-bg: #f8f9fa;
-            --border-color: #adb5bd;
-            --text-color: #495057;
-            --text-light: #868e96;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --border-radius: 16px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --dull-highlighter: #d4edda;
-        }
+    :root {
+        --primary-color: #00a676;
+        --primary-hover: #00b88d;
+        --danger-color: #dc2626;
+        --danger-hover: #ef4444;
+        --sidebar-bg: #f0f9f4;
+        --sidebar-border: #a8d5c2;
+        --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --border-color: #adb5bd;
+        --text-color: #495057;
+        --text-light: #868e96;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --border-radius: 16px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --dull-highlighter: #d4edda;
+    }
 
-        html {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
-        }
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        overflow-x: hidden;
+    }
 
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            height: 100vh;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            overflow-y: auto;
-            box-shadow: var(--shadow-md);
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            transition: var(--transition);
-            border-right: 2px solid var(--sidebar-border);
-            transform: translateX(0);
-        }
+    /* Sidebar */
+    .sidebar {
+        width: 280px;
+        height: 100vh;
+        background: var(--sidebar-bg);
+        color: var(--text-color);
+        overflow-y: auto;
+        box-shadow: var(--shadow-md);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        transition: var(--transition);
+        border-right: 2px solid var(--sidebar-border);
+        transform: translateX(0);
+    }
 
-        .sidebar-header {
-            padding: 2rem 1.5rem;
-            background: var(--white);
-            text-align: center;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            border-bottom: 2px solid var(--sidebar-border);
-        }
+    .sidebar-header {
+        padding: 2rem 1.5rem;
+        background: var(--white);
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 2px solid var(--sidebar-border);
+    }
 
-        .logo-container {
-            width: 100px;
-            height: 80px;
-            background: var(--white);
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            transition: var(--transition);
+    .logo-container {
+        width: 100px;
+        height: 80px;
+        background: var(--white);
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--sidebar-border);
+    }
+
+    .logo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: var(--transition);
+    }
+
+    .logo-container:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
+    }
+
+    .sidebar-header:hover {
+        background: var(--light-bg);
+    }
+
+    .sidebar-nav {
+        padding: 1rem 0;
+    }
+
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: var(--transition);
+        font-size: 1.05rem;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+    }
+
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+        background: var(--dull-highlighter);
+        border-left: 3px solid var(--primary-color);
+        color: var(--primary-color);
+        transform: translateX(4px);
+    }
+
+    .sidebar-nav a img {
+        margin-right: 1rem;
+        transition: var(--transition);
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .sidebar-nav a:hover img {
+        transform: scale(1.1);
+    }
+
+    /* Menu Toggle */
+    .menu-toggle {
+        display: none;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        background: var(--white);
+        border: 2px solid var(--sidebar-border);
+        cursor: pointer;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1001;
+        padding: 0.75rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        width: 50px;
+        height: 50px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .menu-toggle:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: scale(1.05);
+    }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: var(--transition);
+        pointer-events: none;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .page-wrapper {
+        margin-left: 280px;
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        transition: var(--transition);
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 20px;
+    }
+
+    .header {
+        background: var(--white);
+        color: var(--text-color);
+        padding: 1.5rem;
+        border: 2px solid #495057;
+        box-shadow: var(--shadow-md);
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: center;
+        color: var(--primary-color);
+        margin: 0;
+    }
+
+    .main-content {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        padding: 2rem;
+    }
+
+    .section {
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+    .section:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    h2 {
+        color: var(--primary-color);
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    /* Filters */
+    .filters-container {
+        display: flex;
+        align-items: flex-end;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filters-container .form-group {
+        flex: 1;
+        min-width: 150px;
+        margin-bottom: 0;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group select,
+    .form-group input[type="date"] {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--white);
+        font-size: 0.95rem;
+        transition: var(--transition);
+        appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 12px;
+    }
+
+    .filter-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary-color);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--white);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .filter-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .filter-btn.clear {
+        background: var(--danger-color);
+    }
+
+    .filter-btn.clear:hover {
+        background: var(--danger-hover);
+    }
+
+    .leave-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .leave-card {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .leave-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .leave-card p {
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+        color: var(--text-color);
+    }
+
+    .leave-card p strong {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+
+    .submit-btn,
+    .remove-btn {
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .submit-btn {
+        background: var(--primary-color);
+        color: var(--white);
+    }
+
+    .submit-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .remove-btn {
+        background: var(--danger-color);
+        color: var(--white);
+    }
+
+    .remove-btn:hover {
+        background: var(--danger-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .no-requests,
+    .no-results {
+        text-align: center;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        padding: 2rem;
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        grid-column: 1 / -1;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .sidebar { width: 250px; }
+        .page-wrapper { margin-left: 250px; }
+        .logo-container { width: 80px; height: 64px; }
+    }
+
+    @media (max-width: 768px) {
+        .menu-toggle { display: flex; }
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-overlay { display: block; }
+        .page-wrapper { margin-left: 0; }
+        .container { padding: 1.5rem 15px; }
+        .header h1 { font-size: 1.5rem; }
+        .main-content { padding: 1.5rem; }
+        .section { padding: 1.2rem; }
+        h2 { font-size: 1.3rem; }
+        .leave-cards { grid-template-columns: 1fr; }
+        .filters-container { flex-direction: column; align-items: stretch; }
+        .filters-container .form-group { min-width: auto; }
+    }
+
+    @media (max-width: 480px) {
+        .sidebar { width: 100%; max-width: 320px; }
+        .container { padding: 1rem; }
+        .header { padding: 1rem; }
+        .header h1 { font-size: 1.25rem; }
+        .main-content { padding: 1rem; border-radius: 8px; }
+        .section { padding: 1rem; }
+        h2 { font-size: 1.15rem; }
+        .menu-toggle { width: 45px; height: 45px; font-size: 1.25rem; }
+    }
+
+    @media (hover: none) {
+        .section:hover, .leave-card:hover, .logo-container:hover, .sidebar-nav a:hover, .menu-toggle:hover {
+            transform: none;
             box-shadow: var(--shadow-sm);
-            border: 2px solid var(--sidebar-border);
         }
+    }
 
-        .logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: var(--transition);
-        }
-
-        .logo-container:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
-        }
-
-        .sidebar-header:hover {
-            background: var(--light-bg);
-        }
-
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            color: var(--text-color);
-            text-decoration: none;
-            transition: var(--transition);
-            font-size: 1.05rem;
-            font-weight: 500;
-            border-left: 3px solid transparent;
-        }
-
-        .sidebar-nav a:hover,
-        .sidebar-nav a.active {
-            background: var(--dull-highlighter);
-            border-left: 3px solid var(--primary-color);
-            color: var(--primary-color);
-            transform: translateX(4px);
-        }
-
-        .sidebar-nav a img {
-            margin-right: 1rem;
-            width: 24px;
-            height: 24px;
-            flex-shrink: 0;
-            transition: var(--transition);
-        }
-
-        .sidebar-nav a:hover img {
-            transform: scale(1.1);
-        }
-
-        .menu-toggle {
-            display: none;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            background: var(--white);
-            border: 2px solid var(--sidebar-border);
-            cursor: pointer;
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            z-index: 1001;
-            padding: 0.75rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            width: 50px;
-            height: 50px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .menu-toggle:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: scale(1.05);
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            opacity: 0;
-            transition: var(--transition);
-            pointer-events: none;
-        }
-
-        .sidebar-overlay.active {
-            display: block;
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .page-wrapper {
-            margin-left: 280px;
-            height: 100vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-            transition: var(--transition);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 20px;
-        }
-
-        .header {
-            background: var(--white);
-            padding: 1.5rem;
-            border: 2px solid #495057;
-            box-shadow: var(--shadow-md);
-            border-radius: var(--border-radius);
-            margin-bottom: 2rem;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            color: var(--primary-color);
-            margin: 0;
-        }
-
-        .main-content {
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            padding: 2rem;
-        }
-
-        .alert-message {
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-message .error,
-        .alert-message .success {
-            padding: 0.75rem;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .alert-message .error {
-            background: #fef2f2;
-            color: #dc3545;
-            border-left: 4px solid #dc3545;
-        }
-
-        .alert-message .success {
-            background: #d4edda;
-            color: var(--primary-color);
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .section {
-            background: var(--light-bg);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-        }
-
-        .section:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        h2 {
-            color: var(--primary-color);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .request-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .request-card {
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .request-card:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .request-type {
-            background: var(--primary-color);
-            color: var(--white);
-            padding: 0.25rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            display: inline-block;
-            margin-bottom: 0.75rem;
-            align-self: flex-start;
-        }
-
-        .request-card h3 {
-            color: var(--primary-color);
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.8rem;
-        }
-
-        .request-card p {
-            margin-bottom: 0.8rem;
-            font-size: 1rem;
-            color: var(--text-color);
-        }
-
-        .request-card p strong {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: auto;
-        }
-
-        .approve-btn,
-        .reject-btn {
-            flex: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.45rem;
-            padding: 0.65rem 1rem;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            font-family: inherit;
-            transition: var(--transition);
-            border: none;
-            cursor: pointer;
-        }
-
-        .approve-btn {
-            background: var(--primary-color);
-            color: var(--white);
-        }
-
-        .approve-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .reject-btn {
-            background: var(--danger-color);
-            color: var(--white);
-        }
-
-        .reject-btn:hover {
-            background: var(--danger-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .no-requests {
-            text-align: center;
-            color: var(--primary-color);
-            font-size: 1.1rem;
-            padding: 2rem;
-            background: var(--light-bg);
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            grid-column: 1 / -1;
-        }
-
-        @media (max-width: 1024px) {
-            .sidebar { width: 250px; }
-            .page-wrapper { margin-left: 250px; }
-            .logo-container { width: 80px; height: 64px; }
-        }
-
-        @media (max-width: 768px) {
-            .menu-toggle { display: flex; }
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.active { transform: translateX(0); }
-            .sidebar-overlay { display: block; }
-            .page-wrapper { margin-left: 0; }
-            .container { padding: 1.5rem 15px; }
-            .header h1 { font-size: 1.5rem; }
-            .main-content { padding: 1.5rem; }
-            .section { padding: 1.2rem; }
-            h2 { font-size: 1.3rem; }
-            .request-grid { grid-template-columns: 1fr; gap: 1rem; }
-            .action-buttons { flex-direction: column; }
-        }
-
-        @media (max-width: 480px) {
-            .sidebar { width: 100%; max-width: 320px; }
-            .container { padding: 1rem; }
-            .header { padding: 1rem; }
-            .header h1 { font-size: 1.25rem; }
-            .main-content { padding: 1rem; }
-            .section { padding: 1rem; }
-            h2 { font-size: 1.15rem; }
-            .request-card { padding: 1rem; }
-            .approve-btn, .reject-btn { padding: 0.6rem 1rem; font-size: 0.9rem; }
-        }
-
-        @media (hover: none) {
-            .section:hover, .request-card:hover, .approve-btn:hover, .reject-btn:hover {
-                transform: none;
-                box-shadow: var(--shadow-sm);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * { transition: none !important; animation: none !important; }
-            html { scroll-behavior: auto; }
-        }
+    @media (prefers-reduced-motion: reduce) {
+        * { transition: none !important; animation: none !important; }
+        html { scroll-behavior: auto; }
+    }
     </style>
 </head>
 <body>
-    <!-- Mobile Menu Toggle -->
+    <!-- Mobile Menu Toggle Button -->
     <button class="menu-toggle" id="menuToggle">
         <i class="fas fa-bars"></i>
     </button>
@@ -458,7 +489,6 @@
             <span>Manavargal SMS</span>
         </div>
         <nav class="sidebar-nav">
-            
             <a href="{% url 'teacher_profile' %}">
                 <img src="https://img.icons8.com/color/24/user.png" alt="Profile">
                 <span>My Profile</span>
@@ -502,52 +532,90 @@
             </header>
 
             <main class="main-content">
-                {% if messages %}
-                    <div class="alert-message">
-                        {% for message in messages %}
-                            <div class="{{ message.tags }}">
-                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
                 <section class="section">
-                    <h2><i class="fas fa-list" style="color: #06b6d4;"></i> Pending Leave Requests</h2>
+                    <h2><i class="fas fa-list"></i> Leave Requests</h2>
 
-                    <div class="request-grid">
+                    <!-- Filters -->
+                    <div class="filters-container">
+                        <div class="form-group">
+                            <label for="filter_class"><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Filter by Class</label>
+                            <select id="filter_class">
+                                <option value="">All Classes</option>
+                                <option value="1">Class 1</option>
+                                <option value="2">Class 2</option>
+                                <option value="3">Class 3</option>
+                                <option value="4">Class 4</option>
+                                <option value="5">Class 5</option>
+                                <option value="6">Class 6</option>
+                                <option value="7">Class 7</option>
+                                <option value="8">Class 8</option>
+                                <option value="9">Class 9</option>
+                                <option value="10">Class 10</option>
+                                <option value="11">Class 11</option>
+                                <option value="12">Class 12</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="filter_section"><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> Filter by Section</label>
+                            <select id="filter_section">
+                                <option value="">All Sections</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="filter_student"><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Student Name</label>
+                            <select id="filter_student">
+                                <option value="">All Students</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="filter_date"><i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Filter by Date</label>
+                            <input type="date" id="filter_date">
+                        </div>
+
+                        <button type="button" class="filter-btn" onclick="filterCards()">
+                            <i class="fas fa-filter"></i> Apply Filter
+                        </button>
+                        <button type="button" class="filter-btn clear" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+
+                    <div class="leave-cards">
                         {% for request in leave_requests %}
-                        <div class="request-card">
-                            <div class="request-type">Leave Request</div>
-                            <h3>
-                                <span style="color: #3b82f6; margin-right: 8px;">
-                                    <i class="fas fa-user"></i>
+                        <div class="leave-card" 
+                             data-class="{{ request.3 }}" 
+                             data-section="{{ request.4 }}" 
+                             data-start-date="{{ request.6|date:'Y-m-d' }}"
+                             data-student="{{ request.1 }}">
+                            <p><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> <strong>Student Name:</strong> {{ request.1 }}</p>
+                            <p><i class="fas fa-id-card" style="color: #8b5cf6; margin-right: 8px;"></i> <strong>Reg Number:</strong> {{ request.2 }}</p>
+                            <p><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> <strong>Class:</strong> {{ request.3 }}</p>
+                            <p><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> <strong>Section:</strong> {{ request.4 }}</p>
+                            <p><i class="fas fa-comment-dots" style="color: #ec4899; margin-right: 8px;"></i> <strong>Leave Reason:</strong> {{ request.5 }}</p>
+                            <p><i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> <strong>Start Date:</strong> {{ request.6 }}</p>
+                            <p><i class="fas fa-calendar-alt" style="color: #14b8a6; margin-right: 8px;"></i> <strong>End Date:</strong> {{ request.7 }}</p>
+                            <p><i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> <strong>Duration:</strong> {{ request.8 }}</p>
+                            <p><i class="fas fa-info-circle" style="color: #6366f1; margin-right: 8px;"></i> <strong>Status:</strong> 
+                                <span style="color: {% if request.9 == 'Pending' %}#f59e0b;{% elif request.9 == 'Approved' %}#10b981;{% else %}#ef4444;{% endif %}; font-weight: 600;">
+                                    {{ request.9 }}
                                 </span>
-                                {{ request.1 }} - {{ request.4 }}
-                            </h3>
-                            <p><strong>Reg Number:</strong> {{ request.2 }}</p>
-                            <p><strong>Class:</strong> {{ request.3 }}</p>
-                            <p><strong>Start Date:</strong> {{ request.5 }}</p>
-                            <p><strong>End Date:</strong> {{ request.6 }}</p>
-                            <p><strong>Duration:</strong> {{ request.7 }} days</p>
-                            <p><strong>Status:</strong> 
-                                <span style="color: #f59e0b; font-weight: 600;">{{ request.8 }}</span>
                             </p>
 
-                            {% if request.8 == 'Pending' %}
+                            {% if request.9 == 'Pending' %}
                             <div class="action-buttons">
                                 <form method="POST" action="{% url 'teacher_accept_portal' %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="leave_id" value="{{ request.0 }}">
-                                    <button type="submit" name="action" value="approve" class="approve-btn">
+                                    <button type="submit" name="action" value="approve" class="submit-btn">
                                         <i class="fas fa-check"></i> Approve
                                     </button>
-                                </form>
-                                <form method="POST" action="{% url 'teacher_accept_portal' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="leave_id" value="{{ request.0 }}">
-                                    <button type="submit" name="action" value="reject" class="reject-btn">
+                                    <button type="submit" name="action" value="reject" class="remove-btn">
                                         <i class="fas fa-times"></i> Reject
                                     </button>
                                 </form>
@@ -556,8 +624,7 @@
                         </div>
                         {% empty %}
                         <p class="no-requests">
-                            <i class="fas fa-inbox" style="color: #94a3b8; margin-right: 8px;"></i>
-                            No pending leave requests at the moment.
+                            <i class="fas fa-inbox" style="color: #94a3b8; margin-right: 8px;"></i> No leave requests found.
                         </p>
                         {% endfor %}
                     </div>
@@ -621,6 +688,88 @@
                 });
             }
         });
+
+        // Student filter logic - adjust URL to your teacher endpoint
+        function loadStudents() {
+    const classVal = document.getElementById('filter_class').value;
+    const sectionVal = document.getElementById('filter_section').value;
+    const studentSelect = document.getElementById('filter_student');
+
+    studentSelect.innerHTML = '<option value="">All Students</option>';
+
+    if (!classVal || !sectionVal) return;
+
+    fetch(`/teacher/leave-get-students/?class=${classVal}&section=${sectionVal}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.students) {
+                data.students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student;
+                    option.textContent = student;
+                    studentSelect.appendChild(option);
+                });
+            }
+        })
+        .catch(err => console.error('Error loading students:', err));
+}
+
+        document.getElementById('filter_class').addEventListener('change', loadStudents);
+        document.getElementById('filter_section').addEventListener('change', loadStudents);
+
+        function filterCards() {
+            const classFilter = document.getElementById('filter_class').value;
+            const sectionFilter = document.getElementById('filter_section').value;
+            const studentFilter = document.getElementById('filter_student').value;
+            const dateFilter = document.getElementById('filter_date').value;
+
+            const cards = document.querySelectorAll('.leave-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const cardClass = card.getAttribute('data-class');
+                const cardSection = card.getAttribute('data-section');
+                const cardStudent = card.getAttribute('data-student');
+                const cardDate = card.getAttribute('data-start-date');
+
+                let show = true;
+
+                if (classFilter && cardClass !== classFilter) show = false;
+                if (sectionFilter && cardSection !== sectionFilter) show = false;
+                if (studentFilter && cardStudent !== studentFilter) show = false;
+                if (dateFilter && cardDate !== dateFilter) show = false;
+
+                card.style.display = show ? 'flex' : 'none';
+                if (show) visibleCount++;
+            });
+
+            const noResults = document.querySelector('.no-results');
+            const cardsDiv = document.querySelector('.leave-cards');
+            const initialNoRequests = document.querySelector('.no-requests:not(.no-results)');
+
+            if (visibleCount === 0) {
+                if (!noResults) {
+                    const msg = document.createElement('p');
+                    msg.className = 'no-requests no-results';
+                    msg.innerHTML = '<i class="fas fa-search"></i> No matching leave requests found.';
+                    cardsDiv.appendChild(msg);
+                }
+                if (initialNoRequests) initialNoRequests.style.display = 'none';
+            } else {
+                if (noResults) noResults.remove();
+                if (initialNoRequests) initialNoRequests.style.display = 'block';
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('filter_class').value = '';
+            document.getElementById('filter_section').value = '';
+            document.getElementById('filter_student').innerHTML = '<option value="">All Students</option>';
+            document.getElementById('filter_date').value = '';
+            filterCards();
+        }
+
+        filterCards(); // Initial filter
     </script>
 </body>
 </html>

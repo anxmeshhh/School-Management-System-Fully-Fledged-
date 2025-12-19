@@ -1825,52 +1825,106 @@ from django.contrib import messages
 from django.db import connection
 
 def teacher_accept_portal(request):
+    """
+    View for Teacher Leave Request Portal.
+    Teachers can VIEW ALL leave requests (Pending, Approved, Rejected) like admin,
+    but can only APPROVE/REJECT requests that are still 'Pending'.
+    """
     if not request.session.get('teacher_id'):
         messages.error(request, 'You must be logged in to access this page.')
-        return redirect('teacher_login')  # Redirect to login page if not logged in
+        return redirect('teacher_login')
 
     if request.method == 'POST':
         action = request.POST.get('action')
         leave_id = request.POST.get('leave_id')
 
         if action and leave_id:
-            # Update leave status based on action
-            if action == 'approve':
-                new_status = 'Approved'
-            elif action == 'reject':
-                new_status = 'Rejected'
-            else:
-                messages.error(request, 'Invalid action')
-                return redirect('admin_accept_portal')  # Redirect back to the portal if action is invalid
+            if action not in ['approve', 'reject']:
+                messages.error(request, 'Invalid action.')
+                return redirect('teacher_accept_portal')
 
-            with connection.cursor() as cursor:
-                # Update the leave request status
-                cursor.execute("""
-                    UPDATE student_leave_requests
-                    SET status = %s
-                    WHERE id = %s
-                """, [new_status, leave_id])
+            new_status = 'Approved' if action == 'approve' else 'Rejected'
 
-            messages.success(request, f'Leave request {new_status.lower()} successfully.')
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                        UPDATE student_leave_requests
+                        SET status = %s
+                        WHERE id = %s AND status = 'Pending'
+                    """, [new_status, leave_id])
+
+                    if cursor.rowcount == 0:
+                        messages.error(request, 'Cannot update: Request already processed or not found.')
+                    else:
+                        messages.success(request, f'Leave request {new_status.lower()} successfully.')
+            except Exception as e:
+                messages.error(request, 'Error updating leave request. Please try again.')
         else:
-            messages.error(request, 'Leave ID or action missing.')
+            messages.error(request, 'Invalid request: Missing action or leave ID.')
 
-        return redirect('teacher_accept_portal')  # Redirect back to the leave requests page
+        return redirect('teacher_accept_portal')
 
-    # Fetch leave requests to display on the page
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT id, student_name, reg_number, class_number, leave_reason, leave_start_date, leave_end_date, leave_duration, status
-            FROM student_leave_requests
-            WHERE status = 'Pending'
-        """)
-        leave_requests = cursor.fetchall()
+    # Fetch ALL leave requests (just like admin) - for display purpose
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    id, 
+                    student_name, 
+                    reg_number, 
+                    class_number, 
+                    section,
+                    leave_reason, 
+                    leave_start_date, 
+                    leave_end_date, 
+                    leave_duration, 
+                    status
+                FROM student_leave_requests
+                ORDER BY leave_start_date DESC
+            """)
+            leave_requests = cursor.fetchall()
+    except Exception as e:
+        messages.error(request, 'Error fetching leave requests.')
+        leave_requests = []
 
-    return render(request, 'users/teacher_accept_portal.html', {'leave_requests': leave_requests})
+    return render(request, 'users/teacher_accept_portal.html', {
+        'leave_requests': leave_requests
+    })
 
 
 
+def teacher_leave_get_students(request):
+    """
+    Used by Teacher Leave Portal to fetch student names for filter dropdown
+    Exactly same logic as admin version, just checks teacher session
+    """
+    if not request.session.get('teacher_id'):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
 
+    class_num = request.GET.get('class')
+    section = request.GET.get('section')
+
+    if not class_num or not section:
+        return JsonResponse({'students': []})
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT DISTINCT name 
+                FROM student_page1 
+                WHERE class = %s 
+                  AND section = %s 
+                  AND name IS NOT NULL
+                ORDER BY name
+            """, [class_num, section])
+            
+            students = [row[0] for row in cursor.fetchall()]
+            
+        return JsonResponse({'students': students})
+        
+    except Exception as e:
+        print("teacher_leave_get_students error:", str(e))
+        return JsonResponse({'error': 'Server error'}, status=500)
 
 
 
@@ -5064,18 +5118,15 @@ def teacher_dashboard(request):
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import connection, IntegrityError
-from django.http import HttpResponse
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-from io import BytesIO
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 import datetime
-import requests
 import json
 
 def teacher_portal(request):
+    """
+    Main teacher portal page for marking attendance
+    """
     if not request.session.get('teacher_id'):
         messages.error(request, 'Please log in to access this page.')
         return redirect('teacher_login')
@@ -5083,122 +5134,189 @@ def teacher_portal(request):
     today_date = datetime.date.today().strftime('%Y-%m-%d')
     selected_date = request.GET.get('date', today_date)
     
+    # Get all unique classes
     with connection.cursor() as cursor:
-        cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE section IS NOT NULL AND section != '' ORDER BY class, section")
-        class_sections = [(row[0], row[1]) for row in cursor.fetchall()]
-        classes = sorted(set(row[0] for row in class_sections)) or []
-
-    selected_class = request.GET.get('class', '')
-    selected_section = request.GET.get('section', '')
-    students = []
-    
-    if selected_class and selected_section:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT user_id, name, admission_number, class, section
-                FROM student_page1 
-                WHERE class = %s AND section = %s 
-                ORDER BY name, admission_number
-                """, 
-                [selected_class, selected_section]
-            )
-            students = [
-                {
-                    'user_id': row[0],
-                    'name': row[1],
-                    'admission_number': row[2],
-                    'class': row[3],
-                    'section': row[4] if row[4] else 'N/A'
-                } for row in cursor.fetchall()
-            ]
-            
-            cursor.execute(
-                """
-                SELECT student_id, status 
-                FROM attendance 
-                WHERE class = %s AND section = %s AND date = %s
-                """, 
-                [selected_class, selected_section, selected_date]
-            )
-            attendance_records = {row[0]: row[1] for row in cursor.fetchall()}
-            
-            for student in students:
-                student['status'] = attendance_records.get(student['user_id'], '')
+        cursor.execute("""
+            SELECT DISTINCT class 
+            FROM student_page1 
+            WHERE class IS NOT NULL AND class != '' 
+            ORDER BY class
+        """)
+        classes = [row[0] for row in cursor.fetchall()]
 
     return render(request, 'users/teacher_portal.html', {
         'classes': classes,
-        'class_sections': json.dumps(class_sections),
-        'selected_class': selected_class,
-        'selected_section': selected_section,
         'selected_date': selected_date,
-        'students': students,
     })
 
-def mark_attendance(request):
-    if not request.session.get('teacher_id'):
-        messages.error(request, 'Please log in to access this page.')
-        return redirect('teacher_login')
 
-    if request.method == 'POST':
+def mark_single_attendance(request):
+    """
+    Mark attendance for a single student via AJAX
+    This is called every time a teacher clicks Present/Absent/Leave
+    """
+    if not request.session.get('teacher_id'):
+        return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=401)
+
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+
+    try:
         selected_class = request.POST.get('class')
         selected_section = request.POST.get('section')
         selected_date = request.POST.get('date')
+        student_name = request.POST.get('student_name')
+        status = request.POST.get('status')
+
+        # Validate all required fields
+        if not all([selected_class, selected_section, selected_date, student_name, status]):
+            return JsonResponse({
+                'success': False, 
+                'message': 'Missing required fields'
+            }, status=400)
+
         with connection.cursor() as cursor:
-            for key, value in request.POST.items():
-                if key.startswith('student_'):
-                    student_id = int(key.split('_')[1])
-                    status = value
-                    cursor.execute(
-                        """
-                        SELECT name, admission_number, section
-                        FROM student_page1 
-                        WHERE user_id = %s
-                        """,
-                        [student_id]
-                    )
-                    student_info = cursor.fetchone()
-                    if not student_info:
-                        messages.error(request, f"Student ID {student_id} not found.")
-                        continue
-                    name, admission_number, section = student_info
-                    
-                    try:
-                        # Check if attendance record already exists
-                        cursor.execute(
-                            """
-                            SELECT id FROM attendance 
-                            WHERE student_id = %s AND class = %s AND section = %s AND date = %s
-                            """,
-                            [student_id, selected_class, selected_section, selected_date]
-                        )
-                        existing = cursor.fetchone()
-                        if existing:
-                            messages.warning(request, f"Attendance for student ID {student_id} on {selected_date} already exists. Teachers cannot update records.")
-                            continue
-                            
-                        # Insert new record in attendance
-                        cursor.execute(
-                            """
-                            INSERT INTO attendance (student_id, class, section, date, status)
-                            VALUES (%s, %s, %s, %s, %s)
-                            """,
-                            [student_id, selected_class, selected_section, selected_date, status]
-                        )
-                        # Insert in admin_attendance to keep sync
-                        cursor.execute(
-                            """
-                            INSERT INTO admin_attendance (student_id, name, admission_number, class, section, date, status)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)
-                            """,
-                            [student_id, name, admission_number, selected_class, section, selected_date, status]
-                        )
-                    except IntegrityError:
-                        messages.error(request, f"Duplicate attendance record for student ID {student_id} on {selected_date}.")
-                        continue
-        messages.success(request, f'Attendance recorded for {selected_class} - {selected_section} on {selected_date}')
-        return redirect(f"/teacher_portal/?class={selected_class}&section={selected_section}&date={selected_date}")
-    return redirect('teacher_portal')
+            # Get student info
+            cursor.execute("""
+                SELECT user_id, name, admission_number, section
+                FROM student_page1 
+                WHERE name = %s AND class = %s AND section = %s
+            """, [student_name, selected_class, selected_section])
+            
+            student_info = cursor.fetchone()
+            
+            if not student_info:
+                return JsonResponse({
+                    'success': False, 
+                    'message': f'Student {student_name} not found'
+                }, status=404)
+            
+            student_id, name, admission_number, section = student_info
+            
+            # Check if attendance already exists for this student on this date
+            cursor.execute("""
+                SELECT id, status 
+                FROM attendance 
+                WHERE student_id = %s AND class = %s AND section = %s AND date = %s
+            """, [student_id, selected_class, selected_section, selected_date])
+            
+            existing = cursor.fetchone()
+            
+            if existing:
+                # Attendance already exists - don't allow changes
+                return JsonResponse({
+                    'success': False, 
+                    'message': f'Attendance for {name} on {selected_date} is already marked as {existing[1].upper()}. Cannot modify existing records.',
+                    'locked': True
+                }, status=409)
+            
+            # Insert new attendance record
+            try:
+                cursor.execute("""
+                    INSERT INTO attendance (student_id, class, section, date, status)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, [student_id, selected_class, selected_section, selected_date, status])
+                
+                # Sync with admin_attendance table
+                cursor.execute("""
+                    INSERT INTO admin_attendance (student_id, name, admission_number, class, section, date, status)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """, [student_id, name, admission_number, selected_class, section, selected_date, status])
+                
+                # Check if all students in this class/section now have attendance
+                cursor.execute("""
+                    SELECT COUNT(*) FROM student_page1 
+                    WHERE class = %s AND section = %s
+                """, [selected_class, selected_section])
+                total_students = cursor.fetchone()[0]
+                
+                cursor.execute("""
+                    SELECT COUNT(*) FROM attendance 
+                    WHERE class = %s AND section = %s AND date = %s
+                """, [selected_class, selected_section, selected_date])
+                marked_students = cursor.fetchone()[0]
+                
+                all_marked = (marked_students == total_students)
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': f'✓ Attendance saved for {name}: {status.upper()}',
+                    'status': status,
+                    'all_marked': all_marked,
+                    'marked_count': marked_students,
+                    'total_count': total_students
+                })
+                
+            except IntegrityError:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Database error: Record already exists',
+                    'locked': True
+                }, status=409)
+                
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Server error: {str(e)}'
+        }, status=500)
+
+
+def get_attendance(request):
+    """
+    Fetch existing attendance records for a specific class, section, and date
+    Called when loading students to show previously marked attendance
+    """
+    if not request.session.get('teacher_id'):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    class_name = request.GET.get('class', '')
+    section = request.GET.get('section', '')
+    date = request.GET.get('date', '')
+    
+    if not class_name or not section or not date:
+        return JsonResponse({'error': 'Missing parameters'}, status=400)
+    
+    attendance_dict = {}
+    
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT s.name, a.status
+            FROM attendance a
+            JOIN student_page1 s ON a.student_id = s.user_id
+            WHERE a.class = %s AND a.section = %s AND a.date = %s
+        """, [class_name, section, date])
+        
+        for row in cursor.fetchall():
+            attendance_dict[row[0]] = row[1]  # {student_name: status}
+    
+    return JsonResponse({'attendance': attendance_dict})
+
+
+def get_students_by_class_section(request):
+    """
+    Get list of student names for a specific class and section
+    Used for populating the student dropdown
+    """
+    if not request.session.get('teacher_id'):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    class_name = request.GET.get('class', '')
+    section = request.GET.get('section', '')
+    
+    if not class_name or not section:
+        return JsonResponse({'students': []})
+    
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT name 
+            FROM student_page1 
+            WHERE class = %s AND section = %s 
+            ORDER BY name
+        """, [class_name, section])
+        
+        students = [row[0] for row in cursor.fetchall()]
+    
+    return JsonResponse({'students': students})
 
 def admin_attendance_portal(request):
     if not request.session.get('admin_id'):
