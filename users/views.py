@@ -2618,8 +2618,87 @@ def delete_class(request, class_id):
     return redirect('view_edit_class')
 
 
-
-
+# NEW: Duplicate Class Function
+def duplicate_class(request):
+    """Duplicate an existing class with a new section name"""
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    admin_id = request.session['admin_id']
+    
+    if request.method == 'POST':
+        source_class_id = request.POST.get('source_class_id')
+        new_class_name = request.POST.get('new_class_name', '').strip()
+        
+        # Validation
+        if not source_class_id or not new_class_name:
+            messages.error(request, 'Please provide both source class and new class name.')
+            return redirect('view_edit_class')
+        
+        # Validate format (should be "Class-Section")
+        if '-' not in new_class_name:
+            messages.error(request, 'Class name must be in format "Class-Section" (e.g., 10-B).')
+            return redirect('view_edit_class')
+        
+        try:
+            new_class, new_section = new_class_name.split('-')
+            new_class = new_class.strip()
+            new_section = new_section.strip().upper()  # Standardize section to uppercase
+            
+            if not new_class or not new_section:
+                messages.error(request, 'Both class and section parts are required (e.g., 10-B).')
+                return redirect('view_edit_class')
+            
+        except ValueError:
+            messages.error(request, 'Invalid class name format. Use "Class-Section" (e.g., 10-B).')
+            return redirect('view_edit_class')
+        
+        with connection.cursor() as cursor:
+            # Check if source class exists and belongs to this admin
+            cursor.execute("""
+                SELECT class, section 
+                FROM admin_student_classes 
+                WHERE id = %s AND admin_id = %s
+            """, [source_class_id, admin_id])
+            source_class = cursor.fetchone()
+            
+            if not source_class:
+                messages.error(request, 'Source class not found or you don\'t have permission.')
+                return redirect('view_edit_class')
+            
+            # Check if new class-section already exists for this admin
+            cursor.execute("""
+                SELECT COUNT(*) 
+                FROM admin_student_classes 
+                WHERE admin_id = %s AND class = %s AND section = %s
+            """, [admin_id, new_class, new_section])
+            
+            if cursor.fetchone()[0] > 0:
+                messages.error(request, f'Class "{new_class}-{new_section}" already exists. Please choose a different name.')
+                return redirect('view_edit_class')
+            
+            # Create the duplicate class
+            try:
+                cursor.execute("""
+                    INSERT INTO admin_student_classes (admin_id, class, section)
+                    VALUES (%s, %s, %s)
+                """, [admin_id, new_class, new_section])
+                
+                source_class_display = f"{source_class[0]}-{source_class[1]}"
+                new_class_display = f"{new_class}-{new_section}"
+                
+                messages.success(request, f'✅ Class "{new_class_display}" created successfully as a duplicate of "{source_class_display}"!')
+                
+            except Exception as e:
+                messages.error(request, f'Error creating duplicate class: {str(e)}')
+                return redirect('view_edit_class')
+        
+        return redirect('view_edit_class')
+    
+    # If not POST, redirect back
+    messages.warning(request, 'Invalid request method.')
+    return redirect('view_edit_class')
 
 
 
@@ -10129,7 +10208,7 @@ def admin_exam_print(request):
     return response
 
 
-    
+
 import os
 import urllib.parse
 

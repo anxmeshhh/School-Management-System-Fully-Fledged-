@@ -76,6 +76,7 @@ urlpatterns = [
     path('add_class/', views.add_class, name='add_class'),
     path('update_class/<int:class_id>/', views.update_class, name='update_class'),
     path('delete_class/<int:class_id>/', views.delete_class, name='delete_class'),
+    path('admin/duplicate-class/', views.duplicate_class, name='duplicate_class'),
 
     # Student Information URLs
     path('student_info/', views.student_info, name='student_info'),

@@ -58,7 +58,7 @@
     }
 
     .container {
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
         padding: 0 20px;
     }
@@ -190,6 +190,67 @@
         border: 2px solid var(--border-color);
     }
 
+    /* Statistics Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .stat-card.blue {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .stat-card.purple {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    }
+
+    .stat-card.orange {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .stat-card.red {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .stat-card-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card-icon {
+        font-size: 2rem;
+        opacity: 0.9;
+    }
+
+    .stat-card-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
     .section {
         background: var(--light-bg);
         padding: 1.5rem;
@@ -212,13 +273,67 @@
         text-align: center;
     }
 
-    .header-section {
+    /* Search and Filter Bar */
+    .controls-bar {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
         gap: 1rem;
         margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .search-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--white);
+        padding: 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .search-bar input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 0.95rem;
+        color: var(--text-color);
+        background: transparent;
+    }
+
+    .search-bar i {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+
+    .filter-group {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 0.75rem 1.25rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--white);
+        color: var(--text-color);
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: var(--primary-color);
+        color: var(--white);
+        border-color: var(--primary-color);
     }
 
     .create-btn {
@@ -234,6 +349,7 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        margin-left: auto;
     }
 
     .create-btn:hover {
@@ -242,34 +358,59 @@
         box-shadow: var(--shadow-md);
     }
 
-    .search-bar {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+    /* Bulk Actions Bar */
+    .bulk-actions-bar {
+        position: sticky;
+        top: 0;
         background: var(--white);
-        padding: 0.75rem;
+        padding: 1rem;
+        border-bottom: 2px solid var(--border-color);
+        display: none;
+        gap: 1rem;
+        align-items: center;
+        z-index: 100;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 8px 8px 0 0;
+    }
+
+    .bulk-actions-bar.active {
+        display: flex;
+    }
+
+    .bulk-action-btn {
+        padding: 0.6rem 1.2rem;
+        background: var(--white);
         border: 2px solid var(--border-color);
         border-radius: 8px;
-        flex: 1;
-        max-width: 350px;
-    }
-
-    .search-bar input {
-        flex: 1;
-        border: none;
-        outline: none;
-        font-size: 0.95rem;
         color: var(--text-color);
-        background: transparent;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
-    .search-bar button {
-        background: none;
-        border: none;
-        color: var(--primary-color);
-        cursor: pointer;
-        font-size: 1.1rem;
-        padding: 0;
+    .bulk-action-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .bulk-action-btn.danger:hover {
+        background: var(--danger-color);
+        border-color: var(--danger-color);
+    }
+
+    #selectedCount {
+        margin-left: auto;
+        padding: 0.6rem 1rem;
+        background: var(--light-bg);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: var(--text-color);
+        font-weight: 600;
     }
 
     .table-container {
@@ -277,12 +418,15 @@
         border-radius: 12px;
         border: 2px solid var(--border-color);
         box-shadow: var(--shadow-sm);
+        max-height: 600px;
+        overflow-y: auto;
     }
 
     .user-table {
         width: 100%;
         border-collapse: collapse;
         background: var(--white);
+        min-width: 1000px;
     }
 
     .user-table th, .user-table td {
@@ -296,6 +440,14 @@
         background: var(--light-bg);
         color: var(--primary-color);
         font-weight: 600;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .user-table th:first-child {
+        width: 50px;
+        text-align: center;
     }
 
     .user-table tr:hover {
@@ -311,6 +463,43 @@
         margin-right: 0.75rem;
     }
 
+    .user-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .role-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .role-badge.admin {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fca5a5;
+    }
+
+    .role-badge.teacher {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #93c5fd;
+    }
+
+    .role-badge.parent {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #86efac;
+    }
+
+    .role-badge.finance {
+        background: #fef3c7;
+        color: #d97706;
+        border: 1px solid #fcd34d;
+    }
+
     .action-btn {
         padding: 0.5rem 1rem;
         border-radius: 8px;
@@ -322,6 +511,7 @@
         align-items: center;
         gap: 0.4rem;
         border: none;
+        margin-right: 0.5rem;
     }
 
     .update-btn {
@@ -331,6 +521,7 @@
 
     .update-btn:hover {
         background: var(--primary-hover);
+        transform: translateY(-2px);
     }
 
     .delete-btn {
@@ -340,18 +531,26 @@
 
     .delete-btn:hover {
         background: var(--danger-hover);
+        transform: translateY(-2px);
     }
 
     .no-users {
         text-align: center;
-        color: var(--primary-color);
+        color: var(--text-light);
         font-size: 1.1rem;
-        padding: 2rem;
+        padding: 3rem 2rem;
         background: var(--light-bg);
         border-radius: 12px;
-        border: 2px solid var(--border-color);
     }
 
+    .no-users i {
+        font-size: 3rem;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    /* Modal Popup */
     .popup {
         display: none;
         position: fixed;
@@ -362,7 +561,17 @@
         background: rgba(0, 0, 0, 0.6);
         justify-content: center;
         align-items: center;
-        z-index: 1000;
+        z-index: 2000;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .popup.active {
+        display: flex;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
     .popup-content {
@@ -373,6 +582,18 @@
         max-width: 500px;
         box-shadow: var(--shadow-lg);
         overflow: hidden;
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
     }
 
     .popup-header {
@@ -387,6 +608,8 @@
     .popup-header h3 {
         font-size: 1.4rem;
         font-weight: 600;
+        margin: 0;
+        text-align: left;
     }
 
     .close-btn {
@@ -395,6 +618,17 @@
         color: var(--white);
         font-size: 1.5rem;
         cursor: pointer;
+        transition: var(--transition);
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .close-btn:hover {
+        transform: rotate(90deg);
     }
 
     .popup-body {
@@ -402,6 +636,14 @@
         display: flex;
         flex-direction: column;
         gap: 1.2rem;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
     .popup-body label {
@@ -412,7 +654,7 @@
 
     .popup-body input, .popup-body select {
         padding: 0.75rem;
-        border: 1px solid var(--border-color);
+        border: 2px solid var(--border-color);
         border-radius: 8px;
         font-size: 0.95rem;
         background: var(--white);
@@ -425,7 +667,7 @@
         outline: none;
     }
 
-    .popup-body button {
+    .popup-body button[type="submit"] {
         padding: 0.75rem 1.5rem;
         background: var(--primary-color);
         border: none;
@@ -439,7 +681,7 @@
         align-self: flex-end;
     }
 
-    .popup-body button:hover {
+    .popup-body button[type="submit"]:hover {
         background: var(--primary-hover);
         transform: translateY(-2px);
         box-shadow: var(--shadow-md);
@@ -452,7 +694,7 @@
         background: var(--primary-color);
         color: var(--white);
         padding: 1rem;
-        border-radius: 50px;
+        border-radius: 50%;
         box-shadow: var(--shadow-md);
         transition: var(--transition);
         z-index: 1000;
@@ -476,7 +718,27 @@
         display: flex;
     }
 
-    /* Remove underline from all button links */
+    /* Password visibility toggle */
+    .password-field {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .password-toggle:hover {
+        color: var(--primary-color);
+    }
+
     a, .action-btn, .create-btn {
         text-decoration: none !important;
     }
@@ -521,19 +783,51 @@
             padding: 1.5rem;
         }
 
-        .header-section {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .controls-bar {
             flex-direction: column;
-            align-items: stretch;
         }
 
         .search-bar {
-            max-width: none;
-            order: 2;
+            width: 100%;
         }
 
         .create-btn {
             width: 100%;
             justify-content: center;
+            margin-left: 0;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+
+        .filter-btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .bulk-actions-bar {
+            flex-direction: column;
+        }
+
+        .bulk-action-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        #selectedCount {
+            margin-left: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        .action-btn {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
         }
     }
 
@@ -553,7 +847,15 @@
 
         .main-content {
             padding: 1rem;
-       ıları
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-card-value {
+            font-size: 2rem;
+        }
 
         .scroll-top-btn {
             bottom: 0.75rem;
@@ -562,10 +864,15 @@
             height: 40px;
             font-size: 1rem;
         }
+
+        .popup-content {
+            width: 95%;
+        }
     }
 
     @media (hover: none) {
-        .section:hover, .create-btn:hover, .action-btn:hover, .back-btn:hover, .scroll-top-btn:hover {
+        .section:hover, .create-btn:hover, .action-btn:hover, 
+        .back-btn:hover, .scroll-top-btn:hover, .stat-card:hover {
             transform: none;
             box-shadow: var(--shadow-sm);
         }
@@ -586,7 +893,7 @@
 <body>
     <header class="header">
         <a href="{% url 'admin_master' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back To Master data
+            <i class="fas fa-arrow-left"></i> Back To Master Data
         </a>
         <h1><i class="fas fa-users-cog"></i> Manage Users</h1>
         <a href="{% url 'admin_page' %}">
@@ -609,60 +916,147 @@
                 </div>
             {% endif %}
 
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-content">
+                        <span class="stat-card-label">Total Users</span>
+                        <i class="fas fa-users stat-card-icon"></i>
+                    </div>
+                    <div class="stat-card-value">{{ users|length }}</div>
+                </div>
+
+                <div class="stat-card blue">
+                    <div class="stat-card-content">
+                        <span class="stat-card-label">Teachers</span>
+                        <i class="fas fa-chalkboard-teacher stat-card-icon"></i>
+                    </div>
+                    <div class="stat-card-value" id="teacherCount">0</div>
+                </div>
+
+                <div class="stat-card purple">
+                    <div class="stat-card-content">
+                        <span class="stat-card-label">Parents</span>
+                        <i class="fas fa-user-friends stat-card-icon"></i>
+                    </div>
+                    <div class="stat-card-value" id="parentCount">0</div>
+                </div>
+
+                <div class="stat-card orange">
+                    <div class="stat-card-content">
+                        <span class="stat-card-label">Admins</span>
+                        <i class="fas fa-user-shield stat-card-icon"></i>
+                    </div>
+                    <div class="stat-card-value" id="adminCount">0</div>
+                </div>
+            </div>
+
             <section class="section">
-                <div class="header-section">
-                    <h1><i class="fas fa-search"></i> Search Users</h1>
-                    <div class="header-buttons">
-                        <div class="search-bar">
-                            <input type="text" id="searchInput" placeholder="Search users...">
-                            <button onclick="searchUsers()">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                        <button class="create-btn" onclick="showPopup('add')">
-                            <i class="fas fa-plus"></i> Create New User
+                <h2><i class="fas fa-users-cog" style="color: #10b981; margin-right: 8px;"></i> User Management</h2>
+                
+                <!-- Search and Filter Controls -->
+                <div class="controls-bar">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by name, email, or username...">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <button class="filter-btn active" onclick="filterByRole('all')">
+                            <i class="fas fa-globe"></i> All
+                        </button>
+                        <button class="filter-btn" onclick="filterByRole('admin')">
+                            <i class="fas fa-user-shield"></i> Admin
+                        </button>
+                        <button class="filter-btn" onclick="filterByRole('teacher')">
+                            <i class="fas fa-chalkboard-teacher"></i> Teacher
+                        </button>
+                        <button class="filter-btn" onclick="filterByRole('parent')">
+                            <i class="fas fa-user-friends"></i> Parent
+                        </button>
+                        <button class="filter-btn" onclick="filterByRole('finance')">
+                            <i class="fas fa-dollar-sign"></i> Finance
                         </button>
                     </div>
+                    
+                    <button class="create-btn" onclick="showPopup('add')">
+                        <i class="fas fa-user-plus"></i> Create User
+                    </button>
+                </div>
+
+                <!-- Bulk Actions Bar -->
+                <div class="bulk-actions-bar" id="bulkActionsBar">
+                    <button onclick="bulkDelete()" class="bulk-action-btn danger">
+                        <i class="fas fa-trash"></i> Delete Selected
+                    </button>
+                    <button onclick="bulkExport()" class="bulk-action-btn">
+                        <i class="fas fa-file-export"></i> Export Selected
+                    </button>
+                    <span id="selectedCount">
+                        <i class="fas fa-check-square"></i> 0 selected
+                    </span>
                 </div>
 
                 <div class="table-container">
                     <table class="user-table" id="userTable">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" id="selectAll" onclick="toggleAllCheckboxes()" style="width: 18px; height: 18px; cursor: pointer;"></th>
                                 <th><i class="fas fa-user"></i> Name</th>
                                 <th><i class="fas fa-envelope"></i> Email</th>
                                 <th><i class="fas fa-user-tag"></i> Username</th>
                                 <th><i class="fas fa-lock"></i> Password</th>
                                 <th><i class="fas fa-user-cog"></i> Role</th>
-                                <th><i class="fas fa-edit"></i> Update</th>
-                                <th><i class="fas fa-trash"></i> Delete</th>
+                                <th><i class="fas fa-cogs"></i> Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for user in users %}
-                                <tr>
+                                <tr data-role="{{ user.role }}">
+                                    <td style="text-align: center;">
+                                        <input type="checkbox" class="row-checkbox" value="{{ user.id }}" onchange="updateSelectedCount()" style="width: 18px; height: 18px; cursor: pointer;">
+                                    </td>
                                     <td>
-                                        <img src="{{ user.profile_pic_url }}" alt="{{ user.name }}" class="profile-pic" onerror="this.src='{% static 'users/images/greenlogo.png' %}'">
-                                        {{ user.name }}
+                                        <div class="user-info">
+                                            <img src="{{ user.profile_pic_url }}" alt="{{ user.name }}" class="profile-pic" onerror="this.src='{% static 'users/images/greenlogo.png' %}'">
+                                            <span>{{ user.name }}</span>
+                                        </div>
                                     </td>
                                     <td>{{ user.email }}</td>
                                     <td>{{ user.username }}</td>
-                                    <td>{{ user.password }}</td>
-                                    <td>{{ user.role }}</td>
                                     <td>
-                                        <button class="action-btn update-btn" onclick="showPopup('update', '{{ user.id }}', '{{ user.name }}', '{{ user.email }}', '{{ user.username }}', '{{ user.password }}', '{{ user.role }}')">
-                                            <i class="fas fa-edit"></i> Update
-                                        </button>
+                                        <span class="password-masked">••••••••</span>
                                     </td>
                                     <td>
-                                        <button class="action-btn delete-btn" onclick="deleteUser('{{ user.id }}')">
+                                        <span class="role-badge {{ user.role }}">
+                                            {% if user.role == 'admin' %}
+                                                <i class="fas fa-user-shield"></i>
+                                            {% elif user.role == 'teacher' %}
+                                                <i class="fas fa-chalkboard-teacher"></i>
+                                            {% elif user.role == 'parent' %}
+                                                <i class="fas fa-user-friends"></i>
+                                            {% elif user.role == 'finance' %}
+                                                <i class="fas fa-dollar-sign"></i>
+                                            {% endif %}
+                                            {{ user.role|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="action-btn update-btn" onclick="showPopup('update', '{{ user.id }}', '{{ user.name|escapejs }}', '{{ user.email|escapejs }}', '{{ user.username|escapejs }}', '{{ user.password|escapejs }}', '{{ user.role }}')">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="action-btn delete-btn" onclick="deleteUser('{{ user.id }}', '{{ user.name|escapejs }}')">
                                             <i class="fas fa-trash"></i> Delete
                                         </button>
                                     </td>
                                 </tr>
                             {% empty %}
                                 <tr>
-                                    <td colspan="7" class="no-users"><i class="fas fa-search"></i> No users found.</td>
+                                    <td colspan="7" class="no-users">
+                                        <i class="fas fa-users-slash"></i>
+                                        <div>No users found</div>
+                                        <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">Click "Create User" to add your first user</small>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -672,6 +1066,7 @@
         </main>
     </div>
 
+    <!-- User Form Popup -->
     <div class="popup" id="userPopup">
         <div class="popup-content">
             <div class="popup-header">
@@ -684,35 +1079,85 @@
                 <form id="userForm" method="POST" action="" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="hidden" name="user_id" id="userId">
-                    <label for="nameInput"><i class="fas fa-user"></i> Name</label>
-                    <input type="text" name="name" id="nameInput" placeholder="Enter name" required>
-                    <label for="emailInput"><i class="fas fa-envelope"></i> Email ID</label>
-                    <input type="email" name="email" id="emailInput" placeholder="Enter email" required>
-                    <label for="usernameInput"><i class="fas fa-user-tag"></i> Username</label>
-                    <input type="text" name="username" id="usernameInput" placeholder="Enter username" required>
-                    <label for="passwordInput"><i class="fas fa-lock"></i> Password (leave blank to keep unchanged)</label>
-                    <input type="password" name="password" id="passwordInput" placeholder="Enter new password">
-                    <label for="roleInput"><i class="fas fa-user-cog"></i> Role</label>
-                    <select name="role" id="roleInput" required>
-                        <option value="">Select Role</option>
-                        <option value="admin">Admin</option>
-                        <option value="teacher">Teacher</option>
-                        <option value="parent">Parent</option>
-                        <option value="finance">Finance</option>
-                    </select>
-                    <div class="image-upload" id="imageUploadSection" style="display: none;">
+                    
+                    <div class="form-group">
+                        <label for="nameInput"><i class="fas fa-user"></i> Name <span style="color: var(--danger-color);">*</span></label>
+                        <input type="text" name="name" id="nameInput" placeholder="Enter full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emailInput"><i class="fas fa-envelope"></i> Email <span style="color: var(--danger-color);">*</span></label>
+                        <input type="email" name="email" id="emailInput" placeholder="Enter email address" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usernameInput"><i class="fas fa-user-tag"></i> Username <span style="color: var(--danger-color);">*</span></label>
+                        <input type="text" name="username" id="usernameInput" placeholder="Enter username" required>
+                    </div>
+
+                    <div class="form-group password-field">
+                        <label for="passwordInput"><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" name="password" id="passwordInput" placeholder="Enter password">
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="fas fa-eye" id="passwordIcon"></i>
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="roleInput"><i class="fas fa-user-cog"></i> Role <span style="color: var(--danger-color);">*</span></label>
+                        <select name="role" id="roleInput" required>
+                            <option value="">Select Role</option>
+                            <option value="admin">Admin</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="parent">Parent</option>
+                            <option value="finance">Finance</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="imageUploadSection" style="display: none;">
                         <label for="profilePicInput"><i class="fas fa-image"></i> Profile Picture</label>
                         <input type="file" name="profile_pic" id="profilePicInput" accept="image/*">
                     </div>
+
                     <button type="submit" id="submitBtn">
-                        <i class="fas fa-save"></i> Create New User
+                        <i class="fas fa-save"></i> Create User
                     </button>
                 </form>
             </div>
         </div>
     </div>
 
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
     <script>
+        // Calculate role counts on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('#userTable tbody tr[data-role]');
+            let adminCount = 0, teacherCount = 0, parentCount = 0, financeCount = 0;
+            
+            rows.forEach(row => {
+                const role = row.getAttribute('data-role');
+                if (role === 'admin') adminCount++;
+                else if (role === 'teacher') teacherCount++;
+                else if (role === 'parent') parentCount++;
+                else if (role === 'finance') financeCount++;
+            });
+            
+            document.getElementById('adminCount').textContent = adminCount;
+            document.getElementById('teacherCount').textContent = teacherCount;
+            document.getElementById('parentCount').textContent = parentCount;
+            
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('keyup', searchUsers);
+            
+            // Scroll to top button
+            window.addEventListener('scroll', handleScroll);
+        });
+
         function showPopup(type, userId = '', name = '', email = '', username = '', password = '', role = '') {
             const popup = document.getElementById('userPopup');
             const form = document.getElementById('userForm');
@@ -727,9 +1172,9 @@
             const imageUploadSection = document.getElementById('imageUploadSection');
 
             if (type === 'add') {
-                title.innerHTML = '<i class="fas fa-user-plus icon"></i> Create New User';
+                title.innerHTML = '<i class="fas fa-user-plus"></i> Create New User';
                 form.action = "{% url 'add_user' %}";
-                submitBtn.innerHTML = '<i class="fas fa-save icon"></i> Create New User';
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Create User';
                 userIdInput.value = '';
                 nameInput.value = '';
                 emailInput.value = '';
@@ -739,28 +1184,32 @@
                 roleInput.value = '';
                 imageUploadSection.style.display = 'block';
             } else if (type === 'update') {
-                title.innerHTML = '<i class="fas fa-user-edit icon"></i> Update User';
+                title.innerHTML = '<i class="fas fa-user-edit"></i> Update User';
                 form.action = `/update_user/${userId}/`;
-                submitBtn.innerHTML = '<i class="fas fa-save icon"></i> Update User';
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Update User';
                 userIdInput.value = userId;
                 nameInput.value = name;
                 emailInput.value = email;
                 usernameInput.value = username;
                 passwordInput.value = '';
                 passwordInput.removeAttribute('required');
+                passwordInput.placeholder = 'Leave blank to keep current password';
                 roleInput.value = role;
                 imageUploadSection.style.display = role !== 'teacher' ? 'block' : 'none';
             }
 
-            popup.style.display = 'flex';
+            popup.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
         function hidePopup() {
-            document.getElementById('userPopup').style.display = 'none';
+            const popup = document.getElementById('userPopup');
+            popup.classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
 
-        function deleteUser(userId) {
-            if (confirm('Are you sure you want to delete this user?')) {
+        function deleteUser(userId, userName) {
+            if (confirm(`Are you sure you want to delete user "${userName}"?\n\nThis action cannot be undone.`)) {
                 window.location.href = `/delete_user/${userId}/`;
             }
         }
@@ -775,9 +1224,116 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const input = document.getElementById('searchInput');
-            input.addEventListener('keyup', searchUsers);
+        function filterByRole(role) {
+            const rows = document.querySelectorAll('#userTable tbody tr[data-role]');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Filter rows
+            rows.forEach(row => {
+                if (role === 'all' || row.getAttribute('data-role') === role) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleAllCheckboxes() {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            const selectAll = document.getElementById('selectAll');
+            checkboxes.forEach(cb => {
+                if (cb.closest('tr').style.display !== 'none') {
+                    cb.checked = selectAll.checked;
+                }
+            });
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const selected = document.querySelectorAll('.row-checkbox:checked').length;
+            const bulkBar = document.getElementById('bulkActionsBar');
+            const count = document.getElementById('selectedCount');
+            
+            count.innerHTML = `<i class="fas fa-check-square"></i> ${selected} selected`;
+            
+            if (selected > 0) {
+                bulkBar.classList.add('active');
+            } else {
+                bulkBar.classList.remove('active');
+            }
+        }
+
+        function bulkDelete() {
+            const selected = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                alert('⚠️ Please select users to delete');
+                return;
+            }
+            if (confirm(`🗑️ Delete ${selected.length} user(s)?\n\nThis action cannot be undone.`)) {
+                // Implement bulk delete backend call here
+                console.log('Bulk delete:', selected);
+                alert('Bulk delete feature - implement backend endpoint');
+            }
+        }
+
+        function bulkExport() {
+            const selected = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                alert('⚠️ Please select users to export');
+                return;
+            }
+            // Implement bulk export here
+            console.log('Bulk export:', selected);
+            alert('Bulk export feature - implement backend endpoint');
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const passwordIcon = document.getElementById('passwordIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.classList.remove('fa-eye-slash');
+                passwordIcon.classList.add('fa-eye');
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function handleScroll() {
+            const scrollBtn = document.getElementById('scrollTopBtn');
+            if (window.pageYOffset > 300) {
+                scrollBtn.classList.add('show');
+            } else {
+                scrollBtn.classList.remove('show');
+            }
+        }
+
+        // Close popup when clicking outside
+        document.getElementById('userPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hidePopup();
+            }
+        });
+
+        // Close popup on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                hidePopup();
+            }
         });
     </script>
 </body>
