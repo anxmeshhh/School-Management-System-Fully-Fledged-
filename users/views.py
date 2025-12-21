@@ -7560,6 +7560,127 @@ def admin_timetable_copy_week(request):
     
     return redirect('admin_timetable')
 
+def admin_timetable_bulk_delete(request):
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    if request.method == 'POST':
+        ids = request.POST.getlist('ids')
+        if not ids:
+            messages.error(request, 'No entries selected.')
+            return redirect('admin_timetable')
+        
+        with connection.cursor() as cursor:
+            placeholders = ','.join(['%s'] * len(ids))
+            cursor.execute(f"DELETE FROM timetable WHERE id IN ({placeholders})", ids)
+        
+        messages.success(request, f'{len(ids)} timetable entries deleted successfully.')
+    
+    return redirect('admin_timetable')
+
+
+def admin_timetable_bulk_copy(request):
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    ids = request.GET.get('ids', '').split(',')
+    if not ids or ids == ['']:
+        messages.error(request, 'No entries selected.')
+        return redirect('admin_timetable')
+    
+    with connection.cursor() as cursor:
+        placeholders = ','.join(['%s'] * len(ids))
+        cursor.execute(f"""
+            SELECT class_id, subject, teacher_id, day_of_week, 
+                   start_time, end_time, room, week_start_date
+            FROM timetable 
+            WHERE id IN ({placeholders})
+        """, ids)
+        
+        entries = cursor.fetchall()
+        
+        for entry in entries:
+            week_start = entry[7] + timedelta(weeks=1)  # Next week
+            week_end = week_start + timedelta(days=6)
+            
+            try:
+                cursor.execute("""
+                    INSERT INTO timetable (class_id, subject, teacher_id, day_of_week, 
+                                         start_time, end_time, room, week_start_date, week_end_date)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, [entry[0], entry[1], entry[2], entry[3], entry[4], entry[5], 
+                      entry[6], week_start, week_end])
+            except IntegrityError:
+                continue
+        
+        messages.success(request, f'{len(entries)} entries copied to next week.')
+    
+    return redirect('admin_timetable')
+
+
+import openpyxl
+from django.http import HttpResponse
+
+def admin_timetable_export_excel(request):
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    ids = request.GET.get('ids', '')
+    
+    with connection.cursor() as cursor:
+        if ids:
+            id_list = ids.split(',')
+            placeholders = ','.join(['%s'] * len(id_list))
+            query = f"""
+                SELECT t.class_id, t.subject, tch.name, t.day_of_week, 
+                       t.start_time, t.end_time, t.room
+                FROM timetable t
+                LEFT JOIN teachers tch ON t.teacher_id = tch.id
+                WHERE t.id IN ({placeholders})
+                ORDER BY t.class_id, t.day_of_week, t.start_time
+            """
+            cursor.execute(query, id_list)
+        else:
+            cursor.execute("""
+                SELECT t.class_id, t.subject, tch.name, t.day_of_week, 
+                       t.start_time, t.end_time, t.room
+                FROM timetable t
+                LEFT JOIN teachers tch ON t.teacher_id = tch.id
+                ORDER BY t.class_id, t.day_of_week, t.start_time
+            """)
+        
+        entries = cursor.fetchall()
+    
+    # Create workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Timetable"
+    
+    # Headers
+    headers = ['Class', 'Subject', 'Teacher', 'Day', 'Start Time', 'End Time', 'Room']
+    ws.append(headers)
+    
+    # Data
+    for entry in entries:
+        ws.append(list(entry))
+    
+    # Style headers
+    from openpyxl.styles import Font, PatternFill
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+        cell.fill = PatternFill(start_color="00a676", end_color="00a676", fill_type="solid")
+    
+    # Create response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=timetable.xlsx'
+    
+    wb.save(response)
+    return response
 
     # Teacher Timetable View (with integrated filtering)
 def teacher_timetable_view(request):
@@ -9619,11 +9740,396 @@ def admin_exam_delete(request, exam_id):
     })
 
 
+def admin_timetable_bulk_delete(request):
+    """Delete multiple timetable entries at once"""
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    if request.method == 'POST':
+        ids = request.POST.getlist('ids')
+        if not ids:
+            messages.error(request, 'No entries selected.')
+            return redirect('admin_timetable')
+        
+        with connection.cursor() as cursor:
+            placeholders = ','.join(['%s'] * len(ids))
+            cursor.execute(f"DELETE FROM timetable WHERE id IN ({placeholders})", ids)
+        
+        messages.success(request, f'{len(ids)} timetable entries deleted successfully.')
+    
+    return redirect('admin_timetable')
+
+from datetime import timedelta
+from django.db import IntegrityError
+
+def admin_timetable_bulk_copy(request):
+    """Copy selected timetable entries to next week"""
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    ids = request.GET.get('ids', '').split(',')
+    if not ids or ids == ['']:
+        messages.error(request, 'No entries selected.')
+        return redirect('admin_timetable')
+    
+    with connection.cursor() as cursor:
+        placeholders = ','.join(['%s'] * len(ids))
+        cursor.execute(f"""
+            SELECT class_id, subject, teacher_id, day_of_week, 
+                   start_time, end_time, room, week_start_date
+            FROM timetable 
+            WHERE id IN ({placeholders})
+        """, ids)
+        
+        entries = cursor.fetchall()
+        copied_count = 0
+        
+        for entry in entries:
+            week_start = entry[7] + timedelta(weeks=1)  # Next week
+            week_end = week_start + timedelta(days=6)
+            
+            try:
+                cursor.execute("""
+                    INSERT INTO timetable (class_id, subject, teacher_id, day_of_week, 
+                                         start_time, end_time, room, week_start_date, week_end_date)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, [entry[0], entry[1], entry[2], entry[3], entry[4], entry[5], 
+                      entry[6], week_start, week_end])
+                copied_count += 1
+            except IntegrityError:
+                continue
+        
+        messages.success(request, f'{copied_count} entries copied to next week.')
+    
+    return redirect('admin_timetable')
+
+
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from django.http import HttpResponse
+
+def admin_timetable_export_excel(request):
+    """Export timetable to Excel"""
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    ids = request.GET.get('ids', '')
+    
+    with connection.cursor() as cursor:
+        if ids:
+            id_list = ids.split(',')
+            placeholders = ','.join(['%s'] * len(id_list))
+            query = f"""
+                SELECT t.class_id, t.subject, tch.name, t.day_of_week, 
+                       t.start_time, t.end_time, t.room, t.week_start_date
+                FROM timetable t
+                LEFT JOIN teachers tch ON t.teacher_id = tch.id
+                WHERE t.id IN ({placeholders})
+                ORDER BY t.class_id, t.week_start_date, t.day_of_week, t.start_time
+            """
+            cursor.execute(query, id_list)
+        else:
+            cursor.execute("""
+                SELECT t.class_id, t.subject, tch.name, t.day_of_week, 
+                       t.start_time, t.end_time, t.room, t.week_start_date
+                FROM timetable t
+                LEFT JOIN teachers tch ON t.teacher_id = tch.id
+                ORDER BY t.class_id, t.week_start_date, t.day_of_week, t.start_time
+            """)
+        
+        entries = cursor.fetchall()
+    
+    # Create workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Timetable"
+    
+    # Headers
+    headers = ['Class', 'Subject', 'Teacher', 'Day', 'Start Time', 'End Time', 'Room', 'Week Start']
+    ws.append(headers)
+    
+    # Style headers
+    header_fill = PatternFill(start_color="00a676", end_color="00a676", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF", size=12)
+    header_alignment = Alignment(horizontal="center", vertical="center")
+    
+    for cell in ws[1]:
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = header_alignment
+    
+    # Data
+    for entry in entries:
+        row = [
+            entry[0],  # Class
+            entry[1],  # Subject
+            entry[2] or 'N/A',  # Teacher
+            entry[3],  # Day
+            entry[4].strftime('%H:%M') if entry[4] else '',  # Start time
+            entry[5].strftime('%H:%M') if entry[5] else '',  # End time
+            entry[6] or 'N/A',  # Room
+            entry[7].strftime('%Y-%m-%d') if entry[7] else ''  # Week start
+        ]
+        ws.append(row)
+    
+    # Auto-adjust column widths
+    for column in ws.columns:
+        max_length = 0
+        column_letter = column[0].column_letter
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = min(max_length + 2, 50)
+        ws.column_dimensions[column_letter].width = adjusted_width
+    
+    # Create response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=timetable_export.xlsx'
+    
+    wb.save(response)
+    return response
+
+def admin_exam_bulk_delete(request):
+    """Delete multiple exam entries at once"""
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    if request.method == 'POST':
+        ids = request.POST.getlist('ids')
+        if not ids:
+            messages.error(request, 'No exams selected.')
+            return redirect('admin_timetable')
+        
+        with connection.cursor() as cursor:
+            placeholders = ','.join(['%s'] * len(ids))
+            cursor.execute(f"DELETE FROM exams WHERE id IN ({placeholders})", ids)
+        
+        messages.success(request, f'{len(ids)} exam(s) deleted successfully.')
+    
+    return redirect('admin_timetable')
 
 
 
+def admin_exam_export_excel(request):
+    """Export exams to Excel"""
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    ids = request.GET.get('ids', '')
+    
+    with connection.cursor() as cursor:
+        if ids:
+            id_list = ids.split(',')
+            placeholders = ','.join(['%s'] * len(id_list))
+            query = f"""
+                SELECT e.class_id, e.subject, e.exam_date, e.start_time, 
+                       e.end_time, e.room, COALESCE(tch.name, 'N/A') as invigilator_name
+                FROM exams e
+                LEFT JOIN teachers tch ON e.invigilator_id = tch.id
+                WHERE e.id IN ({placeholders})
+                ORDER BY e.class_id, e.exam_date, e.start_time
+            """
+            cursor.execute(query, id_list)
+        else:
+            cursor.execute("""
+                SELECT e.class_id, e.subject, e.exam_date, e.start_time, 
+                       e.end_time, e.room, COALESCE(tch.name, 'N/A') as invigilator_name
+                FROM exams e
+                LEFT JOIN teachers tch ON e.invigilator_id = tch.id
+                ORDER BY e.class_id, e.exam_date, e.start_time
+            """)
+        
+        entries = cursor.fetchall()
+    
+    # Create workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Exam Schedule"
+    
+    # Headers
+    headers = ['Class', 'Subject', 'Exam Date', 'Start Time', 'End Time', 'Room', 'Invigilator']
+    ws.append(headers)
+    
+    # Style headers (orange theme for exams)
+    header_fill = PatternFill(start_color="f59e0b", end_color="f59e0b", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF", size=12)
+    header_alignment = Alignment(horizontal="center", vertical="center")
+    
+    for cell in ws[1]:
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = header_alignment
+    
+    # Data
+    for entry in entries:
+        row = [
+            entry[0],  # Class
+            entry[1],  # Subject
+            entry[2].strftime('%Y-%m-%d') if entry[2] else '',  # Exam date
+            entry[3].strftime('%H:%M') if entry[3] else '',  # Start time
+            entry[4].strftime('%H:%M') if entry[4] else '',  # End time
+            entry[5] or 'N/A',  # Room
+            entry[6]  # Invigilator
+        ]
+        ws.append(row)
+    
+    # Auto-adjust column widths
+    for column in ws.columns:
+        max_length = 0
+        column_letter = column[0].column_letter
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = min(max_length + 2, 50)
+        ws.column_dimensions[column_letter].width = adjusted_width
+    
+    # Create response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=exam_schedule.xlsx'
+    
+    wb.save(response)
+    return response
 
 
+
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.units import inch
+from django.utils import timezone
+
+def admin_exam_print(request):
+    """Generate printable PDF of exam schedule"""
+    if not request.session.get('admin_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('admin_login')
+    
+    ids = request.GET.get('ids', '')
+    
+    with connection.cursor() as cursor:
+        if ids:
+            id_list = ids.split(',')
+            placeholders = ','.join(['%s'] * len(id_list))
+            query = f"""
+                SELECT e.class_id, e.subject, e.exam_date, e.start_time, 
+                       e.end_time, e.room, COALESCE(tch.name, 'N/A') as invigilator_name
+                FROM exams e
+                LEFT JOIN teachers tch ON e.invigilator_id = tch.id
+                WHERE e.id IN ({placeholders})
+                ORDER BY e.exam_date, e.class_id, e.start_time
+            """
+            cursor.execute(query, id_list)
+        else:
+            cursor.execute("""
+                SELECT e.class_id, e.subject, e.exam_date, e.start_time, 
+                       e.end_time, e.room, COALESCE(tch.name, 'N/A') as invigilator_name
+                FROM exams e
+                LEFT JOIN teachers tch ON e.invigilator_id = tch.id
+                ORDER BY e.exam_date, e.class_id, e.start_time
+            """)
+        
+        exams_data = cursor.fetchall()
+    
+    # Create PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="exam_schedule.pdf"'
+    
+    doc = SimpleDocTemplate(response, pagesize=A4)
+    styles = getSampleStyleSheet()
+    story = []
+    
+    # Title
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Title'],
+        fontSize=24,
+        spaceAfter=30,
+        textColor=colors.HexColor('#f59e0b'),
+        alignment=1  # Center
+    )
+    title = Paragraph("Manavargal School - Exam Schedule", title_style)
+    story.append(title)
+    story.append(Spacer(1, 0.3*inch))
+    
+    # Date/time info
+    subtitle_style = ParagraphStyle(
+        'Subtitle',
+        parent=styles['Normal'],
+        fontSize=10,
+        alignment=1,
+        textColor=colors.grey
+    )
+    subtitle = Paragraph(f"Generated on: {timezone.now().strftime('%B %d, %Y at %H:%M')}", subtitle_style)
+    story.append(subtitle)
+    story.append(Spacer(1, 0.5*inch))
+    
+    # Table data
+    if exams_data:
+        table_data = [['Class', 'Subject', 'Date', 'Time', 'Room', 'Invigilator']]
+        
+        for row in exams_data:
+            time_slot = f"{row[3].strftime('%H:%M')}-{row[4].strftime('%H:%M')}" if row[3] and row[4] else 'N/A'
+            exam_date = row[2].strftime('%d/%m/%Y') if row[2] else 'N/A'
+            
+            table_data.append([
+                row[0],  # Class
+                row[1],  # Subject
+                exam_date,  # Date
+                time_slot,  # Time
+                row[5] or 'N/A',  # Room
+                row[6]  # Invigilator
+            ])
+        
+        # Create table
+        table = Table(table_data, colWidths=[0.8*inch, 1.8*inch, 1.2*inch, 1.2*inch, 0.8*inch, 1.5*inch])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f59e0b')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('TOPPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTSIZE', (0, 1), (-1, -1), 10),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.lightgrey]),
+        ]))
+        story.append(table)
+    else:
+        no_data = Paragraph("No exams scheduled.", styles['Normal'])
+        story.append(no_data)
+    
+    # Footer
+    story.append(Spacer(1, 0.5*inch))
+    footer = Paragraph(
+        "Note: Please verify all details before the exam date. Contact administration for any discrepancies.",
+        ParagraphStyle('Footer', parent=styles['Normal'], fontSize=8, alignment=1, textColor=colors.grey)
+    )
+    story.append(footer)
+    
+    doc.build(story)
+    return response
+
+
+    
 import os
 import urllib.parse
 

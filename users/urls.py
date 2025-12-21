@@ -133,6 +133,9 @@ urlpatterns = [
     path('admin_timetable/delete/<int:id>/', views.admin_timetable_delete, name='admin_timetable_delete'),
     path('admin_timetable/weekly/', views.admin_timetable_weekly, name='admin_timetable_weekly'),
     path('admin_timetable/filter/', views.admin_timetable_filter, name='admin_timetable_filter'),
+    path('admin/timetable/bulk-delete/', views.admin_timetable_bulk_delete, name='admin_timetable_bulk_delete'),
+    path('admin/timetable/bulk-copy/', views.admin_timetable_bulk_copy, name='admin_timetable_bulk_copy'),
+    path('admin/timetable/export-excel/', views.admin_timetable_export_excel, name='admin_timetable_export_excel'),
 
     # Teacher Timetable URLs
    
@@ -176,6 +179,9 @@ urlpatterns = [
     path('admin/exam/schedule/', views.admin_exam_schedule, name='admin_exam_schedule'),
     path('admin/exam/filter/', views.admin_exam_filter, name='admin_exam_filter'),
     path('admin/exam/pdf-download/', views.admin_exam_pdf_download, name='admin_exam_pdf_download'),
+    path('admin/exam/bulk-delete/', views.admin_exam_bulk_delete, name='admin_exam_bulk_delete'),
+    path('admin/exam/export-excel/', views.admin_exam_export_excel, name='admin_exam_export_excel'),
+    path('admin/exam/print/', views.admin_exam_print, name='admin_exam_print'),
     # Add this to your urls.py in the Exam URLs section
     path('admin/exam/delete/<int:exam_id>/', views.admin_exam_delete, name='admin_exam_delete'),
 

@@ -4,10 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Admin Timetable Edit</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <title>Edit Timetable Entry - Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
@@ -19,7 +17,6 @@
 
     body {
         font-family: 'Poppins', sans-serif;
-        font-weight: 400;
         background: var(--white);
         min-height: 100vh;
         color: var(--text-color);
@@ -41,29 +38,20 @@
         --light-bg: #f8f9fa;
         --border-color: #adb5bd;
         --text-color: #495057;
-        --text-light: #868e96;
         --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         --border-radius: 16px;
-        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    html {
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-        overflow-x: hidden;
+        --transition: all 0.2s ease;
     }
 
     .container {
-        max-width: 1200px;
+        max-width: 900px;
         margin: 0 auto;
         padding: 0 20px;
     }
 
     .header {
         background: var(--white);
-        color: var(--text-color);
         padding: 0.75rem 1rem;
         border-bottom: 2px solid var(--border-color);
         box-shadow: var(--shadow-md);
@@ -81,11 +69,11 @@
     .header h1 {
         font-size: 1.75rem;
         font-weight: 700;
-        text-align: center;
-        flex-grow: 1;
         color: var(--primary-color);
         margin: 0;
-        margin-left: -10%;  /* Shifts the title slightly left for better balance */
+        flex-grow: 1;
+        text-align: center;
+        margin-left: -10%;
     }
 
     .back-btn {
@@ -102,7 +90,6 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        white-space: nowrap;
     }
 
     .back-btn:hover {
@@ -120,23 +107,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
-        transition: var(--transition);
         box-shadow: var(--shadow-sm);
         border: 2px solid var(--sidebar-border);
-        flex-shrink: 0;
     }
 
     .logo-container img {
         width: 100%;
         height: 100%;
         object-fit: contain;
-        transition: var(--transition);
-    }
-
-    .logo-container:hover {
-        transform: scale(1.05);
-        box-shadow: var(--shadow-md);
     }
 
     .main-content {
@@ -148,44 +126,77 @@
         margin-top: 20px;
     }
 
-    .alert-message {
+    /* NEW: Enhanced Info Banner */
+    .info-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 12px;
         margin-bottom: 1.5rem;
-    }
-
-    .alert-message .error {
-        background: #fef2f2;
-        color: #dc3545;
-        padding: 0.75rem;
-        border-radius: 8px;
-        border-left: 4px solid #dc3545;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        border: 2px solid var(--border-color);
+        gap: 1rem;
     }
 
-    .alert-message .success {
-        background: #d4edda;
-        color: var(--primary-color);
-        padding: 0.75rem;
-        border-radius: 8px;
-        border-left: 4px solid var(--primary-color);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        border: 2px solid var(--border-color);
+    .info-banner i {
+        font-size: 2rem;
+        opacity: 0.9;
     }
 
-    .alert-message .warning {
+    .info-banner-text h3 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.1rem;
+    }
+
+    .info-banner-text p {
+        margin: 0;
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    /* NEW: Conflict Warning */
+    .conflict-warning {
         background: #fff3cd;
+        border: 2px solid #ffc107;
         color: #856404;
-        padding: 0.75rem;
+        padding: 1rem;
         border-radius: 8px;
-        border-left: 4px solid #ffc107;
-        display: flex;
+        margin-bottom: 1rem;
+        display: none;
         align-items: center;
         gap: 0.5rem;
-        border: 2px solid var(--border-color);
+    }
+
+    .conflict-warning.show {
+        display: flex;
+    }
+
+    .conflict-warning strong {
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    /* NEW: Teacher Availability Indicator */
+    .availability-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .availability-indicator.available {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .availability-indicator.busy {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
     }
 
     .section {
@@ -193,25 +204,27 @@
         padding: 1.5rem;
         border-radius: 12px;
         border: 2px solid var(--border-color);
-        box-shadow: var(--shadow-sm);
-        margin-bottom: 2rem;
-        transition: var(--transition);
-    }
-
-    .section:hover {
-        box-shadow: var(--shadow-md);
+        margin-bottom: 1.5rem;
     }
 
     h2 {
         color: var(--primary-color);
-        font-size: 1.5rem;
-        font-weight: 600;
+        font-size: 1.3rem;
         margin-bottom: 1.5rem;
-        text-align: center;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
     }
 
     .form-group {
         margin-bottom: 1.5rem;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
     }
 
     .form-group label {
@@ -222,24 +235,22 @@
         margin-bottom: 0.5rem;
     }
 
-    .form-group input[type="text"],
-    .form-group input[type="date"],
-    .form-group input[type="file"],
-    .form-group input[type="time"],
+    .form-group label i {
+        margin-right: 0.5rem;
+    }
+
+    .form-group input,
     .form-group select {
         width: 100%;
         padding: 0.75rem;
         border-radius: 8px;
-        border: 1px solid var(--border-color);
+        border: 2px solid var(--border-color);
         background: var(--white);
         font-size: 0.95rem;
         transition: var(--transition);
     }
 
-    .form-group input[type="text"]:focus,
-    .form-group input[type="date"]:focus,
-    .form-group input[type="file"]:focus,
-    .form-group input[type="time"]:focus,
+    .form-group input:focus,
     .form-group select:focus {
         border-color: var(--primary-color);
         box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
@@ -247,20 +258,79 @@
     }
 
     .form-group select {
+        appearance: none;
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
         background-repeat: no-repeat;
         background-position: right 0.75rem center;
         background-size: 12px;
-        appearance: none;
+    }
+
+    .helper-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    /* NEW: Quick Actions */
+    .quick-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+
+    .quick-action-btn {
+        padding: 0.5rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--white);
+        color: var(--text-color);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quick-action-btn:hover {
+        background: var(--sidebar-bg);
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    /* NEW: Time Preset Buttons */
+    .time-presets {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .time-preset-btn {
+        padding: 0.4rem 0.8rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background: var(--white);
+        color: var(--text-color);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .time-preset-btn:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        border-color: var(--primary-color);
     }
 
     .submit-btn {
         padding: 0.75rem 1.5rem;
         background: var(--primary-color);
-        border: 2px solid var(--border-color);
+        border: none;
         border-radius: 8px;
         color: var(--white);
-        font-size: 0.95rem;
+        font-size: 1rem;
         font-weight: 500;
         cursor: pointer;
         transition: var(--transition);
@@ -269,7 +339,6 @@
         justify-content: center;
         gap: 0.5rem;
         width: 100%;
-        margin-top: 1rem;
     }
 
     .submit-btn:hover {
@@ -278,8 +347,20 @@
         box-shadow: var(--shadow-md);
     }
 
-    .icon {
-        margin-right: 0.5rem;
+    .submit-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* NEW: Delete Button */
+    .delete-btn {
+        background: #dc3545;
+        margin-top: 1rem;
+    }
+
+    .delete-btn:hover {
+        background: #c82333;
     }
 
     @media (max-width: 768px) {
@@ -290,21 +371,18 @@
         .header {
             flex-wrap: wrap;
             padding: 0.75rem;
-            gap: 0.75rem;
         }
 
         .header h1 {
             font-size: 1.25rem;
             order: 1;
             width: 100%;
+            margin-left: 0;
         }
 
         .back-btn {
             order: 2;
             flex: 1;
-            justify-content: center;
-            padding: 0.6rem 1rem;
-            font-size: 0.9rem;
         }
 
         .logo-container {
@@ -313,116 +391,27 @@
             height: 50px;
         }
 
-        .container {
-            padding: 0 15px;
+        .form-grid {
+            grid-template-columns: 1fr;
         }
 
-        .main-content {
-            padding: 1.5rem;
+        .quick-actions {
+            flex-direction: column;
         }
 
-        .section {
-            padding: 1.2rem;
-        }
-
-        h2 {
-            font-size: 1.3rem;
-        }
-
-        .form-group label {
-            font-size: 0.9rem;
-        }
-
-        .form-group input,
-        .form-group select {
-            font-size: 0.9rem;
-            padding: 0.6rem;
-        }
-
-        .submit-btn {
+        .quick-action-btn {
             width: 100%;
             justify-content: center;
-        }
-    }
-
-    @media (max-width: 480px) {
-        body {
-            padding-top: 160px;
-        }
-
-        .header {
-            padding: 0.5rem;
-        }
-
-        .header h1 {
-            font-size: 1.1rem;
-        }
-
-        .logo-container {
-            width: 50px;
-            height: 45px;
-        }
-
-        .main-content {
-            padding: 1rem;
-            border-radius: 8px;
-        }
-
-        .section {
-            padding: 1rem;
-        }
-
-        h2 {
-            font-size: 1.15rem;
-        }
-
-        .form-group label {
-            font-size: 0.85rem;
-        }
-
-        .form-group input,
-        .form-group select {
-            font-size: 0.85rem;
-            padding: 0.6rem;
-        }
-
-        .back-btn {
-            padding: 0.5rem 0.8rem;
-            font-size: 0.85rem;
-        }
-
-        .submit-btn {
-            font-size: 0.9rem;
-            padding: 0.7rem;
-        }
-    }
-
-    @media (hover: none) {
-        .section:hover, .logo-container:hover, .back-btn:hover, .submit-btn:hover {
-            transform: none;
-            box-shadow: var(--shadow-sm);
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        * {
-            transition: none !important;
-            animation: none !important;
-        }
-
-        html {
-            scroll-behavior: auto;
         }
     }
 </style>
 </head>
 <body>
-    <div id="app">
     <header class="header">
         <a href="{% url 'admin_timetable' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Timetable Dashboard
+            <i class="fas fa-arrow-left"></i> Back to Timetable
         </a>
-        <h1><i class="fas fa-edit" style="color: #10b981; margin-right: 8px;"></i> Admin Timetable Edit</h1>
+        <h1><i class="fas fa-edit"></i> Edit Timetable Entry</h1>
         <a href="{% url 'admin_page' %}">
             <div class="logo-container">
                 <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
@@ -432,86 +421,307 @@
 
     <div class="container">
         <div class="main-content">
-            <div class="section">
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="class">
-                            <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class:
-                        </label>
-                        <select id="class" name="class" required>
-                            {% for cls in classes %}
-                            <option value="{{ cls }}" {% if cls == timetable.class %}selected{% endif %}>{{ cls }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="section">
-                            <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i> Section:
-                        </label>
-                        <select id="section" name="section">
-                            <option value="">None</option>
-                            {% for sec in sections %}
-                            <option value="{{ sec }}" {% if sec == timetable.section %}selected{% endif %}>{{ sec|capfirst }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">
-                            <i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Subject:
-                        </label>
-                        <input type="text" id="subject" name="subject" value="{{ timetable.subject }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="teacher_id">
-                            <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Teacher:
-                        </label>
-                        <select id="teacher_id" name="teacher_id" required>
-                            {% for teacher in teachers %}
-                            <option value="{{ teacher.id }}" {% if teacher.id == timetable.teacher_id %}selected{% endif %}>
-                                {{ teacher.name }} ({{ teacher.subject }})
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="day_of_week">
-                            <i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> Day:
-                        </label>
-                        <select id="day_of_week" name="day_of_week" required>
-                            <option value="Monday" {% if timetable.day_of_week == 'Monday' %}selected{% endif %}>Monday</option>
-                            <option value="Tuesday" {% if timetable.day_of_week == 'Tuesday' %}selected{% endif %}>Tuesday</option>
-                            <option value="Wednesday" {% if timetable.day_of_week == 'Wednesday' %}selected{% endif %}>Wednesday</option>
-                            <option value="Thursday" {% if timetable.day_of_week == 'Thursday' %}selected{% endif %}>Thursday</option>
-                            <option value="Friday" {% if timetable.day_of_week == 'Friday' %}selected{% endif %}>Friday</option>
-                            <option value="Saturday" {% if timetable.day_of_week == 'Saturday' %}selected{% endif %}>Saturday</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="start_time">
-                            <i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> Start Time:
-                        </label>
-                        <input type="time" id="start_time" name="start_time" value="{{ timetable.start_time|time:'H:i' }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="end_time">
-                            <i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> End Time:
-                        </label>
-                        <input type="time" id="end_time" name="end_time" value="{{ timetable.end_time|time:'H:i' }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="room">
-                            <i class="fas fa-door-open" style="color: #14b8a6; margin-right: 8px;"></i> Room:
-                        </label>
-                        <input type="text" id="room" name="room" value="{{ timetable.room|default:'' }}">
-                    </div>
-                    <button type="submit" class="submit-btn">
-                        <i class="fas fa-save" style="color: #ffffff; margin-right: 8px;"></i> Update Entry
-                    </button>
-                </form>
+            <!-- NEW: Info Banner -->
+            
+
+            <!-- NEW: Quick Actions -->
+            <div class="quick-actions">
+                <button type="button" class="quick-action-btn" onclick="duplicateEntry()">
+                    <i class="fas fa-copy"></i> Duplicate to Another Day
+                </button>
+                <button type="button" class="quick-action-btn" onclick="swapEntry()">
+                    <i class="fas fa-exchange-alt"></i> Swap with Another Period
+                </button>
+                <button type="button" class="quick-action-btn" onclick="moveToNextWeek()">
+                    <i class="fas fa-calendar-plus"></i> Move to Next Week
+                </button>
             </div>
+
+            <!-- NEW: Conflict Warning -->
+            <div id="conflictWarning" class="conflict-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>Schedule Conflict Detected!</strong>
+                    <p id="conflictMessage"></p>
+                </div>
+            </div>
+
+            <form method="post" id="editForm">
+                {% csrf_token %}
+                
+                <div class="section">
+                    <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="class">
+                                <i class="fas fa-graduation-cap" style="color: #10b981;"></i> Class *
+                            </label>
+                            <select id="class" name="class" required>
+                                {% for cls in classes %}
+                                <option value="{{ cls }}" {% if cls == timetable.class %}selected{% endif %}>{{ cls }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="section">
+                                <i class="fas fa-th-large" style="color: #f59e0b;"></i> Section
+                            </label>
+                            <select id="section" name="section">
+                                <option value="">None</option>
+                                {% for sec in sections %}
+                                <option value="{{ sec }}" {% if sec == timetable.section %}selected{% endif %}>{{ sec|capfirst }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="week_start_date">
+                                <i class="fas fa-calendar-alt" style="color: #06b6d4;"></i> Week Start Date (Monday) *
+                            </label>
+                            <input type="date" id="week_start_date" name="week_start_date" value="{{ timetable.week_start_date|date:'Y-m-d' }}" required>
+                            <div class="helper-text">Current week: {{ timetable.week_start_date|date:"M d" }} - {{ timetable.week_end_date|date:"M d, Y" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2><i class="fas fa-book-open"></i> Class Details</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="subject">
+                                <i class="fas fa-book" style="color: #ec4899;"></i> Subject *
+                            </label>
+                            <input type="text" id="subject" name="subject" value="{{ timetable.subject }}" placeholder="e.g., Mathematics" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="teacher_id">
+                                <i class="fas fa-user-tie" style="color: #8b5cf6;"></i> Teacher *
+                            </label>
+                            <select id="teacher_id" name="teacher_id" required>
+                                {% for teacher in teachers %}
+                                <option value="{{ teacher.id }}" {% if teacher.id == timetable.teacher_id %}selected{% endif %}>
+                                    {{ teacher.name }} ({{ teacher.subject }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <!-- NEW: Teacher Availability Indicator -->
+                            <div id="teacherAvailability"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="room">
+                                <i class="fas fa-door-open" style="color: #14b8a6;"></i> Room
+                            </label>
+                            <input type="text" id="room" name="room" value="{{ timetable.room|default:'' }}" placeholder="e.g., Room 101">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2><i class="fas fa-clock"></i> Schedule Details</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="day_of_week">
+                                <i class="fas fa-calendar-day" style="color: #06b6d4;"></i> Day *
+                            </label>
+                            <select id="day_of_week" name="day_of_week" required>
+                                <option value="Monday" {% if timetable.day_of_week == 'Monday' %}selected{% endif %}>Monday</option>
+                                <option value="Tuesday" {% if timetable.day_of_week == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                                <option value="Wednesday" {% if timetable.day_of_week == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                                <option value="Thursday" {% if timetable.day_of_week == 'Thursday' %}selected{% endif %}>Thursday</option>
+                                <option value="Friday" {% if timetable.day_of_week == 'Friday' %}selected{% endif %}>Friday</option>
+                                <option value="Saturday" {% if timetable.day_of_week == 'Saturday' %}selected{% endif %}>Saturday</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="start_time">
+                                <i class="fas fa-clock" style="color: #f97316;"></i> Start Time *
+                            </label>
+                            <input type="time" id="start_time" name="start_time" value="{{ timetable.start_time|time:'H:i' }}" required>
+                            <!-- NEW: Time Presets -->
+                            <div class="time-presets">
+                                <button type="button" class="time-preset-btn" onclick="setTime('start', '08:00')">8:00 AM</button>
+                                <button type="button" class="time-preset-btn" onclick="setTime('start', '09:00')">9:00 AM</button>
+                                <button type="button" class="time-preset-btn" onclick="setTime('start', '10:00')">10:00 AM</button>
+                                <button type="button" class="time-preset-btn" onclick="setTime('start', '11:00')">11:00 AM</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="end_time">
+                                <i class="fas fa-clock" style="color: #f97316;"></i> End Time *
+                            </label>
+                            <input type="time" id="end_time" name="end_time" value="{{ timetable.end_time|time:'H:i' }}" required>
+                            <div class="time-presets">
+                                <button type="button" class="time-preset-btn" onclick="setTime('end', '09:00')">9:00 AM</button>
+                                <button type="button" class="time-preset-btn" onclick="setTime('end', '10:00')">10:00 AM</button>
+                                <button type="button" class="time-preset-btn" onclick="setTime('end', '11:00')">11:00 AM</button>
+                                <button type="button" class="time-preset-btn" onclick="setTime('end', '12:00')">12:00 PM</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-save"></i> Update Timetable Entry
+                </button>
+            </form>
+
+            <!-- NEW: Delete Button -->
+            <form method="post" action="{% url 'admin_timetable_delete' timetable.id %}" onsubmit="return confirm('Are you sure you want to delete this entry? This action cannot be undone.');">
+                {% csrf_token %}
+                <button type="submit" class="submit-btn delete-btn">
+                    <i class="fas fa-trash-alt"></i> Delete This Entry
+                </button>
+            </form>
         </div>
     </div>
-</div>
+
+    <script>
+        // NEW: Time Preset Function
+        function setTime(type, time) {
+            document.getElementById(type + '_time').value = time;
+            checkConflicts();
+        }
+
+        // NEW: Real-time Conflict Detection
+        let conflictCheckTimeout;
+        const form = document.getElementById('editForm');
+        const conflictWarning = document.getElementById('conflictWarning');
+        const conflictMessage = document.getElementById('conflictMessage');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function checkConflicts() {
+            clearTimeout(conflictCheckTimeout);
+            
+            const classId = document.getElementById('class').value;
+            const section = document.getElementById('section').value;
+            const teacherId = document.getElementById('teacher_id').value;
+            const day = document.getElementById('day_of_week').value;
+            const startTime = document.getElementById('start_time').value;
+            const endTime = document.getElementById('end_time').value;
+            const weekStart = document.getElementById('week_start_date').value;
+            
+            if (!classId || !teacherId || !day || !startTime || !endTime || !weekStart) {
+                return;
+            }
+            
+            const fullClassId = classId + (section || '');
+            
+            conflictCheckTimeout = setTimeout(() => {
+                fetch(`/admin/timetable/api/conflict-check/?class_id=${fullClassId}&teacher_id=${teacherId}&day=${day}&start_time=${startTime}&end_time=${endTime}&week_start=${weekStart}&exclude_id={{ timetable.id }}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.has_conflict) {
+                            conflictWarning.classList.add('show');
+                            conflictMessage.textContent = `Conflict with ${data.conflicts.length} existing ${data.conflicts.length === 1 ? 'entry' : 'entries'}. ${data.conflict_type === 'teacher' ? 'Teacher is already scheduled.' : 'Time slot is already occupied.'}`;
+                            submitBtn.disabled = true;
+                        } else {
+                            conflictWarning.classList.remove('show');
+                            submitBtn.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking conflicts:', error);
+                        conflictWarning.classList.remove('show');
+                        submitBtn.disabled = false;
+                    });
+            }, 500);
+        }
+
+        // NEW: Check Teacher Availability
+        function checkTeacherAvailability() {
+            const teacherId = document.getElementById('teacher_id').value;
+            const day = document.getElementById('day_of_week').value;
+            const startTime = document.getElementById('start_time').value;
+            const endTime = document.getElementById('end_time').value;
+            const weekStart = document.getElementById('week_start_date').value;
+            
+            if (!teacherId || !day || !startTime || !endTime || !weekStart) {
+                return;
+            }
+            
+            fetch(`/admin/timetable/api/teacher-availability/?teacher_id=${teacherId}&day=${day}&start_time=${startTime}&end_time=${endTime}&week_start=${weekStart}`)
+                .then(response => response.json())
+                .then(data => {
+                    const indicator = document.getElementById('teacherAvailability');
+                    if (data.is_available) {
+                        indicator.innerHTML = '<div class="availability-indicator available"><i class="fas fa-check-circle"></i> Teacher is available</div>';
+                    } else {
+                        indicator.innerHTML = `<div class="availability-indicator busy"><i class="fas fa-exclamation-circle"></i> Busy teaching ${data.busy_class || 'another class'}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking availability:', error);
+                });
+        }
+
+        // Add event listeners
+        ['class', 'section', 'teacher_id', 'day_of_week', 'start_time', 'end_time', 'week_start_date'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', () => {
+                    checkConflicts();
+                    checkTeacherAvailability();
+                });
+            }
+        });
+
+        // Validate end time is after start time
+        document.getElementById('end_time').addEventListener('change', function() {
+            const startTime = document.getElementById('start_time').value;
+            const endTime = this.value;
+            
+            if (startTime && endTime && endTime <= startTime) {
+                alert('End time must be after start time');
+                this.value = '';
+            }
+        });
+
+        // Ensure date is a Monday
+        document.getElementById('week_start_date').addEventListener('change', function() {
+            const selectedDate = new Date(this.value + 'T00:00:00');
+            const dayOfWeek = selectedDate.getDay();
+            
+            if (dayOfWeek !== 1) {
+                alert('Please select a Monday as the week start date');
+                const daysToAdd = dayOfWeek === 0 ? 1 : (8 - dayOfWeek);
+                const nextMonday = new Date(selectedDate);
+                nextMonday.setDate(selectedDate.getDate() + daysToAdd);
+                this.valueAsDate = nextMonday;
+            }
+        });
+
+        // NEW: Quick Action Functions
+        function duplicateEntry() {
+            const targetDay = prompt('Enter target day (Monday, Tuesday, etc.):');
+            if (targetDay) {
+                // Send request to duplicate
+                window.location.href = `/admin/timetable/duplicate/{{ timetable.id }}/?target_day=${targetDay}`;
+            }
+        }
+
+        function swapEntry() {
+            const targetId = prompt('Enter the ID of the entry to swap with:');
+            if (targetId) {
+                window.location.href = `/admin/timetable/swap/{{ timetable.id }}/?target_id=${targetId}`;
+            }
+        }
+
+        function moveToNextWeek() {
+            if (confirm('Move this entry to next week?')) {
+                window.location.href = `/admin/timetable/move-week/{{ timetable.id }}/`;
+            }
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkConflicts();
+            checkTeacherAvailability();
+        });
+    </script>
 </body>
 </html>

@@ -47,6 +47,8 @@
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             --dull-highlighter: #d4edda;
+            --exam-color: #f59e0b;
+            --exam-hover: #d97706;
         }
 
         html {
@@ -182,42 +184,36 @@
         }
 
         .sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    opacity: 0;
-    transition: var(--transition);
-    pointer-events: none;      /* ← NEW */
-}
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+        }
 
-.sidebar-overlay.active {
-    display: block;
-    opacity: 1;
-    pointer-events: all;       /* ← NEW: Allows clicks when open */
-}
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+            pointer-events: all;
+        }
 
         .page-wrapper {
-
-    margin-left: 280px;
-
-    min-height: 100vh;
-
-    transition: var(--transition);
-
-    height: 100vh;             
-
-    overflow-y: auto;    
-    overflow-x: hidden;      
-
-}
+            margin-left: 280px;
+            min-height: 100vh;
+            transition: var(--transition);
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem 20px;
         }
@@ -240,52 +236,194 @@
             margin: 0;
         }
 
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card.blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .stat-card.purple {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        .stat-card.orange {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .stat-card-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card-icon {
+            font-size: 2rem;
+            opacity: 0.9;
+        }
+
+        .stat-card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card-label {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        /* Quick Actions Banner */
+        .quick-actions-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .quick-actions-text h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.3rem;
+            text-align: left;
+        }
+
+        .quick-actions-text p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .quick-action-btns {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Tab Navigation Styles */
+        .tab-navigation {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            background: var(--white);
+            border: 2px solid var(--border-color);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1.2rem 2rem;
+            background: var(--light-bg);
+            border: none;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            position: relative;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .tab-button:not(:last-child) {
+            border-right: 2px solid var(--border-color);
+        }
+
+        .tab-button:hover {
+            background: var(--sidebar-bg);
+            color: var(--primary-color);
+        }
+
+        .tab-button.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-button.active i {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .main-content {
             background: var(--white);
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
             padding: 2rem;
-        }
-
-        .alert-message {
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-message .error {
-            background: #fef2f2;
-            color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #dc3545;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .alert-message .success {
-            background: #d4edda;
-            color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .alert-message .warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #ffc107;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
         }
 
         .section {
@@ -308,20 +446,6 @@
             font-weight: 600;
             margin-bottom: 1.5rem;
             text-align: center;
-        }
-
-        .form-container {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .form-container:hover {
-            box-shadow: var(--shadow-md);
         }
 
         .form-group {
@@ -379,184 +503,6 @@
             outline: none;
         }
 
-        .preview-info {
-            background: var(--light-bg);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .preview-info:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .preview-info h3 {
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .preview-info p {
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-        }
-
-        .preview-table {
-            max-height: 500px;
-            overflow-y: auto;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .preview-table:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        table {
-            width: 100%;
-            min-width: 600px;
-            border-collapse: collapse;
-            background: var(--white);
-        }
-
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
-
-        th {
-            background: var(--light-bg);
-            color: var(--primary-color);
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        td {
-            color: var(--text-color);
-        }
-
-        tr:nth-child(even) {
-            background: var(--light-bg);
-        }
-
-        tr:hover {
-            background: #f0f9f4;
-        }
-
-        .highlight {
-            background-color: var(--light-bg);
-        }
-
-        .error {
-            color: #dc3545;
-        }
-
-        button {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--primary-color);
-            border: none;
-            border-radius: 8px;
-            color: var(--white);
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        button:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .confirm-btn {
-            width: auto;
-            padding: 0.75rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-
-        .confirm-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .cancel-btn {
-            width: auto;
-            padding: 0.75rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--light-bg);
-            color: var(--text-color);
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .cancel-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .preview-btn {
-            width: auto;
-            padding: 0.75rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-
-        .preview-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .icon {
-            margin-right: 0.5rem;
-        }
-
         .form-row {
             display: flex;
             gap: 1rem;
@@ -592,37 +538,329 @@
             box-shadow: var(--shadow-md);
         }
 
-        .table-container {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
             margin-bottom: 1.5rem;
-            transition: var(--transition);
+            flex-wrap: wrap;
         }
 
-        .table-container:hover {
+        /* Collapsible Class/Exam Cards */
+        .class-accordion {
+            margin-bottom: 1rem;
+        }
+
+        .class-card {
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .class-card:hover {
             box-shadow: var(--shadow-md);
         }
 
-        .action-links a {
-            color: var(--primary-color);
-            text-decoration: none;
-            margin-right: 1rem;
-            font-weight: 500;
+        .class-header {
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             transition: var(--transition);
-            padding: 0.25rem 0.5rem;
+            user-select: none;
+        }
+
+        .class-header.exam-header {
+            background: linear-gradient(135deg, var(--exam-color) 0%, var(--exam-hover) 100%);
+        }
+
+        .class-header:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
+        }
+
+        .class-header.exam-header:hover {
+            background: linear-gradient(135deg, var(--exam-hover) 0%, var(--exam-color) 100%);
+        }
+
+        .class-header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .class-badge {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .class-info {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .class-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .class-header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .expand-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .class-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .class-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .class-card.expanded .class-body {
+            max-height: 600px; /* Fixed height when expanded */
+            overflow-y: auto; /* Enable vertical scrolling */
+            transition: max-height 0.3s ease-in;
+        }
+
+        /* Custom scrollbar for class body */
+        .class-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .class-body::-webkit-scrollbar-track {
+            background: var(--light-bg);
             border-radius: 4px;
+        }
+
+        .class-body::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .class-body::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-hover);
+        }
+
+        .class-actions {
+            padding: 1rem 1.5rem;
+            background: var(--light-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .scroll-indicator {
+            width: 100%;
+            text-align: center;
+            padding: 0.5rem;
+            background: linear-gradient(180deg, transparent 0%, var(--light-bg) 100%);
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .class-action-btn {
+            padding: 0.5rem 1rem;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
             display: inline-flex;
             align-items: center;
+            gap: 0.5rem;
+        }
+
+        .class-action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .class-action-btn.select-all {
+            margin-left: auto;
+        }
+
+        .timetable-entries {
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        /* Scroll to top button inside each section */
+        .scroll-to-top-section {
+            position: sticky;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: fit-content;
+            padding: 0.5rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 166, 118, 0.4);
+            transition: var(--transition);
+            z-index: 20;
+            margin: 1rem auto 0;
+        }
+
+        .scroll-to-top-section:hover {
+            background: var(--primary-hover);
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 166, 118, 0.5);
+        }
+
+        .scroll-to-top-section.visible {
+            display: inline-flex;
+        }
+
+        .day-group, .date-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .day-header, .date-header {
+            background: var(--sidebar-bg);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            border: 1px solid var(--sidebar-border);
+        }
+
+        .date-header {
+            background: #fff3cd;
+            color: var(--exam-color);
+            border: 1px solid #ffc107;
+        }
+
+        .entry-card {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+
+        .entry-card:hover {
+            background: var(--light-bg);
+            box-shadow: var(--shadow-sm);
+            transform: translateX(5px);
+        }
+
+        .entry-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .entry-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .entry-field {
+            display: flex;
+            flex-direction: column;
             gap: 0.25rem;
         }
 
-        .action-links a:hover {
-            background: var(--primary-color);
-            color: var(--white);
+        .entry-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .entry-value {
+            font-size: 0.95rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .entry-action-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--white);
+            color: var(--text-color);
             text-decoration: none;
-            transform: translateY(-1px);
+            font-size: 0.85rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .entry-action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .entry-action-btn.delete:hover {
+            background: #dc3545;
+            border-color: #dc3545;
         }
 
         .no-data {
@@ -630,6 +868,82 @@
             padding: 2rem;
             color: var(--text-light);
             font-style: italic;
+        }
+
+        /* Bulk Actions Bar */
+        .bulk-actions-bar {
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .bulk-action-btn {
+            padding: 0.6rem 1.2rem;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bulk-action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .bulk-action-btn.danger:hover {
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+
+        #selectedCount, #selectedCountExam {
+            margin-left: auto;
+            padding: 0.6rem 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--light-bg);
+            border-radius: 12px;
+            border: 2px dashed var(--border-color);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
         }
 
         /* Responsive Styles */
@@ -645,6 +959,10 @@
             .logo-container-sidebar {
                 width: 80px;
                 height: 64px;
+            }
+
+            .entry-details {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -689,6 +1007,42 @@
                 font-size: 1.3rem;
             }
 
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .quick-actions-text h3 {
+                text-align: center;
+            }
+
+            .quick-action-btns {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .quick-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .tab-navigation {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                border-right: none !important;
+                border-bottom: 2px solid var(--border-color);
+            }
+
+            .tab-button:last-child {
+                border-bottom: none;
+            }
+
             .form-row {
                 flex-direction: column;
                 align-items: stretch;
@@ -709,17 +1063,45 @@
                 flex-direction: column;
             }
 
-            .preview-table {
-                max-height: 300px;
+            .class-header-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
             }
 
-            th, td {
-                font-size: 0.85rem;
-                padding: 0.6rem;
+            .class-info {
+                flex-direction: column;
+                gap: 0.5rem;
             }
 
-            table {
-                font-size: 0.9rem;
+            .entry-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .entry-actions {
+                width: 100%;
+            }
+
+            .entry-action-btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .bulk-actions-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .bulk-action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            #selectedCount, #selectedCountExam {
+                margin-left: 0;
+                width: 100%;
+                text-align: center;
             }
         }
 
@@ -754,42 +1136,13 @@
                 font-size: 1.15rem;
             }
 
-            .form-group label {
-                font-size: 0.85rem;
+            .stat-card-value {
+                font-size: 2rem;
             }
 
-            .form-group input[type="text"],
-            .form-group input[type="date"],
-            .form-group input[type="file"],
-            .form-group select {
-                font-size: 0.85rem;
-                padding: 0.6rem;
-            }
-
-            th, td {
-                padding: 0.5rem;
-                font-size: 0.8rem;
-            }
-
-            .form-container {
+            .tab-button {
+                font-size: 0.95rem;
                 padding: 1rem;
-            }
-
-            .action-buttons .btn,
-            .filter-btn {
-                padding: 0.65rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-                font-size: 0.8rem;
-            }
-
-            th, td {
-                padding: 0.5rem 0.25rem;
             }
 
             .menu-toggle {
@@ -797,10 +1150,15 @@
                 height: 45px;
                 font-size: 1.25rem;
             }
+
+            .class-badge {
+                font-size: 0.95rem;
+                min-width: 80px;
+            }
         }
 
         @media (hover: none) {
-            .section:hover, .logo-container-sidebar:hover, .form-container:hover, .preview-info:hover, .preview-table:hover {
+            .section:hover, .logo-container-sidebar:hover, .stat-card:hover, .class-card:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
@@ -810,6 +1168,10 @@
             }
 
             .menu-toggle:hover {
+                transform: none;
+            }
+
+            .entry-card:hover {
                 transform: none;
             }
         }
@@ -897,227 +1259,507 @@
     <div class="page-wrapper">
         <div class="container">
             <header class="header">
-                <h1><i class="fas fa-calendar-alt" ></i> Admin Timetable Panel</h1>
+                <h1><i class="fas fa-calendar-alt"></i> Admin Timetable Panel</h1>
             </header>
 
-            <main class="main-content">
-
-                <!-- Section 1: Timetable Creation -->
-                <div class="section">
-                    <h2><i class="fas fa-calendar-week" style="color: #10b981; margin-right: 8px;"></i> Timetable Creation</h2>
-                   
-                    <div class="action-buttons">
-                        <a href="{% url 'admin_timetable_add' %}" class="btn">
-                            <i class="fas fa-plus" style="color: #10b981; margin-right: 8px;"></i> Add Single Entry
-                        </a>
-                        <a href="{% url 'admin_timetable_weekly' %}" class="btn">
-                            <i class="fas fa-calendar-plus" style="color: #06b6d4; margin-right: 8px;"></i> Create Weekly Timetable
-                        </a>
+            <!-- Statistics Dashboard -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-content">
+                        <span class="stat-card-label">Total Classes</span>
+                        <i class="fas fa-calendar-check stat-card-icon"></i>
                     </div>
+                    <div class="stat-card-value">{{ timetables|length|default:0 }}</div>
+                    <div class="stat-card-label">This Week</div>
+                </div>
 
-                    <form method="get" action="{% url 'admin_timetable_filter' %}">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="class">
-                                    <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Select Class:
-                                </label>
-                                <select id="class" name="class">
-                                    <option value="">All Classes</option>
-                                    {% for cls in classes %}
-                                        <option value="{{ cls }}" {% if cls == selected_class %}selected{% endif %}>{{ cls }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="section">
-                                    <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i> Select Section:
-                                </label>
-                                <select id="section" name="section">
-                                    <option value="">All Sections</option>
-                                    {% for sec in sections %}
-                                        <option value="{{ sec }}" {% if sec == selected_section %}selected{% endif %}>{{ sec|capfirst }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="teacher_id">
-                                    <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Select Teacher:
-                                </label>
-                                <select id="teacher_id" name="teacher_id">
-                                    <option value="">All Teachers</option>
-                                    {% for teacher in teachers %}
-                                        <option value="{{ teacher.id }}" {% if teacher.id == selected_teacher %}selected{% endif %}>
-                                            {{ teacher.name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="day">
-                                    <i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> Select Day:
-                                </label>
-                                <select id="day" name="day">
-                                    <option value="">All Days</option>
-                                    <option value="Monday" {% if selected_day == 'Monday' %}selected{% endif %}>Monday</option>
-                                    <option value="Tuesday" {% if selected_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
-                                    <option value="Wednesday" {% if selected_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
-                                    <option value="Thursday" {% if selected_day == 'Thursday' %}selected{% endif %}>Thursday</option>
-                                    <option value="Friday" {% if selected_day == 'Friday' %}selected{% endif %}>Friday</option>
-                                    <option value="Saturday" {% if selected_day == 'Saturday' %}selected{% endif %}>Saturday</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="filter-btn">
-                                <i class="fas fa-filter" style="color: #ffffff;"></i> Filter
-                            </button>
+                <div class="stat-card blue">
+                    <div class="stat-card-content">
+                        <span class="stat-card-label">Active Teachers</span>
+                        <i class="fas fa-user-tie stat-card-icon"></i>
+                    </div>
+                    <div class="stat-card-value">{{ teachers|length|default:0 }}</div>
+                    <div class="stat-card-label">Teaching Now</div>
+                </div>
+
+                <div class="stat-card purple">
+                    <div class="stat-card-content">
+                        <span class="stat-card-label">Upcoming Exams</span>
+                        <i class="fas fa-clipboard-list stat-card-icon"></i>
+                    </div>
+                    <div class="stat-card-value">{{ exams|length|default:0 }}</div>
+                    <div class="stat-card-label">Next 7 Days</div>
+                </div>
+
+                <div class="stat-card orange">
+                    <div class="stat-card-content">
+                        <span class="stat-card-label">Total Sections</span>
+                        <i class="fas fa-th-large stat-card-icon"></i>
+                    </div>
+                    <div class="stat-card-value">{{ sections|length|default:0 }}</div>
+                    <div class="stat-card-label">Managed</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Banner -->
+            <div class="quick-actions-banner">
+                <div class="quick-actions-text">
+                    <h3>🚀 Quick Actions</h3>
+                    <p>Streamline your timetable management</p>
+                </div>
+                <div class="quick-action-btns">
+                    <a href="{% url 'admin_timetable_weekly' %}" class="quick-btn">
+                        <i class="fas fa-calendar-week"></i> Create Weekly
+                    </a>
+                    <button onclick="exportToExcel()" class="quick-btn">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
+                    <button onclick="expandAllClasses()" class="quick-btn">
+                        <i class="fas fa-expand"></i> Expand All
+                    </button>
+                    <button onclick="collapseAllClasses()" class="quick-btn">
+                        <i class="fas fa-compress"></i> Collapse All
+                    </button>
+                </div>
+            </div>
+
+            <main class="main-content">
+                <!-- Tab Navigation -->
+                <div class="tab-navigation">
+                    <button class="tab-button active" onclick="switchTab('timetable')" id="timetableTab">
+                        <i class="fas fa-calendar-week"></i>
+                        <span>Class Timetable</span>
+                    </button>
+                    <button class="tab-button" onclick="switchTab('exam')" id="examTab">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Exam Scheduler</span>
+                    </button>
+                </div>
+
+                <!-- Timetable Tab Content -->
+                <div id="timetable-content" class="tab-content active">
+                    <div class="section">
+                        <h2><i class="fas fa-calendar-week" style="color: #10b981; margin-right: 8px;"></i> Timetable Management</h2>
+                       
+                        <div class="action-buttons">
+                            <a href="{% url 'admin_timetable_add' %}" class="btn">
+                                <i class="fas fa-plus" style="color: #10b981; margin-right: 8px;"></i> Add Single Entry
+                            </a>
+                            <a href="{% url 'admin_timetable_weekly' %}" class="btn">
+                                <i class="fas fa-calendar-plus" style="color: #06b6d4; margin-right: 8px;"></i> Create Weekly Timetable
+                            </a>
                         </div>
-                    </form>
 
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class</th>
-                                    <th><i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Subject</th>
-                                    <th><i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Teacher</th>
-                                    <th><i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> Day</th>
-                                    <th><i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> Time</th>
-                                    <th><i class="fas fa-door-open" style="color: #14b8a6; margin-right: 8px;"></i> Room</th>
-                                    <th><i class="fas fa-cogs" style="color: #6366f1; margin-right: 8px;"></i> Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for timetable in timetables %}
-                                <tr>
-                                    <td>{{ timetable.class_id|capfirst }}</td>
-                                    <td>{{ timetable.subject }}</td>
-                                    <td>{{ timetable.teacher_name }}</td>
-                                    <td>{{ timetable.day_of_week }}</td>
-                                    <td>{{ timetable.start_time|time:"H:i" }} - {{ timetable.end_time|time:"H:i" }}</td>
-                                    <td>{{ timetable.room|default:"N/A" }}</td>
-                                    <td class="action-links">
-                                        <a href="{% url 'admin_timetable_edit' timetable.id %}">
-                                            <i class="fas fa-edit" style="color: #10b981; margin-right: 6px;"></i> Edit
-                                        </a>
-                                        <a href="{% url 'admin_timetable_delete' timetable.id %}" onclick="return confirm('Are you sure?')">
-                                            <i class="fas fa-trash" style="color: #ef4444; margin-right: 6px;"></i> Delete
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="7" class="no-data">
-                                        <i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> No timetable entries found.
-                                    </td>
-                                </tr>
+                        <form method="get" action="{% url 'admin_timetable_filter' %}">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="class">
+                                        <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Select Class:
+                                    </label>
+                                    <select id="class" name="class">
+                                        <option value="">All Classes</option>
+                                        {% for cls in classes %}
+                                            <option value="{{ cls }}" {% if cls == selected_class %}selected{% endif %}>{{ cls }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="section">
+                                        <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i> Select Section:
+                                    </label>
+                                    <select id="section" name="section">
+                                        <option value="">All Sections</option>
+                                        {% for sec in sections %}
+                                            <option value="{{ sec }}" {% if sec == selected_section %}selected{% endif %}>{{ sec|capfirst }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="teacher_id">
+                                        <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Select Teacher:
+                                    </label>
+                                    <select id="teacher_id" name="teacher_id">
+                                        <option value="">All Teachers</option>
+                                        {% for teacher in teachers %}
+                                            <option value="{{ teacher.id }}" {% if teacher.id == selected_teacher %}selected{% endif %}>
+                                                {{ teacher.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="day">
+                                        <i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> Select Day:
+                                    </label>
+                                    <select id="day" name="day">
+                                        <option value="">All Days</option>
+                                        <option value="Monday" {% if selected_day == 'Monday' %}selected{% endif %}>Monday</option>
+                                        <option value="Tuesday" {% if selected_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                                        <option value="Wednesday" {% if selected_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                                        <option value="Thursday" {% if selected_day == 'Thursday' %}selected{% endif %}>Thursday</option>
+                                        <option value="Friday" {% if selected_day == 'Friday' %}selected{% endif %}>Friday</option>
+                                        <option value="Saturday" {% if selected_day == 'Saturday' %}selected{% endif %}>Saturday</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="filter-btn">
+                                    <i class="fas fa-filter" style="color: #ffffff;"></i> Filter
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Bulk Actions Bar -->
+                        <div class="bulk-actions-bar">
+                            <button onclick="bulkDelete()" class="bulk-action-btn danger">
+                                <i class="fas fa-trash" style="color: #ef4444;"></i> Delete Selected
+                            </button>
+                            <button onclick="bulkCopyToNextWeek()" class="bulk-action-btn">
+                                <i class="fas fa-copy" style="color: #3b82f6;"></i> Copy to Next Week
+                            </button>
+                            <button onclick="bulkExport()" class="bulk-action-btn">
+                                <i class="fas fa-file-export" style="color: #10b981;"></i> Export Selected
+                            </button>
+                            <span id="selectedCount">
+                                <i class="fas fa-check-square"></i> 0 selected
+                            </span>
+                        </div>
+
+                        <!-- Collapsible Class Sections -->
+                        <div id="classAccordion">
+                            {% regroup timetables by class_id as class_groups %}
+                            {% if class_groups %}
+                                {% for class_group in class_groups %}
+                                <div class="class-accordion">
+                                    <div class="class-card" id="class-{{ class_group.grouper }}">
+                                        <div class="class-header" onclick="toggleClass('{{ class_group.grouper }}')">
+                                            <div class="class-header-left">
+                                                <div class="class-badge">
+                                                    <i class="fas fa-graduation-cap"></i> {{ class_group.grouper|upper }}
+                                                </div>
+                                                <div class="class-info">
+                                                    <div class="class-stat">
+                                                        <i class="fas fa-clock"></i>
+                                                        <span>{{ class_group.list|length }} Period{{ class_group.list|length|pluralize }}</span>
+                                                    </div>
+                                                    <div class="class-stat">
+                                                        <i class="fas fa-calendar-week"></i>
+                                                        <span>Weekly Schedule</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="class-header-right">
+                                                <i class="fas fa-chevron-down expand-icon"></i>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="class-body">
+                                            <div class="class-actions">
+                                                <button class="class-action-btn" onclick="selectClassAll('{{ class_group.grouper }}', true)">
+                                                    <i class="fas fa-check-square"></i> Select All
+                                                </button>
+                                                <button class="class-action-btn" onclick="selectClassAll('{{ class_group.grouper }}', false)">
+                                                    <i class="fas fa-square"></i> Deselect All
+                                                </button>
+                                                <button class="class-action-btn" onclick="exportClass('{{ class_group.grouper }}')">
+                                                    <i class="fas fa-download"></i> Export Class
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="timetable-entries" id="entries-{{ class_group.grouper }}">
+                                                {% regroup class_group.list by day_of_week as day_groups %}
+                                                {% for day_group in day_groups %}
+                                                <div class="day-group">
+                                                    <div class="day-header">
+                                                        <i class="fas fa-calendar-day"></i>
+                                                        <span>{{ day_group.grouper }}</span>
+                                                        <span style="margin-left: auto; font-weight: normal; font-size: 0.9rem;">
+                                                            {{ day_group.list|length }} period{{ day_group.list|length|pluralize }}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    {% for entry in day_group.list %}
+                                                    <div class="entry-card">
+                                                        <input type="checkbox" class="entry-checkbox row-checkbox" 
+                                                               value="{{ entry.id }}" 
+                                                               data-class="{{ class_group.grouper }}"
+                                                               onchange="updateSelectedCount()">
+                                                        
+                                                        <div class="entry-details">
+                                                            <div class="entry-field">
+                                                                <span class="entry-label">Subject</span>
+                                                                <span class="entry-value">
+                                                                    <i class="fas fa-book" style="color: #ec4899; margin-right: 5px;"></i>
+                                                                    {{ entry.subject }}
+                                                                </span>
+                                                            </div>
+                                                            <div class="entry-field">
+                                                                <span class="entry-label">Teacher</span>
+                                                                <span class="entry-value">
+                                                                    <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 5px;"></i>
+                                                                    {{ entry.teacher_name }}
+                                                                </span>
+                                                            </div>
+                                                            <div class="entry-field">
+                                                                <span class="entry-label">Time</span>
+                                                                <span class="entry-value">
+                                                                    <i class="fas fa-clock" style="color: #f97316; margin-right: 5px;"></i>
+                                                                    {{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }}
+                                                                </span>
+                                                            </div>
+                                                            <div class="entry-field">
+                                                                <span class="entry-label">Room</span>
+                                                                <span class="entry-value">
+                                                                    <i class="fas fa-door-open" style="color: #14b8a6; margin-right: 5px;"></i>
+                                                                    {{ entry.room|default:"N/A" }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="entry-actions">
+                                                            <a href="{% url 'admin_timetable_edit' entry.id %}" class="entry-action-btn">
+                                                                <i class="fas fa-edit"></i> Edit
+                                                            </a>
+                                                            <a href="{% url 'admin_timetable_delete' entry.id %}" 
+                                                               class="entry-action-btn delete"
+                                                               onclick="return confirm('Are you sure you want to delete this entry?')">
+                                                                <i class="fas fa-trash"></i> Delete
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                                {% endfor %}
+                                                
+                                                <!-- Scroll to top button -->
+                                                <button class="scroll-to-top-section" onclick="scrollToTopOfSection('{{ class_group.grouper }}')">
+                                                    <i class="fas fa-arrow-up"></i>
+                                                    <span>Back to Top</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                            {% else %}
+                                <div class="empty-state">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <h3>No Timetable Entries Found</h3>
+                                    <p>Start by creating a new timetable entry or weekly schedule</p>
+                                    <a href="{% url 'admin_timetable_add' %}" class="btn">
+                                        <i class="fas fa-plus"></i> Create First Entry
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
 
-                <!-- Section 2: Exam Scheduler -->
-                <div class="section">
-                    <h2><i class="fas fa-clipboard-list" style="color: #f59e0b; margin-right: 8px;"></i> Exam Scheduler</h2>
-                   
-                    <div class="action-buttons">
-                        <a href="{% url 'admin_exam_add' %}" class="btn">
-                            <i class="fas fa-plus" style="color: #10b981; margin-right: 8px;"></i> Add Single Exam
-                        </a>
-                        <a href="{% url 'admin_exam_schedule' %}" class="btn">
-                            <i class="fas fa-calendar-plus" style="color: #06b6d4; margin-right: 8px;"></i> Create Exam Schedule
-                        </a>
-                    </div>
-
-                    <form method="get" action="{% url 'admin_exam_filter' %}">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="exam_class">
-                                    <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Select Class:
-                                </label>
-                                <select id="exam_class" name="class">
-                                    <option value="">All Classes</option>
-                                    {% for cls in classes %}
-                                        <option value="{{ cls }}" {% if cls == selected_exam_class %}selected{% endif %}>{{ cls }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="exam_subject">
-                                    <i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Select Subject:
-                                </label>
-                                <select id="exam_subject" name="subject">
-                                    <option value="">All Subjects</option>
-                                    {% for subject in subjects %}
-                                        <option value="{{ subject }}" {% if subject == selected_exam_subject %}selected{% endif %}>{{ subject }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>
-                                    <i class="fas fa-calendar" style="color: #06b6d4; margin-right: 8px;"></i> Select Date Range:
-                                </label>
-                                <input type="date" id="exam_date" name="start_date" value="{{ selected_start_date }}">
-                                <input type="date" id="exam_end_date" name="end_date" value="{{ selected_end_date }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="invigilator">
-                                    <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Select Invigilator:
-                                </label>
-                                <select id="invigilator" name="invigilator">
-                                    <option value="">All Invigilators</option>
-                                    {% for teacher in teachers %}
-                                        <option value="{{ teacher.id }}" {% if teacher.id == selected_invigilator %}selected{% endif %}>
-                                            {{ teacher.name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <button type="submit" class="filter-btn">
-                                <i class="fas fa-filter" style="color: #ffffff;"></i> Filter
-                            </button>
+                <!-- Exam Tab Content -->
+                <div id="exam-content" class="tab-content">
+                    <div class="section">
+                        <h2><i class="fas fa-clipboard-list" style="color: #f59e0b; margin-right: 8px;"></i> Exam Scheduler</h2>
+                       
+                        <div class="action-buttons">
+                            <a href="{% url 'admin_exam_add' %}" class="btn">
+                                <i class="fas fa-plus" style="color: #10b981; margin-right: 8px;"></i> Add Single Exam
+                            </a>
+                            <a href="{% url 'admin_exam_schedule' %}" class="btn">
+                                <i class="fas fa-calendar-plus" style="color: #06b6d4; margin-right: 8px;"></i> Create Exam Schedule
+                            </a>
                         </div>
-                    </form>
 
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class</th>
-                                    <th><i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Subject</th>
-                                    <th><i class="fas fa-calendar" style="color: #06b6d4; margin-right: 8px;"></i> Date</th>
-                                    <th><i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> Time</th>
-                                    <th><i class="fas fa-door-open" style="color: #14b8a6; margin-right: 8px;"></i> Room</th>
-                                    <th><i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Invigilator</th>
-                                    <th><i class="fas fa-cogs" style="color: #6366f1; margin-right: 8px;"></i> Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for exam in exams %}
-                                <tr>
-                                    <td>{{ exam.class_id|capfirst }}</td>
-                                    <td>{{ exam.subject }}</td>
-                                    <td>{{ exam.exam_date|date:"Y-m-d" }}</td>
-                                    <td>{{ exam.start_time|time:"H:i" }} - {{ exam.end_time|time:"H:i" }}</td>
-                                    <td>{{ exam.room|default:"N/A" }}</td>
-                                    <td>{{ exam.invigilator_name|default:"N/A" }}</td>
-                                    <td class="action-links">
-                                        <a href="{% url 'admin_exam_edit' exam.id %}">
-                                            <i class="fas fa-edit" style="color: #10b981; margin-right: 6px;"></i> Edit
-                                        </a>
-                                        <a href="{% url 'admin_exam_delete' exam.id %}" onclick="return confirm('Are you sure?')">
-                                            <i class="fas fa-trash" style="color: #ef4444; margin-right: 6px;"></i> Delete
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="7" class="no-data">
-                                        <i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> No exam entries found.
-                                    </td>
-                                </tr>
+                        <form method="get" action="{% url 'admin_exam_filter' %}">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="exam_class">
+                                        <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Select Class:
+                                    </label>
+                                    <select id="exam_class" name="class">
+                                        <option value="">All Classes</option>
+                                        {% for cls in classes %}
+                                            <option value="{{ cls }}" {% if cls == selected_exam_class %}selected{% endif %}>{{ cls }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exam_subject">
+                                        <i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Select Subject:
+                                    </label>
+                                    <select id="exam_subject" name="subject">
+                                        <option value="">All Subjects</option>
+                                        {% for subject in subjects %}
+                                            <option value="{{ subject }}" {% if subject == selected_exam_subject %}selected{% endif %}>{{ subject }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        <i class="fas fa-calendar" style="color: #06b6d4; margin-right: 8px;"></i> Date Range:
+                                    </label>
+                                    <input type="date" id="exam_date" name="start_date" value="{{ selected_start_date }}">
+                                    <input type="date" id="exam_end_date" name="end_date" value="{{ selected_end_date }}" style="margin-top: 0.5rem;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="invigilator">
+                                        <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 8px;"></i> Invigilator:
+                                    </label>
+                                    <select id="invigilator" name="invigilator">
+                                        <option value="">All Invigilators</option>
+                                        {% for teacher in teachers %}
+                                            <option value="{{ teacher.id }}" {% if teacher.id == selected_invigilator %}selected{% endif %}>
+                                                {{ teacher.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" class="filter-btn">
+                                    <i class="fas fa-filter" style="color: #ffffff;"></i> Filter
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Bulk Actions for Exams -->
+                        <div class="bulk-actions-bar">
+                            <button onclick="bulkDeleteExam()" class="bulk-action-btn danger">
+                                <i class="fas fa-trash" style="color: #ef4444;"></i> Delete Selected
+                            </button>
+                            <button onclick="bulkExportExam()" class="bulk-action-btn">
+                                <i class="fas fa-file-export" style="color: #10b981;"></i> Export Selected
+                            </button>
+                            <button onclick="printExamSchedule()" class="bulk-action-btn">
+                                <i class="fas fa-print" style="color: #3b82f6;"></i> Print Schedule
+                            </button>
+                            <span id="selectedCountExam">
+                                <i class="fas fa-check-square"></i> 0 selected
+                            </span>
+                        </div>
+
+                        <!-- Collapsible Exam Sections (Grouped by Class) -->
+                        <div id="examAccordion">
+                            {% regroup exams by class_id as exam_class_groups %}
+                            {% if exam_class_groups %}
+                                {% for exam_class_group in exam_class_groups %}
+                                <div class="class-accordion">
+                                    <div class="class-card" id="exam-class-{{ exam_class_group.grouper }}">
+                                        <div class="class-header exam-header" onclick="toggleExamClass('{{ exam_class_group.grouper }}')">
+                                            <div class="class-header-left">
+                                                <div class="class-badge">
+                                                    <i class="fas fa-clipboard-list"></i> {{ exam_class_group.grouper|upper }}
+                                                </div>
+                                                <div class="class-info">
+                                                    <div class="class-stat">
+                                                        <i class="fas fa-file-alt"></i>
+                                                        <span>{{ exam_class_group.list|length }} Exam{{ exam_class_group.list|length|pluralize }}</span>
+                                                    </div>
+                                                    <div class="class-stat">
+                                                        <i class="fas fa-calendar-check"></i>
+                                                        <span>Scheduled</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="class-header-right">
+                                                <i class="fas fa-chevron-down expand-icon"></i>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="class-body">
+                                            <div class="class-actions">
+                                                <button class="class-action-btn" onclick="selectExamClassAll('{{ exam_class_group.grouper }}', true)">
+                                                    <i class="fas fa-check-square"></i> Select All
+                                                </button>
+                                                <button class="class-action-btn" onclick="selectExamClassAll('{{ exam_class_group.grouper }}', false)">
+                                                    <i class="fas fa-square"></i> Deselect All
+                                                </button>
+                                                <button class="class-action-btn" onclick="exportExamClass('{{ exam_class_group.grouper }}')">
+                                                    <i class="fas fa-download"></i> Export Schedule
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="timetable-entries" id="exam-entries-{{ exam_class_group.grouper }}">
+                                                {% regroup exam_class_group.list by exam_date as date_groups %}
+                                                {% for date_group in date_groups %}
+                                                <div class="date-group">
+                                                    <div class="date-header">
+                                                        <i class="fas fa-calendar"></i>
+                                                        <span>{{ date_group.grouper|date:"F d, Y" }}</span>
+                                                        <span style="margin-left: auto; font-weight: normal; font-size: 0.9rem;">
+                                                            {{ date_group.list|length }} exam{{ date_group.list|length|pluralize }}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    {% for exam in date_group.list %}
+                                                    <div class="entry-card">
+                                                        <input type="checkbox" class="entry-checkbox row-checkbox-exam" 
+                                                               value="{{ exam.id }}" 
+                                                               data-exam-class="{{ exam_class_group.grouper }}"
+                                                               onchange="updateSelectedCountExam()">
+                                                        
+                                                        <div class="entry-details">
+                                                            <div class="entry-field">
+                                                                <span class="entry-label">Subject</span>
+                                                                <span class="entry-value">
+                                                                    <i class="fas fa-book" style="color: #ec4899; margin-right: 5px;"></i>
+                                                                    {{ exam.subject }}
+                                                                </span>
+                                                            </div>
+                                                            <div class="entry-field">
+                                                                <span class="entry-label">Time</span>
+                                                                <span class="entry-value">
+                                                                    <i class="fas fa-clock" style="color: #f97316; margin-right: 5px;"></i>
+                                                                    {{ exam.start_time|time:"H:i" }} - {{ exam.end_time|time:"H:i" }}
+                                                                </span>
+                                                            </div>
+                                                            <div class="entry-field">
+                                                                <span class="entry-label">Room</span>
+                                                                <span class="entry-value">
+                                                                    <i class="fas fa-door-open" style="color: #14b8a6; margin-right: 5px;"></i>
+                                                                    {{ exam.room|default:"N/A" }}
+                                                                </span>
+                                                            </div>
+                                                            <div class="entry-field">
+                                                                <span class="entry-label">Invigilator</span>
+                                                                <span class="entry-value">
+                                                                    <i class="fas fa-user-tie" style="color: #8b5cf6; margin-right: 5px;"></i>
+                                                                    {{ exam.invigilator_name|default:"N/A" }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="entry-actions">
+                                                            <a href="{% url 'admin_exam_edit' exam.id %}" class="entry-action-btn">
+                                                                <i class="fas fa-edit"></i> Edit
+                                                            </a>
+                                                            <a href="{% url 'admin_exam_delete' exam.id %}" 
+                                                               class="entry-action-btn delete"
+                                                               onclick="return confirm('Are you sure you want to delete this exam?')">
+                                                                <i class="fas fa-trash"></i> Delete
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                                {% endfor %}
+                                                
+                                                <!-- Scroll to top button -->
+                                                <button class="scroll-to-top-section" onclick="scrollToTopOfExamSection('{{ exam_class_group.grouper }}')">
+                                                    <i class="fas fa-arrow-up"></i>
+                                                    <span>Back to Top</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                            {% else %}
+                                <div class="empty-state">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    <h3>No Exam Entries Found</h3>
+                                    <p>Start by creating a new exam entry or exam schedule</p>
+                                    <a href="{% url 'admin_exam_add' %}" class="btn">
+                                        <i class="fas fa-plus"></i> Create First Exam
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </main>
@@ -1125,6 +1767,258 @@
     </div>
 
     <script>
+        // Tab Switching Function
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            if (tabName === 'timetable') {
+                document.getElementById('timetable-content').classList.add('active');
+                document.getElementById('timetableTab').classList.add('active');
+            } else if (tabName === 'exam') {
+                document.getElementById('exam-content').classList.add('active');
+                document.getElementById('examTab').classList.add('active');
+            }
+        }
+
+        // Toggle Class Accordion (Timetable)
+        function toggleClass(classId) {
+            const classCard = document.getElementById('class-' + classId);
+            classCard.classList.toggle('expanded');
+            
+            // Setup scroll listener if expanding
+            if (classCard.classList.contains('expanded')) {
+                setupScrollListener(classId, false);
+            }
+        }
+
+        // Toggle Exam Class Accordion
+        function toggleExamClass(classId) {
+            const classCard = document.getElementById('exam-class-' + classId);
+            classCard.classList.toggle('expanded');
+            
+            // Setup scroll listener if expanding
+            if (classCard.classList.contains('expanded')) {
+                setupScrollListener(classId, true);
+            }
+        }
+
+        // Setup scroll listener for showing "Back to Top" button
+        function setupScrollListener(classId, isExam) {
+            const prefix = isExam ? 'exam-entries-' : 'entries-';
+            const entriesDiv = document.getElementById(prefix + classId);
+            const parentBody = entriesDiv.closest('.class-body');
+            const scrollButton = entriesDiv.querySelector('.scroll-to-top-section');
+            
+            if (!scrollButton) return;
+            
+            // Show/hide button based on scroll position
+            parentBody.addEventListener('scroll', function() {
+                if (parentBody.scrollTop > 200) {
+                    scrollButton.classList.add('visible');
+                } else {
+                    scrollButton.classList.remove('visible');
+                }
+            });
+        }
+
+        // Scroll to top of timetable section
+        function scrollToTopOfSection(classId) {
+            const classBody = document.querySelector('#class-' + classId + ' .class-body');
+            if (classBody) {
+                classBody.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Scroll to top of exam section
+        function scrollToTopOfExamSection(classId) {
+            const classBody = document.querySelector('#exam-class-' + classId + ' .class-body');
+            if (classBody) {
+                classBody.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Expand All Classes
+        function expandAllClasses() {
+            document.querySelectorAll('.class-card').forEach(card => {
+                card.classList.add('expanded');
+            });
+        }
+
+        // Collapse All Classes
+        function collapseAllClasses() {
+            document.querySelectorAll('.class-card').forEach(card => {
+                card.classList.remove('expanded');
+            });
+        }
+
+        // Select/Deselect All in Class (Timetable)
+        function selectClassAll(classId, checked) {
+            document.querySelectorAll(`input[data-class="${classId}"]`).forEach(checkbox => {
+                checkbox.checked = checked;
+            });
+            updateSelectedCount();
+        }
+
+        // Select/Deselect All in Exam Class
+        function selectExamClassAll(classId, checked) {
+            document.querySelectorAll(`input[data-exam-class="${classId}"]`).forEach(checkbox => {
+                checkbox.checked = checked;
+            });
+            updateSelectedCountExam();
+        }
+
+        // Update Selected Count (Timetable)
+        function updateSelectedCount() {
+            const selected = document.querySelectorAll('.row-checkbox:checked').length;
+            document.getElementById('selectedCount').innerHTML = `<i class="fas fa-check-square"></i> ${selected} selected`;
+        }
+
+        // Update Selected Count (Exams)
+        function updateSelectedCountExam() {
+            const selected = document.querySelectorAll('.row-checkbox-exam:checked').length;
+            document.getElementById('selectedCountExam').innerHTML = `<i class="fas fa-check-square"></i> ${selected} selected`;
+        }
+
+        // Bulk Delete (Timetable)
+        function bulkDelete() {
+            const selected = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                alert('⚠️ Please select entries to delete');
+                return;
+            }
+            if (confirm(`🗑️ Delete ${selected.length} entries? This cannot be undone.`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/admin/timetable/bulk-delete/';
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = 'csrfmiddlewaretoken';
+                csrfToken.value = '{{ csrf_token }}';
+                form.appendChild(csrfToken);
+                
+                selected.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'ids';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Bulk Delete (Exams)
+        function bulkDeleteExam() {
+            const selected = Array.from(document.querySelectorAll('.row-checkbox-exam:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                alert('⚠️ Please select exams to delete');
+                return;
+            }
+            if (confirm(`🗑️ Delete ${selected.length} exam(s)? This cannot be undone.`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/admin/exam/bulk-delete/';
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = 'csrfmiddlewaretoken';
+                csrfToken.value = '{{ csrf_token }}';
+                form.appendChild(csrfToken);
+                
+                selected.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'ids';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Bulk Copy to Next Week
+        function bulkCopyToNextWeek() {
+            const selected = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                alert('⚠️ Please select entries to copy');
+                return;
+            }
+            if (confirm(`📋 Copy ${selected.length} entries to next week?`)) {
+                window.location.href = `/admin/timetable/bulk-copy/?ids=${selected.join(',')}`;
+            }
+        }
+
+        // Bulk Export (Timetable)
+        function bulkExport() {
+            const selected = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                alert('⚠️ Please select entries to export');
+                return;
+            }
+            window.location.href = `/admin/timetable/export-excel/?ids=${selected.join(',')}`;
+        }
+
+        // Bulk Export (Exams)
+        function bulkExportExam() {
+            const selected = Array.from(document.querySelectorAll('.row-checkbox-exam:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                alert('⚠️ Please select exams to export');
+                return;
+            }
+            window.location.href = `/admin/exam/export-excel/?ids=${selected.join(',')}`;
+        }
+
+        // Export Class (Timetable)
+        function exportClass(classId) {
+            const checkboxes = document.querySelectorAll(`input[data-class="${classId}"]`);
+            const ids = Array.from(checkboxes).map(cb => cb.value);
+            window.location.href = `/admin/timetable/export-excel/?ids=${ids.join(',')}`;
+        }
+
+        // Export Exam Class
+        function exportExamClass(classId) {
+            const checkboxes = document.querySelectorAll(`input[data-exam-class="${classId}"]`);
+            const ids = Array.from(checkboxes).map(cb => cb.value);
+            window.location.href = `/admin/exam/export-excel/?ids=${ids.join(',')}`;
+        }
+
+        // Print Exam Schedule
+        function printExamSchedule() {
+            const selected = Array.from(document.querySelectorAll('.row-checkbox-exam:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                alert('⚠️ Please select exams to print');
+                return;
+            }
+            window.open(`/admin/exam/print/?ids=${selected.join(',')}`, '_blank');
+        }
+
+        // Export to Excel (all)
+        function exportToExcel() {
+            const activeTab = document.querySelector('.tab-button.active').textContent.includes('Timetable') ? 'timetable' : 'exam';
+            if (activeTab === 'timetable') {
+                window.location.href = '/admin/timetable/export-excel/';
+            } else {
+                window.location.href = '/admin/exam/export-excel/';
+            }
+        }
+
         // Sidebar functionality
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('menuToggle');
@@ -1132,37 +2026,30 @@
             const sidebarOverlay = document.getElementById('sidebarOverlay');
             const navLinks = document.querySelectorAll('.sidebar-nav a');
 
-            // Toggle sidebar on mobile
             if (menuToggle) {
                 menuToggle.addEventListener('click', function(e) {
                     e.stopPropagation();
                     sidebar.classList.toggle('active');
                     sidebarOverlay.classList.toggle('active');
-                    
                 });
             }
 
-            // Close sidebar when clicking overlay
             if (sidebarOverlay) {
                 sidebarOverlay.addEventListener('click', function() {
                     sidebar.classList.remove('active');
                     sidebarOverlay.classList.remove('active');
-                    
                 });
             }
 
-            // Close sidebar when clicking a link on mobile
             navLinks.forEach(link => {
                 link.addEventListener('click', function() {
                     if (window.innerWidth <= 768) {
                         sidebar.classList.remove('active');
                         sidebarOverlay.classList.remove('active');
-                        
                     }
                 });
             });
 
-            // Handle window resize
             let resizeTimer;
             window.addEventListener('resize', function() {
                 clearTimeout(resizeTimer);
@@ -1170,12 +2057,10 @@
                     if (window.innerWidth > 768) {
                         sidebar.classList.remove('active');
                         sidebarOverlay.classList.remove('active');
-                        
                     }
                 }, 250);
             });
 
-            // Hover animation for nav items
             navLinks.forEach(item => {
                 item.addEventListener('mouseenter', function() {
                     const icon = this.querySelector('img');
@@ -1183,7 +2068,6 @@
                         icon.style.transform = 'scale(1.1) rotate(5deg)';
                     }
                 });
-
                 item.addEventListener('mouseleave', function() {
                     const icon = this.querySelector('img');
                     if (icon) {
