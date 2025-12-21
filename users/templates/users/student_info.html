@@ -612,16 +612,7 @@
 
         <div class="container">
             <main class="main-content">
-                {% if messages %}
-                    <div class="alert-message">
-                        {% for message in messages %}
-                            <div class="{{ message.tags }}">
-                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                
 
                 <section class="section">
                     <h2><i class="fas fa-info-circle"></i> Student Information</h2>
