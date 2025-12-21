@@ -4101,13 +4101,6 @@ def update_user(request, user_id):
                     if cursor.fetchone():
                         messages.error(request, 'Username or email already exists')
                         return redirect('manage_users')
-                    
-                    # NEW: If changing to teacher role, check if email exists in teachers table
-                    if role == 'teacher':
-                        cursor.execute("SELECT id FROM teachers WHERE email = %s AND id != %s", [email, user_id])
-                        if cursor.fetchone():
-                            messages.error(request, f'Email {email} is already used by another teacher. Please use a different email.')
-                            return redirect('manage_users')
 
                     # NEW: Check dependencies before changing from teacher role
                     if current_role == 'teacher' and role != 'teacher':
@@ -4156,21 +4149,31 @@ def update_user(request, user_id):
                     elif role == 'teacher':
                         # Update or insert teacher record
                         cursor.execute("SELECT id FROM teachers WHERE id = %s", [user_id])
-                        if not cursor.fetchone():
-                            # Inserting new teacher record
-                            cursor.execute(
-                                """INSERT INTO teachers (id, name, email, password, subject, created_at)
-                                VALUES (%s, %s, %s, %s, %s, NOW())""",
-                                [user_id, name, email, new_password, '']
-                            )
-                        else:
-                            # Updating existing teacher record
-                            cursor.execute(
-                                """UPDATE teachers 
-                                SET name = %s, email = %s, password = %s
-                                WHERE id = %s""",
-                                [name, email, new_password, user_id]
-                            )
+                        teacher_exists = cursor.fetchone()
+                        
+                        try:
+                            if not teacher_exists:
+                                # Inserting new teacher record
+                                cursor.execute(
+                                    """INSERT INTO teachers (id, name, email, password, subject, created_at)
+                                    VALUES (%s, %s, %s, %s, %s, NOW())""",
+                                    [user_id, name, email, new_password, '']
+                                )
+                            else:
+                                # Updating existing teacher record
+                                cursor.execute(
+                                    """UPDATE teachers 
+                                    SET name = %s, email = %s, password = %s
+                                    WHERE id = %s""",
+                                    [name, email, new_password, user_id]
+                                )
+                        except Exception as teacher_error:
+                            # Handle duplicate email error in teachers table
+                            if '1062' in str(teacher_error) or 'Duplicate entry' in str(teacher_error):
+                                messages.error(request, f'Email {email} is already used by another teacher. Please use a different email.')
+                                return redirect('manage_users')
+                            else:
+                                raise teacher_error
 
                     # Handle profile picture
                     if 'profile_pic' in request.FILES:
