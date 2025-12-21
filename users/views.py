@@ -4102,6 +4102,28 @@ def update_user(request, user_id):
                         messages.error(request, 'Username or email already exists')
                         return redirect('manage_users')
 
+                    # NEW: Check dependencies before changing from teacher role
+                    if current_role == 'teacher' and role != 'teacher':
+                        # Check if teacher is assigned to any timetable
+                        cursor.execute("SELECT COUNT(*) FROM timetable WHERE teacher_id = %s", [user_id])
+                        timetable_count = cursor.fetchone()[0]
+                        
+                        # Check if teacher is assigned as invigilator in exams
+                        cursor.execute("SELECT COUNT(*) FROM exams WHERE invigilator_id = %s", [user_id])
+                        exam_count = cursor.fetchone()[0]
+                        
+                        if timetable_count > 0 or exam_count > 0:
+                            error_msg = f'Cannot change role from Teacher. This teacher is assigned to '
+                            if timetable_count > 0:
+                                error_msg += f'{timetable_count} timetable slot(s)'
+                            if timetable_count > 0 and exam_count > 0:
+                                error_msg += ' and '
+                            if exam_count > 0:
+                                error_msg += f'{exam_count} exam(s) as invigilator'
+                            error_msg += '. Please remove these assignments first.'
+                            messages.error(request, error_msg)
+                            return redirect('manage_users')
+
                     # Update admin_manage_users
                     new_password = password if password else current_password
                     cursor.execute(
@@ -4113,6 +4135,7 @@ def update_user(request, user_id):
 
                     # Handle role changes
                     if current_role == 'teacher' and role != 'teacher':
+                        # Safe to delete now - we've already checked for dependencies above
                         # Delete teacher record and profile picture
                         cursor.execute("SELECT profile_pic_url FROM profile_pics_teachers WHERE teacher_id = %s", [user_id])
                         old_pic = cursor.fetchone()
@@ -4135,9 +4158,9 @@ def update_user(request, user_id):
                         else:
                             cursor.execute(
                                 """UPDATE teachers 
-                                SET name = %s, email = %s, password = %s, subject = %s
+                                SET name = %s, email = %s, password = %s
                                 WHERE id = %s""",
-                                [name, email, new_password, '', user_id]
+                                [name, email, new_password, user_id]
                             )
 
                     # Handle profile picture
@@ -4196,12 +4219,34 @@ def delete_user(request, user_id):
         with transaction.atomic():
             with connection.cursor() as cursor:
                 # Check user and role
-                cursor.execute("SELECT role FROM admin_manage_users WHERE id = %s", [user_id])
+                cursor.execute("SELECT role, name FROM admin_manage_users WHERE id = %s", [user_id])
                 user_data = cursor.fetchone()
                 if not user_data:
                     messages.error(request, 'User not found.')
                     return redirect('manage_users')
-                role = user_data[0]
+                role, name = user_data
+
+                # NEW: Check dependencies before deleting teacher
+                if role == 'teacher':
+                    # Check if teacher is assigned to any timetable
+                    cursor.execute("SELECT COUNT(*) FROM timetable WHERE teacher_id = %s", [user_id])
+                    timetable_count = cursor.fetchone()[0]
+                    
+                    # Check if teacher is assigned as invigilator in exams
+                    cursor.execute("SELECT COUNT(*) FROM exams WHERE invigilator_id = %s", [user_id])
+                    exam_count = cursor.fetchone()[0]
+                    
+                    if timetable_count > 0 or exam_count > 0:
+                        error_msg = f'Cannot delete teacher "{name}". This teacher is assigned to '
+                        if timetable_count > 0:
+                            error_msg += f'{timetable_count} timetable slot(s)'
+                        if timetable_count > 0 and exam_count > 0:
+                            error_msg += ' and '
+                        if exam_count > 0:
+                            error_msg += f'{exam_count} exam(s) as invigilator'
+                        error_msg += '. Please remove these assignments first.'
+                        messages.error(request, error_msg)
+                        return redirect('manage_users')
 
                 # Delete profile picture
                 table = 'profile_pics_teachers' if role == 'teacher' else 'otherusers_profile_pic'
@@ -4216,9 +4261,7 @@ def delete_user(request, user_id):
 
                 # Delete from teachers if applicable
                 if role == 'teacher':
-                    # Delete dependent timetable records
-                    cursor.execute("DELETE FROM timetable WHERE teacher_id = %s", [user_id])
-                    # Delete from teachers table
+                    # Safe to delete now - we've already checked for dependencies
                     cursor.execute("DELETE FROM teachers WHERE id = %s", [user_id])
 
                 # Delete from admin_manage_users
@@ -4227,7 +4270,7 @@ def delete_user(request, user_id):
                     messages.error(request, 'User not found.')
                     return redirect('manage_users')
 
-        messages.success(request, 'User deleted successfully!')
+        messages.success(request, f'User "{name}" deleted successfully!')
         return redirect(f'/manage_users/?t={uuid.uuid4().hex}')
 
     except Exception as e:
