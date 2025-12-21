@@ -4093,7 +4093,7 @@ def update_user(request, user_id):
                     current_role = user_data[1]
                     current_password = user_data[2]
 
-                    # Check for duplicate username or email
+                    # Check for duplicate username or email in admin_manage_users
                     cursor.execute(
                         "SELECT id FROM admin_manage_users WHERE (username = %s OR email = %s) AND id != %s",
                         [username, email, user_id]
@@ -4101,6 +4101,13 @@ def update_user(request, user_id):
                     if cursor.fetchone():
                         messages.error(request, 'Username or email already exists')
                         return redirect('manage_users')
+                    
+                    # NEW: If changing to teacher role, check if email exists in teachers table
+                    if role == 'teacher':
+                        cursor.execute("SELECT id FROM teachers WHERE email = %s AND id != %s", [email, user_id])
+                        if cursor.fetchone():
+                            messages.error(request, f'Email {email} is already used by another teacher. Please use a different email.')
+                            return redirect('manage_users')
 
                     # NEW: Check dependencies before changing from teacher role
                     if current_role == 'teacher' and role != 'teacher':
@@ -4150,12 +4157,14 @@ def update_user(request, user_id):
                         # Update or insert teacher record
                         cursor.execute("SELECT id FROM teachers WHERE id = %s", [user_id])
                         if not cursor.fetchone():
+                            # Inserting new teacher record
                             cursor.execute(
                                 """INSERT INTO teachers (id, name, email, password, subject, created_at)
                                 VALUES (%s, %s, %s, %s, %s, NOW())""",
                                 [user_id, name, email, new_password, '']
                             )
                         else:
+                            # Updating existing teacher record
                             cursor.execute(
                                 """UPDATE teachers 
                                 SET name = %s, email = %s, password = %s
