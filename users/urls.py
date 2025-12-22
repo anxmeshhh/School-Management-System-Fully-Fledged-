@@ -59,6 +59,10 @@ urlpatterns = [
     path('media/<path:file_path>', views.serve_pdf, name='serve_pdf'),
     path('admin_homework_panel/', views.admin_homework_panel, name='admin_homework_panel'),
     path('teacher_homework_panel/', views.teacher_homework_panel, name='teacher_homework_panel'),
+   
+    path('serve-file/<str:file_type>/<path:file_path>', views.serve_protected_file, name='serve_protected_file'),
+
+    
     path('teacher_accept_portal/', views.teacher_accept_portal, name='teacher_accept_portal'),
 
     path('admin_circular_upload/', views.admin_circular_upload, name='admin_circular_upload'),

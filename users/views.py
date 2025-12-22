@@ -2552,32 +2552,329 @@ def admin_homework_panel(request):
     })
 
 # Teacher homework panel
+import os
+import uuid
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import connection
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import FileSystemStorage
+from datetime import datetime
+
+
+def normalize_value(value):
+    """Normalize string values for consistency"""
+    if value:
+        return str(value).strip().lower()
+    return value
+
+
+from django.http import HttpResponse, Http404
+from django.conf import settings
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
+import os
+import mimetypes
+
+def serve_protected_file(request, file_path, file_type='homework'):
+    """
+    Generic protected file serving view that handles both teacher uploads and student submissions.
+    Detects file type and serves appropriately with view/download options.
+    
+    Args:
+        file_path: Relative path to the file
+        file_type: Type of file ('homework' for teacher uploads, 'submission' for student submissions)
+    """
+    # Check if teacher is logged in
+    if not request.session.get('teacher_id'):
+        messages.error(request, 'You must be logged in to access this file.')
+        return redirect('teacher_login')
+
+    # Security: Normalize path to prevent directory traversal
+    file_path = os.path.normpath(file_path).lstrip('/')
+    
+    # Determine base directory based on file type
+    if file_type == 'submission':
+        # Student submissions are in media root directly
+        full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+    else:
+        # Teacher homework files
+        full_path = os.path.join(settings.MEDIA_ROOT, 'teacher_homework', file_path)
+
+    # Check if file exists
+    if not os.path.exists(full_path):
+        messages.error(request, 'File not found.')
+        return redirect('teacher_homework_panel')
+
+    # Extra security: ensure file is inside MEDIA_ROOT
+    if not os.path.abspath(full_path).startswith(os.path.abspath(settings.MEDIA_ROOT)):
+        messages.error(request, 'Access denied.')
+        return redirect('teacher_homework_panel')
+
+    # Detect MIME type
+    mime_type, _ = mimetypes.guess_type(full_path)
+    file_ext = os.path.splitext(full_path)[1].lower()
+    
+    # Fallback MIME types for common file extensions
+    mime_type_map = {
+        '.pdf': 'application/pdf',
+        '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        '.doc': 'application/msword',
+        '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        '.xls': 'application/vnd.ms-excel',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.gif': 'image/gif',
+        '.webp': 'image/webp',
+        '.txt': 'text/plain',
+        '.zip': 'application/zip',
+    }
+    
+    if mime_type is None:
+        mime_type = mime_type_map.get(file_ext, 'application/octet-stream')
+
+    # Read and serve file
+    try:
+        with open(full_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type=mime_type)
+            filename = os.path.basename(full_path)
+
+            # Check if download is explicitly requested
+            force_download = request.GET.get('download', '').lower() == 'true'
+            
+            if force_download:
+                # Force download
+                response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            else:
+                # View inline in browser (default behavior)
+                # Images, PDFs, and text files will display in browser
+                # Other files will prompt download based on browser settings
+                viewable_types = [
+                    'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+                    'application/pdf', 'text/plain'
+                ]
+                
+                if mime_type in viewable_types:
+                    response['Content-Disposition'] = f'inline; filename="{filename}"'
+                else:
+                    # For non-viewable types (DOCX, XLSX), still try inline
+                    # The browser will decide whether to display or download
+                    response['Content-Disposition'] = f'inline; filename="{filename}"'
+
+            return response
+    except Exception as e:
+        messages.error(request, f'Error serving file: {str(e)}')
+        return redirect('teacher_homework_panel')
+
+
 @csrf_exempt
 def teacher_homework_panel(request):
     if not request.session.get('teacher_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('teacher_login')
 
-    # Fetch distinct classes and sections
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT class FROM student_page1")
-            classes = [row[0] for row in cursor.fetchall()]
-            cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-            sections = [row[0] for row in cursor.fetchall()]
-    except Exception as e:
-        messages.error(request, f"Error fetching classes/sections: {str(e)}")
-        classes = []
-        sections = []
+    teacher_id = request.session.get('teacher_id')
+    HOMEWORK_DIR = os.path.join(settings.MEDIA_ROOT, 'teacher_homework')
+    
+    # Create homework directory if it doesn't exist
+    if not os.path.exists(HOMEWORK_DIR):
+        os.makedirs(HOMEWORK_DIR)
 
-    # Get filter values
-    selected_class = request.POST.get('class', '')
-    selected_section = request.POST.get('section', '')
+    # Handle homework upload
+    if request.method == 'POST' and request.POST.get('upload_homework'):
+        title = request.POST.get('homework_title', '').strip()
+        description = request.POST.get('homework_description', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        due_date = request.POST.get('due_date', '')
+        target = request.POST.get('target', 'all')
+        class_name = request.POST.get('class') if target == 'specific' else None
+        section = request.POST.get('section') if target == 'specific' else None
+        homework_file = request.FILES.get('homework_file')
 
+        # Validation
+        if not title:
+            messages.error(request, 'Homework title is required.')
+            return redirect('teacher_homework_panel')
+        
+        if not homework_file:
+            messages.error(request, 'Please upload a file.')
+            return redirect('teacher_homework_panel')
+
+        # Validate class and section if specific
+        if target == 'specific' and (not class_name or not section):
+            messages.error(request, 'Please select both class and section for specific target.')
+            return redirect('teacher_homework_panel')
+
+        # Normalize class and section
+        class_name = normalize_value(class_name)
+        section = normalize_value(section)
+
+        # Validate file type
+        allowed_extensions = ['.pdf', '.docx', '.xlsx', '.xls', '.jpg', '.jpeg', '.png', '.gif', '.webp']
+        file_ext = os.path.splitext(homework_file.name)[1].lower()
+        
+        if file_ext not in allowed_extensions:
+            messages.error(request, 'Invalid file type. Allowed: PDF, DOCX, XLSX, XLS, and images.')
+            return redirect('teacher_homework_panel')
+
+        # Validate file size (max 10MB)
+        if homework_file.size > 10 * 1024 * 1024:
+            messages.error(request, 'File size must be less than 10MB.')
+            return redirect('teacher_homework_panel')
+
+        # Generate unique filename
+        filename = f"{uuid.uuid4().hex}_{homework_file.name}"
+        fs = FileSystemStorage(location=HOMEWORK_DIR, base_url='/media/teacher_homework/')
+        
+        try:
+            filename = fs.save(filename, homework_file)
+            full_path = os.path.join(HOMEWORK_DIR, filename)
+            
+            if not os.path.exists(full_path):
+                messages.error(request, 'Failed to save the file.')
+                return redirect('teacher_homework_panel')
+            
+            file_url = f"/media/teacher_homework/{filename}"
+        except Exception as e:
+            messages.error(request, f'Error saving the file: {str(e)}')
+            return redirect('teacher_homework_panel')
+
+        # Save homework metadata in a unique file
+        metadata_file_path = os.path.join(HOMEWORK_DIR, f"{filename}.txt")
+        try:
+            with open(metadata_file_path, 'w', encoding='utf-8') as f:
+                f.write(f"{title}\n")
+                f.write(f"{description}\n")
+                f.write(f"{subject}\n")
+                f.write(f"{due_date}\n")
+                f.write(f"{target}\n")
+                f.write(f"{teacher_id}\n")
+                if target == 'specific':
+                    f.write(f"{class_name}\n")
+                    f.write(f"{section}\n")
+        except Exception as e:
+            messages.error(request, f'Error saving homework metadata: {str(e)}')
+            return redirect('teacher_homework_panel')
+
+        messages.success(request, f'Homework "{title}" uploaded successfully!')
+        return redirect('teacher_homework_panel')
+
+    # Prepare uploaded homework list for display
+    uploaded_homework = []
+    if os.path.exists(HOMEWORK_DIR):
+        print(f"DEBUG: Checking homework directory: {HOMEWORK_DIR}")
+        print(f"DEBUG: Current teacher_id: {teacher_id}")
+        
+        for file in os.listdir(HOMEWORK_DIR):
+            # Skip metadata files
+            if file.endswith('.txt'):
+                continue
+            
+            print(f"DEBUG: Processing file: {file}")
+            
+            # Check for valid file extensions
+            if not any(file.lower().endswith(ext) for ext in ['.pdf', '.docx', '.xlsx', '.xls', '.jpg', '.jpeg', '.png', '.gif', '.webp']):
+                print(f"DEBUG: Skipping {file} - invalid extension")
+                continue
+            
+            full_path = os.path.join(HOMEWORK_DIR, file)
+            if not os.path.exists(full_path):
+                print(f"DEBUG: Skipping {file} - file doesn't exist")
+                continue
+
+            metadata_file = f"{file}.txt"
+            metadata_path = os.path.join(HOMEWORK_DIR, metadata_file)
+            
+            title = "Untitled"
+            description = ""
+            subject = ""
+            due_date = ""
+            target = "All Classes"
+            file_teacher_id = ""
+            
+            if os.path.exists(metadata_path):
+                try:
+                    with open(metadata_path, 'r', encoding='utf-8') as f:
+                        lines = f.readlines()
+                        title = lines[0].strip() if len(lines) > 0 else "Untitled"
+                        description = lines[1].strip() if len(lines) > 1 else ""
+                        subject = lines[2].strip() if len(lines) > 2 else ""
+                        due_date = lines[3].strip() if len(lines) > 3 else ""
+                        target_type = lines[4].strip() if len(lines) > 4 else "all"
+                        file_teacher_id = lines[5].strip() if len(lines) > 5 else ""
+                        
+                        print(f"DEBUG: File {file} - teacher_id from metadata: {file_teacher_id}")
+                        
+                        if target_type == 'specific' and len(lines) >= 8:
+                            class_name = lines[6].strip()
+                            section = lines[7].strip()
+                            target = f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
+                        else:
+                            target = "All Classes"
+                except Exception as e:
+                    print(f"Error reading metadata from {metadata_path}: {e}")
+            else:
+                print(f"DEBUG: No metadata file found for {file}")
+            
+            # Only show homework uploaded by this teacher
+            if file_teacher_id != str(teacher_id):
+                print(f"DEBUG: Skipping {file} - teacher mismatch ({file_teacher_id} != {teacher_id})")
+                continue
+
+            print(f"DEBUG: Adding {file} to uploaded_homework list")
+
+            try:
+                file_ext = os.path.splitext(file)[1].lower()
+                upload_date = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%B %d, %Y at %I:%M %p')
+                
+                # Use protected file serving URL
+                file_url = f"/serve-file/homework/{file}"
+                
+                # Format due date if exists
+                formatted_due_date = None
+                if due_date:
+                    try:
+                        formatted_due_date = datetime.strptime(due_date, '%Y-%m-%d').strftime('%B %d, %Y')
+                    except:
+                        formatted_due_date = due_date
+                
+                uploaded_homework.append({
+                    'title': title,
+                    'description': description if description else None,
+                    'subject': subject if subject else None,
+                    'due_date': formatted_due_date,
+                    'target': target,
+                    'file_path': file,
+                    'file_type': file_ext,
+                    'date': upload_date,
+                    'file_url': file_url
+                })
+            except Exception as e:
+                print(f"Error processing file {file}: {e}")
+        
+        print(f"DEBUG: Total uploaded_homework items: {len(uploaded_homework)}")
+
+    # Sort by newest first
+    uploaded_homework = sorted(uploaded_homework, key=lambda x: x['date'], reverse=True)
+
+    # Get filter values for student submissions
+    selected_class = ''
+    selected_section = ''
+    
+    if request.method == 'POST' and request.POST.get('filter_homework'):
+        selected_class = normalize_value(request.POST.get('class', ''))
+        selected_section = normalize_value(request.POST.get('section', ''))
+
+    # Fetch student homework submissions
+    homework_list = []
     try:
         with connection.cursor() as cursor:
             query = """
-                SELECT h.user_id, h.title, h.submission_date, h.file_path, h.class, h.section, s.name
+                SELECT h.user_id, h.title, h.submission_date, h.file_path, 
+                       h.class, h.section, s.name
                 FROM homework h
                 JOIN student_page1 s ON h.user_id = s.user_id
                 {where_clause}
@@ -2585,52 +2882,69 @@ def teacher_homework_panel(request):
             """
             params = []
             where_clause = ""
+            
             if selected_class and selected_section:
                 where_clause = "WHERE h.class = %s AND h.section = %s"
                 params = [selected_class, selected_section]
+            elif selected_class:
+                where_clause = "WHERE h.class = %s"
+                params = [selected_class]
+            elif selected_section:
+                where_clause = "WHERE h.section = %s"
+                params = [selected_section]
 
             cursor.execute(query.format(where_clause=where_clause), params)
             homework_list = [
                 {
                     "user_id": r[0],
                     "title": r[1],
-                    "submission_date": r[2],
+                    "submission_date": r[2].strftime('%B %d, %Y at %I:%M %p') if r[2] else 'N/A',
                     "file_path": r[3],
                     "class": r[4],
                     "section": r[5],
-                    "student_name": r[6]
+                    "student_name": r[6],
+                    # Add protected URLs for student submissions
+                    "view_url": f"/serve-file/submission/{r[3]}",
+                    "download_url": f"/serve-file/submission/{r[3]}?download=true"
                 } for r in cursor.fetchall()
             ]
     except Exception as e:
         messages.error(request, f"Error retrieving homework submissions: {str(e)}")
-        homework_list = []
+
+    # Fetch classes and sections from student_page1
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT class FROM student_page1 ORDER BY class")
+            classes = [normalize_value(row[0]) for row in cursor.fetchall()]
+            cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL ORDER BY section")
+            sections = [normalize_value(row[0]) for row in cursor.fetchall()]
+    except Exception as e:
+        messages.error(request, f"Error fetching classes/sections: {str(e)}")
+        classes = []
+        sections = []
+
+    # Default subjects list (can be customized)
+    subjects = ['Mathematics', 'English', 'Science', 'Social Studies', 'Hindi', 
+                'Computer Science', 'Physics', 'Chemistry', 'Biology', 'History', 
+                'Geography', 'Economics', 'Accountancy']
 
     return render(request, "users/teacher_homework_panel.html", {
         "homework_list": homework_list,
+        "uploaded_homework": uploaded_homework,
         "media_url": settings.MEDIA_URL,
         "classes": classes,
         "sections": sections,
+        "subjects": subjects,
         "selected_class": selected_class,
         "selected_section": selected_section
     })
+
 
 def teacher_view(request):
     return render(request, "users/teacher.html")
 
 def fees(request):
     return render(request, "users/fees.html")
-
-def mark_view(request):
-    return render(request, "users/mark.html")
-
-
-
-
-
-
-
-
-
 
 
 from django.shortcuts import render, redirect
