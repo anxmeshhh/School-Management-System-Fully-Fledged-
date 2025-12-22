@@ -1734,14 +1734,17 @@ from django.contrib import messages
 
 def admin_accept_portal(request):
     """
-    Main view for Admin Leave Request Portal.
-    Handles viewing all leave requests, approving/rejecting them,
-    and rendering the template.
+    Enhanced Admin Leave Request Portal with TWO SECTIONS:
+    1. Pending Leave Requests - Can approve/reject
+    2. Request History - View approved/rejected requests (read-only)
+    
+    NO DATABASE CHANGES REQUIRED - Uses existing table structure
     """
     if not request.session.get('admin_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
 
+    # Handle POST requests for approving/rejecting leave
     if request.method == 'POST':
         action = request.POST.get('action')
         leave_id = request.POST.get('leave_id')
@@ -1757,39 +1760,123 @@ def admin_accept_portal(request):
 
             try:
                 with connection.cursor() as cursor:
+                    # Only update status - NO DATABASE STRUCTURE CHANGES
                     cursor.execute("""
                         UPDATE student_leave_requests
                         SET status = %s
-                        WHERE id = %s
+                        WHERE id = %s AND status = 'Pending'
                     """, [new_status, leave_id])
-                messages.success(request, f'Leave request {new_status.lower()} successfully.')
+                    
+                    if cursor.rowcount == 0:
+                        messages.error(request, 'Cannot update: Request already processed or not found.')
+                    else:
+                        messages.success(request, f'Leave request {new_status.lower()} successfully.')
             except Exception as e:
+                print(f"Error updating leave request: {str(e)}")
                 messages.error(request, 'Error updating leave request.')
         else:
             messages.error(request, 'Leave ID or action missing.')
 
         return redirect('admin_accept_portal')
 
-    # Fetch all leave requests for display
+    # GET request - Fetch leave requests separated into two sections
+    
+    # SECTION 1: Fetch PENDING leave requests only
+    pending_requests = []
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT id, student_name, reg_number, class_number, section,
-                       leave_reason, leave_start_date, leave_end_date, leave_duration, status
+                SELECT 
+                    id, 
+                    student_name, 
+                    reg_number, 
+                    class_number, 
+                    section,
+                    leave_reason, 
+                    leave_start_date, 
+                    leave_end_date, 
+                    leave_duration, 
+                    status
                 FROM student_leave_requests
-                ORDER BY leave_start_date DESC
+                WHERE status = 'Pending'
+                ORDER BY leave_start_date DESC, id DESC
             """)
-            leave_requests = cursor.fetchall()
+            pending_requests = cursor.fetchall()
     except Exception as e:
-        messages.error(request, 'Error fetching leave requests.')
-        leave_requests = []
-
-    return render(request, 'users/admin_accept_portal.html', {
-        'leave_requests': leave_requests
-    })
+        print(f"Error fetching pending requests: {str(e)}")
+        messages.error(request, 'Error fetching pending leave requests.')
+    
+    # SECTION 2: Fetch APPROVED and REJECTED leave requests (History)
+    history_requests = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    id, 
+                    student_name, 
+                    reg_number, 
+                    class_number, 
+                    section,
+                    leave_reason, 
+                    leave_start_date, 
+                    leave_end_date, 
+                    leave_duration, 
+                    status,
+                    NULL as processed_date
+                FROM student_leave_requests
+                WHERE status IN ('Approved', 'Rejected')
+                ORDER BY id DESC
+            """)
+            history_requests = cursor.fetchall()
+    except Exception as e:
+        print(f"Error fetching history requests: {str(e)}")
+        messages.error(request, 'Error fetching leave request history.')
+    
+    # Calculate statistics
+    pending_count = len(pending_requests)
+    
+    # Count approved and rejected requests
+    approved_count = 0
+    rejected_count = 0
+    try:
+        with connection.cursor() as cursor:
+            # Count all approved requests
+            cursor.execute("""
+                SELECT COUNT(*) 
+                FROM student_leave_requests
+                WHERE status = 'Approved'
+            """)
+            result = cursor.fetchone()
+            approved_count = result[0] if result else 0
+            
+            # Count all rejected requests
+            cursor.execute("""
+                SELECT COUNT(*) 
+                FROM student_leave_requests
+                WHERE status = 'Rejected'
+            """)
+            result = cursor.fetchone()
+            rejected_count = result[0] if result else 0
+    except Exception as e:
+        print(f"Error calculating stats: {str(e)}")
+    
+    context = {
+        'pending_requests': pending_requests,
+        'history_requests': history_requests,
+        'pending_count': pending_count,
+        'approved_count': approved_count,
+        'rejected_count': rejected_count,
+    }
+    
+    return render(request, 'users/admin_accept_portal.html', context)
 
 
 def leave_get_students(request):
+    """
+    AJAX endpoint to fetch student names for filter dropdown
+    Used by both pending and history sections
+    NO DATABASE CHANGES - Uses existing student_page1 table
+    """
     if not request.session.get('admin_id'):
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
@@ -1801,6 +1888,7 @@ def leave_get_students(request):
 
     try:
         with connection.cursor() as cursor:
+            # Fetch from student_page1 table (existing table)
             cursor.execute("""
                 SELECT DISTINCT name 
                 FROM student_page1 
@@ -1820,21 +1908,24 @@ def leave_get_students(request):
 
 
 
-
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import connection
+from django.http import JsonResponse
 
 def teacher_accept_portal(request):
     """
-    View for Teacher Leave Request Portal.
-    Teachers can VIEW ALL leave requests (Pending, Approved, Rejected) like admin,
-    but can only APPROVE/REJECT requests that are still 'Pending'.
+    Enhanced View for Teacher Leave Request Portal with TWO SECTIONS:
+    1. Pending Leave Requests - Can approve/reject
+    2. Request History - View approved/rejected requests (read-only)
+    
+    NO DATABASE CHANGES REQUIRED - Uses existing table structure
     """
     if not request.session.get('teacher_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('teacher_login')
 
+    # Handle POST requests for approving/rejecting leave
     if request.method == 'POST':
         action = request.POST.get('action')
         leave_id = request.POST.get('leave_id')
@@ -1848,6 +1939,7 @@ def teacher_accept_portal(request):
 
             try:
                 with connection.cursor() as cursor:
+                    # Only update status - NO DATABASE STRUCTURE CHANGES
                     cursor.execute("""
                         UPDATE student_leave_requests
                         SET status = %s
@@ -1857,15 +1949,20 @@ def teacher_accept_portal(request):
                     if cursor.rowcount == 0:
                         messages.error(request, 'Cannot update: Request already processed or not found.')
                     else:
-                        messages.success(request, f'Leave request {new_status.lower()} successfully.')
+                        action_text = 'approved' if action == 'approve' else 'rejected'
+                        messages.success(request, f'Leave request {action_text} successfully.')
             except Exception as e:
+                print(f"Error updating leave request: {str(e)}")
                 messages.error(request, 'Error updating leave request. Please try again.')
         else:
             messages.error(request, 'Invalid request: Missing action or leave ID.')
 
         return redirect('teacher_accept_portal')
 
-    # Fetch ALL leave requests (just like admin) - for display purpose
+    # GET request - Fetch leave requests separated into two sections
+    
+    # SECTION 1: Fetch PENDING leave requests only
+    pending_requests = []
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
@@ -1881,23 +1978,84 @@ def teacher_accept_portal(request):
                     leave_duration, 
                     status
                 FROM student_leave_requests
-                ORDER BY leave_start_date DESC
+                WHERE status = 'Pending'
+                ORDER BY leave_start_date DESC, id DESC
             """)
-            leave_requests = cursor.fetchall()
+            pending_requests = cursor.fetchall()
     except Exception as e:
-        messages.error(request, 'Error fetching leave requests.')
-        leave_requests = []
-
-    return render(request, 'users/teacher_accept_portal.html', {
-        'leave_requests': leave_requests
-    })
-
+        print(f"Error fetching pending requests: {str(e)}")
+        messages.error(request, 'Error fetching pending leave requests.')
+    
+    # SECTION 2: Fetch APPROVED and REJECTED leave requests (History)
+    history_requests = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    id, 
+                    student_name, 
+                    reg_number, 
+                    class_number, 
+                    section,
+                    leave_reason, 
+                    leave_start_date, 
+                    leave_end_date, 
+                    leave_duration, 
+                    status,
+                    NULL as processed_date
+                FROM student_leave_requests
+                WHERE status IN ('Approved', 'Rejected')
+                ORDER BY id DESC
+            """)
+            history_requests = cursor.fetchall()
+    except Exception as e:
+        print(f"Error fetching history requests: {str(e)}")
+        messages.error(request, 'Error fetching leave request history.')
+    
+    # Calculate statistics
+    pending_count = len(pending_requests)
+    
+    # Count approved and rejected requests
+    approved_count = 0
+    rejected_count = 0
+    try:
+        with connection.cursor() as cursor:
+            # Count all approved requests
+            cursor.execute("""
+                SELECT COUNT(*) 
+                FROM student_leave_requests
+                WHERE status = 'Approved'
+            """)
+            result = cursor.fetchone()
+            approved_count = result[0] if result else 0
+            
+            # Count all rejected requests
+            cursor.execute("""
+                SELECT COUNT(*) 
+                FROM student_leave_requests
+                WHERE status = 'Rejected'
+            """)
+            result = cursor.fetchone()
+            rejected_count = result[0] if result else 0
+    except Exception as e:
+        print(f"Error calculating stats: {str(e)}")
+    
+    context = {
+        'pending_requests': pending_requests,
+        'history_requests': history_requests,
+        'pending_count': pending_count,
+        'approved_count': approved_count,
+        'rejected_count': rejected_count,
+    }
+    
+    return render(request, 'users/teacher_accept_portal.html', context)
 
 
 def teacher_leave_get_students(request):
     """
-    Used by Teacher Leave Portal to fetch student names for filter dropdown
-    Exactly same logic as admin version, just checks teacher session
+    AJAX endpoint to fetch student names for filter dropdown
+    Used by both pending and history sections
+    NO DATABASE CHANGES - Uses existing student_page1 table
     """
     if not request.session.get('teacher_id'):
         return JsonResponse({'error': 'Unauthorized'}, status=401)
@@ -1910,6 +2068,7 @@ def teacher_leave_get_students(request):
 
     try:
         with connection.cursor() as cursor:
+            # Fetch from student_page1 table (existing table)
             cursor.execute("""
                 SELECT DISTINCT name 
                 FROM student_page1 
@@ -1924,7 +2083,7 @@ def teacher_leave_get_students(request):
         return JsonResponse({'students': students})
         
     except Exception as e:
-        print("teacher_leave_get_students error:", str(e))
+        print(f"teacher_leave_get_students error: {str(e)}")
         return JsonResponse({'error': 'Server error'}, status=500)
 
 

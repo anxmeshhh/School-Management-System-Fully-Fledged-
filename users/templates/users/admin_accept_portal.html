@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Leave Request Updates</title>
+    <title>Manavargal School Management System - Admin Leave Requests</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
@@ -22,7 +22,7 @@
         background: var(--white);
         min-height: 100vh;
         color: var(--text-color);
-        overflow: hidden; /* Background never scrolls */
+        overflow: hidden;
     }
 
     h1, h2, h3 {
@@ -34,6 +34,9 @@
         --primary-hover: #00b88d;
         --danger-color: #dc2626;
         --danger-hover: #ef4444;
+        --success-color: #10b981;
+        --success-hover: #059669;
+        --warning-color: #f59e0b;
         --sidebar-bg: #f0f9f4;
         --sidebar-border: #a8d5c2;
         --white: #ffffff;
@@ -201,7 +204,6 @@
         pointer-events: all;
     }
 
-    /* Main Content — This is what scrolls */
     .page-wrapper {
         margin-left: 280px;
         height: 100vh;
@@ -234,6 +236,68 @@
         margin: 0;
     }
 
+    /* Tab Navigation */
+    .tab-navigation {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 0;
+    }
+
+    .tab-btn {
+        padding: 1rem 2rem;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: var(--text-color);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .tab-btn:hover {
+        color: var(--primary-color);
+        background: var(--light-bg);
+    }
+
+    .tab-btn.active {
+        color: var(--primary-color);
+        border-bottom: 3px solid var(--primary-color);
+        background: var(--dull-highlighter);
+    }
+
+    .tab-badge {
+        background: var(--danger-color);
+        color: var(--white);
+        padding: 0.25rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        min-width: 24px;
+        text-align: center;
+    }
+
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
     .main-content {
         background: var(--white);
         border: 2px solid var(--border-color);
@@ -261,6 +325,67 @@
         font-weight: 600;
         margin-bottom: 1.5rem;
         text-align: center;
+    }
+
+    /* Stats Summary */
+    .stats-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .stat-card.pending {
+        border-color: var(--warning-color);
+    }
+
+    .stat-card.approved {
+        border-color: var(--success-color);
+    }
+
+    .stat-card.rejected {
+        border-color: var(--danger-color);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card.pending .stat-number {
+        color: var(--warning-color);
+    }
+
+    .stat-card.approved .stat-number {
+        color: var(--success-color);
+    }
+
+    .stat-card.rejected .stat-number {
+        color: var(--danger-color);
+    }
+
+    .stat-label {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     /* Filters */
@@ -347,11 +472,24 @@
         transition: var(--transition);
         display: flex;
         flex-direction: column;
+        position: relative;
     }
 
     .leave-card:hover {
         transform: translateY(-4px);
         box-shadow: var(--shadow-md);
+    }
+
+    .leave-card.status-approved {
+        border-left: 4px solid var(--success-color);
+    }
+
+    .leave-card.status-rejected {
+        border-left: 4px solid var(--danger-color);
+    }
+
+    .leave-card.status-pending {
+        border-left: 4px solid var(--warning-color);
     }
 
     .leave-card p {
@@ -363,6 +501,33 @@
     .leave-card p strong {
         color: var(--primary-color);
         font-weight: 600;
+    }
+
+    .status-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-badge.pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-badge.approved {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-badge.rejected {
+        background: #fee2e2;
+        color: #991b1b;
     }
 
     .action-buttons {
@@ -389,12 +554,12 @@
     }
 
     .submit-btn {
-        background: var(--primary-color);
+        background: var(--success-color);
         color: var(--white);
     }
 
     .submit-btn:hover {
-        background: var(--primary-hover);
+        background: var(--success-hover);
         transform: translateY(-2px);
         box-shadow: var(--shadow-md);
     }
@@ -432,21 +597,10 @@
 
     @media (max-width: 768px) {
         .menu-toggle { display: flex; }
-
-        .sidebar {
-            transform: translateX(-100%);
-        }
-
-        .sidebar.active {
-            transform: translateX(0);
-        }
-
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.active { transform: translateX(0); }
         .sidebar-overlay { display: block; }
-
-        .page-wrapper {
-            margin-left: 0;
-        }
-
+        .page-wrapper { margin-left: 0; }
         .container { padding: 1.5rem 15px; }
         .header h1 { font-size: 1.5rem; }
         .main-content { padding: 1.5rem; }
@@ -455,6 +609,9 @@
         .leave-cards { grid-template-columns: 1fr; }
         .filters-container { flex-direction: column; align-items: stretch; }
         .filters-container .form-group { min-width: auto; }
+        .tab-navigation { overflow-x: auto; }
+        .tab-btn { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
+        .stats-summary { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 480px) {
@@ -466,10 +623,12 @@
         .section { padding: 1rem; }
         h2 { font-size: 1.15rem; }
         .menu-toggle { width: 45px; height: 45px; font-size: 1.25rem; }
+        .tab-btn { padding: 0.6rem 1rem; }
+        .status-badge { position: static; margin-bottom: 1rem; display: inline-block; }
     }
 
     @media (hover: none) {
-        .section:hover, .leave-card:hover, .card:hover, .logo-container:hover, .sidebar-nav a:hover, .menu-toggle:hover {
+        .section:hover, .leave-card:hover, .logo-container:hover, .sidebar-nav a:hover, .menu-toggle:hover {
             transform: none;
             box-shadow: var(--shadow-sm);
         }
@@ -552,112 +711,231 @@
     <div class="page-wrapper">
         <div class="container">
             <header class="header">
-                <h1><i class="fas fa-calendar-times"></i> Leave Request Updates</h1>
+                <h1><i class="fas fa-calendar-times"></i> Student Leave Management</h1>
             </header>
 
             <main class="main-content">
-                <section class="section">
-                    <h2><i class="fas fa-list"></i> Leave Requests</h2>
+                <!-- Tab Navigation -->
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="switchTab('pending')" id="pendingTab">
+                        <i class="fas fa-clock"></i>
+                        Pending Requests
+                        <span class="tab-badge" id="pendingCount">{{ pending_count }}</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('history')" id="historyTab">
+                        <i class="fas fa-history"></i>
+                        Request History
+                    </button>
+                </div>
 
-                    <!-- Filters -->
-                    <div class="filters-container">
-                        <div class="form-group">
-                            <label for="filter_class"><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Filter by Class</label>
-                            <select id="filter_class">
-                                <option value="">All Classes</option>
-                                <option value="1">Class 1</option>
-                                <option value="2">Class 2</option>
-                                <option value="3">Class 3</option>
-                                <option value="4">Class 4</option>
-                                <option value="5">Class 5</option>
-                                <option value="6">Class 6</option>
-                                <option value="7">Class 7</option>
-                                <option value="8">Class 8</option>
-                                <option value="9">Class 9</option>
-                                <option value="10">Class 10</option>
-                                <option value="11">Class 11</option>
-                                <option value="12">Class 12</option>
-                            </select>
-                        </div>
+                <!-- SECTION 1: Pending Leave Requests -->
+                <div id="pendingContent" class="tab-content active">
+                    <section class="section">
+                        <h2><i class="fas fa-hourglass-half"></i> Pending Leave Requests</h2>
 
-                        <div class="form-group">
-                            <label for="filter_section"><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> Filter by Section</label>
-                            <select id="filter_section">
-                                <option value="">All Sections</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="filter_student"><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Student Name</label>
-                            <select id="filter_student">
-                                <option value="">All Students</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="filter_date"><i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Filter by Date</label>
-                            <input type="date" id="filter_date">
-                        </div>
-
-                        <button type="button" class="filter-btn" onclick="filterCards()">
-                            <i class="fas fa-filter"></i> Apply Filter
-                        </button>
-                        <button type="button" class="filter-btn clear" onclick="clearFilters()">
-                            <i class="fas fa-times"></i> Clear
-                        </button>
-                    </div>
-
-                    <div class="leave-cards">
-                        {% for request in leave_requests %}
-                        <div class="leave-card" 
-                             data-class="{{ request.3 }}" 
-                             data-section="{{ request.4 }}" 
-                             data-start-date="{{ request.6|date:'Y-m-d' }}"
-                             data-student="{{ request.1 }}">
-                            <p><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> <strong>Student Name:</strong> {{ request.1 }}</p>
-                            <p><i class="fas fa-id-card" style="color: #8b5cf6; margin-right: 8px;"></i> <strong>Reg Number:</strong> {{ request.2 }}</p>
-                            <p><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> <strong>Class:</strong> {{ request.3 }}</p>
-                            <p><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> <strong>Section:</strong> {{ request.4 }}</p>
-                            <p><i class="fas fa-comment-dots" style="color: #ec4899; margin-right: 8px;"></i> <strong>Leave Reason:</strong> {{ request.5 }}</p>
-                            <p><i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> <strong>Start Date:</strong> {{ request.6 }}</p>
-                            <p><i class="fas fa-calendar-alt" style="color: #14b8a6; margin-right: 8px;"></i> <strong>End Date:</strong> {{ request.7 }}</p>
-                            <p><i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> <strong>Duration:</strong> {{ request.8 }}</p>
-                            <p><i class="fas fa-info-circle" style="color: #6366f1; margin-right: 8px;"></i> <strong>Status:</strong> 
-                                <span style="color: {% if request.9 == 'Pending' %}#f59e0b;{% elif request.9 == 'Approved' %}#10b981;{% else %}#ef4444;{% endif %}; font-weight: 600;">
-                                    {{ request.9 }}
-                                </span>
-                            </p>
-
-                            {% if request.9 == 'Pending' %}
-                            <div class="action-buttons">
-                                <form method="POST" action="{% url 'admin_accept_portal' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="leave_id" value="{{ request.0 }}">
-                                    <button type="submit" name="action" value="approve" class="submit-btn">
-                                        <i class="fas fa-check"></i> Approve
-                                    </button>
-                                    <button type="submit" name="action" value="reject" class="remove-btn">
-                                        <i class="fas fa-times"></i> Reject
-                                    </button>
-                                </form>
+                        <!-- Stats Summary -->
+                        <div class="stats-summary">
+                            <div class="stat-card pending">
+                                <div class="stat-number">{{ pending_count }}</div>
+                                <div class="stat-label">Pending</div>
                             </div>
-                            {% endif %}
+                            <div class="stat-card approved">
+                                <div class="stat-number">{{ approved_count }}</div>
+                                <div class="stat-label">Total Approved</div>
+                            </div>
+                            <div class="stat-card rejected">
+                                <div class="stat-number">{{ rejected_count }}</div>
+                                <div class="stat-label">Total Rejected</div>
+                            </div>
                         </div>
-                        {% empty %}
-                        <p class="no-requests">
-                            <i class="fas fa-inbox" style="color: #94a3b8; margin-right: 8px;"></i> No leave requests found.
-                        </p>
-                        {% endfor %}
-                    </div>
-                </section>
+
+                        <!-- Filters -->
+                        <div class="filters-container">
+                            <div class="form-group">
+                                <label for="pending_filter_class"><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Filter by Class</label>
+                                <select id="pending_filter_class">
+                                    <option value="">All Classes</option>
+                                    <option value="1">Class 1</option>
+                                    <option value="2">Class 2</option>
+                                    <option value="3">Class 3</option>
+                                    <option value="4">Class 4</option>
+                                    <option value="5">Class 5</option>
+                                    <option value="6">Class 6</option>
+                                    <option value="7">Class 7</option>
+                                    <option value="8">Class 8</option>
+                                    <option value="9">Class 9</option>
+                                    <option value="10">Class 10</option>
+                                    <option value="11">Class 11</option>
+                                    <option value="12">Class 12</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pending_filter_section"><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> Filter by Section</label>
+                                <select id="pending_filter_section">
+                                    <option value="">All Sections</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pending_filter_student"><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Student Name</label>
+                                <select id="pending_filter_student">
+                                    <option value="">All Students</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pending_filter_date"><i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Filter by Date</label>
+                                <input type="date" id="pending_filter_date">
+                            </div>
+
+                            <button type="button" class="filter-btn" onclick="filterPendingCards()">
+                                <i class="fas fa-filter"></i> Apply Filter
+                            </button>
+                            <button type="button" class="filter-btn clear" onclick="clearPendingFilters()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+
+                        <div class="leave-cards" id="pendingCards">
+                            {% for request in pending_requests %}
+                            <div class="leave-card status-pending" 
+                                 data-class="{{ request.3 }}" 
+                                 data-section="{{ request.4 }}" 
+                                 data-start-date="{{ request.6|date:'Y-m-d' }}"
+                                 data-student="{{ request.1 }}">
+                                <span class="status-badge pending">Pending</span>
+                                <p><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> <strong>Student Name:</strong> {{ request.1 }}</p>
+                                <p><i class="fas fa-id-card" style="color: #8b5cf6; margin-right: 8px;"></i> <strong>Reg Number:</strong> {{ request.2 }}</p>
+                                <p><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> <strong>Class:</strong> {{ request.3 }}</p>
+                                <p><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> <strong>Section:</strong> {{ request.4 }}</p>
+                                <p><i class="fas fa-comment-dots" style="color: #ec4899; margin-right: 8px;"></i> <strong>Leave Reason:</strong> {{ request.5 }}</p>
+                                <p><i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> <strong>Start Date:</strong> {{ request.6 }}</p>
+                                <p><i class="fas fa-calendar-alt" style="color: #14b8a6; margin-right: 8px;"></i> <strong>End Date:</strong> {{ request.7 }}</p>
+                                <p><i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> <strong>Duration:</strong> {{ request.8 }}</p>
+
+                                <div class="action-buttons">
+                                    <form method="POST" action="{% url 'admin_accept_portal' %}" style="display: contents;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="leave_id" value="{{ request.0 }}">
+                                        <button type="submit" name="action" value="approve" class="submit-btn">
+                                            <i class="fas fa-check"></i> Approve
+                                        </button>
+                                        <button type="submit" name="action" value="reject" class="remove-btn">
+                                            <i class="fas fa-times"></i> Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="no-requests">
+                                <i class="fas fa-check-circle" style="color: #10b981; margin-right: 8px;"></i> No pending leave requests. All caught up!
+                            </p>
+                            {% endfor %}
+                        </div>
+                    </section>
+                </div>
+
+                <!-- SECTION 2: Approved/Rejected History -->
+                <div id="historyContent" class="tab-content">
+                    <section class="section">
+                        <h2><i class="fas fa-history"></i> Leave Request History</h2>
+
+                        <!-- Filters -->
+                        <div class="filters-container">
+                            <div class="form-group">
+                                <label for="history_filter_status"><i class="fas fa-filter" style="color: #8b5cf6; margin-right: 8px;"></i> Filter by Status</label>
+                                <select id="history_filter_status">
+                                    <option value="">All Status</option>
+                                    <option value="Approved">Approved</option>
+                                    <option value="Rejected">Rejected</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="history_filter_class"><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Filter by Class</label>
+                                <select id="history_filter_class">
+                                    <option value="">All Classes</option>
+                                    <option value="1">Class 1</option>
+                                    <option value="2">Class 2</option>
+                                    <option value="3">Class 3</option>
+                                    <option value="4">Class 4</option>
+                                    <option value="5">Class 5</option>
+                                    <option value="6">Class 6</option>
+                                    <option value="7">Class 7</option>
+                                    <option value="8">Class 8</option>
+                                    <option value="9">Class 9</option>
+                                    <option value="10">Class 10</option>
+                                    <option value="11">Class 11</option>
+                                    <option value="12">Class 12</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="history_filter_section"><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> Filter by Section</label>
+                                <select id="history_filter_section">
+                                    <option value="">All Sections</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="history_filter_student"><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Student Name</label>
+                                <select id="history_filter_student">
+                                    <option value="">All Students</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="history_filter_date"><i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Filter by Date</label>
+                                <input type="date" id="history_filter_date">
+                            </div>
+
+                            <button type="button" class="filter-btn" onclick="filterHistoryCards()">
+                                <i class="fas fa-filter"></i> Apply Filter
+                            </button>
+                            <button type="button" class="filter-btn clear" onclick="clearHistoryFilters()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+
+                        <div class="leave-cards" id="historyCards">
+                            {% for request in history_requests %}
+                            <div class="leave-card status-{{ request.9|lower }}" 
+                                 data-class="{{ request.3 }}" 
+                                 data-section="{{ request.4 }}" 
+                                 data-start-date="{{ request.6|date:'Y-m-d' }}"
+                                 data-student="{{ request.1 }}"
+                                 data-status="{{ request.9 }}">
+                                <span class="status-badge {{ request.9|lower }}">{{ request.9 }}</span>
+                                <p><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> <strong>Student Name:</strong> {{ request.1 }}</p>
+                                <p><i class="fas fa-id-card" style="color: #8b5cf6; margin-right: 8px;"></i> <strong>Reg Number:</strong> {{ request.2 }}</p>
+                                <p><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> <strong>Class:</strong> {{ request.3 }}</p>
+                                <p><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> <strong>Section:</strong> {{ request.4 }}</p>
+                                <p><i class="fas fa-comment-dots" style="color: #ec4899; margin-right: 8px;"></i> <strong>Leave Reason:</strong> {{ request.5 }}</p>
+                                <p><i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> <strong>Start Date:</strong> {{ request.6 }}</p>
+                                <p><i class="fas fa-calendar-alt" style="color: #14b8a6; margin-right: 8px;"></i> <strong>End Date:</strong> {{ request.7 }}</p>
+                                <p><i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> <strong>Duration:</strong> {{ request.8 }}</p>
+                            </div>
+                            {% empty %}
+                            <p class="no-requests">
+                                <i class="fas fa-inbox" style="color: #94a3b8; margin-right: 8px;"></i> No leave request history available.
+                            </p>
+                            {% endfor %}
+                        </div>
+                    </section>
+                </div>
             </main>
         </div>
     </div>
 
     <script>
+        // Sidebar Toggle
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
@@ -699,7 +977,6 @@
                 }
             });
 
-            // Hover only on desktop
             if (window.innerWidth > 768) {
                 navLinks.forEach(item => {
                     item.addEventListener('mouseenter', function() {
@@ -714,11 +991,30 @@
             }
         });
 
-        // Student filter logic
-        function loadStudents() {
-            const classVal = document.getElementById('filter_class').value;
-            const sectionVal = document.getElementById('filter_section').value;
-            const studentSelect = document.getElementById('filter_student');
+        // Tab Switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            if (tab === 'pending') {
+                document.getElementById('pendingContent').classList.add('active');
+                document.getElementById('pendingTab').classList.add('active');
+            } else if (tab === 'history') {
+                document.getElementById('historyContent').classList.add('active');
+                document.getElementById('historyTab').classList.add('active');
+            }
+        }
+
+        // Student filter logic for Pending section
+        function loadPendingStudents() {
+            const classVal = document.getElementById('pending_filter_class').value;
+            const sectionVal = document.getElementById('pending_filter_section').value;
+            const studentSelect = document.getElementById('pending_filter_student');
 
             studentSelect.innerHTML = '<option value="">All Students</option>';
 
@@ -736,19 +1032,47 @@
                         });
                     }
                 })
-                .catch(err => console.error('Error:', err));
+                .catch(err => console.error('Error loading students:', err));
         }
 
-        document.getElementById('filter_class').addEventListener('change', loadStudents);
-        document.getElementById('filter_section').addEventListener('change', loadStudents);
+        // Student filter logic for History section
+        function loadHistoryStudents() {
+            const classVal = document.getElementById('history_filter_class').value;
+            const sectionVal = document.getElementById('history_filter_section').value;
+            const studentSelect = document.getElementById('history_filter_student');
 
-        function filterCards() {
-            const classFilter = document.getElementById('filter_class').value;
-            const sectionFilter = document.getElementById('filter_section').value;
-            const studentFilter = document.getElementById('filter_student').value;
-            const dateFilter = document.getElementById('filter_date').value;
+            studentSelect.innerHTML = '<option value="">All Students</option>';
 
-            const cards = document.querySelectorAll('.leave-card');
+            if (!classVal || !sectionVal) return;
+
+            fetch(`/admin/leave-get-students/?class=${classVal}&section=${sectionVal}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.students) {
+                        data.students.forEach(student => {
+                            const option = document.createElement('option');
+                            option.value = student;
+                            option.textContent = student;
+                            studentSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(err => console.error('Error loading students:', err));
+        }
+
+        document.getElementById('pending_filter_class').addEventListener('change', loadPendingStudents);
+        document.getElementById('pending_filter_section').addEventListener('change', loadPendingStudents);
+        document.getElementById('history_filter_class').addEventListener('change', loadHistoryStudents);
+        document.getElementById('history_filter_section').addEventListener('change', loadHistoryStudents);
+
+        // Filter Pending Cards
+        function filterPendingCards() {
+            const classFilter = document.getElementById('pending_filter_class').value;
+            const sectionFilter = document.getElementById('pending_filter_section').value;
+            const studentFilter = document.getElementById('pending_filter_student').value;
+            const dateFilter = document.getElementById('pending_filter_date').value;
+
+            const cards = document.querySelectorAll('#pendingCards .leave-card');
             let visibleCount = 0;
 
             cards.forEach(card => {
@@ -768,16 +1092,54 @@
                 if (show) visibleCount++;
             });
 
-            const noResults = document.querySelector('.no-results');
-            const cardsDiv = document.querySelector('.leave-cards');
-            const initialNoRequests = document.querySelector('.no-requests:not(.no-results)');
+            handleNoResults('pendingCards', visibleCount);
+        }
+
+        // Filter History Cards
+        function filterHistoryCards() {
+            const statusFilter = document.getElementById('history_filter_status').value;
+            const classFilter = document.getElementById('history_filter_class').value;
+            const sectionFilter = document.getElementById('history_filter_section').value;
+            const studentFilter = document.getElementById('history_filter_student').value;
+            const dateFilter = document.getElementById('history_filter_date').value;
+
+            const cards = document.querySelectorAll('#historyCards .leave-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const cardStatus = card.getAttribute('data-status');
+                const cardClass = card.getAttribute('data-class');
+                const cardSection = card.getAttribute('data-section');
+                const cardStudent = card.getAttribute('data-student');
+                const cardDate = card.getAttribute('data-start-date');
+
+                let show = true;
+
+                if (statusFilter && cardStatus !== statusFilter) show = false;
+                if (classFilter && cardClass !== classFilter) show = false;
+                if (sectionFilter && cardSection !== sectionFilter) show = false;
+                if (studentFilter && cardStudent !== studentFilter) show = false;
+                if (dateFilter && cardDate !== dateFilter) show = false;
+
+                card.style.display = show ? 'flex' : 'none';
+                if (show) visibleCount++;
+            });
+
+            handleNoResults('historyCards', visibleCount);
+        }
+
+        // Handle No Results Message
+        function handleNoResults(containerId, visibleCount) {
+            const container = document.getElementById(containerId);
+            const noResults = container.querySelector('.no-results');
+            const initialNoRequests = container.querySelector('.no-requests:not(.no-results)');
 
             if (visibleCount === 0) {
                 if (!noResults) {
                     const msg = document.createElement('p');
                     msg.className = 'no-requests no-results';
-                    msg.innerHTML = '<i class="fas fa-search"></i> No matching leave requests found.';
-                    cardsDiv.appendChild(msg);
+                    msg.innerHTML = '<i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> No matching leave requests found.';
+                    container.appendChild(msg);
                 }
                 if (initialNoRequests) initialNoRequests.style.display = 'none';
             } else {
@@ -786,15 +1148,27 @@
             }
         }
 
-        function clearFilters() {
-            document.getElementById('filter_class').value = '';
-            document.getElementById('filter_section').value = '';
-            document.getElementById('filter_student').innerHTML = '<option value="">All Students</option>';
-            document.getElementById('filter_date').value = '';
-            filterCards();
+        // Clear Filters Functions
+        function clearPendingFilters() {
+            document.getElementById('pending_filter_class').value = '';
+            document.getElementById('pending_filter_section').value = '';
+            document.getElementById('pending_filter_student').innerHTML = '<option value="">All Students</option>';
+            document.getElementById('pending_filter_date').value = '';
+            filterPendingCards();
         }
 
-        filterCards(); // Initial filter
+        function clearHistoryFilters() {
+            document.getElementById('history_filter_status').value = '';
+            document.getElementById('history_filter_class').value = '';
+            document.getElementById('history_filter_section').value = '';
+            document.getElementById('history_filter_student').innerHTML = '<option value="">All Students</option>';
+            document.getElementById('history_filter_date').value = '';
+            filterHistoryCards();
+        }
+
+        // Initial filter on page load
+        filterPendingCards();
+        filterHistoryCards();
     </script>
 </body>
 </html>
