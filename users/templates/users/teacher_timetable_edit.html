@@ -4,418 +4,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Edit Timetable Entry</title>
+    <title>Edit Timetable Entry - Teacher</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: var(--white);
+        min-height: 100vh;
+        color: var(--text-color);
+        padding-top: 100px;
+        padding-bottom: 40px;
+    }
+
+    h1, h2 {
+        font-family: 'Montserrat', sans-serif;
+        text-align: center;
+    }
+
+    :root {
+        --primary-color: #00a676;
+        --primary-hover: #00b88d;
+        --sidebar-bg: #f0f9f4;
+        --sidebar-border: #a8d5c2;
+        --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --border-color: #adb5bd;
+        --text-color: #495057;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --border-radius: 16px;
+        --transition: all 0.2s ease;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .header {
+        background: var(--white);
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+        flex-grow: 1;
+        text-align: center;
+        margin-left: -10%;
+    }
+
+    .back-btn {
+        padding: 0.6rem 1.2rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        background: var(--sidebar-bg);
+        color: var(--text-color);
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .logo-container {
+        width: 90px;
+        height: 70px;
+        background: var(--white);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--sidebar-border);
+    }
+
+    .logo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .main-content {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        padding: 2rem;
+        margin-top: 20px;
+    }
+
+    .alert-message {
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-message .error,
+    .alert-message .success,
+    .alert-message .warning {
+        padding: 0.75rem;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .alert-message .error {
+        background: #fef2f2;
+        color: #dc3545;
+        border-left: 4px solid #dc3545;
+    }
+
+    .alert-message .success {
+        background: #d4edda;
+        color: var(--primary-color);
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .alert-message .warning {
+        background: #fff3cd;
+        color: #856404;
+        border-left: 4px solid #ffc107;
+    }
+
+    .info-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .info-banner i {
+        font-size: 2rem;
+        opacity: 0.9;
+    }
+
+    .info-banner-text h3 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.1rem;
+        text-align: left;
+    }
+
+    .info-banner-text p {
+        margin: 0;
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .section {
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        margin-bottom: 1.5rem;
+    }
+
+    h2 {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group label i {
+        margin-right: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 2px solid var(--border-color);
+        background: var(--white);
+        font-size: 0.95rem;
+        transition: var(--transition);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+        outline: none;
+    }
+
+    .form-group select {
+        appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 12px;
+    }
+
+    .helper-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    .conflict-warning {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        color: #856404;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        display: none;
+    }
+
+    .conflict-warning.show {
+        display: block;
+    }
+
+    .current-info {
+        background: #e7f3ff;
+        border: 2px solid #0066cc;
+        border-left: 4px solid #0066cc;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .current-info h3 {
+        color: #004080;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        text-align: left;
+    }
+
+    .current-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+    }
+
+    .current-info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #004080;
+        font-size: 0.9rem;
+    }
+
+    .current-info-item i {
+        color: #0066cc;
+    }
+
+    .submit-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary-color);
+        border: none;
+        border-radius: 8px;
+        color: var(--white);
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .submit-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .submit-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .button-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .cancel-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--sidebar-bg);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-color);
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .cancel-btn:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    @media (max-width: 768px) {
         body {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            background: var(--white);
-            min-height: 100vh;
-            color: var(--text-color);
-            padding-top: 100px;
-            padding-bottom: 40px;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        :root {
-            --primary-color: #00a676;
-            --primary-hover: #00b88d;
-            --sidebar-bg: #f0f9f4;
-            --sidebar-border: #a8d5c2;
-            --white: #ffffff;
-            --light-bg: #f8f9fa;
-            --border-color: #adb5bd;
-            --text-color: #495057;
-            --text-light: #868e96;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --border-radius: 16px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        html {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            padding-top: 140px;
         }
 
         .header {
-            background: var(--white);
-            color: var(--text-color);
-            padding: 0.75rem 1rem;
-            border-bottom: 2px solid var(--border-color);
-            box-shadow: var(--shadow-md);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
+            flex-wrap: wrap;
+            padding: 0.75rem;
         }
 
         .header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            text-align: center;
-            flex-grow: 1;
-            color: var(--primary-color);
-            margin: 0;
-            margin-left: -10%;
+            font-size: 1.25rem;
+            order: 1;
+            width: 100%;
+            margin-left: 0;
         }
 
         .back-btn {
-            padding: 0.6rem 1.2rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            text-decoration: none;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            white-space: nowrap;
-        }
-
-        .back-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            order: 2;
+            flex: 1;
         }
 
         .logo-container {
-            width: 90px;
-            height: 70px;
-            background: var(--white);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            transition: var(--transition);
-            box-shadow: var(--shadow-sm);
-            border: 2px solid var(--sidebar-border);
-            flex-shrink: 0;
+            order: 3;
+            width: 60px;
+            height: 50px;
         }
 
-        .logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: var(--transition);
+        .form-grid {
+            grid-template-columns: 1fr;
         }
 
-        .logo-container:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
-        }
-
-        .main-content {
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            padding: 2rem;
-            margin-top: 20px;
-        }
-
-        .alert-message {
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-message .error {
-            background: #fef2f2;
-            color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #dc3545;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .alert-message .success {
-            background: #d4edda;
-            color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
-        }
-
-        .section {
-            background: var(--light-bg);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-        }
-
-        .section:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        h2 {
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
+        .info-banner {
+            flex-direction: column;
             text-align: center;
         }
 
-        .form-row {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-end;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
+        .info-banner-text h3 {
+            text-align: center;
         }
 
-        .form-group {
-            flex: 1;
-            min-width: 200px;
-            margin-bottom: 0;
+        .button-group {
+            grid-template-columns: 1fr;
         }
 
-        .form-group label {
-            display: block;
-            color: var(--text-color);
-            font-size: 0.95rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+        .current-info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header h1 {
+            font-size: 1.1rem;
         }
 
-        .form-group input[type="text"],
-        .form-group input[type="time"],
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--white);
-            font-size: 0.95rem;
-            transition: var(--transition);
+        .main-content {
+            padding: 1rem;
         }
-
-        .form-group input[type="text"]:focus,
-        .form-group input[type="time"]:focus,
-        .form-group select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
-            outline: none;
-        }
-
-        .form-group select {
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 12px;
-            appearance: none;
-        }
-
-        .submit-btn {
-            padding: 0.75rem 1.5rem;
-            background: var(--primary-color);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--white);
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            width: 100%;
-            margin-top: 1rem;
-        }
-
-        .submit-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .cancel-btn {
-            padding: 0.75rem 1.5rem;
-            background: var(--sidebar-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-color);
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            width: 100%;
-            margin-top: 0.5rem;
-            text-decoration: none;
-        }
-
-        .cancel-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding-top: 140px;
-            }
-
-            .header {
-                flex-wrap: wrap;
-                padding: 0.75rem;
-                gap: 0.75rem;
-            }
-
-            .header h1 {
-                font-size: 1.25rem;
-                order: 1;
-                width: 100%;
-            }
-
-            .back-btn {
-                order: 2;
-                flex: 1;
-                justify-content: center;
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .logo-container {
-                order: 3;
-                width: 60px;
-                height: 50px;
-            }
-
-            .container {
-                padding: 0 15px;
-            }
-
-            .main-content {
-                padding: 1.5rem;
-            }
-
-            .section {
-                padding: 1.2rem;
-            }
-
-            .form-row {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 1rem;
-            }
-
-            .form-group {
-                min-width: auto;
-            }
-
-            .submit-btn, .cancel-btn {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding-top: 160px;
-            }
-
-            .header {
-                padding: 0.5rem;
-            }
-
-            .header h1 {
-                font-size: 1.1rem;
-            }
-
-            .logo-container {
-                width: 50px;
-                height: 45px;
-            }
-
-            .main-content {
-                padding: 1rem;
-                border-radius: 8px;
-            }
-
-            .section {
-                padding: 1rem;
-            }
-
-            .back-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.85rem;
-            }
-
-            .submit-btn, .cancel-btn {
-                font-size: 0.9rem;
-                padding: 0.7rem;
-            }
-        }
-
-        @media (hover: none) {
-            .section:hover, .logo-container:hover, .back-btn:hover, .submit-btn:hover, .cancel-btn:hover {
-                transform: none;
-                box-shadow: var(--shadow-sm);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
-            }
-
-            html {
-                scroll-behavior: auto;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <header class="header">
         <a href="{% url 'teacher_timetable' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Timetable
         </a>
-        <h1><i class="fas fa-edit" style="color: var(--primary-color); margin-right: 8px;"></i> Edit Timetable Entry</h1>
+        <h1><i class="fas fa-edit"></i> Edit Timetable Entry</h1>
         <a href="{% url 'teacher_dashboard' %}">
             <div class="logo-container">
                 <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
@@ -429,57 +448,129 @@
                 <div class="alert-message">
                     {% for message in messages %}
                         <div class="{{ message.tags }}">
-                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-check-circle{% endif %}"></i>
                             {{ message }}
                         </div>
                     {% endfor %}
                 </div>
             {% endif %}
 
-            <div class="section">
-                <h2>Edit Timetable Entry</h2>
-                <form method="post" action="{% url 'teacher_timetable_edit' timetable.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="id" value="{{ timetable.id }}">
+            <div class="info-banner">
+                <i class="fas fa-info-circle"></i>
+                <div class="info-banner-text">
+                    <h3>Editing Timetable Entry</h3>
+                    <p>Update the details below. The system will check for scheduling conflicts with your existing entries.</p>
+                </div>
+            </div>
 
-                    <div class="form-row">
+            <div class="current-info">
+                <h3><i class="fas fa-history"></i> Current Entry Details</h3>
+                <div class="current-info-grid">
+                    <div class="current-info-item">
+                        <i class="fas fa-graduation-cap"></i>
+                        <strong>Class:</strong> {{ timetable.class_id }}
+                    </div>
+                    <div class="current-info-item">
+                        <i class="fas fa-book"></i>
+                        <strong>Subject:</strong> {{ timetable.subject }}
+                    </div>
+                    <div class="current-info-item">
+                        <i class="fas fa-calendar-day"></i>
+                        <strong>Day:</strong> {{ timetable.day_of_week }}
+                    </div>
+                    <div class="current-info-item">
+                        <i class="fas fa-clock"></i>
+                        <strong>Time:</strong> {{ timetable.start_time|time:"H:i" }} - {{ timetable.end_time|time:"H:i" }}
+                    </div>
+                    {% if timetable.room %}
+                    <div class="current-info-item">
+                        <i class="fas fa-door-open"></i>
+                        <strong>Room:</strong> {{ timetable.room }}
+                    </div>
+                    {% endif %}
+                    {% if timetable.week_start_date %}
+                    <div class="current-info-item">
+                        <i class="fas fa-calendar-week"></i>
+                        <strong>Week:</strong> {{ timetable.week_start_date|date:"M d, Y" }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div id="conflictWarning" class="conflict-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Conflict Detected!</strong>
+                <p id="conflictMessage"></p>
+            </div>
+
+            <form method="post" id="editForm">
+                {% csrf_token %}
+                
+                <div class="section">
+                    <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
+                    <div class="form-grid">
                         <div class="form-group">
                             <label for="class">
-                                <i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> Class:
+                                <i class="fas fa-graduation-cap" style="color: #10b981;"></i> Class *
                             </label>
                             <select id="class" name="class" required>
-                                <option value="" disabled>Select Class</option>
+                                <option value="">Select class</option>
                                 {% for cls in classes %}
-                                    <option value="{{ cls }}" {% if cls == timetable.class %}selected{% endif %}>{{ cls }}</option>
+                                <option value="{{ cls }}" {% if cls == timetable.class %}selected{% endif %}>{{ cls }}</option>
                                 {% endfor %}
                             </select>
                         </div>
+                        
                         <div class="form-group">
                             <label for="section">
-                                <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i> Section (Optional):
+                                <i class="fas fa-th-large" style="color: #f59e0b;"></i> Section
                             </label>
                             <select id="section" name="section">
-                                <option value="" {% if not timetable.section %}selected{% endif %}>No Section</option>
+                                <option value="">None</option>
                                 {% for sec in sections %}
-                                    <option value="{{ sec }}" {% if sec == timetable.section %}selected{% endif %}>{{ sec|capfirst }}</option>
+                                <option value="{{ sec }}" {% if sec == timetable.section %}selected{% endif %}>{{ sec|capfirst }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="subject">
-                                <i class="fas fa-book" style="color: #ec4899; margin-right: 8px;"></i> Subject:
+
+                        <div class="form-group full-width">
+                            <label for="week_start_date">
+                                <i class="fas fa-calendar-alt" style="color: #06b6d4;"></i> Week Start Date (Monday) *
                             </label>
-                            <input type="text" id="subject" name="subject" value="{{ timetable.subject }}" required placeholder="e.g., Mathematics">
+                            <input type="date" id="week_start_date" name="week_start_date" value="{{ timetable.week_start_date|date:'Y-m-d' }}" required>
+                            <div class="helper-text">Select the Monday of the week for this entry</div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="form-row">
+                <div class="section">
+                    <h2><i class="fas fa-book-open"></i> Class Details</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="subject">
+                                <i class="fas fa-book" style="color: #ec4899;"></i> Subject *
+                            </label>
+                            <input type="text" id="subject" name="subject" value="{{ timetable.subject }}" placeholder="e.g., Mathematics" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="room">
+                                <i class="fas fa-door-open" style="color: #14b8a6;"></i> Room
+                            </label>
+                            <input type="text" id="room" name="room" value="{{ timetable.room|default:'' }}" placeholder="e.g., Room 101">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2><i class="fas fa-clock"></i> Schedule Details</h2>
+                    <div class="form-grid">
                         <div class="form-group">
                             <label for="day_of_week">
-                                <i class="fas fa-calendar-day" style="color: #06b6d4; margin-right: 8px;"></i> Day of Week:
+                                <i class="fas fa-calendar-day" style="color: #06b6d4;"></i> Day *
                             </label>
                             <select id="day_of_week" name="day_of_week" required>
-                                <option value="" disabled>Select Day</option>
+                                <option value="">Select day</option>
                                 <option value="Monday" {% if timetable.day_of_week == 'Monday' %}selected{% endif %}>Monday</option>
                                 <option value="Tuesday" {% if timetable.day_of_week == 'Tuesday' %}selected{% endif %}>Tuesday</option>
                                 <option value="Wednesday" {% if timetable.day_of_week == 'Wednesday' %}selected{% endif %}>Wednesday</option>
@@ -488,38 +579,102 @@
                                 <option value="Saturday" {% if timetable.day_of_week == 'Saturday' %}selected{% endif %}>Saturday</option>
                             </select>
                         </div>
+                        
                         <div class="form-group">
                             <label for="start_time">
-                                <i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> Start Time:
+                                <i class="fas fa-clock" style="color: #f97316;"></i> Start Time *
                             </label>
                             <input type="time" id="start_time" name="start_time" value="{{ timetable.start_time|time:'H:i' }}" required>
                         </div>
+                        
                         <div class="form-group">
                             <label for="end_time">
-                                <i class="fas fa-clock" style="color: #f97316; margin-right: 8px;"></i> End Time:
+                                <i class="fas fa-clock" style="color: #f97316;"></i> End Time *
                             </label>
                             <input type="time" id="end_time" name="end_time" value="{{ timetable.end_time|time:'H:i' }}" required>
                         </div>
                     </div>
+                </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="room">
-                                <i class="fas fa-door-open" style="color: #14b8a6; margin-right: 8px;"></i> Room (Optional):
-                            </label>
-                            <input type="text" id="room" name="room" value="{{ timetable.room|default:'' }}" placeholder="e.g., Room 101">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="submit-btn">
+                <div class="button-group">
+                    <button type="submit" class="submit-btn" id="submitBtn">
                         <i class="fas fa-save"></i> Update Entry
                     </button>
                     <a href="{% url 'teacher_timetable' %}" class="cancel-btn">
                         <i class="fas fa-times"></i> Cancel
                     </a>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
+
+    <script>
+        // Set minimum date to today
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('week_start_date');
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            dateInput.min = todayStr;
+        });
+
+        // Validate end time is after start time
+        document.getElementById('end_time').addEventListener('change', function() {
+            const startTime = document.getElementById('start_time').value;
+            const endTime = this.value;
+            
+            if (startTime && endTime && endTime <= startTime) {
+                alert('⚠️ End time must be after start time');
+                this.value = '{{ timetable.end_time|time:"H:i" }}';
+            }
+        });
+
+        document.getElementById('start_time').addEventListener('change', function() {
+            const startTime = this.value;
+            const endTime = document.getElementById('end_time').value;
+            
+            if (startTime && endTime && endTime <= startTime) {
+                alert('⚠️ End time must be after start time');
+                this.value = '{{ timetable.start_time|time:"H:i" }}';
+            }
+        });
+
+        // Ensure date is a Monday
+        document.getElementById('week_start_date').addEventListener('change', function() {
+            const selectedDate = new Date(this.value + 'T00:00:00');
+            const dayOfWeek = selectedDate.getDay();
+            
+            if (dayOfWeek !== 1) { // 1 = Monday
+                alert('⚠️ Please select a Monday as the week start date');
+                
+                // Calculate next Monday
+                const daysToAdd = dayOfWeek === 0 ? 1 : (8 - dayOfWeek);
+                const nextMonday = new Date(selectedDate);
+                nextMonday.setDate(selectedDate.getDate() + daysToAdd);
+                
+                const year = nextMonday.getFullYear();
+                const month = String(nextMonday.getMonth() + 1).padStart(2, '0');
+                const day = String(nextMonday.getDate()).padStart(2, '0');
+                this.value = `${year}-${month}-${day}`;
+            }
+        });
+
+        // Form validation before submit
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            const startTime = document.getElementById('start_time').value;
+            const endTime = document.getElementById('end_time').value;
+            
+            if (startTime && endTime && endTime <= startTime) {
+                e.preventDefault();
+                alert('⚠️ End time must be after start time');
+                return false;
+            }
+
+            // Confirm update
+            if (!confirm('Are you sure you want to update this timetable entry?')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
 </body>
 </html>
