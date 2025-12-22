@@ -7976,69 +7976,154 @@ def admin_timetable_export_excel(request):
     wb.save(response)
     return response
 
+
+
+
     # Teacher Timetable View (with integrated filtering)
+from django.contrib import messages
+from django.db import connection, IntegrityError
+from django.shortcuts import render, redirect
+from datetime import datetime, timedelta
+
+
 def teacher_timetable_view(request):
+    """
+    Enhanced teacher timetable view with filtering similar to admin
+    """
     if 'teacher_id' not in request.session:
         messages.error(request, 'Please log in to access the teacher portal.')
-        return redirect('teacher_login')  # Use named URL
+        return redirect('teacher_login')
     
     teacher_id = request.session['teacher_id']
-    day_filter = request.GET.get('day', '')
     
     with connection.cursor() as cursor:
-        # Base query for teacher's timetable
-        query = """
+        # Fetch distinct values for filters
+        cursor.execute("SELECT DISTINCT class FROM student_page1")
+        classes = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
+        sections = [row[0] for row in cursor.fetchall()]
+        
+        # Fetch all timetable entries for this teacher
+        cursor.execute("""
             SELECT t.id, t.class_id, t.subject, t.day_of_week, 
-                   t.start_time, t.end_time, t.room
+                   t.start_time, t.end_time, COALESCE(t.room, 'N/A') as room,
+                   t.week_start_date, t.week_end_date
             FROM timetable t
             WHERE t.teacher_id = %s
-        """
-        params = [teacher_id]
+            ORDER BY t.week_start_date DESC, 
+                     FIELD(t.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'),
+                     t.start_time
+        """, [teacher_id])
         
-        if day_filter:
-            query += " AND t.day_of_week = %s"
-            params.append(day_filter)
+        timetables = []
+        for row in cursor.fetchall():
+            timetables.append({
+                'id': row[0], 'class_id': row[1], 'subject': row[2],
+                'day_of_week': row[3], 'start_time': row[4], 'end_time': row[5],
+                'room': row[6], 'week_start_date': row[7], 'week_end_date': row[8]
+            })
         
-        query += """
-            ORDER BY FIELD(t.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
-        """
-        
-        cursor.execute(query, params)
-        timetables = [
-            {
-                'id': row[0],
-                'class_id': row[1],
-                'subject': row[2],
-                'day_of_week': row[3],
-                'start_time': row[4],
-                'end_time': row[5],
-                'room': row[6]
-            } for row in cursor.fetchall()
-        ]
-    
-    # Organize by day as a list of (day, entries)
-    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    timetable_data = []
-    if day_filter:
-        entries = [entry for entry in timetables if entry['day_of_week'] == day_filter]
-        timetable_data.append((day_filter, entries))
-    else:
-        for day in days:
-            entries = [entry for entry in timetables if entry['day_of_week'] == day]
-            timetable_data.append((day, entries))
-    
-    # Check if no entries at all
-    if not any(len(entries) for _, entries in timetable_data):
-        messages.warning(request, 'No timetable entries found for you.')
+        # Get distinct weeks for week filter
+        cursor.execute("""
+            SELECT DISTINCT week_start_date 
+            FROM timetable 
+            WHERE teacher_id = %s 
+            ORDER BY week_start_date DESC
+        """, [teacher_id])
+        weeks = [row[0] for row in cursor.fetchall()]
     
     return render(request, 'users/teacher_timetable.html', {
-        'timetable_data': timetable_data,
-        'selected_day': day_filter,
+        'timetables': timetables, 
+        'classes': classes, 
+        'sections': sections,
+        'weeks': weeks,
         'teacher_id': teacher_id
     })
 
-# Teacher Timetable Add
+
+def teacher_timetable_filter(request):
+    """
+    Filter teacher's timetable entries
+    """
+    if not request.session.get('teacher_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('teacher_login')
+    
+    teacher_id = request.session['teacher_id']
+    class_filter = request.GET.get('class', '')
+    section_filter = request.GET.get('section', '')
+    day_filter = request.GET.get('day', '')
+    week_filter = request.GET.get('week', '')
+    
+    query = """
+        SELECT t.id, t.class_id, t.subject, t.day_of_week, 
+               t.start_time, t.end_time, COALESCE(t.room, 'N/A') as room,
+               t.week_start_date, t.week_end_date
+        FROM timetable t
+        WHERE t.teacher_id = %s
+    """
+    params = [teacher_id]
+    
+    if class_filter and section_filter:
+        class_id = f"{class_filter}{section_filter}"
+        query += " AND t.class_id = %s"
+        params.append(class_id)
+    elif class_filter:
+        query += " AND t.class_id LIKE %s"
+        params.append(f"{class_filter}%")
+    
+    if day_filter:
+        query += " AND t.day_of_week = %s"
+        params.append(day_filter)
+    
+    if week_filter:
+        query += " AND t.week_start_date = %s"
+        params.append(week_filter)
+    
+    query += """ 
+        ORDER BY t.week_start_date DESC, 
+                 FIELD(t.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'),
+                 t.start_time
+    """
+    
+    with connection.cursor() as cursor:
+        cursor.execute(query, params)
+        timetables = []
+        for row in cursor.fetchall():
+            timetables.append({
+                'id': row[0], 'class_id': row[1], 'subject': row[2],
+                'day_of_week': row[3], 'start_time': row[4], 'end_time': row[5],
+                'room': row[6], 'week_start_date': row[7], 'week_end_date': row[8]
+            })
+        
+        cursor.execute("SELECT DISTINCT class FROM student_page1")
+        classes = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
+        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("""
+            SELECT DISTINCT week_start_date 
+            FROM timetable 
+            WHERE teacher_id = %s 
+            ORDER BY week_start_date DESC
+        """, [teacher_id])
+        weeks = [row[0] for row in cursor.fetchall()]
+    
+    return render(request, 'users/teacher_timetable.html', {
+        'timetables': timetables, 
+        'classes': classes, 
+        'sections': sections,
+        'weeks': weeks,
+        'selected_class': class_filter, 
+        'selected_section': section_filter, 
+        'selected_day': day_filter, 
+        'selected_week': week_filter
+    })
+
+
 def teacher_timetable_add(request):
+    """
+    Add single timetable entry for teacher
+    """
     if not request.session.get('teacher_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('teacher_login')
@@ -8053,17 +8138,19 @@ def teacher_timetable_add(request):
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
         room = request.POST.get('room')
+        week_start_date = request.POST.get('week_start_date')
 
-        # Construct class_id
         class_id = f"{class_name}{section}" if section else class_name
 
-        # Validate inputs
         if not class_name or not class_id:
             messages.error(request, 'Please select a valid class.')
             return redirect('teacher_timetable_add')
-        if not subject or not day_of_week or not start_time or not end_time:
+        if not subject or not day_of_week or not start_time or not end_time or not week_start_date:
             messages.error(request, 'Please fill in all required fields.')
             return redirect('teacher_timetable_add')
+
+        week_start = datetime.strptime(week_start_date, '%Y-%m-%d').date()
+        week_end = week_start + timedelta(days=6)
 
         with connection.cursor() as cursor:
             # Check for conflicts
@@ -8072,19 +8159,19 @@ def teacher_timetable_add(request):
                 WHERE (class_id = %s OR teacher_id = %s)
                 AND day_of_week = %s
                 AND start_time <= %s AND end_time >= %s
-            """, [class_id, teacher_id, day_of_week, end_time, start_time])
+                AND week_start_date = %s
+            """, [class_id, teacher_id, day_of_week, end_time, start_time, week_start])
             conflict = cursor.fetchone()
             
             if conflict:
-                messages.error(request, 'Scheduling conflict detected.')
+                messages.error(request, 'Scheduling conflict detected for the selected week.')
                 return redirect('teacher_timetable')
             
-            # Insert into timetable
             cursor.execute("""
                 INSERT INTO timetable (class_id, subject, teacher_id, day_of_week, 
-                                     start_time, end_time, room)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room or None])
+                                     start_time, end_time, room, week_start_date, week_end_date)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room or None, week_start, week_end])
         
         messages.success(request, 'Timetable entry added successfully.')
         return redirect('teacher_timetable')
@@ -8099,8 +8186,11 @@ def teacher_timetable_add(request):
         'classes': classes, 'sections': sections
     })
 
-# Teacher Edit Timetable Entry
+
 def teacher_timetable_edit(request, id):
+    """
+    Edit timetable entry - teacher can only edit their own entries
+    """
     if not request.session.get('teacher_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('teacher_login')
@@ -8110,22 +8200,24 @@ def teacher_timetable_edit(request, id):
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT id, class_id, subject, teacher_id, day_of_week, 
-                   start_time, end_time, room
+                   start_time, end_time, room, week_start_date, week_end_date
             FROM timetable WHERE id = %s AND teacher_id = %s
         """, [id, teacher_id])
         timetable = cursor.fetchone()
+        
         if not timetable:
             messages.error(request, 'Timetable entry not found or you do not have permission.')
             return redirect('teacher_timetable')
         
         class_id = timetable[1]
-        class_name = class_id[:-1] if len(class_id) > 1 and class_id[-1].isalpha() else class_id
-        section = class_id[-1] if len(class_id) > 1 and class_id[-1].isalpha() else ''
+        class_name = class_id[:-1] if class_id[-1].isalpha() else class_id
+        section = class_id[-1] if class_id[-1].isalpha() else ''
         
         timetable_data = {
             'id': timetable[0], 'class_id': timetable[1], 'subject': timetable[2],
             'teacher_id': timetable[3], 'day_of_week': timetable[4],
             'start_time': timetable[5], 'end_time': timetable[6], 'room': timetable[7],
+            'week_start_date': timetable[8], 'week_end_date': timetable[9],
             'class': class_name, 'section': section
         }
         
@@ -8138,37 +8230,40 @@ def teacher_timetable_edit(request, id):
             start_time = request.POST.get('start_time')
             end_time = request.POST.get('end_time')
             room = request.POST.get('room')
+            week_start_date = request.POST.get('week_start_date')
             
-            # Validate inputs
             if not class_name or not class_id:
                 messages.error(request, 'Please select a valid class.')
                 return redirect('teacher_timetable_edit', id=id)
-            if not subject or not day_of_week or not start_time or not end_time:
+            if not subject or not day_of_week or not start_time or not end_time or not week_start_date:
                 messages.error(request, 'Please fill in all required fields.')
                 return redirect('teacher_timetable_edit', id=id)
             
-            # Check for conflicts (excluding current entry)
+            week_start = datetime.strptime(week_start_date, '%Y-%m-%d').date()
+            week_end = week_start + timedelta(days=6)
+            
             cursor.execute("""
                 SELECT id FROM timetable 
                 WHERE (class_id = %s OR teacher_id = %s)
                 AND day_of_week = %s
                 AND start_time <= %s AND end_time >= %s
+                AND week_start_date = %s
                 AND id != %s
-            """, [class_id, teacher_id, day_of_week, end_time, start_time, id])
+            """, [class_id, teacher_id, day_of_week, end_time, start_time, week_start, id])
             conflict = cursor.fetchone()
             
             if conflict:
                 messages.error(request, 'Scheduling conflict detected.')
                 return redirect('teacher_timetable_edit', id=id)
             
-            # Update timetable
             try:
                 cursor.execute("""
                     UPDATE timetable 
                     SET class_id = %s, subject = %s, teacher_id = %s, 
-                        day_of_week = %s, start_time = %s, end_time = %s, room = %s
+                        day_of_week = %s, start_time = %s, end_time = %s, room = %s,
+                        week_start_date = %s, week_end_date = %s
                     WHERE id = %s
-                """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room or None, id])
+                """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room or None, week_start, week_end, id])
             except IntegrityError as e:
                 messages.error(request, f'Error updating timetable entry: {str(e)}')
                 return redirect('teacher_timetable_edit', id=id)
@@ -8186,8 +8281,11 @@ def teacher_timetable_edit(request, id):
         'classes': classes, 'sections': sections
     })
 
-# Teacher Delete Timetable Entry
+
 def teacher_timetable_delete(request, id):
+    """
+    Delete timetable entry - teacher can only delete their own entries
+    """
     if not request.session.get('teacher_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('teacher_login')
@@ -8203,82 +8301,78 @@ def teacher_timetable_delete(request, id):
     
     return redirect('teacher_timetable')
 
-# Teacher Weekly Timetable Creation
+
 def teacher_timetable_weekly(request):
+    """
+    Create weekly timetable - similar to admin but auto-assigns teacher_id
+    """
     if not request.session.get('teacher_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('teacher_login')
     
     teacher_id = request.session['teacher_id']
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    # Store number of periods in session to persist across requests
-    if 'num_periods' not in request.session:
-        request.session['num_periods'] = 6
     
-    # Handle add/delete period actions
-    if request.method == 'POST' and 'action' in request.POST:
-        action = request.POST.get('action')
-        current_periods = request.session['num_periods']
-        if action == 'add' and current_periods < 10:
-            request.session['num_periods'] = current_periods + 1
-        elif action == 'delete' and current_periods > 1:
-            request.session['num_periods'] = current_periods - 1
-        request.session.modified = True
-        return redirect('teacher_timetable_weekly')
-    
-    num_periods = request.session['num_periods']
-    periods = list(range(1, num_periods + 1))
-    
-    if request.method == 'POST' and 'create_timetable' in request.POST:
+    if request.method == 'POST':
         class_name = request.POST.get('class')
         section = request.POST.get('section')
         class_id = f"{class_name}{section}" if section else class_name
+        week_start_date = request.POST.get('week_start_date')
+        num_weeks = int(request.POST.get('num_weeks', 1))
+        num_periods = int(request.POST.get('num_periods', 6))
         
-        # Validate class_id
         if not class_name or not class_id:
             messages.error(request, 'Please select a valid class.')
             return redirect('teacher_timetable_weekly')
         
+        if not week_start_date:
+            messages.error(request, 'Please select a start date for the week.')
+            return redirect('teacher_timetable_weekly')
+        
+        week_start = datetime.strptime(week_start_date, '%Y-%m-%d').date()
+        
         with connection.cursor() as cursor:
             success_count = 0
-            for day in days:
-                for period in periods:
-                    subject = request.POST.get(f'subject_{day}_{period}')
-                    start_time = request.POST.get(f'start_time_{day}_{period}')
-                    end_time = request.POST.get(f'end_time_{day}_{period}')
-                    room = request.POST.get(f'room_{day}_{period}')
-                    
-                    # Skip if required fields are missing
-                    if not (subject and start_time and end_time):
-                        continue
+            for week_offset in range(num_weeks):
+                current_week_start = week_start + timedelta(weeks=week_offset)
+                current_week_end = current_week_start + timedelta(days=6)
+                
+                for day in days:
+                    for period in range(1, num_periods + 1):
+                        subject = request.POST.get(f'subject_{day}_{period}')
+                        start_time = request.POST.get(f'start_time_{day}_{period}')
+                        end_time = request.POST.get(f'end_time_{day}_{period}')
+                        room = request.POST.get(f'room_{day}_{period}')
                         
-                    # Check for conflicts
-                    cursor.execute("""
-                        SELECT id FROM timetable 
-                        WHERE (class_id = %s OR teacher_id = %s)
-                        AND day_of_week = %s
-                        AND start_time <= %s AND end_time >= %s
-                    """, [class_id, teacher_id, day, end_time, start_time])
-                    conflict = cursor.fetchone()
-                    
-                    if conflict:
-                        messages.error(request, f'Conflict detected for {day} period {period}.')
-                        continue
-                    
-                    # Insert into timetable
-                    try:
+                        if not (subject and start_time and end_time):
+                            continue
+                        
                         cursor.execute("""
-                            INSERT INTO timetable (class_id, subject, teacher_id, day_of_week, 
-                                                 start_time, end_time, room)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)
-                        """, [class_id, subject, teacher_id, day, start_time, end_time, room or None])
-                        success_count += 1
-                    except IntegrityError as e:
-                        messages.error(request, f'Error adding timetable entry for {day} period {period}: {str(e)}')
-                        continue
+                            SELECT id FROM timetable 
+                            WHERE (class_id = %s OR teacher_id = %s)
+                            AND day_of_week = %s
+                            AND start_time <= %s AND end_time >= %s
+                            AND week_start_date = %s
+                        """, [class_id, teacher_id, day, end_time, start_time, current_week_start])
+                        conflict = cursor.fetchone()
+                        
+                        if conflict:
+                            messages.warning(request, f'Conflict detected for {day} period {period} in week starting {current_week_start}. Skipped.')
+                            continue
+                        
+                        try:
+                            cursor.execute("""
+                                INSERT INTO timetable (class_id, subject, teacher_id, day_of_week, 
+                                                     start_time, end_time, room, week_start_date, week_end_date)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            """, [class_id, subject, teacher_id, day, start_time, end_time, room or None, current_week_start, current_week_end])
+                            success_count += 1
+                        except IntegrityError as e:
+                            messages.warning(request, f'Error adding timetable for {day} period {period} in week {current_week_start}: {str(e)}')
+                            continue
         
         if success_count > 0:
-            messages.success(request, f'Weekly timetable created successfully with {success_count} entries.')
+            messages.success(request, f'Weekly timetable created successfully for {num_weeks} week(s) with {success_count} entries.')
         return redirect('teacher_timetable')
     
     with connection.cursor() as cursor:
@@ -8288,9 +8382,95 @@ def teacher_timetable_weekly(request):
         sections = [row[0] for row in cursor.fetchall()]
     
     return render(request, 'users/teacher_timetable_weekly.html', {
-        'days': days, 'periods': periods, 
-        'classes': classes, 'sections': sections, 'num_periods': num_periods
+        'days': days, 
+        'classes': classes, 
+        'sections': sections
     })
+
+
+def teacher_timetable_copy_week(request):
+    """
+    Copy timetable from one week to another
+    """
+    if not request.session.get('teacher_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('teacher_login')
+    
+    teacher_id = request.session['teacher_id']
+    
+    if request.method == 'POST':
+        source_week = request.POST.get('source_week')
+        target_week = request.POST.get('target_week')
+        num_weeks = int(request.POST.get('num_weeks', 1))
+        
+        if not source_week or not target_week:
+            messages.error(request, 'Please select both source and target weeks.')
+            return redirect('teacher_timetable')
+        
+        source_date = datetime.strptime(source_week, '%Y-%m-%d').date()
+        target_date = datetime.strptime(target_week, '%Y-%m-%d').date()
+        
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * FROM timetable 
+                WHERE week_start_date = %s AND teacher_id = %s
+            """, [source_date, teacher_id])
+            source_timetables = cursor.fetchall()
+            
+            if not source_timetables:
+                messages.error(request, 'No timetable entries found for the selected source week.')
+                return redirect('teacher_timetable')
+            
+            success_count = 0
+            for week_offset in range(num_weeks):
+                current_target = target_date + timedelta(weeks=week_offset)
+                current_target_end = current_target + timedelta(days=6)
+                
+                for entry in source_timetables:
+                    try:
+                        cursor.execute("""
+                            INSERT INTO timetable (class_id, subject, teacher_id, day_of_week, 
+                                                 start_time, end_time, room, week_start_date, week_end_date)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        """, [entry[1], entry[2], entry[3], entry[4], entry[5], entry[6], entry[7], current_target, current_target_end])
+                        success_count += 1
+                    except IntegrityError:
+                        continue
+            
+            if success_count > 0:
+                messages.success(request, f'Timetable copied successfully to {num_weeks} week(s) with {success_count} entries.')
+            else:
+                messages.warning(request, 'No entries were copied. Check for conflicts.')
+    
+    return redirect('teacher_timetable')
+
+
+def teacher_timetable_bulk_delete(request):
+    """
+    Delete multiple timetable entries
+    """
+    if not request.session.get('teacher_id'):
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('teacher_login')
+    
+    teacher_id = request.session['teacher_id']
+    
+    if request.method == 'POST':
+        ids = request.POST.getlist('ids')
+        if not ids:
+            messages.error(request, 'No entries selected.')
+            return redirect('teacher_timetable')
+        
+        with connection.cursor() as cursor:
+            placeholders = ','.join(['%s'] * len(ids))
+            cursor.execute(
+                f"DELETE FROM timetable WHERE id IN ({placeholders}) AND teacher_id = %s", 
+                ids + [teacher_id]
+            )
+        
+        messages.success(request, f'{len(ids)} timetable entries deleted successfully.')
+    
+    return redirect('teacher_timetable')
 
 # Student Timetable View
 def student_timetable_view(request):

@@ -140,12 +140,14 @@ urlpatterns = [
 
     # Teacher Timetable URLs
    
-    path('teacher_timetable/filter/', views.teacher_timetable_view, name='teacher_timetable_filter'),  # Handles filtering via GET params
+    path('teacher_timetable/', views.teacher_timetable_view, name='teacher_timetable'),
+    path('teacher_timetable/filter/', views.teacher_timetable_filter, name='teacher_timetable_filter'),
     path('teacher_timetable/add/', views.teacher_timetable_add, name='teacher_timetable_add'),
     path('teacher_timetable/edit/<int:id>/', views.teacher_timetable_edit, name='teacher_timetable_edit'),
     path('teacher_timetable/delete/<int:id>/', views.teacher_timetable_delete, name='teacher_timetable_delete'),
     path('teacher_timetable/weekly/', views.teacher_timetable_weekly, name='teacher_timetable_weekly'),
-    
+    path('teacher_timetable/copy_week/', views.teacher_timetable_copy_week, name='teacher_timetable_copy_week'),
+    path('teacher_timetable/bulk_delete/', views.teacher_timetable_bulk_delete, name='teacher_timetable_bulk_delete'),
     # Teacher route
     path('teacher_timetable/', views.teacher_timetable_view, name='teacher_timetable'),
     
