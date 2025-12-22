@@ -1,0 +1,1567 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Enhanced Teacher Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: var(--white);
+        min-height: 100vh;
+        color: var(--text-color);
+        overflow: hidden;
+    }
+
+    h1, h2, h3 {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    :root {
+        --primary-color: #00a676;
+        --primary-hover: #00b88d;
+        --sidebar-bg: #f0f9f4;
+        --sidebar-border: #a8d5c2;
+        --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --border-color: #adb5bd;
+        --text-color: #495057;
+        --text-light: #868e96;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --border-radius: 16px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --dull-highlighter: #d4edda;
+    }
+
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        overflow-x: hidden;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+        width: 280px;
+        height: 100vh;
+        background: var(--sidebar-bg);
+        color: var(--text-color);
+        overflow-y: auto;
+        box-shadow: var(--shadow-md);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        transition: var(--transition);
+        border-right: 2px solid var(--sidebar-border);
+    }
+
+    .sidebar-header {
+        padding: 2rem 1.5rem;
+        background: var(--white);
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 2px solid var(--sidebar-border);
+    }
+
+    .logo-container-sidebar {
+        width: 100px;
+        height: 80px;
+        background: var(--white);
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--sidebar-border);
+    }
+
+    .logo-container-sidebar img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: var(--transition);
+    }
+
+    .logo-container-sidebar:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
+    }
+
+    .sidebar-header:hover {
+        background: var(--light-bg);
+    }
+
+    .sidebar-nav {
+        padding: 1rem 0;
+    }
+
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: var(--transition);
+        font-size: 1.05rem;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+    }
+
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+        background: var(--dull-highlighter);
+        border-left: 3px solid var(--primary-color);
+        color: var(--primary-color);
+        transform: translateX(4px);
+    }
+
+    .sidebar-nav a img {
+        margin-right: 1rem;
+        transition: var(--transition);
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .sidebar-nav a:hover img {
+        transform: scale(1.1);
+    }
+
+    /* Menu Toggle Button */
+    .menu-toggle {
+        display: none;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        background: var(--white);
+        border: 2px solid var(--sidebar-border);
+        cursor: pointer;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1001;
+        padding: 0.75rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        width: 50px;
+        height: 50px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .menu-toggle:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: scale(1.05);
+    }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: var(--transition);
+        pointer-events: none;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    /* Page Wrapper */
+    .page-wrapper {
+        margin-left: 280px;
+        min-height: 100vh;
+        transition: var(--transition);
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 20px;
+    }
+
+    .header {
+        background: var(--white);
+        color: var(--text-color);
+        padding: 1.5rem;
+        border: 2px solid #495057;
+        box-shadow: var(--shadow-md);
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: center;
+        color: var(--primary-color);
+        margin: 0;
+    }
+
+    .main-content {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        padding: 2rem;
+    }
+
+    .alert-message {
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-message .error {
+        background: #fef2f2;
+        color: #dc3545;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid #dc3545;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .alert-message .success {
+        background: #d4edda;
+        color: var(--primary-color);
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .section {
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        transition: var(--transition);
+    }
+
+    .section:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    h2 {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    /* Tab Navigation */
+    .tab-navigation {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-color);
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--light-bg);
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+        background: var(--dull-highlighter);
+        color: var(--primary-color);
+    }
+
+    .tab-btn.active {
+        background: var(--white);
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Form Styles */
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-color);
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background: var(--white);
+        color: var(--text-color);
+        transition: var(--transition);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .form-group select {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 12px;
+        appearance: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+        outline: none;
+    }
+
+    .form-group-full {
+        grid-column: 1 / -1;
+    }
+
+    .add-btn, .submit-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary-color);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--white);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .add-btn:hover, .submit-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Teacher Grid */
+    .teacher-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .teacher-card {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
+        padding: 1.5rem;
+        transition: var(--transition);
+    }
+
+    .teacher-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    .teacher-card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--light-bg);
+    }
+
+    .teacher-card img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary-color);
+    }
+
+    .teacher-card-info h3 {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+        text-align: left;
+    }
+
+    .teacher-card-info .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: var(--dull-highlighter);
+        color: var(--primary-color);
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .teacher-card-details {
+        margin-bottom: 1rem;
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--light-bg);
+        font-size: 0.9rem;
+    }
+
+    .detail-item:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        color: var(--text-light);
+        font-weight: 500;
+    }
+
+    .detail-value {
+        color: var(--text-color);
+        font-weight: 400;
+        text-align: right;
+    }
+
+    .teacher-card .actions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .teacher-card .actions form {
+        display: contents;
+    }
+
+    .teacher-card .actions button,
+    .teacher-card .actions a {
+        padding: 0.6rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        text-align: center;
+        background: var(--sidebar-bg);
+        color: var(--text-color);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+    }
+
+    .teacher-card .actions button:hover,
+    .teacher-card .actions a:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .teacher-card .actions .delete-btn:hover {
+        background: #dc3545;
+        color: var(--white);
+    }
+
+    .no-teachers {
+        color: var(--primary-color);
+        font-size: 1rem;
+        margin-top: 2rem;
+        text-align: center;
+        padding: 2rem;
+        background: var(--light-bg);
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        grid-column: 1 / -1;
+    }
+
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+        overflow-y: auto;
+        padding: 2rem;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        width: 100%;
+        max-width: 900px;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .modal-header h3 {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .modal-content .close {
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: var(--transition);
+        background: none;
+        border: none;
+        padding: 0.5rem;
+    }
+
+    .modal-content .close:hover {
+        color: #dc3545;
+        transform: scale(1.1);
+    }
+
+    /* Quick Add Toggle */
+    .quick-add-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background: var(--light-bg);
+        border-radius: 8px;
+    }
+
+    .quick-add-toggle input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .quick-add-toggle label {
+        cursor: pointer;
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .sidebar { width: 250px; }
+        .page-wrapper { margin-left: 250px; }
+        .form-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+        .menu-toggle { display: flex; }
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.active { transform: translateX(0); }
+        .page-wrapper { margin-left: 0; }
+        .container { padding: 1.5rem 15px; }
+        .header h1 { font-size: 1.5rem; }
+        .teacher-grid { grid-template-columns: 1fr; }
+        .teacher-card .actions { grid-template-columns: 1fr; }
+        .tab-navigation { flex-direction: column; }
+        .tab-btn { width: 100%; justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+        .container { padding: 1rem; }
+        .modal { padding: 1rem; }
+        .modal-content { padding: 1.5rem; }
+    }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'admin_dashboard' %}" style="text-decoration: none; color: inherit;">
+                <div class="logo-container-sidebar">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
+                </div>
+            </a>
+            <span>Manavargal SMS</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'admin_master' %}">
+                <img src="https://img.icons8.com/fluency/24/home.png" alt="Master Data">
+                <span>Master Data</span>
+            </a>
+            <a href="{% url 'admin_accept_portal' %}">
+                <img src="https://img.icons8.com/color/24/000000/calendar--v1.png" alt="Leave Reports">
+                <span>Students Leave Reports</span>
+            </a>
+            <a href="{% url 'admin_attendance_portal' %}">
+                <img src="https://img.icons8.com/color/48/todo-list.png" alt="Attendance">
+                <span>Students Attendance Reports</span>
+            </a>
+            <a href="{% url 'admin_circular_upload' %}">
+                <img src="https://img.icons8.com/color/24/000000/classroom.png" alt="Circulars">
+                <span>Circulars</span>
+            </a>
+            <a href="{% url 'admin_study_materials_upload' %}">
+                <img src="https://img.icons8.com/color/24/000000/graduation-cap.png" alt="Materials">
+                <span>Student Materials</span>
+            </a>
+            <a href="{% url 'admin_homework_panel' %}">
+                <img src="https://img.icons8.com/color/24/000000/homework.png" alt="Homework">
+                <span>Homework</span>
+            </a>
+            <a href="{% url 'admin_timetable' %}">
+                <img src="https://img.icons8.com/color/24/000000/add-user-male.png" alt="Timetable">
+                <span>Timetable/Exam Scheduler</span>
+            </a>
+            <a href="{% url 'mark_entry' %}">
+                <img src="https://img.icons8.com/color/24/000000/user-group-man-woman.png" alt="Progress Card">
+                <span>Progress Card</span>
+            </a>
+            <a href="#">
+                <img src="https://img.icons8.com/color/24/000000/edit--v1.png" alt="Fees">
+                <span>Fees Collection</span>
+            </a>
+            <a href="{% url 'manage_teachers' %}" class="active">
+                <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="Teachers">
+                <span>Teacher Management</span>
+            </a>
+            <a href="{% url 'admin_send_student_pdf' %}">
+                <img src="https://img.icons8.com/color/24/000000/whatsapp.png" alt="WhatsApp">
+                <span>WHATSAPP BETA TESTING</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="page-wrapper">
+        <div class="container">
+            <header class="header">
+                <h1><i class="fas fa-users-cog" style="color: #00a676;"></i> Enhanced Teacher Management Panel</h1>
+            </header>
+
+            <main class="main-content">
+                {% if messages %}
+                    <div class="alert-message">
+                        {% for message in messages %}
+                            <div class="{{ message.tags }}">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <section class="section">
+                    <h2><i class="fas fa-user-plus" style="color: #00a676;"></i> Add New Teacher</h2>
+
+                    <!-- Quick Add Toggle -->
+                    <div class="quick-add-toggle">
+                        <input type="checkbox" id="quickAddMode" onchange="toggleQuickAdd()">
+                        <label for="quickAddMode">
+                            <i class="fas fa-bolt"></i> Quick Add Mode (Basic Info Only)
+                        </label>
+                    </div>
+
+                    <!-- Add Teacher Form -->
+                    <form method="POST" action="{% url 'add_teacher' %}" id="addTeacherForm">
+                        {% csrf_token %}
+                        
+                        <!-- Tab Navigation -->
+                        <div class="tab-navigation" id="addFormTabs">
+                            <button type="button" class="tab-btn active" data-tab="basic">
+                                <i class="fas fa-user" style="color: #3b82f6;"></i> Basic Details
+                            </button>
+                            <button type="button" class="tab-btn" data-tab="contact">
+                                <i class="fas fa-address-book" style="color: #ec4899;"></i> Contact Info
+                            </button>
+                            <button type="button" class="tab-btn" data-tab="employment">
+                                <i class="fas fa-briefcase" style="color: #f59e0b;"></i> Employment
+                            </button>
+                            <button type="button" class="tab-btn" data-tab="qualifications">
+                                <i class="fas fa-graduation-cap" style="color: #8b5cf6;"></i> Qualifications
+                            </button>
+                            <button type="button" class="tab-btn" data-tab="responsibilities">
+                                <i class="fas fa-tasks" style="color: #10b981;"></i> Responsibilities
+                            </button>
+                        </div>
+
+                        <!-- Basic Details Tab -->
+                        <div class="tab-content active" data-tab="basic">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-user"></i> Login Name (Short) *</label>
+                                    <input type="text" name="name" required placeholder="e.g., John Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-id-card"></i> Full Name</label>
+                                    <input type="text" name="full_name" placeholder="Complete name for records">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-envelope"></i> Email *</label>
+                                    <input type="email" name="email" required placeholder="teacher@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-lock"></i> Password *</label>
+                                    <input type="text" name="password" required placeholder="Login password">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-venus-mars"></i> Gender</label>
+                                    <select name="gender">
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-calendar"></i> Date of Birth</label>
+                                    <input type="date" name="date_of_birth">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-tint"></i> Blood Group</label>
+                                    <select name="blood_group">
+                                        <option value="">Select Blood Group</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-flag"></i> Nationality</label>
+                                    <input type="text" name="nationality" value="Indian" placeholder="Nationality">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information Tab -->
+                        <div class="tab-content" data-tab="contact">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-mobile-alt"></i> Mobile Number</label>
+                                    <input type="tel" name="mobile_number" placeholder="+91 XXXXX XXXXX">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-phone"></i> Alternate Contact</label>
+                                    <input type="tel" name="alternate_contact" placeholder="Alternative number">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-full">
+                                    <label><i class="fas fa-envelope-open"></i> Official Email</label>
+                                    <input type="email" name="official_email" placeholder="Official school email">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-full">
+                                    <label><i class="fas fa-home"></i> Residential Address</label>
+                                    <textarea name="residential_address" placeholder="Complete residential address"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-full">
+                                    <label><i class="fas fa-map-marker-alt"></i> City / State / PIN Code</label>
+                                    <input type="text" name="city_state_pin" placeholder="e.g., Raipur, Chhattisgarh - 492001">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-user-shield"></i> Emergency Contact Name</label>
+                                    <input type="text" name="emergency_contact_name" placeholder="Emergency contact person">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-phone-square"></i> Emergency Contact Number</label>
+                                    <input type="tel" name="emergency_contact_number" placeholder="Emergency number">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Employment Details Tab -->
+                        <div class="tab-content" data-tab="employment">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-id-badge"></i> Designation</label>
+                                    <select name="designation">
+                                        <option value="">Select Designation</option>
+                                        <option value="PRT">PRT (Primary Teacher)</option>
+                                        <option value="TGT">TGT (Trained Graduate Teacher)</option>
+                                        <option value="PGT">PGT (Post Graduate Teacher)</option>
+                                        <option value="Principal">Principal</option>
+                                        <option value="Vice Principal">Vice Principal</option>
+                                        <option value="Head Teacher">Head Teacher</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-building"></i> Department / Subject Group</label>
+                                    <input type="text" name="department" placeholder="e.g., Science, Mathematics">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-book"></i> Main Subject *</label>
+                                    <input type="text" name="subject" required placeholder="Primary subject">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-books"></i> All Subjects Taught</label>
+                                    <input type="text" name="subjects_taught" placeholder="Comma separated subjects">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-chalkboard"></i> Classes Assigned</label>
+                                    <input type="text" name="classes_assigned" placeholder="e.g., 6, 7, 8">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-layer-group"></i> Sections</label>
+                                    <input type="text" name="sections" placeholder="e.g., A, B, C">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-user-clock"></i> Employee Type</label>
+                                    <select name="employee_type">
+                                        <option value="">Select Type</option>
+                                        <option value="Full-time">Full-time</option>
+                                        <option value="Part-time">Part-time</option>
+                                        <option value="Contract">Contract</option>
+                                        <option value="Temporary">Temporary</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-circle"></i> Employment Status</label>
+                                    <select name="employment_status">
+                                        <option value="Active" selected>Active</option>
+                                        <option value="On Leave">On Leave</option>
+                                        <option value="Suspended">Suspended</option>
+                                        <option value="Resigned">Resigned</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-calendar-plus"></i> Joining Date</label>
+                                    <input type="date" name="joining_date">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-chalkboard-teacher"></i> Class Teacher Of</label>
+                                    <select name="class_teacher_of">
+                                        <option value="">Not Assigned</option>
+                                        {% for i in "123456789" %}
+                                            {% for section in "ABC" %}
+                                                <option value="Class {{ i }}-{{ section }}">Class {{ i }}-{{ section }}</option>
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% for i in "1012" %}
+                                            {% for section in "ABC" %}
+                                                <option value="Class 1{{ i }}-{{ section }}">Class 1{{ i }}-{{ section }}</option>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Qualifications Tab -->
+                        <div class="tab-content" data-tab="qualifications">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-user-graduate"></i> Highest Qualification</label>
+                                    <select name="qualification">
+                                        <option value="">Select Qualification</option>
+                                        <option value="B.Ed">B.Ed</option>
+                                        <option value="M.Ed">M.Ed</option>
+                                        <option value="B.A.">B.A.</option>
+                                        <option value="M.A.">M.A.</option>
+                                        <option value="B.Sc.">B.Sc.</option>
+                                        <option value="M.Sc.">M.Sc.</option>
+                                        <option value="B.Com">B.Com</option>
+                                        <option value="M.Com">M.Com</option>
+                                        <option value="Ph.D">Ph.D</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-microscope"></i> Specialization</label>
+                                    <input type="text" name="specialization" placeholder="Subject specialization">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-university"></i> Board / University</label>
+                                    <input type="text" name="board_university" placeholder="Name of board/university">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-calendar-check"></i> Year of Passing</label>
+                                    <input type="number" name="year_of_passing" min="1950" max="2025" placeholder="YYYY">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-full">
+                                    <label><i class="fas fa-certificate"></i> B.Ed / D.Ed / CTET / TET</label>
+                                    <input type="text" name="bed_ctet_tet" placeholder="Professional teaching certifications">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-full">
+                                    <label><i class="fas fa-award"></i> Special Training</label>
+                                    <textarea name="special_training" placeholder="Any special training or courses completed"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-full">
+                                    <label><i class="fas fa-users"></i> Workshops Attended</label>
+                                    <textarea name="workshops_attended" placeholder="List of workshops and seminars attended"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Academic Responsibilities Tab -->
+                        <div class="tab-content" data-tab="responsibilities">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-chalkboard-teacher"></i> Is Class Teacher?</label>
+                                    <select name="is_class_teacher">
+                                        <option value="No">No</option>
+                                        <option value="Yes">Yes</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-home"></i> House / Club In-charge</label>
+                                    <input type="text" name="house_club_incharge" placeholder="e.g., Red House, Science Club">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-full">
+                                    <label><i class="fas fa-palette"></i> Co-curricular Responsibilities</label>
+                                    <textarea name="cocurricular_responsibilities" placeholder="Sports, arts, music, drama, etc."></textarea>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-full">
+                                    <label><i class="fas fa-clipboard-list"></i> Exam Duties</label>
+                                    <textarea name="exam_duties" placeholder="Exam supervision, paper setting, invigilation, etc."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="add-btn">
+                            <i class="fas fa-user-plus"></i> Add Teacher
+                        </button>
+                    </form>
+                </section>
+
+                <section class="section">
+                    <h2><i class="fas fa-users" style="color: #00a676;"></i> All Teachers</h2>
+
+                    <div class="teacher-grid">
+                        {% for teacher in teachers %}
+                        <div class="teacher-card">
+                            <div class="teacher-card-header">
+                                <img src="{{ teacher.profile_pic_url }}" alt="{{ teacher.name }}" onerror="this.src='{% static 'users/images/greenlogo.png' %}';">
+                                <div class="teacher-card-info">
+                                    <h3>{{ teacher.full_name|default:teacher.name }}</h3>
+                                    <span class="badge">{{ teacher.designation|default:"Teacher" }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="teacher-card-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">ID:</span>
+                                    <span class="detail-value">{{ teacher.id }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Email:</span>
+                                    <span class="detail-value">{{ teacher.email }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Subject:</span>
+                                    <span class="detail-value">{{ teacher.subject }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Department:</span>
+                                    <span class="detail-value">{{ teacher.department|default:"N/A" }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Class Teacher:</span>
+                                    <span class="detail-value">{{ teacher.class_teacher_of|default:"Not Assigned" }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Status:</span>
+                                    <span class="detail-value">{{ teacher.employment_status|default:"Active" }}</span>
+                                </div>
+                            </div>
+
+                            <div class="actions">
+                                <button class="edit-btn" onclick="openEditModal({{ teacher.id|safe }})">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <a href="#" class="view-btn" onclick="viewTeacherProfile({{ teacher.id }})">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <form method="POST" action="{% url 'delete_teacher' teacher.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="delete_teacher" value="1">
+                                    <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete {{ teacher.name|escapejs }}?')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="no-teachers">
+                            <i class="fas fa-search"></i><br>
+                            No teachers found. Add your first teacher using the form above!
+                        </p>
+                        {% endfor %}
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Edit Teacher Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit" style="color: #00a676;"></i> Edit Teacher Profile</h3>
+                <button class="close" onclick="closeEditModal()">&times;</button>
+            </div>
+            
+            <form method="POST" action="{% url 'update_teacher' %}" id="editTeacherForm">
+                {% csrf_token %}
+                <input type="hidden" id="edit_teacher_id" name="teacher_id">
+                
+                <!-- Tab Navigation for Edit Form -->
+                <div class="tab-navigation" id="editFormTabs">
+                    <button type="button" class="tab-btn active" data-tab="edit-basic">
+                        <i class="fas fa-user" style="color: #3b82f6;"></i> Basic
+                    </button>
+                    <button type="button" class="tab-btn" data-tab="edit-contact">
+                        <i class="fas fa-address-book" style="color: #ec4899;"></i> Contact
+                    </button>
+                    <button type="button" class="tab-btn" data-tab="edit-employment">
+                        <i class="fas fa-briefcase" style="color: #f59e0b;"></i> Employment
+                    </button>
+                    <button type="button" class="tab-btn" data-tab="edit-qualifications">
+                        <i class="fas fa-graduation-cap" style="color: #8b5cf6;"></i> Qualifications
+                    </button>
+                    <button type="button" class="tab-btn" data-tab="edit-responsibilities">
+                        <i class="fas fa-tasks" style="color: #10b981;"></i> Responsibilities
+                    </button>
+                </div>
+
+                <!-- Tabs content will be populated by JavaScript when editing -->
+                <div id="editFormContent">
+                    <!-- Content will be dynamically loaded -->
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i> Update Teacher
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.toggle('active');
+                    sidebarOverlay.classList.toggle('active');
+                });
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', function() {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                });
+            }
+
+            // Tab functionality
+            setupTabNavigation('addFormTabs');
+            setupTabNavigation('editFormTabs');
+        });
+
+        // Tab Navigation Setup
+        function setupTabNavigation(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const tabBtns = container.querySelectorAll('.tab-btn');
+            const isEditForm = containerId === 'editFormTabs';
+            const tabContents = isEditForm ? 
+                document.querySelectorAll('#editFormContent .tab-content') :
+                document.querySelectorAll('#addTeacherForm .tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and contents
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(content => {
+                        if (content.getAttribute('data-tab') === targetTab || 
+                            content.getAttribute('data-tab') === targetTab.replace('edit-', '')) {
+                            content.classList.add('active');
+                        } else {
+                            content.classList.remove('active');
+                        }
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        // Quick Add Mode Toggle
+        function toggleQuickAdd() {
+            const quickMode = document.getElementById('quickAddMode').checked;
+            const tabs = document.querySelectorAll('#addFormTabs .tab-btn');
+            const tabContents = document.querySelectorAll('#addTeacherForm .tab-content');
+            
+            if (quickMode) {
+                // Show only basic tab
+                tabs.forEach((tab, index) => {
+                    if (index > 0) tab.style.display = 'none';
+                });
+                tabContents.forEach((content, index) => {
+                    if (index > 0) content.style.display = 'none';
+                });
+            } else {
+                // Show all tabs
+                tabs.forEach(tab => tab.style.display = 'flex');
+                tabContents.forEach(content => content.style.display = 'block');
+            }
+        }
+
+        // Open Edit Modal
+        function openEditModal(teacherId) {
+            // Fetch teacher data and populate edit form
+            fetch(`/api/get-teacher/${teacherId}/`)
+                .then(response => response.json())
+                .then(teacher => {
+                    populateEditForm(teacher);
+                    document.getElementById('editModal').classList.add('active');
+                })
+                .catch(error => {
+                    console.error('Error fetching teacher data:', error);
+                    alert('Error loading teacher data. Please refresh and try again.');
+                });
+        }
+
+        // Populate Edit Form
+        function populateEditForm(teacher) {
+            // Set hidden teacher ID
+            document.getElementById('edit_teacher_id').value = teacher.id;
+            
+            // Create edit form content with all tabs
+            const editFormContent = document.getElementById('editFormContent');
+            editFormContent.innerHTML = `
+                <!-- Basic Details Tab -->
+                <div class="tab-content active" data-tab="basic">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Login Name *</label>
+                            <input type="text" name="name" value="${teacher.name || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-id-card"></i> Full Name</label>
+                            <input type="text" name="full_name" value="${teacher.full_name || teacher.name || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email *</label>
+                            <input type="email" name="email" value="${teacher.email || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-lock"></i> Password *</label>
+                            <input type="text" name="password" value="${teacher.password || ''}" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-venus-mars"></i> Gender</label>
+                            <select name="gender">
+                                <option value="">Select Gender</option>
+                                <option value="Male" ${teacher.gender === 'Male' ? 'selected' : ''}>Male</option>
+                                <option value="Female" ${teacher.gender === 'Female' ? 'selected' : ''}>Female</option>
+                                <option value="Other" ${teacher.gender === 'Other' ? 'selected' : ''}>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Date of Birth</label>
+                            <input type="date" name="date_of_birth" value="${teacher.date_of_birth || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-tint"></i> Blood Group</label>
+                            <select name="blood_group">
+                                <option value="">Select Blood Group</option>
+                                ${['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => 
+                                    `<option value="${bg}" ${teacher.blood_group === bg ? 'selected' : ''}>${bg}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-flag"></i> Nationality</label>
+                            <input type="text" name="nationality" value="${teacher.nationality || 'Indian'}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information Tab -->
+                <div class="tab-content" data-tab="contact">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-mobile-alt"></i> Mobile Number</label>
+                            <input type="tel" name="mobile_number" value="${teacher.mobile_number || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Alternate Contact</label>
+                            <input type="tel" name="alternate_contact" value="${teacher.alternate_contact || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group form-group-full">
+                            <label><i class="fas fa-envelope-open"></i> Official Email</label>
+                            <input type="email" name="official_email" value="${teacher.official_email || teacher.email || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group form-group-full">
+                            <label><i class="fas fa-home"></i> Residential Address</label>
+                            <textarea name="residential_address">${teacher.residential_address || ''}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group form-group-full">
+                            <label><i class="fas fa-map-marker-alt"></i> City / State / PIN</label>
+                            <input type="text" name="city_state_pin" value="${teacher.city_state_pin || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user-shield"></i> Emergency Contact Name</label>
+                            <input type="text" name="emergency_contact_name" value="${teacher.emergency_contact_name || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone-square"></i> Emergency Contact Number</label>
+                            <input type="tel" name="emergency_contact_number" value="${teacher.emergency_contact_number || ''}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employment Details Tab -->
+                <div class="tab-content" data-tab="employment">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-id-badge"></i> Designation</label>
+                            <select name="designation">
+                                <option value="">Select Designation</option>
+                                ${['PRT', 'TGT', 'PGT', 'Principal', 'Vice Principal', 'Head Teacher'].map(des => 
+                                    `<option value="${des}" ${teacher.designation === des ? 'selected' : ''}>${des}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-building"></i> Department</label>
+                            <input type="text" name="department" value="${teacher.department || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-book"></i> Main Subject *</label>
+                            <input type="text" name="subject" value="${teacher.subject || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-books"></i> All Subjects</label>
+                            <input type="text" name="subjects_taught" value="${teacher.subjects_taught || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-chalkboard"></i> Classes Assigned</label>
+                            <input type="text" name="classes_assigned" value="${teacher.classes_assigned || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-layer-group"></i> Sections</label>
+                            <input type="text" name="sections" value="${teacher.sections || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user-clock"></i> Employee Type</label>
+                            <select name="employee_type">
+                                <option value="">Select Type</option>
+                                ${['Full-time', 'Part-time', 'Contract', 'Temporary'].map(type => 
+                                    `<option value="${type}" ${teacher.employee_type === type ? 'selected' : ''}>${type}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-circle"></i> Status</label>
+                            <select name="employment_status">
+                                ${['Active', 'On Leave', 'Suspended', 'Resigned'].map(status => 
+                                    `<option value="${status}" ${(teacher.employment_status || 'Active') === status ? 'selected' : ''}>${status}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-plus"></i> Joining Date</label>
+                            <input type="date" name="joining_date" value="${teacher.joining_date || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-chalkboard-teacher"></i> Class Teacher Of</label>
+                            <select name="class_teacher_of">
+                                <option value="">Not Assigned</option>
+                                ${generateClassOptions(teacher.class_teacher_of)}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Qualifications Tab -->
+                <div class="tab-content" data-tab="qualifications">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user-graduate"></i> Qualification</label>
+                            <select name="qualification">
+                                <option value="">Select Qualification</option>
+                                ${['B.Ed', 'M.Ed', 'B.A.', 'M.A.', 'B.Sc.', 'M.Sc.', 'B.Com', 'M.Com', 'Ph.D'].map(qual => 
+                                    `<option value="${qual}" ${teacher.qualification === qual ? 'selected' : ''}>${qual}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-microscope"></i> Specialization</label>
+                            <input type="text" name="specialization" value="${teacher.specialization || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-university"></i> Board / University</label>
+                            <input type="text" name="board_university" value="${teacher.board_university || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-check"></i> Year of Passing</label>
+                            <input type="number" name="year_of_passing" value="${teacher.year_of_passing || ''}" min="1950" max="2025">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group form-group-full">
+                            <label><i class="fas fa-certificate"></i> B.Ed / D.Ed / CTET / TET</label>
+                            <input type="text" name="bed_ctet_tet" value="${teacher.bed_ctet_tet || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group form-group-full">
+                            <label><i class="fas fa-award"></i> Special Training</label>
+                            <textarea name="special_training">${teacher.special_training || ''}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group form-group-full">
+                            <label><i class="fas fa-users"></i> Workshops Attended</label>
+                            <textarea name="workshops_attended">${teacher.workshops_attended || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Responsibilities Tab -->
+                <div class="tab-content" data-tab="responsibilities">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-chalkboard-teacher"></i> Is Class Teacher?</label>
+                            <select name="is_class_teacher">
+                                <option value="No" ${(teacher.is_class_teacher || 'No') === 'No' ? 'selected' : ''}>No</option>
+                                <option value="Yes" ${teacher.is_class_teacher === 'Yes' ? 'selected' : ''}>Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-home"></i> House / Club In-charge</label>
+                            <input type="text" name="house_club_incharge" value="${teacher.house_club_incharge || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group form-group-full">
+                            <label><i class="fas fa-palette"></i> Co-curricular Responsibilities</label>
+                            <textarea name="cocurricular_responsibilities">${teacher.cocurricular_responsibilities || ''}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group form-group-full">
+                            <label><i class="fas fa-clipboard-list"></i> Exam Duties</label>
+                            <textarea name="exam_duties">${teacher.exam_duties || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Reinitialize tab navigation for edit form
+            setupTabNavigation('editFormTabs');
+        }
+
+        // Generate class options for select dropdown
+        function generateClassOptions(selectedClass) {
+            let options = '';
+            for (let i = 1; i <= 12; i++) {
+                for (let section of ['A', 'B', 'C']) {
+                    const value = `Class ${i}-${section}`;
+                    const selected = value === selectedClass ? 'selected' : '';
+                    options += `<option value="${value}" ${selected}>${value}</option>`;
+                }
+            }
+            return options;
+        }
+
+        // Close Edit Modal
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        // View Teacher Profile (can be implemented to show a detailed view)
+        function viewTeacherProfile(teacherId) {
+            window.location.href = `/teacher-profile/${teacherId}/`;
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeEditModal();
+            }
+        }
+    </script>
+</body>
+</html>

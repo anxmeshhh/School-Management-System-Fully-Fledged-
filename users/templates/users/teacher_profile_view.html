@@ -1,0 +1,318 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Profile - {{ teacher.full_name|default:teacher.name }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #f8f9fa;
+        color: #495057;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .header img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #00a676;
+    }
+
+    .header-info h1 {
+        color: #00a676;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #d4edda;
+        color: #00a676;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: #00a676;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+        background: #00b88d;
+        transform: translateY(-2px);
+    }
+
+    .section {
+        margin-bottom: 2rem;
+    }
+
+    .section h2 {
+        color: #00a676;
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    .info-item {
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 3px solid #00a676;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .info-value {
+        color: #495057;
+        font-size: 1rem;
+    }
+
+    .info-item.full-width {
+        grid-column: 1 / -1;
+    }
+
+    @media print {
+        .back-btn { display: none; }
+        body { padding: 0; }
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'manage_teachers' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Teachers
+        </a>
+
+        <div class="header">
+            <img src="{{ teacher.profile_pic_url }}" alt="{{ teacher.name }}" onerror="this.src='{% static 'users/images/greenlogo.png' %}';">
+            <div class="header-info">
+                <h1>{{ teacher.full_name|default:teacher.name }}</h1>
+                <span class="badge">{{ teacher.designation|default:"Teacher" }} - ID: {{ teacher.id }}</span>
+            </div>
+        </div>
+
+        <!-- Basic Details -->
+        <div class="section">
+            <h2><i class="fas fa-user" style="color: #3b82f6;"></i> Basic Details</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value">{{ teacher.full_name|default:teacher.name }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Gender</div>
+                    <div class="info-value">{{ teacher.gender|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Date of Birth</div>
+                    <div class="info-value">{{ teacher.date_of_birth|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Blood Group</div>
+                    <div class="info-value">{{ teacher.blood_group|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Nationality</div>
+                    <div class="info-value">{{ teacher.nationality|default:"Indian" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="section">
+            <h2><i class="fas fa-address-book" style="color: #ec4899;"></i> Contact Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">{{ teacher.email }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Official Email</div>
+                    <div class="info-value">{{ teacher.official_email|default:teacher.email }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Mobile Number</div>
+                    <div class="info-value">{{ teacher.mobile_number|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Alternate Contact</div>
+                    <div class="info-value">{{ teacher.alternate_contact|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item full-width">
+                    <div class="info-label">Residential Address</div>
+                    <div class="info-value">{{ teacher.residential_address|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">City / State / PIN</div>
+                    <div class="info-value">{{ teacher.city_state_pin|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Emergency Contact</div>
+                    <div class="info-value">{{ teacher.emergency_contact_name|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Emergency Number</div>
+                    <div class="info-value">{{ teacher.emergency_contact_number|default:"Not Specified" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employment Details -->
+        <div class="section">
+            <h2><i class="fas fa-briefcase" style="color: #f59e0b;"></i> Employment Details</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Designation</div>
+                    <div class="info-value">{{ teacher.designation|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Department</div>
+                    <div class="info-value">{{ teacher.department|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Main Subject</div>
+                    <div class="info-value">{{ teacher.subject }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">All Subjects Taught</div>
+                    <div class="info-value">{{ teacher.subjects_taught|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Classes Assigned</div>
+                    <div class="info-value">{{ teacher.classes_assigned|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Sections</div>
+                    <div class="info-value">{{ teacher.sections|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Employee Type</div>
+                    <div class="info-value">{{ teacher.employee_type|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Employment Status</div>
+                    <div class="info-value">{{ teacher.employment_status|default:"Active" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Joining Date</div>
+                    <div class="info-value">{{ teacher.joining_date|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Class Teacher Of</div>
+                    <div class="info-value">{{ teacher.class_teacher_of|default:"Not Assigned" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Qualifications -->
+        <div class="section">
+            <h2><i class="fas fa-graduation-cap" style="color: #8b5cf6;"></i> Qualifications</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Highest Qualification</div>
+                    <div class="info-value">{{ teacher.qualification|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Specialization</div>
+                    <div class="info-value">{{ teacher.specialization|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Board / University</div>
+                    <div class="info-value">{{ teacher.board_university|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Year of Passing</div>
+                    <div class="info-value">{{ teacher.year_of_passing|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item full-width">
+                    <div class="info-label">B.Ed / D.Ed / CTET / TET</div>
+                    <div class="info-value">{{ teacher.bed_ctet_tet|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item full-width">
+                    <div class="info-label">Special Training</div>
+                    <div class="info-value">{{ teacher.special_training|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item full-width">
+                    <div class="info-label">Workshops Attended</div>
+                    <div class="info-value">{{ teacher.workshops_attended|default:"Not Specified" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Responsibilities -->
+        <div class="section">
+            <h2><i class="fas fa-tasks" style="color: #10b981;"></i> Academic Responsibilities</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Is Class Teacher?</div>
+                    <div class="info-value">{{ teacher.is_class_teacher|default:"No" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">House / Club In-charge</div>
+                    <div class="info-value">{{ teacher.house_club_incharge|default:"Not Assigned" }}</div>
+                </div>
+                <div class="info-item full-width">
+                    <div class="info-label">Co-curricular Responsibilities</div>
+                    <div class="info-value">{{ teacher.cocurricular_responsibilities|default:"Not Specified" }}</div>
+                </div>
+                <div class="info-item full-width">
+                    <div class="info-label">Exam Duties</div>
+                    <div class="info-value">{{ teacher.exam_duties|default:"Not Specified" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <a href="{% url 'manage_teachers' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Teachers
+        </a>
+    </div>
+</body>
+</html>

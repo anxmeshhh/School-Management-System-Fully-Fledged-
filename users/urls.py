@@ -109,6 +109,10 @@ urlpatterns = [
     path('teachers/add/', views.add_teacher, name='add_teacher'),
     path('teachers/update/', views.update_teacher, name='update_teacher'),
     path('teachers/delete/<int:teacher_id>/', views.delete_teacher, name='delete_teacher'),
+    path('api/get-teacher/<int:teacher_id>/', views.get_teacher_data, name='get_teacher_data'),
+    path('teacher-profile/<int:teacher_id>/', views.view_teacher_profile, name='teacher_profile'),
+    
+    
 
 
 
