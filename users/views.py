@@ -730,7 +730,7 @@ def qr_page(request):
     qr_code_base64 = base64.b64encode(img_io.read()).decode('utf-8')
 
     # Get current date for footer
-    current_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
     # Pass data to template
@@ -760,15 +760,16 @@ from django.db import connection
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.conf import settings
-import datetime
+from datetime import datetime
+
 
 def calculate_age(dob):
     """Calculate age from DOB string in 'YYYY-MM-DD' format."""
     if not dob:
         return "N/A"
     try:
-        birth_date = datetime.datetime.strptime(dob, '%Y-%m-%d').date()
-        today = datetime.date.today()
+        birth_date = datetime.strptime(dob, '%Y-%m-%d').date()
+        today = datetime.now().date()
         age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
         return str(age)
     except:
@@ -1220,7 +1221,7 @@ def normalize_value(value):
 # Admin uploads circular
 from django.conf import settings
 import os
-
+# Add this
 def admin_circular_upload(request):
     CIRCULARS_DIR = os.path.join(settings.MEDIA_ROOT, 'circulars')
     if request.method == 'POST':
@@ -1305,7 +1306,7 @@ def admin_circular_upload(request):
                     print(f"Error reading metadata from {title_path}: {e}")
 
             try:
-                created_at = datetime.datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
+                created_at = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
                 image_url = f"/media/circulars/{file}"  # Consistent path
                 print(f"Listing circular: {file}, image_url: {image_url}, full_path: {full_path}")
                 circulars.append({
@@ -1322,10 +1323,10 @@ def admin_circular_upload(request):
     date_filter = date_str
     if date_str:
         try:
-            filter_date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+            filter_date = datetime.strptime(date_str, '%Y-%m-%d').date()
             filtered_circulars = []
             for circ in circulars:
-                circ_date = datetime.datetime.strptime(circ['date'], '%Y-%m-%d %H:%M:%S').date()
+                circ_date = datetime.strptime(circ['date'], '%Y-%m-%d %H:%M:%S').date()
                 if circ_date == filter_date:
                     filtered_circulars.append(circ)
             circulars = filtered_circulars
@@ -1428,7 +1429,7 @@ def student_circular(request):
 
             if include_circular:
                 try:
-                    created_at = datetime.datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
+                    created_at = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
                     image_url = f"/static/uploads/{file}"  # Consistent path
                     print(f"Included circular: {file}, image_url: {image_url}, full_path: {full_path}")
                     display_target = "All" if target == "all" else f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
@@ -1456,7 +1457,7 @@ def student_circular(request):
 # Teacher uploads circular
 from django.conf import settings
 import os
-
+ # Add this
 def teacher_circular_upload(request):
     CIRCULARS_DIR = os.path.join(settings.MEDIA_ROOT, 'circulars')
     if request.method == 'POST':
@@ -1537,7 +1538,7 @@ def teacher_circular_upload(request):
                     print(f"Error reading title from {title_path}: {e}")
 
             try:
-                created_at = datetime.datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
+                created_at = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
                 image_url = f"/media/circulars/{file}"  # Consistent path
                 print(f"Listing circular: {file}, image_url: {image_url}, full_path: {full_path}")
                 circulars.append({
@@ -1615,8 +1616,8 @@ def student_leave(request):
                 return redirect("student_leave")
 
             try:
-                start_date = datetime.datetime.strptime(form_data["leave_start_date"], "%Y-%m-%d")
-                end_date = datetime.datetime.strptime(form_data["leave_end_date"], "%Y-%m-%d")
+                start_date = datetime.strptime(form_data["leave_start_date"], "%Y-%m-%d")
+                end_date = datetime.strptime(form_data["leave_end_date"], "%Y-%m-%d")
                 if start_date > end_date:
                     messages.error(request, "End date must be on or after start date.")
                     return redirect("student_leave")
@@ -1997,7 +1998,7 @@ def admin_study_materials_upload(request):
                     INSERT INTO study_materials (title, file_path, upload_date, class, section)
                     VALUES (%s, %s, %s, %s, %s)
                     """,
-                    [title, f"study_materials/{filename}", datetime.datetime.now(), selected_class, selected_section]
+                    [title, f"study_materials/{filename}", datetime.now(), selected_class, selected_section]
                 )
             messages.success(request, "Study material uploaded successfully!")
         except Exception as e:
@@ -2105,7 +2106,7 @@ def teacher_study_materials_upload(request):
                     INSERT INTO study_materials (title, file_path, upload_date, class, section)
                     VALUES (%s, %s, %s, %s, %s)
                     """,
-                    [title, f"study_materials/{filename}", datetime.datetime.now(), selected_class, selected_section]
+                    [title, f"study_materials/{filename}", datetime.now(), selected_class, selected_section]
                 )
             messages.success(request, "Study material uploaded successfully!")
         except Exception as e:
@@ -5254,7 +5255,7 @@ from django.contrib import messages
 from django.db import connection, IntegrityError
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import datetime
+
 import json
 
 def teacher_portal(request):
@@ -5265,7 +5266,7 @@ def teacher_portal(request):
         messages.error(request, 'Please log in to access this page.')
         return redirect('teacher_login')
 
-    today_date = datetime.date.today().strftime('%Y-%m-%d')
+    today_date = datetime.now().date().strftime('%Y-%m-%d')  # Changed this line
     selected_date = request.GET.get('date', today_date)
     
     # Get all unique classes
@@ -5453,14 +5454,14 @@ def get_students_by_class_section(request):
     return JsonResponse({'students': students})
 
 
-from datetime import date as date_class
+
 
 def admin_attendance_portal(request):
     if not request.session.get('admin_id'):
         messages.error(request, 'Please log in to access this page.')
         return redirect('admin_login')
 
-    today_date = date_class.today().strftime('%Y-%m-%d')
+    today_date = datetime.now().date().strftime('%Y-%m-%d')
     selected_date = request.GET.get('date', today_date)
     
     with connection.cursor() as cursor:
@@ -5721,7 +5722,7 @@ def admin_generate_attendance_pdf(request):
     elements.append(Paragraph("Manavargal School Management System", header_style))
     elements.append(Paragraph("Admin Attendance Report", header_style))
     elements.append(Paragraph(f"Class: {selected_class} | Section: {selected_section} | Date: {selected_date}", subheader_style))
-    elements.append(Paragraph(f"Generated on: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", subheader_style))
+    elements.append(Paragraph(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", subheader_style))
     elements.append(Spacer(1, 0.25*inch))
     
     if data:
@@ -8581,8 +8582,8 @@ def parent_student_leave(request):
                 return redirect("parent_student_leave")
 
             try:
-                start_date = datetime.datetime.strptime(form_data["leave_start_date"], "%Y-%m-%d")
-                end_date = datetime.datetime.strptime(form_data["leave_end_date"], "%Y-%m-%d")
+                start_date = datetime.strptime(form_data["leave_start_date"], "%Y-%m-%d")
+                end_date = datetime.strptime(form_data["leave_end_date"], "%Y-%m-%d")
                 if start_date > end_date:
                     messages.error(request, "End date must be on or after start date.")
                     return redirect("parent_student_leave")
@@ -8710,7 +8711,7 @@ def parent_student_circular(request):
 
             if include_circular:
                 try:
-                    created_at = datetime.datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
+                    created_at = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
                     image_url = f"/media/circulars/{file}"  # Consistent path
                     print(f"Included circular: {file}, image_url: {image_url}, full_path: {full_path}")
                     display_target = "All" if target == "all" else f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
