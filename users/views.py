@@ -9237,7 +9237,7 @@ from django.utils import timezone
 def teacher_profile(request):
     if 'teacher_id' not in request.session:
         messages.error(request, "Please log in to view your profile.")
-        return redirect('login')  # Redirect to login page if not authenticated
+        return redirect('login')
 
     teacher_id = request.session['teacher_id']
     
@@ -9333,17 +9333,34 @@ def teacher_profile(request):
             messages.error(request, "An error occurred during upload.")
             return redirect('teacher_profile')
 
-    # Fetch teacher details
+    # Fetch comprehensive teacher details
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM teachers WHERE id = %s", [teacher_id])
+            cursor.execute("""
+                SELECT 
+                    t.id, t.name, t.email, t.subject, t.class_teacher_of, t.created_at,
+                    tp.full_name, tp.gender, tp.date_of_birth, tp.blood_group, tp.nationality,
+                    tp.mobile_number, tp.alternate_contact, tp.official_email,
+                    tp.residential_address, tp.city_state_pin,
+                    tp.emergency_contact_name, tp.emergency_contact_number,
+                    tp.designation, tp.department, tp.subjects_taught, tp.classes_assigned,
+                    tp.sections, tp.employee_type, tp.employment_status, tp.joining_date,
+                    tp.qualification, tp.specialization, tp.board_university, tp.year_of_passing,
+                    tp.bed_ctet_tet, tp.special_training, tp.workshops_attended,
+                    tp.is_class_teacher, tp.house_club_incharge, 
+                    tp.cocurricular_responsibilities, tp.exam_duties
+                FROM teachers t
+                LEFT JOIN teacher_profiles tp ON t.id = tp.teacher_id
+                WHERE t.id = %s
+            """, [teacher_id])
+            
             teacher = cursor.fetchone()
             
             if not teacher:
                 messages.error(request, "Teacher not found.")
                 return redirect('login')
 
-            # Convert tuple to dictionary for template
+            # Convert tuple to comprehensive dictionary for template
             teacher_data = {
                 'id': teacher[0],
                 'name': teacher[1],
@@ -9351,6 +9368,37 @@ def teacher_profile(request):
                 'subject': teacher[3],
                 'class_teacher_of': teacher[4],
                 'created_at': teacher[5],
+                'full_name': teacher[6] if teacher[6] else teacher[1],
+                'gender': teacher[7],
+                'date_of_birth': teacher[8],
+                'blood_group': teacher[9],
+                'nationality': teacher[10] if teacher[10] else 'Indian',
+                'mobile_number': teacher[11],
+                'alternate_contact': teacher[12],
+                'official_email': teacher[13] if teacher[13] else teacher[2],
+                'residential_address': teacher[14],
+                'city_state_pin': teacher[15],
+                'emergency_contact_name': teacher[16],
+                'emergency_contact_number': teacher[17],
+                'designation': teacher[18],
+                'department': teacher[19],
+                'subjects_taught': teacher[20],
+                'classes_assigned': teacher[21],
+                'sections': teacher[22],
+                'employee_type': teacher[23],
+                'employment_status': teacher[24] if teacher[24] else 'Active',
+                'joining_date': teacher[25],
+                'qualification': teacher[26],
+                'specialization': teacher[27],
+                'board_university': teacher[28],
+                'year_of_passing': teacher[29],
+                'bed_ctet_tet': teacher[30],
+                'special_training': teacher[31],
+                'workshops_attended': teacher[32],
+                'is_class_teacher': teacher[33] if teacher[33] else 'No',
+                'house_club_incharge': teacher[34],
+                'cocurricular_responsibilities': teacher[35],
+                'exam_duties': teacher[36],
             }
             profile_pic_url = profile_picture if profile_picture else f"{settings.MEDIA_URL}pfpicsteacher/default.jpg"
     except Exception as e:
