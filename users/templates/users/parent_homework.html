@@ -34,6 +34,8 @@
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
+            --info-color: #3b82f6;
+            --info-hover: #2563eb;
             --sidebar-bg: #f0f9f4;
             --sidebar-border: #a8d5c2;
             --white: #ffffff;
@@ -297,23 +299,39 @@
         }
 
         .file-link {
-            color: var(--primary-color);
+            flex: 1;
+            color: var(--white);
             text-decoration: none;
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
+            padding: 0.65rem 1rem;
+            border: none;
+            border-radius: 8px;
             font-weight: 500;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
+            text-align: center;
         }
 
-        .file-link:hover {
+        .view-link {
+            background: var(--info-color);
+        }
+
+        .view-link:hover {
+            background: var(--info-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .download-link {
             background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
+        }
+
+        .download-link:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .no-submissions {
@@ -361,6 +379,36 @@
             background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
+        }
+
+        .file-type-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 0.5rem;
+        }
+
+        .badge-pdf {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-doc {
+            background: #2563eb;
+            color: white;
+        }
+
+        .badge-excel {
+            background: #16a34a;
+            color: white;
+        }
+
+        .badge-image {
+            background: #9333ea;
+            color: white;
         }
 
         .icon {
@@ -576,6 +624,50 @@
                 </div>
             {% endif %}
 
+            <!-- Teacher Uploaded Homework Section (NEW) -->
+            <div class="section">
+                <h2><i class="fas fa-chalkboard-teacher icon"></i> Homework from Teachers</h2>
+                {% for hw in teacher_homework %}
+                <div class="homework-card">
+                    <h3>
+                        <i class="fas fa-file-alt"></i>
+                        {{ hw.title }}
+                        {% if hw.file_type == '.pdf' %}
+                            <span class="file-type-badge badge-pdf">PDF</span>
+                        {% elif hw.file_type == '.docx' %}
+                            <span class="file-type-badge badge-doc">DOCX</span>
+                        {% elif hw.file_type in '.xlsx,.xls' %}
+                            <span class="file-type-badge badge-excel">EXCEL</span>
+                        {% else %}
+                            <span class="file-type-badge badge-image">IMAGE</span>
+                        {% endif %}
+                    </h3>
+                    {% if hw.description %}
+                        <p><strong><i class="fas fa-align-left icon"></i> Description:</strong> {{ hw.description }}</p>
+                    {% endif %}
+                    {% if hw.subject %}
+                        <p><strong><i class="fas fa-book-open icon"></i> Subject:</strong> {{ hw.subject }}</p>
+                    {% endif %}
+                    {% if hw.due_date %}
+                        <p><strong><i class="fas fa-calendar-alt icon"></i> Due Date:</strong> {{ hw.due_date }}</p>
+                    {% endif %}
+                    <p><strong><i class="fas fa-clock icon"></i> Uploaded on:</strong> {{ hw.date }}</p>
+                    <div class="file-links">
+                        <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}" target="_blank" class="file-link view-link">
+                            <i class="fas fa-eye"></i> View File
+                        </a>
+                        <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}?download=true" class="file-link download-link">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="no-submissions">
+                    <i class="fas fa-inbox icon"></i> No homework assigned by teachers yet.
+                </div>
+                {% endfor %}
+            </div>
+
             <div class="section">
                 <h2><i class="fas fa-upload icon"></i> Submit Homework</h2>
                 <form method="POST" enctype="multipart/form-data">
@@ -603,10 +695,10 @@
                     <h3>{{ hw.title }}</h3>
                     <p><strong><i class="fas fa-calendar icon"></i> Submitted on:</strong> {{ hw.submission_date }}</p>
                     <div class="file-links">
-                        <a href="{% url 'serve_pdf' hw.file_path %}" target="_blank" class="file-link">
+                        <a href="{% url 'serve_pdf' hw.file_path %}" target="_blank" class="file-link view-link">
                             <i class="fas fa-eye icon"></i> View PDF
                         </a>
-                        <a href="{% url 'serve_pdf' hw.file_path %}?download=true" target="_blank" class="file-link">
+                        <a href="{% url 'serve_pdf' hw.file_path %}?download=true" target="_blank" class="file-link download-link">
                             <i class="fas fa-download icon"></i> Download PDF
                         </a>
                     </div>

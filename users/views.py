@@ -9509,6 +9509,7 @@ def parent_homework(request):
             messages.error(request, f"Error submitting homework: {str(e)}")
         return redirect("/parent-homework/")
 
+    # Fetch student's submitted homework
     try:
         with connection.cursor() as cursor:
             cursor.execute(
@@ -9528,8 +9529,93 @@ def parent_homework(request):
         messages.error(request, f"Error retrieving homework: {str(e)}")
         homework_list = []
 
+    # Fetch teacher-uploaded homework for this student's class/section
+    teacher_homework = []
+    HOMEWORK_DIR = os.path.join(settings.MEDIA_ROOT, 'teacher_homework')
+    
+    if os.path.exists(HOMEWORK_DIR) and student_class and student_section:
+        # Normalize student's class and section for comparison
+        normalized_student_class = normalize_value(student_class)
+        normalized_student_section = normalize_value(student_section)
+        
+        for file in os.listdir(HOMEWORK_DIR):
+            # Skip metadata files
+            if file.endswith('.txt'):
+                continue
+            
+            # Check for valid file extensions
+            if not any(file.lower().endswith(ext) for ext in ['.pdf', '.docx', '.xlsx', '.xls', '.jpg', '.jpeg', '.png', '.gif', '.webp']):
+                continue
+            
+            full_path = os.path.join(HOMEWORK_DIR, file)
+            if not os.path.exists(full_path):
+                continue
+
+            metadata_file = f"{file}.txt"
+            metadata_path = os.path.join(HOMEWORK_DIR, metadata_file)
+            
+            # Read metadata
+            if os.path.exists(metadata_path):
+                try:
+                    with open(metadata_path, 'r', encoding='utf-8') as f:
+                        lines = f.readlines()
+                        
+                        if len(lines) < 6:
+                            continue
+                        
+                        title = lines[0].strip() if len(lines) > 0 else "Untitled"
+                        description = lines[1].strip() if len(lines) > 1 else ""
+                        subject = lines[2].strip() if len(lines) > 2 else ""
+                        due_date = lines[3].strip() if len(lines) > 3 else ""
+                        target_type = lines[4].strip() if len(lines) > 4 else "all"
+                        teacher_id = lines[5].strip() if len(lines) > 5 else ""
+                        
+                        # Check if homework is for this student
+                        homework_for_student = False
+                        
+                        if target_type == 'all':
+                            # Homework is for all classes
+                            homework_for_student = True
+                        elif target_type == 'specific' and len(lines) >= 8:
+                            # Check if homework matches student's class and section
+                            hw_class = normalize_value(lines[6].strip())
+                            hw_section = normalize_value(lines[7].strip())
+                            
+                            if hw_class == normalized_student_class and hw_section == normalized_student_section:
+                                homework_for_student = True
+                        
+                        # If homework is for this student, add to list
+                        if homework_for_student:
+                            file_ext = os.path.splitext(file)[1].lower()
+                            upload_date = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%B %d, %Y at %I:%M %p')
+                            
+                            # Format due date if exists
+                            formatted_due_date = None
+                            if due_date:
+                                try:
+                                    formatted_due_date = datetime.strptime(due_date, '%Y-%m-%d').strftime('%B %d, %Y')
+                                except:
+                                    formatted_due_date = due_date
+                            
+                            teacher_homework.append({
+                                'title': title,
+                                'description': description if description else None,
+                                'subject': subject if subject else None,
+                                'due_date': formatted_due_date,
+                                'file_path': file,
+                                'file_type': file_ext,
+                                'date': upload_date,
+                            })
+                except Exception as e:
+                    print(f"Error reading metadata from {metadata_path}: {e}")
+                    continue
+    
+    # Sort teacher homework by newest first
+    teacher_homework = sorted(teacher_homework, key=lambda x: x['date'], reverse=True)
+
     return render(request, "users/parent_homework.html", {
         "homework_list": homework_list,
+        "teacher_homework": teacher_homework,
         "student_class": student_class,
         "student_section": student_section
     })
