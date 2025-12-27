@@ -1037,69 +1037,89 @@
                 </div>
 
                 <div id="markEntrySection" class="section">
-                    <h2><i class="fas fa-edit" style="color: #e67e22;"></i> Mark Entry</h2>
-                    <div id="alert" class="alert-message success"></div>
-                    <div class="form-group class-section">
+    <h2><i class="fas fa-edit" style="color: #e67e22;"></i> Mark Entry - Class {{ selected_class }}-{{ selected_section }}</h2>
+    
+    <!-- Show Assigned Class Clearly -->
+    <div style="background: #d4edda; padding: 1.5rem; border-radius: 12px; text-align: center; margin-bottom: 2rem; border: 3px solid var(--primary-color);">
+        <h3 style="color: var(--primary-color); margin: 0 0 1rem 0;">
+            <i class="fas fa-chalkboard-teacher"></i> Your Assigned Class
+        </h3>
+        <p style="font-size: 2rem; font-weight: bold; color: var(--primary-color); margin: 0;">
+            Class {{ selected_class }} - Section {{ selected_section }}
+        </p>
+        <p style="margin-top: 1rem; color: #495057; font-style: italic;">
+            You can only enter marks for this class.
+        </p>
+    </div>
+
+    <!-- Student Selection -->
+    <div class="form-group">
+        <label for="studentSelect">
+            <i class="fas fa-users" style="color: #9b59b6;"></i> 
+            Select Student ({{ students|length }} students)
+        </label>
+        <select id="studentSelect" required>
+            <option value="">-- Choose a student --</option>
+            {% for student in students %}
+                <option value="{{ student.id }}">
+                    {{ student.name }} (Roll: {{ student.roll_number }}
+                    {% if student.admission_number %}, Adm: {{ student.admission_number }}{% endif %})
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Subjects & Marks Input -->
+    <div id="marksInput">
+        {% if subjects %}
+            <div class="marks-entry-container">
+                <h3><i class="fas fa-edit"></i> Enter Marks for All Subjects</h3>
+                {% for sub in subjects %}
+                    <div class="subject-row">
                         <div>
-                            <label for="classSelect"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i> Class</label>
-                            <select id="classSelect" required>
-                                <option value="">Select Class</option>
-                                {% for class in classes %}
-                                    <option value="{{ class }}">{{ class }}</option>
-                                {% endfor %}
-                            </select>
+                            <label>{{ sub.name }} Marks</label>
+                            <input type="number" id="{{ sub.id }}-marks" min="0" max="{{ sub.max_marks }}" placeholder="Enter marks" required>
                         </div>
                         <div>
-                            <label for="sectionSelect"><i class="fas fa-th-large" style="color: #f39c12;"></i> Section</label>
-                            <select id="sectionSelect" required>
-                                <option value="">Select Section</option>
-                                {% for section in sections %}
-                                    <option value="{{ section }}">{{ section }}</option>
-                                {% endfor %}
-                            </select>
+                            <label>Max Marks</label>
+                            <input type="number" value="{{ sub.max_marks }}" readonly>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="studentSelect"><i class="fas fa-user" style="color: #9b59b6;"></i> Select Student</label>
-                        <select id="studentSelect" required>
-                            <option value="">Select Student</option>
-                        </select>
-                    </div>
-                    <div id="subjectSelection"></div>
-                    <div id="marksInput"></div>
-                    <div class="signature-section">
-                        <div class="form-group" style="flex: 1;">
-                            <label for="signaturePad"><i class="fas fa-signature" style="color: #3498db;"></i> Teacher Digital Signature</label>
-                            <canvas id="signaturePad" class="signature-pad" width="300" height="100"></canvas>
-                            <button id="clearSignature" class="button button-secondary">
-                                <i class="fas fa-eraser"></i> Clear Teacher Signature
-                            </button>
-                        </div>
-                        <div class="form-group" style="flex: 1;">
-                            <label for="principalSignaturePad"><i class="fas fa-signature" style="color: #3498db;"></i> Principal Digital Signature</label>
-                            <canvas id="principalSignaturePad" class="signature-pad" width="300" height="100"></canvas>
-                            <button id="clearPrincipalSignature" class="button button-secondary">
-                                <i class="fas fa-eraser"></i> Clear Principal Signature
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-group button-group">
-                        <button id="addSubject" class="button button-green">
-                            <i class="fas fa-plus"></i> Add Subject
-                        </button>
-                        <button id="deleteSubject" class="button button-red">
-                            <i class="fas fa-trash"></i> Delete Subject
-                        </button>
-                    </div>
-                    <div class="button-group">
-                        <button id="saveMarks" class="button button-primary">
-                            <i class="fas fa-save"></i> Save Marks
-                        </button>
-                        <button id="clearForm" class="button button-secondary">
-                            <i class="fas fa-times"></i> Clear Form
-                        </button>
-                    </div>
-                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="text-align: center; color: #dc3545;">No subjects found for this class.</p>
+        {% endif %}
+    </div>
+
+    <!-- Signatures -->
+    <div class="signature-section">
+        <div class="form-group" style="flex: 1;">
+            <label><i class="fas fa-signature" style="color: #3498db;"></i> Teacher Digital Signature</label>
+            <canvas id="signaturePad" class="signature-pad" width="300" height="100"></canvas>
+            <button id="clearSignature" class="button button-secondary">
+                <i class="fas fa-eraser"></i> Clear
+            </button>
+        </div>
+        <div class="form-group" style="flex: 1;">
+            <label><i class="fas fa-signature" style="color: #3498db;"></i> Principal Digital Signature</label>
+            <canvas id="principalSignaturePad" class="signature-pad" width="300" height="100"></canvas>
+            <button id="clearPrincipalSignature" class="button button-secondary">
+                <i class="fas fa-eraser"></i> Clear
+            </button>
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="button-group">
+        <button id="saveMarks" class="button button-primary">
+            <i class="fas fa-save"></i> Save Marks
+        </button>
+        <button id="clearForm" class="button button-secondary">
+            <i class="fas fa-times"></i> Clear Form
+        </button>
+    </div>
+</div>
 
                 <div id="progressCardSection" class="section" style="display: none;">
                     <h2><i class="fas fa-chart-bar" style="color: #27ae60;"></i> Digital Progress Card</h2>
