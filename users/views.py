@@ -5315,7 +5315,7 @@ def manage_teachers(request):
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT 
-                    t.id, t.name, t.email, t.subject, t.class_teacher_of, t.created_at, t.password,
+                    t.id, t.name, t.email, t.subject, t.class_teacher_of, t.created_at,
                     p.profile_pic_url,
                     tp.full_name, tp.gender, tp.date_of_birth, tp.blood_group, tp.nationality,
                     tp.mobile_number, tp.alternate_contact, tp.official_email,
@@ -5336,54 +5336,53 @@ def manage_teachers(request):
             teachers = []
             for row in cursor.fetchall():
                 teachers.append({
-                    # Basic teacher info
                     'id': row[0],
                     'name': row[1],
                     'email': row[2],
                     'subject': row[3] or 'N/A',
                     'class_teacher_of': row[4] if row[4] else 'Not Assigned',
                     'created_at': row[5],
-                    'password': row[6],
-                    'profile_pic_url': f"{settings.MEDIA_URL}{row[7]}" if row[7] else f"{settings.MEDIA_URL}pfpicsteacher/default.jpg",
+                    'profile_pic_url': f"{settings.MEDIA_URL}{row[6]}" if row[6] else f"{settings.MEDIA_URL}pfpicsteacher/default.jpg",
                     
-                    # Extended profile info
-                    'full_name': row[8] or row[1],
-                    'gender': row[9],
-                    'date_of_birth': row[10],
-                    'blood_group': row[11],
-                    'nationality': row[12] or 'Indian',
-                    'mobile_number': row[13],
-                    'alternate_contact': row[14],
-                    'official_email': row[15] or row[2],
-                    'residential_address': row[16],
-                    'city_state_pin': row[17],
-                    'emergency_contact_name': row[18],
-                    'emergency_contact_number': row[19],
-                    'designation': row[20],
-                    'department': row[21],
-                    'subjects_taught': row[22],
-                    'classes_assigned': row[23],
-                    'sections': row[24],
-                    'employee_type': row[25],
-                    'employment_status': row[26] or 'Active',
-                    'joining_date': row[27],
-                    'qualification': row[28],
-                    'specialization': row[29],
-                    'board_university': row[30],
-                    'year_of_passing': row[31],
-                    'bed_ctet_tet': row[32],
-                    'special_training': row[33],
-                    'workshops_attended': row[34],
-                    'is_class_teacher': row[35] or 'No',
-                    'house_club_incharge': row[36],
-                    'cocurricular_responsibilities': row[37],
-                    'exam_duties': row[38],
+                    # Extended profile
+                    'full_name': row[7] or row[1],
+                    'gender': row[8],
+                    'date_of_birth': row[9],
+                    'blood_group': row[10],
+                    'nationality': row[11] or 'Indian',
+                    'mobile_number': row[12],
+                    'alternate_contact': row[13],
+                    'official_email': row[14] or row[2],
+                    'residential_address': row[15],
+                    'city_state_pin': row[16],
+                    'emergency_contact_name': row[17],
+                    'emergency_contact_number': row[18],
+                    'designation': row[19],
+                    'department': row[20],
+                    'subjects_taught': row[21],
+                    'classes_assigned': row[22],
+                    'sections': row[23],
+                    'employee_type': row[24],
+                    'employment_status': row[25] or 'Active',
+                    'joining_date': row[26],
+                    'qualification': row[27],
+                    'specialization': row[28],
+                    'board_university': row[29],
+                    'year_of_passing': row[30],
+                    'bed_ctet_tet': row[31],
+                    'special_training': row[32],
+                    'workshops_attended': row[33],
+                    'is_class_teacher': row[34] or 'No',
+                    'house_club_incharge': row[35],
+                    'cocurricular_responsibilities': row[36],
+                    'exam_duties': row[37],
                 })
                 
         return render(request, 'users/manage_teachers_enhanced.html', {'teachers': teachers})
-    except Error as e:
+        
+    except Exception as e:
         messages.error(request, f'Error fetching teachers: {str(e)}')
-        return redirect('manage_teachers')
+        return render(request, 'users/manage_teachers_enhanced.html', {'teachers': []})
 
 
 def add_teacher(request):
@@ -5393,21 +5392,23 @@ def add_teacher(request):
     if request.method != 'POST':
         return redirect('manage_teachers')
 
-    # Basic required fields
+    # Required fields
     name = request.POST.get('name')
     email = request.POST.get('email')
     subject = request.POST.get('subject')
     password = request.POST.get('password')
-    class_teacher_of = request.POST.get('class_teacher_of') or None
-    
-    # Extended profile fields - Basic Details
+    class_teacher_of = request.POST.get('class_teacher_of').strip() or None
+
+    if not all([name, email, subject, password]):
+        messages.error(request, 'Name, Email, Subject, and Password are required.')
+        return redirect('manage_teachers')
+
+    # Optional extended fields
     full_name = request.POST.get('full_name') or name
     gender = request.POST.get('gender')
     date_of_birth = request.POST.get('date_of_birth') or None
     blood_group = request.POST.get('blood_group')
     nationality = request.POST.get('nationality') or 'Indian'
-    
-    # Contact Information
     mobile_number = request.POST.get('mobile_number')
     alternate_contact = request.POST.get('alternate_contact')
     official_email = request.POST.get('official_email') or email
@@ -5415,8 +5416,6 @@ def add_teacher(request):
     city_state_pin = request.POST.get('city_state_pin')
     emergency_contact_name = request.POST.get('emergency_contact_name')
     emergency_contact_number = request.POST.get('emergency_contact_number')
-    
-    # Employment Details
     designation = request.POST.get('designation')
     department = request.POST.get('department')
     subjects_taught = request.POST.get('subjects_taught')
@@ -5425,94 +5424,84 @@ def add_teacher(request):
     employee_type = request.POST.get('employee_type')
     employment_status = request.POST.get('employment_status') or 'Active'
     joining_date = request.POST.get('joining_date') or None
-    
-    # Qualifications
     qualification = request.POST.get('qualification')
     specialization = request.POST.get('specialization')
     board_university = request.POST.get('board_university')
     year_of_passing = request.POST.get('year_of_passing') or None
-    
-    # Professional Certifications
     bed_ctet_tet = request.POST.get('bed_ctet_tet')
     special_training = request.POST.get('special_training')
     workshops_attended = request.POST.get('workshops_attended')
-    
-    # Academic Responsibilities
     is_class_teacher = request.POST.get('is_class_teacher') or 'No'
     house_club_incharge = request.POST.get('house_club_incharge')
     cocurricular_responsibilities = request.POST.get('cocurricular_responsibilities')
     exam_duties = request.POST.get('exam_duties')
 
-    # Validation
-    if not all([name, email, subject, password]):
-        messages.error(request, 'Name, email, subject, and password are required.')
-        return redirect('manage_teachers')
-
     try:
         with transaction.atomic():
             with connection.cursor() as cursor:
-                # Check if email already exists
+                # Prevent duplicate email
                 cursor.execute("SELECT id FROM teachers WHERE email = %s", [email])
                 if cursor.fetchone():
-                    messages.error(request, 'Email already exists.')
+                    messages.error(request, 'This email is already registered.')
                     return redirect('manage_teachers')
 
-                # Insert into teachers table (basic login info)
-                cursor.execute(
-                    "INSERT INTO teachers (name, email, subject, class_teacher_of, password) "
-                    "VALUES (%s, %s, %s, %s, %s)",
-                    [name, email, subject, class_teacher_of, password]
-                )
+                # Prevent duplicate class_teacher_of if assigned
+                if class_teacher_of:
+                    cursor.execute("SELECT id FROM teachers WHERE class_teacher_of = %s", [class_teacher_of])
+                    if cursor.fetchone():
+                        messages.error(request, f'Class {class_teacher_of} is already assigned to another teacher.')
+                        return redirect('manage_teachers')
+
+                # Insert into teachers table
+                cursor.execute("""
+                    INSERT INTO teachers (name, email, subject, class_teacher_of, password)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, [name, email, subject, class_teacher_of, password])
+                
                 teacher_id = cursor.lastrowid
 
-                # Insert into admin_manage_users
+                # Insert into admin_manage_users for login
                 username = f"{name.lower().replace(' ', '')}_{teacher_id}"
-                cursor.execute(
-                    """INSERT INTO admin_manage_users 
-                    (name, email, username, password, role, created_at, updated_at) 
-                    VALUES (%s, %s, %s, %s, %s, NOW(), NOW())""",
-                    [name, email, username, password, 'teacher']
-                )
-                
-                # Insert comprehensive profile into teacher_profiles
+                cursor.execute("""
+                    INSERT INTO admin_manage_users 
+                    (name, email, username, password, role, created_at, updated_at)
+                    VALUES (%s, %s, %s, %s, 'teacher', NOW(), NOW())
+                """, [name, email, username, password])
+
+                # Insert into teacher_profiles
                 cursor.execute("""
                     INSERT INTO teacher_profiles (
                         teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
                         mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
-                        emergency_contact_name, emergency_contact_number,
-                        designation, department, subjects_taught, classes_assigned, sections,
-                        employee_type, employment_status, joining_date,
-                        qualification, specialization, board_university, year_of_passing,
+                        emergency_contact_name, emergency_contact_number, designation, department,
+                        subjects_taught, classes_assigned, sections, employee_type, employment_status,
+                        joining_date, qualification, specialization, board_university, year_of_passing,
                         bed_ctet_tet, special_training, workshops_attended,
                         is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
-                    ) VALUES (
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-                    )
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                              %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, [
                     teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
                     mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
-                    emergency_contact_name, emergency_contact_number,
-                    designation, department, subjects_taught, classes_assigned, sections,
-                    employee_type, employment_status, joining_date,
-                    qualification, specialization, board_university, year_of_passing,
+                    emergency_contact_name, emergency_contact_number, designation, department,
+                    subjects_taught, classes_assigned, sections, employee_type, employment_status,
+                    joining_date, qualification, specialization, board_university, year_of_passing,
                     bed_ctet_tet, special_training, workshops_attended,
                     is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
                 ])
 
-        messages.success(request, f'Teacher "{full_name}" added successfully with complete profile!')
-    except Error as e:
+        messages.success(request, f'Teacher "{full_name}" added successfully!')
+        
+    except IntegrityError as e:
+        messages.error(request, 'Database constraint violated (e.g., duplicate entry).')
+    except Exception as e:
         messages.error(request, f'Error adding teacher: {str(e)}')
+
     return redirect('manage_teachers')
 
 
 
 from django.db.utils import IntegrityError  # For better error handling
-
-from django.db import transaction, connection
-from django.contrib import messages
-from django.shortcuts import redirect
-from django.db.utils import IntegrityError
 
 def update_teacher(request):
     """
@@ -5523,7 +5512,6 @@ def update_teacher(request):
         return redirect('admin_login')
 
     if request.method != 'POST':
-        messages.error(request, 'Invalid request method.')
         return redirect('manage_teachers')
 
     teacher_id = request.POST.get('teacher_id')
@@ -5531,25 +5519,22 @@ def update_teacher(request):
         messages.error(request, 'Teacher ID is required.')
         return redirect('manage_teachers')
 
-    # Basic required fields
     name = request.POST.get('name', '').strip()
     email = request.POST.get('email', '').strip()
     subject = request.POST.get('subject', '').strip()
     password = request.POST.get('password', '').strip()
+    class_teacher_of = request.POST.get('class_teacher_of').strip() or None
 
     if not all([name, email, subject, password]):
         messages.error(request, 'Name, Email, Subject, and Password are required.')
         return redirect('manage_teachers')
 
-    # Optional fields with defaults
-    class_teacher_of = request.POST.get('class_teacher_of') or None
-
+    # Extended fields
     full_name = request.POST.get('full_name') or name
     gender = request.POST.get('gender')
     date_of_birth = request.POST.get('date_of_birth') or None
     blood_group = request.POST.get('blood_group')
     nationality = request.POST.get('nationality') or 'Indian'
-
     mobile_number = request.POST.get('mobile_number')
     alternate_contact = request.POST.get('alternate_contact')
     official_email = request.POST.get('official_email') or email
@@ -5557,7 +5542,6 @@ def update_teacher(request):
     city_state_pin = request.POST.get('city_state_pin')
     emergency_contact_name = request.POST.get('emergency_contact_name')
     emergency_contact_number = request.POST.get('emergency_contact_number')
-
     designation = request.POST.get('designation')
     department = request.POST.get('department')
     subjects_taught = request.POST.get('subjects_taught')
@@ -5566,7 +5550,6 @@ def update_teacher(request):
     employee_type = request.POST.get('employee_type')
     employment_status = request.POST.get('employment_status') or 'Active'
     joining_date = request.POST.get('joining_date') or None
-
     qualification = request.POST.get('qualification')
     specialization = request.POST.get('specialization')
     board_university = request.POST.get('board_university')
@@ -5574,7 +5557,6 @@ def update_teacher(request):
     bed_ctet_tet = request.POST.get('bed_ctet_tet')
     special_training = request.POST.get('special_training')
     workshops_attended = request.POST.get('workshops_attended')
-
     is_class_teacher = request.POST.get('is_class_teacher') or 'No'
     house_club_incharge = request.POST.get('house_club_incharge')
     cocurricular_responsibilities = request.POST.get('cocurricular_responsibilities')
@@ -5583,104 +5565,96 @@ def update_teacher(request):
     try:
         with transaction.atomic():
             with connection.cursor() as cursor:
-                # Get current email for admin_manage_users update
-                cursor.execute("SELECT email FROM teachers WHERE id = %s", [teacher_id])
+                # Get current data
+                cursor.execute("SELECT email, class_teacher_of FROM teachers WHERE id = %s", [teacher_id])
                 current = cursor.fetchone()
                 if not current:
                     messages.error(request, 'Teacher not found.')
                     return redirect('manage_teachers')
-                old_email = current[0]
+                old_email, old_class_teacher_of = current
 
-                # Check email uniqueness (excluding current teacher)
-                cursor.execute(
-                    "SELECT id FROM teachers WHERE email = %s AND id != %s",
-                    [email, teacher_id]
-                )
+                # Check email uniqueness (exclude self)
+                cursor.execute("SELECT id FROM teachers WHERE email = %s AND id != %s", [email, teacher_id])
                 if cursor.fetchone():
                     messages.error(request, 'This email is already used by another teacher.')
                     return redirect('manage_teachers')
 
-                # Update main teachers table
+                # Check class_teacher_of uniqueness (exclude self if same)
+                if class_teacher_of and class_teacher_of != old_class_teacher_of:
+                    cursor.execute("SELECT id FROM teachers WHERE class_teacher_of = %s AND id != %s", [class_teacher_of, teacher_id])
+                    if cursor.fetchone():
+                        messages.error(request, f'Class {class_teacher_of} is already assigned to another teacher.')
+                        return redirect('manage_teachers')
+
+                # Update teachers table
                 cursor.execute("""
                     UPDATE teachers 
-                    SET name = %s, email = %s, subject = %s, 
-                        class_teacher_of = %s, password = %s
+                    SET name = %s, email = %s, subject = %s, class_teacher_of = %s, password = %s
                     WHERE id = %s
                 """, [name, email, subject, class_teacher_of, password, teacher_id])
 
-                # Update admin_manage_users (for login consistency)
+                # Update admin_manage_users
                 cursor.execute("""
                     UPDATE admin_manage_users 
                     SET name = %s, email = %s, password = %s, updated_at = NOW()
                     WHERE email = %s AND role = 'teacher'
                 """, [name, email, password, old_email])
 
-                # Check if profile exists
-                cursor.execute(
-                    "SELECT 1 FROM teacher_profiles WHERE teacher_id = %s",
-                    [teacher_id]
-                )
-                profile_exists = cursor.fetchone()
-
-                if profile_exists:
-                    # Update existing profile - Explicit parameters to avoid any mismatch
+                # Update or Insert teacher_profiles
+                cursor.execute("SELECT 1 FROM teacher_profiles WHERE teacher_id = %s", [teacher_id])
+                if cursor.fetchone():
+                    # Update
                     cursor.execute("""
                         UPDATE teacher_profiles SET
-                            full_name = %s, gender = %s, date_of_birth = %s, blood_group = %s, 
-                            nationality = %s, mobile_number = %s, alternate_contact = %s, 
-                            official_email = %s, residential_address = %s, city_state_pin = %s,
+                            full_name = %s, gender = %s, date_of_birth = %s, blood_group = %s, nationality = %s,
+                            mobile_number = %s, alternate_contact = %s, official_email = %s,
+                            residential_address = %s, city_state_pin = %s,
                             emergency_contact_name = %s, emergency_contact_number = %s,
-                            designation = %s, department = %s, subjects_taught = %s, 
-                            classes_assigned = %s, sections = %s,
-                            employee_type = %s, employment_status = %s, joining_date = %s,
-                            qualification = %s, specialization = %s, board_university = %s, 
-                            year_of_passing = %s, bed_ctet_tet = %s, special_training = %s, 
-                            workshops_attended = %s, is_class_teacher = %s, house_club_incharge = %s, 
-                            cocurricular_responsibilities = %s, exam_duties = %s,
+                            designation = %s, department = %s, subjects_taught = %s,
+                            classes_assigned = %s, sections = %s, employee_type = %s,
+                            employment_status = %s, joining_date = %s,
+                            qualification = %s, specialization = %s, board_university = %s,
+                            year_of_passing = %s, bed_ctet_tet = %s, special_training = %s,
+                            workshops_attended = %s, is_class_teacher = %s,
+                            house_club_incharge = %s, cocurricular_responsibilities = %s, exam_duties = %s,
                             updated_at = NOW()
                         WHERE teacher_id = %s
                     """, [
                         full_name, gender, date_of_birth, blood_group, nationality,
-                        mobile_number, alternate_contact, official_email, residential_address, 
-                        city_state_pin, emergency_contact_name, emergency_contact_number,
-                        designation, department, subjects_taught, classes_assigned, sections,
-                        employee_type, employment_status, joining_date,
-                        qualification, specialization, board_university, year_of_passing,
-                        bed_ctet_tet, special_training, workshops_attended,
-                        is_class_teacher, house_club_incharge, cocurricular_responsibilities, 
-                        exam_duties,
-                        teacher_id  # Last parameter for WHERE clause
+                        mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
+                        emergency_contact_name, emergency_contact_number, designation, department,
+                        subjects_taught, classes_assigned, sections, employee_type, employment_status,
+                        joining_date, qualification, specialization, board_university, year_of_passing,
+                        bed_ctet_tet, special_training, workshops_attended, is_class_teacher,
+                        house_club_incharge, cocurricular_responsibilities, exam_duties, teacher_id
                     ])
                 else:
-                    # Insert new profile - Same explicit approach
+                    # Insert new profile
                     cursor.execute("""
                         INSERT INTO teacher_profiles (
                             teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
                             mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
-                            emergency_contact_name, emergency_contact_number,
-                            designation, department, subjects_taught, classes_assigned, sections,
-                            employee_type, employment_status, joining_date,
-                            qualification, specialization, board_university, year_of_passing,
+                            emergency_contact_name, emergency_contact_number, designation, department,
+                            subjects_taught, classes_assigned, sections, employee_type, employment_status,
+                            joining_date, qualification, specialization, board_university, year_of_passing,
                             bed_ctet_tet, special_training, workshops_attended,
                             is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
-                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                                  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                                  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """, [
                         teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
-                        mobile_number, alternate_contact, official_email, residential_address, 
-                        city_state_pin, emergency_contact_name, emergency_contact_number,
-                        designation, department, subjects_taught, classes_assigned, sections,
-                        employee_type, employment_status, joining_date,
-                        qualification, specialization, board_university, year_of_passing,
-                        bed_ctet_tet, special_training, workshops_attended,
-                        is_class_teacher, house_club_incharge, cocurricular_responsibilities, 
-                        exam_duties
+                        mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
+                        emergency_contact_name, emergency_contact_number, designation, department,
+                        subjects_taught, classes_assigned, sections, employee_type, employment_status,
+                        joining_date, qualification, specialization, board_university, year_of_passing,
+                        bed_ctet_tet, special_training, workshops_attended, is_class_teacher,
+                        house_club_incharge, cocurricular_responsibilities, exam_duties
                     ])
 
-        messages.success(request, f'Teacher "{full_name}" has been updated successfully!')
+        messages.success(request, f'Teacher "{full_name}" updated successfully!')
         
-    except IntegrityError as e:
-        messages.error(request, 'Database error: Possible duplicate entry or constraint violation.')
+    except IntegrityError:
+        messages.error(request, 'Cannot assign the same class to multiple teachers.')
     except Exception as e:
         messages.error(request, f'Error updating teacher: {str(e)}')
 
@@ -7487,119 +7461,87 @@ def teacher_mark_entry(request):
         messages.error(request, 'Please log in to access the mark entry system.')
         return redirect('teacher_login')
 
+    teacher_id = request.session['teacher_id']
+
     with connection.cursor() as cursor:
-        # Get teacher details
+        # Get teacher details including assigned class
         cursor.execute(
-            "SELECT subject, class_teacher_of, name FROM teachers WHERE id = %s",
-            [request.session['teacher_id']]
+            "SELECT name, subject, class_teacher_of FROM teachers WHERE id = %s",
+            [teacher_id]
         )
         teacher = cursor.fetchone()
         if not teacher:
             messages.error(request, 'Teacher not found.')
             return redirect('teacher_login')
 
-        role = 'classTeacher' if teacher[1] else 'subjectTeacher'
-        teacher_subject = teacher[0] if role == 'subjectTeacher' else None
-        teacher_name = teacher[2]
+        teacher_name, teacher_subject, class_teacher_of = teacher
+        is_class_teacher = bool(class_teacher_of)
 
-        # Get distinct classes and sections
-        cursor.execute("SELECT DISTINCT class FROM student_page1 ORDER BY class")
-        classes = [row[0] for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL ORDER BY section")
-        sections = [row[0] for row in cursor.fetchall()]
+        if not is_class_teacher:
+            messages.error(request, 'You are not assigned as a class teacher. Contact admin.')
+            return redirect('teacher_login')  # Or show a different page
 
-        # Default class and section
-        default_class = ''
-        default_section = ''
-        if teacher[1]:
-            try:
-                class_section = teacher[1].split('-')
-                if len(class_section) == 2:
-                    default_class, default_section = class_section
-                else:
-                    messages.warning(request, 'Invalid class_teacher_of format.')
-            except Exception as e:
-                messages.error(request, f'Error parsing class_teacher_of: {str(e)}')
+        # Parse assigned class-section
+        try:
+            assigned_class, assigned_section = class_teacher_of.split('-')
+        except:
+            messages.error(request, 'Invalid class assignment format.')
+            return redirect('teacher_login')
 
-        selected_class = request.GET.get('class', default_class or (classes[0] if classes else ''))
-        selected_section = request.GET.get('section', default_section or (sections[0] if sections else ''))
+        # Force teacher to only work on their assigned class/section
+        selected_class = assigned_class
+        selected_section = assigned_section
 
-        # Validate class and section
-        if selected_class not in classes or selected_section not in sections:
-            selected_class = classes[0] if classes else ''
-            selected_section = sections[0] if sections else ''
-            if not classes or not sections:
-                messages.warning(request, 'No classes or sections found.')
+        # Get subjects for this class
+        cursor.execute(
+            "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
+            [selected_class]
+        )
+        subjects = [{'id': r[0], 'name': r[1], 'max_marks': r[2]} for r in cursor.fetchall()]
 
-        # Get subjects for selected class
-        subjects = []
-        if selected_class:
-            cursor.execute(
-                "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
-                [selected_class]
-            )
-            subjects = [{'id': row[0], 'name': row[1], 'max_marks': row[2]} for row in cursor.fetchall()]
-
-        # Get students for selected class and section
+        # Get students
         students = []
-        if selected_class and selected_section:
-            try:
-                cursor.execute(
-                    """
-                    SELECT user_id AS id, name, roll_number, class, section, 
-                           COALESCE(admission_number, '') AS admission_number 
-                    FROM student_page1 
-                    WHERE class = %s AND section = %s 
+        try:
+            cursor.execute("""
+                SELECT user_id, name, roll_number, class, section,
+                       COALESCE(admission_number, '') AS admission_number
+                FROM student_page1
+                WHERE class = %s AND section = %s
+                ORDER BY name
+            """, [selected_class, selected_section])
+            students = [
+                {'id': r[0], 'name': r[1], 'roll_number': r[2],
+                 'class': r[3], 'section': r[4], 'admission_number': r[5]}
+                for r in cursor.fetchall()
+            ]
+        except Exception as e:
+            if "admission_number" in str(e):
+                cursor.execute("""
+                    SELECT user_id, name, roll_number, class, section
+                    FROM student_page1
+                    WHERE class = %s AND section = %s
                     ORDER BY name
-                    """,
-                    [selected_class, selected_section]
-                )
+                """, [selected_class, selected_section])
                 students = [
-                    {
-                        'id': row[0], 
-                        'name': row[1], 
-                        'roll_number': row[2], 
-                        'class': row[3], 
-                        'section': row[4], 
-                        'admission_number': row[5]
-                    } 
-                    for row in cursor.fetchall()
+                    {'id': r[0], 'name': r[1], 'roll_number': r[2],
+                     'class': r[3], 'section': r[4], 'admission_number': ''}
+                    for r in cursor.fetchall()
                 ]
-            except Exception as col_err:
-                if "Unknown column 'admission_number'" in str(col_err):
-                    cursor.execute(
-                        """
-                        SELECT user_id AS id, name, roll_number, class, section
-                        FROM student_page1 
-                        WHERE class = %s AND section = %s 
-                        ORDER BY name
-                        """,
-                        [selected_class, selected_section]
-                    )
-                    students = [
-                        {
-                            'id': row[0], 
-                            'name': row[1], 
-                            'roll_number': row[2], 
-                            'class': row[3], 
-                            'section': row[4], 
-                            'admission_number': ''
-                        } 
-                        for row in cursor.fetchall()
-                    ]
-                else:
-                    raise col_err
+
+        # Get actual class teacher name for display (should be this teacher)
+        cursor.execute("SELECT name FROM teachers WHERE class_teacher_of = %s", [class_teacher_of])
+        class_teacher_name = cursor.fetchone()[0] if cursor.fetchone() else teacher_name
 
     return render(request, 'users/teacher_mark_entry.html', {
         'subjects': subjects,
         'students': students,
         'teacher_name': teacher_name,
-        'role': role,
+        'class_teacher_name': class_teacher_name,
+        'role': 'classTeacher',
         'teacher_subject': teacher_subject,
-        'classes': classes,
-        'sections': sections,
         'selected_class': selected_class,
-        'selected_section': selected_section
+        'selected_section': selected_section,
+        'assigned_class_section': class_teacher_of,
     })
 
 
@@ -7616,214 +7558,104 @@ def teacher_save_marks(request):
 
     try:
         data = json.loads(request.body)
-        role = data.get('role')  # 'subjectTeacher' or 'classTeacher'
         student_id = data.get('studentId')
         marks_data = data.get('marks')
         class_name = data.get('class')
         section = data.get('section')
         principal_signature_data = data.get('principalSignature')
 
-        # Basic validation
-        if not all([role, student_id, marks_data, class_name, section, principal_signature_data]):
+        if not all([student_id, marks_data, class_name, section, principal_signature_data]):
             return JsonResponse({'success': False, 'message': 'Missing required fields.'}, status=400)
 
-        # Normalize marks_data
         if isinstance(marks_data, dict):
             marks_data = [marks_data]
-        if not marks_data:
-            return JsonResponse({'success': False, 'message': 'No marks data provided.'}, status=400)
 
         teacher_signature_data = marks_data[0].get('signature')
         if not teacher_signature_data:
-            return JsonResponse({'success': False, 'message': 'Teacher signature is required.'}, status=400)
+            return JsonResponse({'success': False, 'message': 'Teacher signature required.'}, status=400)
+
+        class_section_key = f"{class_name}-{section}"
 
         with connection.cursor() as cursor:
-            # Get logged-in teacher details
-            cursor.execute(
-                "SELECT subject, class_teacher_of FROM teachers WHERE id = %s",
-                [request.session['teacher_id']]
-            )
-            teacher_row = cursor.fetchone()
-            if not teacher_row:
-                return JsonResponse({'success': False, 'message': 'Teacher not found.'}, status=403)
+            teacher_id = request.session['teacher_id']
 
-            assigned_subject, is_class_teacher_str = teacher_row
-            expected_role = 'classTeacher' if is_class_teacher_str else 'subjectTeacher'
+            # Get teacher's assigned class
+            cursor.execute("SELECT class_teacher_of FROM teachers WHERE id = %s", [teacher_id])
+            row = cursor.fetchone()
+            if not row or row[0] != class_section_key:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'You are not authorized to enter marks for this class.'
+                }, status=403)
 
-            # Validate role matches teacher's actual role
-            if role != expected_role:
-                return JsonResponse({'success': False, 'message': 'Invalid role for this teacher.'}, status=403)
-
-            # Verify student is in the selected class/section
-            cursor.execute(
-                "SELECT user_id FROM student_page1 WHERE user_id = %s AND class = %s AND section = %s",
-                [student_id, class_name, section]
-            )
-            if not cursor.fetchone():
-                return JsonResponse({'success': False, 'message': 'Student not found in specified class/section.'}, status=400)
-
-            # === SIGNATURE HANDLING: Must be assigned as class teacher ===
-            class_section_key = f"{class_name}-{section}"
-            
-            # For teachers, they MUST be assigned as class teacher
-            cursor.execute(
-                "SELECT id FROM teachers WHERE class_teacher_of = %s",
-                [class_section_key]
-            )
+            # Find the class teacher ID (should be this teacher)
+            cursor.execute("SELECT id FROM teachers WHERE class_teacher_of = %s", [class_section_key])
             class_teacher_row = cursor.fetchone()
-            
             if not class_teacher_row:
                 return JsonResponse({
                     'success': False,
-                    'message': f'No class teacher assigned for {class_section_key}. Please contact admin to assign a class teacher first.'
+                    'message': 'No class teacher assigned. Contact admin.'
                 }, status=400)
-
             class_teacher_id = class_teacher_row[0]
 
-            # Save Teacher Signature under the CLASS TEACHER's ID
-            cursor.execute(
-                """INSERT INTO teacher_signature (teacher_id, signature) 
-                   VALUES (%s, %s) 
-                   ON DUPLICATE KEY UPDATE signature = %s""",
-                [class_teacher_id, teacher_signature_data, teacher_signature_data]
-            )
+            # === CORRECT: Use composite key (teacher_id, class_section) ===
+            cursor.execute("""
+                INSERT INTO teacher_signature (teacher_id, class_section, signature)
+                VALUES (%s, %s, %s)
+                ON DUPLICATE KEY UPDATE signature = %s
+            """, [class_teacher_id, class_section_key, teacher_signature_data, teacher_signature_data])
 
-            # Save Principal Signature globally (fixed principal_id = 1)
-            cursor.execute(
-                """INSERT INTO principal_signature (principal_id, signature) 
-                   VALUES (1, %s) 
-                   ON DUPLICATE KEY UPDATE signature = %s""",
-                [principal_signature_data, principal_signature_data]
-            )
+            # Save principal signature
+            cursor.execute("""
+                INSERT INTO principal_signature (principal_id, signature)
+                VALUES (1, %s)
+                ON DUPLICATE KEY UPDATE signature = %s
+            """, [principal_signature_data, principal_signature_data])
 
-            # Grade calculation
+            # Grade function
             def calculate_grade(marks, max_marks):
-                if max_marks == 0:
-                    return 'E'
-                percentage = (marks / max_marks) * 100
-                if percentage >= 80:
-                    return 'A'
-                elif percentage >= 60:
-                    return 'B'
-                elif percentage >= 40:
-                    return 'C'
-                elif percentage >= 33:
-                    return 'D'
-                else:
-                    return 'E'
+                if max_marks == 0: return 'E'
+                p = (marks / max_marks) * 100
+                if p >= 80: return 'A'
+                elif p >= 60: return 'B'
+                elif p >= 40: return 'C'
+                elif p >= 33: return 'D'
+                else: return 'E'
 
-            marks_updated = False
-            marks_inserted = False
-
-            # Subject Teacher: Only one subject allowed
-            if role == 'subjectTeacher':
-                if len(marks_data) > 1:
-                    return JsonResponse({'success': False, 'message': 'Subject teachers can only submit one subject.'}, status=400)
-
-                entry = marks_data[0]
+            # Save all subject marks
+            for entry in marks_data:
                 subject_id = entry.get('subjectId')
                 marks_val = entry.get('marks')
                 max_marks_val = entry.get('maxMarks')
-
                 if not all([subject_id, marks_val is not None, max_marks_val]):
-                    return JsonResponse({'success': False, 'message': 'Missing subject or marks data.'}, status=400)
-
-                # Verify teacher is assigned to this subject
-                cursor.execute(
-                    "SELECT id FROM school_subjects WHERE id = %s AND class = %s AND name = %s",
-                    [subject_id, class_name, assigned_subject]
-                )
-                if not cursor.fetchone():
-                    return JsonResponse({'success': False, 'message': 'You are not authorized to enter marks for this subject.'}, status=403)
+                    continue
 
                 marks = int(marks_val)
                 max_marks = int(max_marks_val)
-                if marks < 0 or marks > max_marks or max_marks < 1:
-                    return JsonResponse({'success': False, 'message': 'Invalid marks value.'}, status=400)
+                if marks < 0 or marks > max_marks:
+                    continue
+
+                # Verify subject belongs to class
+                cursor.execute("SELECT id FROM school_subjects WHERE id = %s AND class = %s",
+                               [subject_id, class_name])
+                if not cursor.fetchone():
+                    continue
 
                 grade = calculate_grade(marks, max_marks)
 
-                # Check if marks exist
-                cursor.execute(
-                    "SELECT id FROM school_marks WHERE student_id = %s AND subject_id = %s",
-                    [student_id, subject_id]
-                )
-                existing = cursor.fetchone()
-
-                cursor.execute(
-                    """INSERT INTO school_marks (student_id, subject_id, marks, max_marks, grade)
-                       VALUES (%s, %s, %s, %s, %s)
-                       ON DUPLICATE KEY UPDATE marks=%s, max_marks=%s, grade=%s""",
-                    [student_id, subject_id, marks, max_marks, grade, marks, max_marks, grade]
-                )
-
-                if existing:
-                    marks_updated = True
-                else:
-                    marks_inserted = True
-
-            # Class Teacher: Can enter all subjects
-            else:
-                for entry in marks_data:
-                    subject_id = entry.get('subjectId')
-                    marks_val = entry.get('marks')
-                    max_marks_val = entry.get('maxMarks')
-
-                    if not all([subject_id, marks_val is not None, max_marks_val]):
-                        return JsonResponse({'success': False, 'message': 'Invalid data in marks entry.'}, status=400)
-
-                    cursor.execute(
-                        "SELECT id FROM school_subjects WHERE id = %s AND class = %s",
-                        [subject_id, class_name]
-                    )
-                    if not cursor.fetchone():
-                        return JsonResponse({'success': False, 'message': 'Subject not valid for this class.'}, status=400)
-
-                    marks = int(marks_val)
-                    max_marks = int(max_marks_val)
-                    if marks < 0 or marks > max_marks or max_marks < 1:
-                        return JsonResponse({'success': False, 'message': 'Invalid marks entered.'}, status=400)
-
-                    grade = calculate_grade(marks, max_marks)
-
-                    # Check if marks exist
-                    cursor.execute(
-                        "SELECT id FROM school_marks WHERE student_id = %s AND subject_id = %s",
-                        [student_id, subject_id]
-                    )
-                    existing = cursor.fetchone()
-
-                    cursor.execute(
-                        """INSERT INTO school_marks (student_id, subject_id, marks, max_marks, grade)
-                           VALUES (%s, %s, %s, %s, %s)
-                           ON DUPLICATE KEY UPDATE marks=%s, max_marks=%s, grade=%s""",
-                        [student_id, subject_id, marks, max_marks, grade, marks, max_marks, grade]
-                    )
-
-                    if existing:
-                        marks_updated = True
-                    else:
-                        marks_inserted = True
+                cursor.execute("""
+                    INSERT INTO school_marks (student_id, subject_id, marks, max_marks, grade)
+                    VALUES (%s, %s, %s, %s, %s)
+                    ON DUPLICATE KEY UPDATE marks=%s, max_marks=%s, grade=%s
+                """, [student_id, subject_id, marks, max_marks, grade,
+                      marks, max_marks, grade])
 
             connection.commit()
+            return JsonResponse({'success': True, 'message': 'Marks and signatures saved successfully!'})
 
-            # Success message
-            if marks_updated and marks_inserted:
-                message = 'Marks saved successfully! Some updated, some newly added.'
-            elif marks_updated:
-                message = 'Marks updated successfully!'
-            else:
-                message = 'Marks saved successfully!'
-
-            return JsonResponse({'success': True, 'message': message})
-
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'message': 'Invalid JSON data.'}, status=400)
-    except ValueError:
-        return JsonResponse({'success': False, 'message': 'Invalid number format in marks.'}, status=400)
     except Exception as e:
         connection.rollback()
-        return JsonResponse({'success': False, 'message': f'Error saving marks: {str(e)}'}, status=500)
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
 
 def teacher_add_subject(request):
     if 'teacher_id' not in request.session:
