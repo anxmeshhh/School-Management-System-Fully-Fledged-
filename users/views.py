@@ -5293,11 +5293,7 @@ def bulk_upload(request):
 
 
 # users/views.py
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.db import connection, transaction
-from django.conf import settings
-from mysql.connector import Error
+
 
 
 from django.shortcuts import render, redirect
@@ -5510,30 +5506,45 @@ def add_teacher(request):
     return redirect('manage_teachers')
 
 
+
+from django.db.utils import IntegrityError  # For better error handling
+
 def update_teacher(request):
     """
     Handles updating an existing teacher's comprehensive profile.
     """
+    if 'admin_id' not in request.session:
+        messages.error(request, 'Please log in to access this page.')
+        return redirect('admin_login')
+
     if request.method != 'POST':
+        messages.error(request, 'Invalid request method.')
         return redirect('manage_teachers')
 
     teacher_id = request.POST.get('teacher_id')
-    
-    # Basic fields
-    name = request.POST.get('name')
-    email = request.POST.get('email')
-    subject = request.POST.get('subject')
-    password = request.POST.get('password')
-    class_teacher_of = request.POST.get('class_teacher_of') or None
-    
-    # Extended profile fields - Basic Details
+    if not teacher_id:
+        messages.error(request, 'Teacher ID is required.')
+        return redirect('manage_teachers')
+
+    # Basic required fields
+    name = request.POST.get('name', '').strip()
+    email = request.POST.get('email', '').strip()
+    subject = request.POST.get('subject', '').strip()
+    password = request.POST.get('password', '').strip()
+
+    if not all([name, email, subject, password]):
+        messages.error(request, 'Name, Email, Subject, and Password are required.')
+        return redirect('manage_teachers')
+
+    # Optional fields with defaults
+    class_teacher_of = request.POST.get('class_teacher_of') or None  # Can be empty → None
+
     full_name = request.POST.get('full_name') or name
     gender = request.POST.get('gender')
     date_of_birth = request.POST.get('date_of_birth') or None
     blood_group = request.POST.get('blood_group')
     nationality = request.POST.get('nationality') or 'Indian'
-    
-    # Contact Information
+
     mobile_number = request.POST.get('mobile_number')
     alternate_contact = request.POST.get('alternate_contact')
     official_email = request.POST.get('official_email') or email
@@ -5541,8 +5552,7 @@ def update_teacher(request):
     city_state_pin = request.POST.get('city_state_pin')
     emergency_contact_name = request.POST.get('emergency_contact_name')
     emergency_contact_number = request.POST.get('emergency_contact_number')
-    
-    # Employment Details
+
     designation = request.POST.get('designation')
     department = request.POST.get('department')
     subjects_taught = request.POST.get('subjects_taught')
@@ -5551,74 +5561,75 @@ def update_teacher(request):
     employee_type = request.POST.get('employee_type')
     employment_status = request.POST.get('employment_status') or 'Active'
     joining_date = request.POST.get('joining_date') or None
-    
-    # Qualifications
+
     qualification = request.POST.get('qualification')
     specialization = request.POST.get('specialization')
     board_university = request.POST.get('board_university')
     year_of_passing = request.POST.get('year_of_passing') or None
-    
-    # Professional Certifications
     bed_ctet_tet = request.POST.get('bed_ctet_tet')
     special_training = request.POST.get('special_training')
     workshops_attended = request.POST.get('workshops_attended')
-    
-    # Academic Responsibilities
+
     is_class_teacher = request.POST.get('is_class_teacher') or 'No'
     house_club_incharge = request.POST.get('house_club_incharge')
     cocurricular_responsibilities = request.POST.get('cocurricular_responsibilities')
     exam_duties = request.POST.get('exam_duties')
 
-    # Validation
-    if not all([teacher_id, name, email, subject, password]):
-        messages.error(request, 'All required fields are mandatory.')
-        return redirect('manage_teachers')
-
     try:
         with transaction.atomic():
             with connection.cursor() as cursor:
-                # Get current teacher
+                # Get current email for admin_manage_users update
                 cursor.execute("SELECT email FROM teachers WHERE id = %s", [teacher_id])
-                teacher = cursor.fetchone()
-                if not teacher:
+                current = cursor.fetchone()
+                if not current:
                     messages.error(request, 'Teacher not found.')
                     return redirect('manage_teachers')
+                old_email = current[0]
 
-                old_email = teacher[0]
-
-                # Check email conflict
+                # Check email uniqueness (excluding current teacher)
                 cursor.execute(
                     "SELECT id FROM teachers WHERE email = %s AND id != %s",
                     [email, teacher_id]
                 )
                 if cursor.fetchone():
-                    messages.error(request, 'Email already exists.')
+                    messages.error(request, 'This email is already used by another teacher.')
                     return redirect('manage_teachers')
 
-                # Update teachers table
-                cursor.execute(
-                    """UPDATE teachers 
-                    SET name = %s, email = %s, subject = %s, class_teacher_of = %s, password = %s 
-                    WHERE id = %s""",
-                    [name, email, subject, class_teacher_of, password, teacher_id]
-                )
+                # Update main teachers table
+                cursor.execute("""
+                    UPDATE teachers 
+                    SET name = %s, email = %s, subject = %s, 
+                        class_teacher_of = %s, password = %s
+                    WHERE id = %s
+                """, [name, email, subject, class_teacher_of, password, teacher_id])
 
-                # Update admin_manage_users
+                # Update admin_manage_users (for login consistency)
+                cursor.execute("""
+                    UPDATE admin_manage_users 
+                    SET name = %s, email = %s, password = %s, updated_at = NOW()
+                    WHERE email = %s AND role = 'teacher'
+                """, [name, email, password, old_email])
+
+                # Update or Insert into teacher_profiles
                 cursor.execute(
-                    """UPDATE admin_manage_users 
-                    SET name = %s, email = %s, password = %s, updated_at = NOW() 
-                    WHERE email = %s AND role = 'teacher'""",
-                    [name, email, password, old_email]
-                )
-                
-                # Update or Insert teacher_profiles
-                cursor.execute(
-                    "SELECT teacher_id FROM teacher_profiles WHERE teacher_id = %s",
+                    "SELECT 1 FROM teacher_profiles WHERE teacher_id = %s",
                     [teacher_id]
                 )
-                
-                if cursor.fetchone():
-                    # Update existing profile
+                profile_exists = cursor.fetchone()
+
+                profile_data = [
+                    teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
+                    mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
+                    emergency_contact_name, emergency_contact_number,
+                    designation, department, subjects_taught, classes_assigned, sections,
+                    employee_type, employment_status, joining_date,
+                    qualification, specialization, board_university, year_of_passing,
+                    bed_ctet_tet, special_training, workshops_attended,
+                    is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
+                ]
+
+                if profile_exists:
+                    # Update
                     cursor.execute("""
                         UPDATE teacher_profiles SET
                             full_name = %s, gender = %s, date_of_birth = %s, blood_group = %s, nationality = %s,
@@ -5634,19 +5645,9 @@ def update_teacher(request):
                             cocurricular_responsibilities = %s, exam_duties = %s,
                             updated_at = NOW()
                         WHERE teacher_id = %s
-                    """, [
-                        full_name, gender, date_of_birth, blood_group, nationality,
-                        mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
-                        emergency_contact_name, emergency_contact_number,
-                        designation, department, subjects_taught, classes_assigned, sections,
-                        employee_type, employment_status, joining_date,
-                        qualification, specialization, board_university, year_of_passing,
-                        bed_ctet_tet, special_training, workshops_attended,
-                        is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties,
-                        teacher_id
-                    ])
+                    """, profile_data[1:] + [teacher_id])  # Skip teacher_id in VALUES, add at end for WHERE
                 else:
-                    # Insert new profile
+                    # Insert
                     cursor.execute("""
                         INSERT INTO teacher_profiles (
                             teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
@@ -5657,24 +5658,17 @@ def update_teacher(request):
                             qualification, specialization, board_university, year_of_passing,
                             bed_ctet_tet, special_training, workshops_attended,
                             is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
-                        ) VALUES (
-                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-                        )
-                    """, [
-                        teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
-                        mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
-                        emergency_contact_name, emergency_contact_number,
-                        designation, department, subjects_taught, classes_assigned, sections,
-                        employee_type, employment_status, joining_date,
-                        qualification, specialization, board_university, year_of_passing,
-                        bed_ctet_tet, special_training, workshops_attended,
-                        is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
-                    ])
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                                  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, profile_data)
 
-        messages.success(request, f'Teacher "{full_name}" updated successfully!')
-    except Error as e:
+        messages.success(request, f'Teacher "{full_name}" has been updated successfully!')
+        
+    except IntegrityError as e:
+        messages.error(request, 'Database error: Possible duplicate entry or constraint violation.')
+    except Exception as e:
         messages.error(request, f'Error updating teacher: {str(e)}')
+
     return redirect('manage_teachers')
 
 
