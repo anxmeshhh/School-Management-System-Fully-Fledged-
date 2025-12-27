@@ -6967,7 +6967,6 @@ from django.db import connection
 import json
 
 
-
 def mark_entry(request):
     # Support both Admin and Teacher login
     if 'admin_id' in request.session:
@@ -6978,132 +6977,122 @@ def mark_entry(request):
         user_id = request.session['teacher_id']
     else:
         messages.error(request, 'Please log in to access the mark entry system.')
-        return redirect('admin_login')  # or teacher_login — adjust as needed
+        return redirect('admin_login')  # or your login URL
 
     with connection.cursor() as cursor:
-        # Fetch user name
+        # === Fetch current user name safely ===
         if user_type == 'admin':
             cursor.execute("SELECT full_name FROM admins WHERE id = %s", [user_id])
-            full_name = cursor.fetchone()[0] if cursor.fetchone() else 'Admin'
-            teacher_name = 'Admin'  # Will be shown only if no class teacher found
-            role = 'classTeacher'   # Admins have full access
-        else:
+            row = cursor.fetchone()
+            display_name = row[0] if row and row[0] else 'Admin'
+            role = 'classTeacher'
+        else:  # teacher
             cursor.execute("SELECT name, class_teacher_of FROM teachers WHERE id = %s", [user_id])
-            teacher_row = cursor.fetchone()
-            if not teacher_row:
+            row = cursor.fetchone()
+            if not row:
                 messages.error(request, 'Teacher not found.')
                 return redirect('teacher_login')  # adjust URL name
-            full_name, assigned_class = teacher_row
-            teacher_name = full_name
+            display_name, assigned_class_section = row
             role = 'classTeacher'
 
         # Get distinct classes and sections
         cursor.execute("SELECT DISTINCT class FROM student_page1 ORDER BY class")
-        classes = [row[0] for row in cursor.fetchall()]
+        classes = [row[0] for row in cursor.fetchall() if row[0]]
 
         cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL ORDER BY section")
-        sections = [row[0] for row in cursor.fetchall()]
-
-        # Get selected class/section from GET
-        selected_class = request.GET.get('class', classes[0] if classes else '')
-        selected_section = request.GET.get('section', sections[0] if sections else '')
-
-        # Validate selection
-        if selected_class and selected_class not in classes:
-            selected_class = classes[0] if classes else ''
-        if selected_section and selected_section not in sections:
-            selected_section = sections[0] if sections else ''
+        sections = [row[0] for row in cursor.fetchall() if row[0]]
 
         if not classes:
             messages.warning(request, 'No classes found in the system.')
-            subjects = []
-            students = []
-            class_teacher_name = None
+            return render(request, 'users/mark.html', {
+                'subjects': [], 'students': [], 'classes': [], 'sections': [],
+                'selected_class': '', 'selected_section': '',
+                'teacher_name': display_name, 'class_teacher_name': None,
+                'role': role, 'user_type': user_type
+            })
+
+        # Selected class/section from GET
+        selected_class = request.GET.get('class', classes[0])
+        selected_section = request.GET.get('section', sections[0] if sections else '')
+
+        # Validate
+        if selected_class not in classes:
+            selected_class = classes[0]
+        if selected_section not in sections:
+            selected_section = sections[0] if sections else ''
+
+        class_section_key = f"{selected_class}-{selected_section}"
+
+        # === Find assigned class teacher name for display ===
+        cursor.execute("SELECT name FROM teachers WHERE class_teacher_of = %s", [class_section_key])
+        class_teacher_row = cursor.fetchone()
+        class_teacher_name = class_teacher_row[0] if class_teacher_row else None
+
+        # === Restrict teachers to their own class ===
+        if user_type == 'teacher':
+            if assigned_class_section != class_section_key:
+                messages.error(request, f'You can only enter marks for your assigned class: {assigned_class_section or "None"}.')
+                subjects = []
+                students = []
+            else:
+                # Allowed
+                subjects = []
+                students = []
         else:
-            class_section_key = f"{selected_class}-{selected_section}"
-
-            # === FIND THE ASSIGNED CLASS TEACHER NAME (for display) ===
-            cursor.execute("""
-                SELECT name FROM teachers 
-                WHERE class_teacher_of = %s
-            """, [class_section_key])
-            class_teacher_row = cursor.fetchone()
-            class_teacher_name = class_teacher_row[0] if class_teacher_row else None
-
-            # If teacher is logged in, restrict to their assigned class only
-            if user_type == 'teacher':
-                if assigned_class != class_section_key:
-                    messages.error(request, f'You are only authorized to enter marks for your assigned class: {assigned_class or "None"}.')
-                    # Optionally redirect or show empty
-                    subjects = []
-                    students = []
-                else:
-                    # Teacher is entering for their own class → all good
-                    pass
-
-            # Get subjects
+            # Admin can see everything
             subjects = []
-            if selected_class:
-                cursor.execute(
-                    "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
-                    [selected_class]
-                )
-                subjects = [{'id': r[0], 'name': r[1], 'max_marks': r[2]} for r in cursor.fetchall()]
-
-            # Get students
             students = []
-            if selected_class and selected_section:
-                try:
+
+        # === Get subjects ===
+        if selected_class:
+            cursor.execute(
+                "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
+                [selected_class]
+            )
+            subjects = [{'id': r[0], 'name': r[1], 'max_marks': r[2]} for r in cursor.fetchall()]
+
+        # === Get students ===
+        if selected_class and selected_section:
+            try:
+                cursor.execute("""
+                    SELECT user_id, name, roll_number, class, section,
+                           COALESCE(admission_number, '') AS admission_number
+                    FROM student_page1
+                    WHERE class = %s AND section = %s
+                    ORDER BY name
+                """, [selected_class, selected_section])
+                students = [
+                    {'id': r[0], 'name': r[1], 'roll_number': r[2],
+                     'class': r[3], 'section': r[4], 'admission_number': r[5]}
+                    for r in cursor.fetchall()
+                ]
+            except Exception as e:
+                if "admission_number" in str(e):
                     cursor.execute("""
-                        SELECT user_id, name, roll_number, class, section,
-                               COALESCE(admission_number, '') AS admission_number
+                        SELECT user_id, name, roll_number, class, section
                         FROM student_page1
                         WHERE class = %s AND section = %s
                         ORDER BY name
                     """, [selected_class, selected_section])
                     students = [
-                        {
-                            'id': r[0],
-                            'name': r[1],
-                            'roll_number': r[2],
-                            'class': r[3],
-                            'section': r[4],
-                            'admission_number': r[5]
-                        } for r in cursor.fetchall()
+                        {'id': r[0], 'name': r[1], 'roll_number': r[2],
+                         'class': r[3], 'section': r[4], 'admission_number': ''}
+                        for r in cursor.fetchall()
                     ]
-                except Exception as e:
-                    if "admission_number" in str(e):
-                        cursor.execute("""
-                            SELECT user_id, name, roll_number, class, section
-                            FROM student_page1
-                            WHERE class = %s AND section = %s
-                            ORDER BY name
-                        """, [selected_class, selected_section])
-                        students = [
-                            {
-                                'id': r[0],
-                                'name': r[1],
-                                'roll_number': r[2],
-                                'class': r[3],
-                                'section': r[4],
-                                'admission_number': ''
-                            } for r in cursor.fetchall()
-                        ]
-                    else:
-                        raise
+                else:
+                    raise
 
     context = {
         'subjects': subjects,
         'students': students,
-        'teacher_name': teacher_name,                    # Name of logged-in user
-        'class_teacher_name': class_teacher_name,        # NEW: Name of actual class teacher (for display)
-        'admin_name': full_name if user_type == 'admin' else None,
+        'teacher_name': display_name,           # Name of logged-in person
+        'class_teacher_name': class_teacher_name,  # Actual class teacher (for report)
         'role': role,
         'classes': classes,
         'sections': sections,
         'selected_class': selected_class,
         'selected_section': selected_section,
-        'user_type': user_type,                          # Helpful in template
+        'user_type': user_type,
     }
 
     return render(request, 'users/mark.html', context)
