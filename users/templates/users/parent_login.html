@@ -315,6 +315,30 @@ body::before {
     transform: translateY(-1px);
 }
 
+/* Remember Me Checkbox */
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+    margin-top: 4px;
+}
+
+.remember-me input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary-green);
+}
+
+.remember-me label {
+    color: var(--text-dark);
+    font-size: var(--font-sm);
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+}
+
 /* Toggle Password Icon */
 .toggle-password {
     position: absolute;
@@ -553,6 +577,15 @@ body::before {
     body {
         padding: 10px;
     }
+
+    .remember-me {
+        font-size: var(--font-xs);
+    }
+
+    .remember-me input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -593,6 +626,10 @@ body::before {
                         <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                     </svg>
                 </div>
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <label for="rememberMe">Remember Me</label>
+                </div>
                 <button type="submit" class="login-btn">Login</button>
             </form>
         </div>
@@ -606,6 +643,19 @@ body::before {
     </div>
 
     <script>
+        // Remember Me Functionality - Load saved credentials on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedUsername = localStorage.getItem('rememberedParentUsername');
+            const savedPassword = localStorage.getItem('rememberedParentPassword');
+            const rememberMeChecked = localStorage.getItem('rememberParent') === 'true';
+
+            if (rememberMeChecked && savedUsername && savedPassword) {
+                document.getElementById('username').value = savedUsername;
+                document.getElementById('password').value = savedPassword;
+                document.getElementById('rememberMe').checked = true;
+            }
+        });
+
         function togglePassword(fieldId) {
             const passwordInput = document.getElementById(fieldId);
             const toggleButton = passwordInput.nextElementSibling;
@@ -622,6 +672,8 @@ body::before {
             event.preventDefault();
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value.trim();
+            const rememberMe = document.getElementById("rememberMe").checked;
+            
             if (!username || !password) {
                 const errorMsg = document.getElementById("errorMessage");
                 errorMsg.style.display = "block";
@@ -629,10 +681,24 @@ body::before {
                 errorMsg.textContent = "Username and password cannot be empty.";
                 return;
             }
+
+            // Save credentials if Remember Me is checked
+            if (rememberMe) {
+                localStorage.setItem('rememberedParentUsername', username);
+                localStorage.setItem('rememberedParentPassword', password);
+                localStorage.setItem('rememberParent', 'true');
+            } else {
+                // Clear saved credentials if Remember Me is unchecked
+                localStorage.removeItem('rememberedParentUsername');
+                localStorage.removeItem('rememberedParentPassword');
+                localStorage.removeItem('rememberParent');
+            }
+
             const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
             const formData = new URLSearchParams();
             formData.append("username", username);
             formData.append("password", password);
+            
             const response = await fetch(this.dataset.url, {
                 method: "POST",
                 headers: {
@@ -642,6 +708,7 @@ body::before {
                 body: formData
             });
             const result = await response.text();
+            
             if (result.trim() === "Success") {
                 const successMsg = document.getElementById("successMessage");
                 successMsg.style.display = "block";

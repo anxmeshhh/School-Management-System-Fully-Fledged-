@@ -4,9 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Student Circulars</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Student Circulars - Manavargal School Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
@@ -23,7 +22,7 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 120px 20px 40px 20px;
+            overflow: hidden;
         }
 
         h1, h2, h3 {
@@ -33,6 +32,10 @@
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
+            --danger-color: #dc2626;
+            --danger-hover: #ef4444;
+            --info-color: #3b82f6;
+            --info-hover: #2563eb;
             --sidebar-bg: #f0f9f4;
             --sidebar-border: #a8d5c2;
             --white: #ffffff;
@@ -45,6 +48,7 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --dull-highlighter: #d4edda;
         }
 
         html {
@@ -53,61 +57,37 @@
             overflow-x: hidden;
         }
 
-        .header {
-            background: var(--white);
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
             color: var(--text-color);
-            padding: 0.5rem 1rem 0.5rem 0.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: 0;
-            gap: 0.5rem;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            flex-grow: 1;
-            color: var(--primary-color);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            flex: none;
-            margin: 0;
-            z-index: 0;
-        }
-
-        .back-btn {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            text-decoration: none;
+            z-index: 1000;
             transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 1;
+            border-right: 2px solid var(--sidebar-border);
+            transform: translateX(0);
         }
 
-        .back-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            background: var(--white);
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid var(--sidebar-border);
         }
 
         .logo-container {
@@ -122,8 +102,6 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
             border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
         }
 
         .logo-container img {
@@ -138,13 +116,117 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-container:hover img {
+        .sidebar-header:hover {
+            background: var(--light-bg);
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: var(--dull-highlighter);
+            border-left: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav a img {
+            margin-right: 1rem;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .sidebar-nav a:hover img {
+            transform: scale(1.1);
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            background: var(--white);
+            border: 2px solid var(--sidebar-border);
+            cursor: pointer;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            width: 50px;
+            height: 50px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-color);
+            color: var(--white);
             transform: scale(1.05);
         }
 
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .page-wrapper {
+            margin-left: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 2rem 20px;
+        }
+
+        .header {
+            background: var(--white);
+            padding: 1.5rem;
+            border: 2px solid #495057;
+            box-shadow: var(--shadow-md);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--primary-color);
+            margin: 0;
         }
 
         .main-content {
@@ -155,50 +237,43 @@
             padding: 2rem;
         }
 
-        .messages {
+        .alert-message {
             margin-bottom: 1.5rem;
         }
 
-        .messages .success {
-            background: #d4edda;
-            color: var(--primary-color);
+        .alert-message .error,
+        .alert-message .success,
+        .alert-message .warning {
             padding: 0.75rem;
             border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
             display: flex;
             align-items: center;
             gap: 0.5rem;
             border: 2px solid var(--border-color);
         }
 
-        .messages .error {
+        .alert-message .error {
             background: #fef2f2;
             color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 8px;
             border-left: 4px solid #dc3545;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
         }
 
-        .messages .warning {
+        .alert-message .success {
+            background: #d4edda;
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .alert-message .warning {
             background: #fff3cd;
             color: #856404;
-            padding: 0.75rem;
-            border-radius: 8px;
             border-left: 4px solid #ffc107;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
         }
 
         .section {
             background: var(--light-bg);
             padding: 1.5rem;
-            border-radius: 8px;
+            border-radius: 12px;
             border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             margin-bottom: 2rem;
@@ -209,161 +284,65 @@
             box-shadow: var(--shadow-md);
         }
 
-        .timetable-header {
-            color: var(--primary-color);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .day-header {
+        h2 {
             color: var(--primary-color);
             font-size: 1.5rem;
             font-weight: 600;
-            margin: 2rem 0 1rem 0;
+            margin-bottom: 1.5rem;
             text-align: center;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
-
-        .timetable-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .timetable-table:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .timetable-table th,
-        .timetable-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 1rem;
-        }
-
-        .timetable-table th {
-            background-color: var(--primary-color);
-            color: var(--white);
-            font-weight: 500;
-        }
-
-        .timetable-table tr:hover {
-            background-color: var(--light-bg);
-        }
-
-        .no-timetable {
-            text-align: center;
-            color: var(--primary-color);
-            font-size: 1.1rem;
-            padding: 2rem;
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-        }
-
-        .icon {
-            margin-right: 0.5rem;
-        }
-
-        .scroll-top-btn {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: var(--primary-color);
-            color: var(--white);
-            padding: 1rem;
-            border-radius: 50px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            width: 50px;
-            height: 50px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .scroll-top-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .scroll-top-btn.show {
-            display: flex;
         }
 
         .student-info {
-            text-align: center;
-            color: var(--text-light);
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
             background: var(--white);
             border: 2px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: var(--shadow-sm);
             padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--text-color);
+            font-size: 1rem;
         }
 
         .filter-form {
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-            max-width: 500px;
-            width: 100%;
-            transition: var(--transition);
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
         }
 
-        .filter-form:hover {
-            box-shadow: var(--shadow-md);
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 0;
         }
 
-        .filter-form label {
-            display: block;
+        .form-group label {
+            display: flex;
+            align-items: center;
             color: var(--text-color);
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
         }
 
-        .filter-form select {
+        .form-group select {
             width: 100%;
             padding: 0.75rem;
             border-radius: 8px;
             border: 1px solid var(--border-color);
             background: var(--white);
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: var(--transition);
-            margin-bottom: 1rem;
         }
 
-        .filter-form select:focus {
+        .form-group select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
             outline: none;
         }
 
-        .filter-form button {
-            width: 100%;
-            padding: 0.75rem;
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
             background: var(--primary-color);
             border: none;
             border-radius: 8px;
@@ -372,65 +351,21 @@
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .filter-form button:hover {
+        .filter-btn:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
-        }
-
-        .error-message {
-            background: #fef2f2;
-            color: #dc3545;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #dc3545;
-            margin-bottom: 1.5rem;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            border: 2px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .circular-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 1.5rem;
-            max-width: 1000px;
-            width: 100%;
-            position: relative;
-        }
-
-        .circular-container::before {
-            content: '\f077';
-            font-family: "Font Awesome 5 Free";
-            font-weight: 900;
-            color: var(--primary-color);
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.2rem;
-            z-index: 5;
-            opacity: 0.7;
-        }
-
-        .circular-container::after {
-            content: '\f078';
-            font-family: "Font Awesome 5 Free";
-            font-weight: 900;
-            color: var(--primary-color);
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.2rem;
-            z-index: 5;
-            opacity: 0.7;
         }
 
         .circular {
@@ -442,70 +377,100 @@
             transition: var(--transition);
             display: flex;
             flex-direction: column;
-            overflow: visible;
         }
 
         .circular:hover {
             box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
         }
 
         .circular-type {
             background: var(--primary-color);
             color: var(--white);
-            padding: 0.25rem 0.75rem;
-            border-radius: 4px;
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 500;
             display: inline-block;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             align-self: flex-start;
         }
 
         .circular h3 {
             color: var(--primary-color);
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 600;
             margin-bottom: 0.75rem;
         }
 
-        .circular small {
+        .circular-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .circular-meta small {
             color: var(--text-light);
             font-size: 0.875rem;
-            font-weight: 400;
-            display: block;
-            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .circular img {
             width: 100%;
             height: auto;
-            max-width: 100%;
             border-radius: 8px;
-            margin-top: 1rem;
-            flex-grow: 1;
+            margin-bottom: 1rem;
+            border: 2px solid var(--border-color);
             transition: var(--transition);
-            overflow: visible;
+            cursor: pointer;
         }
 
         .circular img:hover {
-            transform: scale(1.03);
+            transform: scale(1.02);
+            box-shadow: var(--shadow-md);
         }
 
+        .circular-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: auto;
+        }
+
+        .view-btn,
         .download-btn {
+            flex: 1;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.75rem 1rem;
-            background: var(--primary-color);
-            color: var(--white);
+            gap: 0.45rem;
+            padding: 0.65rem 1rem;
             text-decoration: none;
             border-radius: 8px;
-            margin-top: 1rem;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
+            font-family: inherit;
             transition: var(--transition);
             border: none;
             cursor: pointer;
+        }
+
+        .view-btn {
+            background: var(--info-color);
+            color: var(--white);
+        }
+
+        .view-btn:hover {
+            background: var(--info-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .download-btn {
+            background: var(--primary-color);
+            color: var(--white);
         }
 
         .download-btn:hover {
@@ -515,348 +480,365 @@
         }
 
         .no-circulars {
-            font-size: 1rem;
-            color: var(--text-light);
             text-align: center;
-            margin-top: 1.5rem;
-            background: var(--white);
-            border: 2px solid var(--border-color);
+            color: var(--text-light);
+            font-size: 1.1rem;
+            padding: 3rem;
+            background: var(--light-bg);
+            border: 2px dashed var(--border-color);
             border-radius: 8px;
-            box-shadow: var(--shadow-sm);
-            padding: 2rem;
             grid-column: 1 / -1;
         }
 
+        .no-circulars i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            opacity: 0.3;
+            display: block;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow: auto;
+        }
+
+        .modal-content {
+            position: relative;
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            margin-top: 2%;
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { width: 250px; }
+            .page-wrapper { margin-left: 250px; }
+            .logo-container { width: 80px; height: 64px; }
+        }
+
         @media (max-width: 768px) {
-            body {
-                padding: 100px 10px 20px 10px;
-            }
-
-            .header {
-                padding: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .logo-container {
-                width: 80px;
-                height: 64px;
-            }
-
-            .timetable-header {
-                font-size: 1.5rem;
-                margin-bottom: 1.25rem;
-            }
-
-            .day-header {
-                font-size: 1.25rem;
-                margin: 1.5rem 0 0.75rem 0;
-            }
-
-            .timetable-table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-                font-size: 0.9rem;
-            }
-
-            .timetable-table th,
-            .timetable-table td {
-                padding: 0.75rem;
-                font-size: 0.85rem;
-                min-width: 100px;
-            }
-
-            .no-timetable {
-                font-size: 0.9rem;
-                padding: 1.5rem;
-            }
-
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .scroll-top-btn {
-                bottom: 1rem;
-                right: 1rem;
-                width: 45px;
-                height: 45px;
-                font-size: 1.1rem;
-                padding: 0.9rem;
-            }
-
-            .student-info {
-                font-size: 1rem;
-                padding: 0.75rem;
-            }
-
-            .filter-form,
-            .circular {
-                padding: 1.2rem;
-            }
-
-            .filter-form label,
-            .filter-form select,
-            .filter-form button {
-                font-size: 0.9rem;
-            }
-
-            .circular h3 {
-                font-size: 1.25rem;
-            }
-
-            .circular small {
-                font-size: 0.8rem;
-            }
-
-            .no-circulars {
-                font-size: 0.9rem;
-                padding: 1.5rem;
-            }
-
-            .circular-container {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .circular-type {
-                font-size: 0.75rem;
-                padding: 0.2rem 0.5rem;
-            }
+            .menu-toggle { display: flex; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .sidebar-overlay { display: block; }
+            .page-wrapper { margin-left: 0; }
+            .container { padding: 1.5rem 15px; }
+            .header h1 { font-size: 1.5rem; }
+            .main-content { padding: 1.5rem; }
+            .section { padding: 1.2rem; }
+            h2 { font-size: 1.3rem; }
+            .filter-form { flex-direction: column; }
+            .form-group { width: 100%; }
+            .filter-btn { width: 100%; }
+            .circular-container { grid-template-columns: 1fr; }
+            .circular-actions { flex-direction: column; }
+            .close-modal { top: 10px; right: 20px; font-size: 30px; }
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 80px 5px 15px 5px;
-            }
-
-            .header {
-                padding: 0.75rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.25rem;
-            }
-
-            .logo-container {
-                width: 60px;
-                height: 48px;
-            }
-
-            .timetable-header {
-                font-size: 1.3rem;
-                margin-bottom: 1rem;
-            }
-
-            .day-header {
-                font-size: 1.1rem;
-                margin: 1.25rem 0 0.5rem 0;
-            }
-
-            .timetable-table th,
-            .timetable-table td {
-                padding: 0.5rem;
-                font-size: 0.8rem;
-                min-width: 80px;
-            }
-
-            .no-timetable {
-                font-size: 0.85rem;
-                padding: 1rem;
-            }
-
-            .back-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-            }
-
-            .scroll-top-btn {
-                bottom: 0.75rem;
-                right: 0.75rem;
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-                padding: 0.8rem;
-            }
-
-            .student-info {
-                font-size: 0.9rem;
-                padding: 0.5rem;
-            }
-
-            .filter-form,
-            .circular {
-                padding: 1rem;
-            }
-
-            .filter-form label,
-            .filter-form select,
-            .filter-form button {
-                font-size: 0.85rem;
-            }
-
-            .circular h3 {
-                font-size: 1.1rem;
-            }
-
-            .circular small {
-                font-size: 0.75rem;
-            }
-
-            .no-circulars {
-                font-size: 0.85rem;
-                padding: 1rem;
-            }
-
-            .download-btn {
-                padding: 0.6rem 0.8rem;
-                font-size: 0.9rem;
-            }
-
-            .circular-type {
-                font-size: 0.7rem;
-                padding: 0.15rem 0.4rem;
-            }
+            .sidebar { width: 100%; max-width: 320px; }
+            .container { padding: 1rem; }
+            .header { padding: 1rem; }
+            .header h1 { font-size: 1.25rem; }
+            .main-content { padding: 1rem; }
+            .section { padding: 1rem; }
+            h2 { font-size: 1.15rem; }
+            .form-group label { font-size: 0.85rem; }
+            .form-group select { font-size: 0.85rem; padding: 0.6rem; }
+            .circular { padding: 1rem; }
+            .circular h3 { font-size: 1.1rem; }
+            .view-btn, .download-btn { padding: 0.6rem 1rem; font-size: 0.9rem; }
         }
 
         @media (hover: none) {
-            .timetable-table:hover, .logo-container:hover, .back-btn:hover, .scroll-top-btn:hover {
-                transform: none;
-                box-shadow: var(--shadow-sm);
-            }
-
-            .section:hover, .filter-form:hover, .circular:hover, .filter-form button:hover, .logo-container:hover, .back-btn:hover, .download-btn:hover, .scroll-top-btn:hover {
+            .section:hover, .filter-btn:hover, .circular:hover, .view-btn:hover, .download-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
-            }
-
-            html {
-                scroll-behavior: auto;
-            }
+            * { transition: none !important; animation: none !important; }
+            html { scroll-behavior: auto; }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <a href="{% url 'parent_dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Main Dashboard
-        </a>
-        <h1><i class="fas fa-file-alt"></i> School Circulars</h1>
-        <a href="{% url 'parent_dashboard' %}">
-            <div class="logo-container">
-                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
-            </div>
-        </a>
-    </header>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
 
-    <div class="container">
-        <div class="main-content">
-            <div class="messages">
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'parent_dashboard' %}" style="text-decoration: none; color: inherit;">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
+                </div>
+            </a>
+            <span>Manavargal SMS</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'parent_profile_view' %}">
+                <img src="https://img.icons8.com/fluency/20/home.png" alt="Profile Icon">
+                <span>Profile View</span>
+            </a>
+            <a href="{% url 'parent_student_portal' %}">
+                <img src="https://img.icons8.com/color/20/calendar--v1.png" alt="Attendance">
+                <span>Attendance & Leave</span>
+            </a>
+            <a href="{% url 'parent_student_circular' %}" class="active">
+                <img src="https://img.icons8.com/color/20/megaphone.png" alt="Circular">
+                <span>Circulars</span>
+            </a>
+            <a href="{% url 'parent_study_materials' %}">
+                <img src="https://img.icons8.com/color/20/book.png" alt="Study Materials">
+                <span>Study Materials</span>
+            </a>
+            <a href="{% url 'parent_homework' %}">
+                <img src="https://img.icons8.com/color/20/homework.png" alt="Homework">
+                <span>Homework</span>
+            </a>
+            <a href="{% url 'parent_student_timetable' %}">
+                <img src="https://img.icons8.com/color/20/clock.png" alt="Timetable">
+                <span>Timetable</span>
+            </a>
+            <a href="{% url 'parent_student_progress_card' %}">
+                <img src="https://img.icons8.com/color/20/graph.png" alt="Progress Card">
+                <span>Progress Card</span>
+            </a>
+            <a href="{% url 'fees' %}">
+                <img src="https://img.icons8.com/color/20/money.png" alt="Fees">
+                <span>Fees Panel</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="page-wrapper">
+        <div class="container">
+            <header class="header">
+                <h1><i class="fas fa-megaphone"></i> School Circulars</h1>
+            </header>
+
+            <main class="main-content">
                 {% if messages %}
-                    {% for message in messages %}
-                        <div class="{{ message.tags }}">
-                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} icon"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-
-            {% if error_message %}
-                <div class="messages">
-                    <div class="error">
-                        <i class="fas fa-exclamation-circle icon"></i>
-                        {{ error_message }}
+                    <div class="alert-message">
+                        {% for message in messages %}
+                            <div class="{{ message.tags }}">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
 
-            {% if student_class and student_section %}
-                <div class="student-info">
-                    Your Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}
-                </div>
-            {% endif %}
+                {% if error_message %}
+                    <div class="alert-message">
+                        <div class="error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ error_message }}
+                        </div>
+                    </div>
+                {% endif %}
 
-            <div class="section">
-                <h3 class="day-header">
-                    <i class="fas fa-filter icon"></i> Filter Circulars
-                </h3>
-                <form class="filter-form" method="post">
-                    {% csrf_token %}
-                    <label for="filter_type">Filter Type:</label>
-                    <select id="filter_type" name="filter_type" required>
-                        <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Circulars</option>
-                        <option value="specific" {% if filter_type == 'specific' %}selected{% endif %}>Class/Section Only</option>
-                    </select>
-                    <button type="submit"><i class="fas fa-check icon"></i> Apply Filter</button>
-                </form>
-            </div>
+                {% if student_class and student_section %}
+                    <div class="student-info">
+                        <strong>Your Class:</strong> {{ student_class|capfirst }} - {{ student_section|capfirst }}
+                    </div>
+                {% endif %}
 
-            <div class="section">
-                <h3 class="day-header">
-                    <i class="fas fa-file-alt icon"></i> Circulars List
-                </h3>
-                <div class="circular-container">
-                    {% for circular in circulars %}
+                <!-- Filter Section -->
+                <section class="section">
+                    <h2><i class="fas fa-filter" style="color: #f59e0b;"></i> Filter Circulars</h2>
+                    <form class="filter-form" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="filter_type">
+                                <span style="color: #3b82f6; margin-right: 8px;">
+                                    <i class="fas fa-sliders-h"></i>
+                                </span>
+                                Filter Type:
+                            </label>
+                            <select id="filter_type" name="filter_type" required>
+                                <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Circulars</option>
+                                <option value="specific" {% if filter_type == 'specific' %}selected{% endif %}>Class/Section Only</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="filter-btn">
+                            <i class="fas fa-check"></i> Apply Filter
+                        </button>
+                    </form>
+                </section>
+
+                <!-- Circulars Section -->
+                <section class="section">
+                    <h2><i class="fas fa-bell" style="color: #06b6d4;"></i> Available Circulars</h2>
+
+                    <div class="circular-container">
+                        {% for circular in circulars %}
                         <div class="circular">
                             <div class="circular-type">
                                 {% if 'school' in circular.target|lower or circular.target == 'All' %}
-                                    School Circular
+                                    <i class="fas fa-school"></i> School Circular
                                 {% else %}
-                                    Class Circular
+                                    <i class="fas fa-chalkboard"></i> Class Circular
                                 {% endif %}
                             </div>
                             <h3>{{ circular.title }}</h3>
-                            <small>Posted on: {{ circular.date }}</small>
-                            <small>Target: {{ circular.target }}</small>
-                            <img src="{{ circular.image_url }}" alt="Circular Image">
-                            <a href="{{ circular.image_url }}" download="{{ circular.title|slugify }}.jpg" class="download-btn">
-                                <i class="fas fa-download icon"></i> Download Circular
-                            </a>
+                            <div class="circular-meta">
+                                <small>
+                                    <i class="fas fa-calendar-alt"></i>
+                                    {{ circular.date }}
+                                </small>
+                                <small>
+                                    <i class="fas fa-bullseye"></i>
+                                    Target: {{ circular.target }}
+                                </small>
+                            </div>
+                            <img src="{{ circular.image_url }}" alt="{{ circular.title }}" onclick="openModal('{{ circular.image_url }}', '{{ circular.title }}')">
+
+                            <div class="circular-actions">
+                                <button class="view-btn" onclick="openModal('{{ circular.image_url }}', '{{ circular.title }}')">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <a href="{{ circular.image_url }}" download="{{ circular.title|slugify }}.jpg" class="download-btn">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
                         </div>
-                    {% empty %}
+                        {% empty %}
                         <div class="no-circulars">
-                            <i class="fas fa-inbox icon"></i> No circulars available for {% if filter_type == 'specific' %}your class and section{% else %}the selected filter{% endif %}.
+                            <i class="fas fa-inbox"></i>
+                            <p>No circulars available {% if filter_type == 'specific' %}for your class and section{% else %}at this time{% endif %}.</p>
                             {% if student_class and student_section %}
-                                (Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }})
+                                <small>(Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }})</small>
                             {% endif %}
                         </div>
-                    {% endfor %}
-                </div>
-            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </main>
         </div>
     </div>
 
-    <button class="scroll-top-btn" onclick="scrollToTop()">
-        <i class="fas fa-chevron-up"></i>
-    </button>
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="modalImage" src="" alt="">
+        </div>
+    </div>
 
     <script>
-        window.onscroll = function() {
-            const btn = document.querySelector('.scroll-top-btn');
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                btn.classList.add('show');
-            } else {
-                btn.classList.remove('show');
-            }
-        };
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
 
-        function scrollToTop() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
+            function openSidebar() {
+                sidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
+                });
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        closeSidebar();
+                    }
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
+                }
+            });
+
+            if (window.innerWidth > 768) {
+                navLinks.forEach(item => {
+                    item.addEventListener('mouseenter', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) icon.style.transform = 'scale(1.1) rotate(5deg)';
+                    });
+                    item.addEventListener('mouseleave', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) icon.style.transform = 'none';
+                    });
+                });
+            }
+        });
+
+        function openModal(imageUrl, title) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = imageUrl;
+            modalImg.alt = title;
         }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>

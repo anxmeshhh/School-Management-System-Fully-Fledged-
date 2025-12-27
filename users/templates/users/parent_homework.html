@@ -4,9 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Homework Portal</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Homework Portal - Manavargal School Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
@@ -23,12 +22,11 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            padding: 120px 20px 40px 20px;
+            overflow: hidden;
         }
 
         h1, h2, h3 {
             font-family: 'Montserrat', sans-serif;
-            text-align: center;
         }
 
         :root {
@@ -48,6 +46,7 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --dull-highlighter: #d4edda;
         }
 
         html {
@@ -56,66 +55,37 @@
             overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .header {
-            background: var(--white);
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
             color: var(--text-color);
-            padding: 0.5rem 1rem 0.5rem 0.5rem;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: 0;
-            gap: 0.5rem;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            flex-grow: 1;
-            color: var(--primary-color);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            flex: none;
-            margin: 0;
-            z-index: 0;
-        }
-
-        .back-btn {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: var(--sidebar-bg);
-            color: var(--text-color);
-            text-decoration: none;
+            z-index: 1000;
             transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 1;
+            border-right: 2px solid var(--sidebar-border);
+            transform: translateX(0);
         }
 
-        .back-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            background: var(--white);
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid var(--sidebar-border);
         }
 
         .logo-container {
@@ -130,8 +100,6 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
             border: 2px solid var(--sidebar-border);
-            position: relative;
-            z-index: 1;
         }
 
         .logo-container img {
@@ -146,8 +114,122 @@
             box-shadow: var(--shadow-md);
         }
 
-        .logo-container:hover img {
+        .sidebar-header:hover {
+            background: var(--light-bg);
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: var(--dull-highlighter);
+            border-left: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav a img {
+            margin-right: 1rem;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .sidebar-nav a:hover img {
+            transform: scale(1.1);
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            background: var(--white);
+            border: 2px solid var(--sidebar-border);
+            cursor: pointer;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            width: 50px;
+            height: 50px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-color);
+            color: var(--white);
             transform: scale(1.05);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .page-wrapper {
+            margin-left: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+
+        .header {
+            background: var(--white);
+            padding: 1.5rem;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--primary-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .main-content {
@@ -158,38 +240,36 @@
             padding: 2rem;
         }
 
-        .alert-message {
+        .messages {
             margin-bottom: 1.5rem;
         }
 
-        .alert-message .error {
-            background: #fef2f2;
-            color: #dc3545;
-            padding: 0.75rem;
+        .messages .success,
+        .messages .error {
+            padding: 0.75rem 1rem;
             border-radius: 8px;
-            border-left: 4px solid #dc3545;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            border: 2px solid var(--border-color);
+            margin-bottom: 0.5rem;
         }
 
-        .alert-message .success {
+        .messages .success {
             background: #d4edda;
             color: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 8px;
             border-left: 4px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 2px solid var(--border-color);
+        }
+
+        .messages .error {
+            background: #f8d7da;
+            color: #dc3545;
+            border-left: 4px solid #dc3545;
         }
 
         .section {
             background: var(--light-bg);
             padding: 1.5rem;
-            border-radius: 8px;
+            border-radius: 12px;
             border: 2px solid var(--border-color);
             box-shadow: var(--shadow-sm);
             margin-bottom: 2rem;
@@ -200,16 +280,66 @@
             box-shadow: var(--shadow-md);
         }
 
-        h2 {
+        .section h2 {
             color: var(--primary-color);
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
-            text-align: center;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .info-card i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .info-card .info-content {
+            flex: 1;
+        }
+
+        .info-card .info-label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 0.85rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .info-card .info-value {
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 500;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .form-group label {
@@ -218,6 +348,9 @@
             font-size: 1rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .form-group input[type="text"],
@@ -226,23 +359,22 @@
             width: 100%;
             padding: 0.75rem;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             background: var(--white);
             font-size: 1rem;
             transition: var(--transition);
+            font-family: inherit;
         }
 
-        .form-group input[type="text"]:focus,
-        .form-group input[type="date"]:focus,
-        .form-group input[type="file"]:focus {
+        .form-group input:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
             outline: none;
         }
 
-        button {
+        .submit-btn {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.8rem;
             background: var(--primary-color);
             border: none;
             border-radius: 8px;
@@ -251,144 +383,80 @@
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: inherit;
         }
 
-        button:hover {
+        .submit-btn:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+        }
+
+        .homework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
         }
 
         .homework-card {
             background: var(--white);
             border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
+            border-radius: 8px;
             box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
             transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
         .homework-card:hover {
-            transform: translateY(-4px);
             box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
         }
 
         .homework-card h3 {
             color: var(--primary-color);
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .homework-card p {
+            margin: 0;
             color: var(--text-color);
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .homework-card p strong {
-            color: var(--primary-color);
-            font-weight: 500;
-        }
-
-        .file-links {
+            font-size: 0.95rem;
             display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .file-link {
-            flex: 1;
-            color: var(--white);
-            text-decoration: none;
-            padding: 0.65rem 1rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            text-align: center;
-        }
-
-        .view-link {
-            background: var(--info-color);
-        }
-
-        .view-link:hover {
-            background: var(--info-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .download-link {
-            background: var(--primary-color);
-        }
-
-        .download-link:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .no-submissions {
-            text-align: center;
-            color: var(--primary-color);
-            font-size: 1.1rem;
-            padding: 2rem;
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-        }
-
-        .student-info {
-            text-align: center;
-            color: var(--text-light);
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-            background: var(--white);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: var(--shadow-sm);
-            padding: 1rem;
-        }
-
-        .study-materials-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--primary-color);
-            color: var(--white);
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 500;
-            z-index: 1000;
-            transition: var(--transition);
-            box-shadow: var(--shadow-md);
-            display: inline-flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 0.5rem;
         }
 
-        .study-materials-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+        .homework-card p i {
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+        }
+
+        .homework-card strong {
+            font-weight: 600;
+            color: #6c757d;
         }
 
         .file-type-badge {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             padding: 0.25rem 0.75rem;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
-            margin-left: 0.5rem;
         }
 
         .badge-pdf {
@@ -411,309 +479,644 @@
             color: white;
         }
 
-        .icon {
-            margin-right: 0.5rem;
+        .file-links {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: auto;
+            padding-top: 1rem;
+        }
+
+        .view-btn,
+        .download-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: inherit;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .view-btn {
+            background: var(--info-color);
+            color: var(--white);
+        }
+
+        .view-btn:hover {
+            background: var(--info-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .download-btn {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .download-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .no-homework {
+            font-size: 1rem;
+            color: var(--text-color);
+            text-align: center;
+            padding: 2rem;
+            background: var(--white);
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .no-homework i {
+            font-size: 2.5rem;
+            color: #95a5a6;
+        }
+
+        .quick-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            margin-top: 1rem;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: 50%;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .scroll-top-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .scroll-top-btn.show {
+            display: flex;
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            font-family: 'Montserrat', sans-serif;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-color);
+            background: var(--light-bg);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            background: var(--dull-highlighter);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar { width: 250px; }
+            .page-wrapper { margin-left: 250px; }
+            .logo-container { width: 80px; height: 64px; }
         }
 
         @media (max-width: 768px) {
-            body {
-                padding: 100px 10px 20px 10px;
+            .menu-toggle { display: flex; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .sidebar-overlay { display: block; }
+            .page-wrapper { margin-left: 0; }
+            .container { padding: 1.5rem 15px; }
+            .header { padding: 1rem; }
+            .header h1 { font-size: 1.5rem; }
+            .main-content { padding: 1.5rem; }
+            .section { padding: 1rem; }
+            .section h2 { font-size: 1.3rem; }
+            .student-info { grid-template-columns: 1fr; }
+            .homework-grid { grid-template-columns: 1fr; }
+            .file-links { flex-direction: column; }
+            .view-btn, .download-btn { width: 100%; }
+            .scroll-top-btn {
+                bottom: 1rem;
+                right: 1rem;
+                width: 45px;
+                height: 45px;
             }
-
-            .header {
-                padding: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .logo-container {
-                width: 80px;
-                height: 64px;
-            }
-
-            .main-content {
-                padding: 1.5rem;
-            }
-
-            .section {
-                padding: 1.2rem;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            .form-group label {
-                font-size: 0.9rem;
-            }
-
-            .form-group input[type="text"],
-            .form-group input[type="date"],
-            .form-group input[type="file"] {
-                font-size: 0.9rem;
-                padding: 0.6rem;
-            }
-
-            .homework-card {
-                padding: 1rem;
-            }
-
-            .homework-card h3 {
-                font-size: 1.3rem;
-            }
-
-            .homework-card p {
-                font-size: 0.9rem;
-            }
-
-            .file-links {
-                flex-direction: column;
+            .tab-navigation { 
+                overflow-x: auto; 
                 gap: 0.5rem;
             }
-
-            .file-link {
-                padding: 0.5rem;
-                font-size: 0.9rem;
-            }
-
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .study-materials-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-                bottom: 10px;
-                right: 10px;
-            }
-
-            .student-info {
-                font-size: 1rem;
-                padding: 0.75rem;
+            .tab-btn { 
+                padding: 0.75rem 1.5rem; 
+                font-size: 0.9rem; 
             }
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 80px 5px 15px 5px;
-            }
-
-            .header {
-                padding: 0.75rem;
+            .sidebar { width: 100%; max-width: 320px; }
+            .container { padding: 1rem; }
+            .header { padding: 0.75rem; }
+            .header h1 { font-size: 1.25rem; }
+            .main-content { padding: 1rem; }
+            .section { padding: 0.75rem; }
+            .section h2 { font-size: 1.1rem; }
+            .homework-card { padding: 1rem; }
+            .homework-card h3 { font-size: 1.1rem; }
+            .homework-card p { font-size: 0.9rem; }
+            .info-card {
                 flex-direction: column;
-                gap: 1rem;
+                text-align: center;
             }
-
-            .header h1 {
-                font-size: 1.25rem;
-            }
-
-            .logo-container {
-                width: 60px;
-                height: 48px;
-            }
-
-            .main-content {
-                padding: 1rem;
-                border-radius: 8px;
-            }
-
-            .section {
-                padding: 1rem;
-            }
-
-            h2 {
-                font-size: 1.25rem;
-            }
-
-            .form-group label {
-                font-size: 0.85rem;
-            }
-
-            .form-group input[type="text"],
-            .form-group input[type="date"],
-            .form-group input[type="file"] {
-                font-size: 0.85rem;
-                padding: 0.5rem;
-            }
-
-            .homework-card {
-                padding: 0.75rem;
-            }
-
-            .homework-card h3 {
-                font-size: 1.2rem;
-            }
-
-            .homework-card p {
-                font-size: 0.85rem;
-            }
-
-            .file-link {
-                font-size: 0.85rem;
-                padding: 0.4rem 0.8rem;
-            }
-
-            .back-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-            }
-
-            .study-materials-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.85rem;
-            }
-
-            .student-info {
-                font-size: 0.9rem;
-                padding: 0.5rem;
+            .scroll-top-btn {
+                bottom: 0.75rem;
+                right: 0.75rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
             }
         }
 
         @media (hover: none) {
-            .section:hover, .file-link:hover, .homework-card:hover, .logo-container:hover, .back-btn:hover, .study-materials-btn:hover {
+            .section:hover,
+            .homework-card:hover,
+            .info-card:hover,
+            .view-btn:hover,
+            .download-btn:hover,
+            .submit-btn:hover,
+            .quick-action-btn:hover,
+            .scroll-top-btn:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
+            * { 
+                transition: none !important; 
+                animation: none !important; 
             }
+            html { scroll-behavior: auto; }
+        }
 
-            html {
-                scroll-behavior: auto;
+        @media print {
+            .sidebar, 
+            .menu-toggle, 
+            .sidebar-overlay,
+            .scroll-top-btn,
+            .quick-action-btn,
+            .file-links,
+            .submit-btn { 
+                display: none; 
+            }
+            .page-wrapper { margin-left: 0; }
+            .container { padding: 0; }
+            .main-content { 
+                box-shadow: none; 
+                border: none; 
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <a href="{% url 'parent_dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Main Dashboard
-        </a>
-        <h1><i class="fas fa-book"></i> Homework Portal</h1>
-        <a href="{% url 'parent_dashboard' %}">
-            <div class="logo-container">
-                <img src="{% static 'users/images/greenlogo.png' %}" alt="School Logo">
-            </div>
-        </a>
-    </div>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
 
-    <div class="container">
-        <div class="main-content">
-            {% if messages %}
-            <div class="alert-message">
-                {% for message in messages %}
-                <div class="{{ message.tags }}">
-                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} icon"></i>
-                    {{ message }}
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'parent_dashboard' %}" style="text-decoration: none; color: inherit;">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
                 </div>
-                {% endfor %}
-            </div>
-            {% endif %}
+            </a>
+            <span>Manavargal SMS</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'parent_profile_view' %}">
+                <img src="https://img.icons8.com/fluency/20/home.png" alt="Profile Icon">
+                <span>Profile View</span>
+            </a>
+            <a href="{% url 'parent_student_portal' %}">
+                <img src="https://img.icons8.com/color/20/calendar--v1.png" alt="Attendance">
+                <span>Attendance & Leave</span>
+            </a>
+            <a href="{% url 'parent_student_circular' %}">
+                <img src="https://img.icons8.com/color/20/megaphone.png" alt="Circular">
+                <span>Circulars</span>
+            </a>
+            <a href="{% url 'parent_study_materials' %}">
+                <img src="https://img.icons8.com/color/20/book.png" alt="Study Materials">
+                <span>Study Materials</span>
+            </a>
+            <a href="{% url 'parent_homework' %}" class="active">
+                <img src="https://img.icons8.com/color/20/homework.png" alt="Homework">
+                <span>Homework</span>
+            </a>
+            <a href="{% url 'parent_student_timetable' %}">
+                <img src="https://img.icons8.com/color/20/clock.png" alt="Timetable">
+                <span>Timetable</span>
+            </a>
+            <a href="{% url 'parent_student_progress_card' %}">
+                <img src="https://img.icons8.com/color/20/graph.png" alt="Progress Card">
+                <span>Progress Card</span>
+            </a>
+            <a href="{% url 'fees' %}">
+                <img src="https://img.icons8.com/color/20/money.png" alt="Fees">
+                <span>Fees Panel</span>
+            </a>
+        </nav>
+    </aside>
 
-            {% if student_class and student_section %}
-                <div class="student-info">
-                    Your Class: {{ student_class|capfirst }}, Section: {{ student_section|capfirst }}
-                </div>
-            {% endif %}
+    <!-- Main Content Wrapper -->
+    <div class="page-wrapper">
+        <div class="container">
+            <header class="header">
+                <h1>
+                    <i class="fas fa-book"></i> 
+                    <span>Homework Portal</span>
+                </h1>
+            </header>
 
-            <!-- Teacher Uploaded Homework Section (NEW) -->
-            <div class="section">
-                <h2><i class="fas fa-chalkboard-teacher icon"></i> Homework from Teachers</h2>
-                {% for hw in teacher_homework %}
-                <div class="homework-card">
-                    <h3>
-                        <i class="fas fa-file-alt"></i>
-                        {{ hw.title }}
-                        {% if hw.file_type == '.pdf' %}
-                            <span class="file-type-badge badge-pdf">PDF</span>
-                        {% elif hw.file_type == '.docx' %}
-                            <span class="file-type-badge badge-doc">DOCX</span>
-                        {% elif hw.file_type in '.xlsx,.xls' %}
-                            <span class="file-type-badge badge-excel">EXCEL</span>
-                        {% else %}
-                            <span class="file-type-badge badge-image">IMAGE</span>
-                        {% endif %}
-                    </h3>
-                    {% if hw.description %}
-                        <p><strong><i class="fas fa-align-left icon"></i> Description:</strong> {{ hw.description }}</p>
+            <main class="main-content">
+                <!-- Messages -->
+                <div class="messages">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="{{ message.tags }}">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
                     {% endif %}
-                    {% if hw.subject %}
-                        <p><strong><i class="fas fa-book-open icon"></i> Subject:</strong> {{ hw.subject }}</p>
-                    {% endif %}
-                    {% if hw.due_date %}
-                        <p><strong><i class="fas fa-calendar-alt icon"></i> Due Date:</strong> {{ hw.due_date }}</p>
-                    {% endif %}
-                    <p><strong><i class="fas fa-clock icon"></i> Uploaded on:</strong> {{ hw.date }}</p>
-                    <div class="file-links">
-                        <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}" target="_blank" class="file-link view-link">
-                            <i class="fas fa-eye"></i> View File
-                        </a>
-                        <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}?download=true" class="file-link download-link">
-                            <i class="fas fa-download"></i> Download
-                        </a>
-                    </div>
                 </div>
-                {% empty %}
-                <div class="no-submissions">
-                    <i class="fas fa-inbox icon"></i> No homework assigned by teachers yet.
-                </div>
-                {% endfor %}
-            </div>
 
-            <div class="section">
-                <h2><i class="fas fa-upload icon"></i> Submit Homework</h2>
-                <form method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="title"><i class="fas fa-heading icon"></i> Title:</label>
-                        <input type="text" name="title" id="title" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="submission_date"><i class="fas fa-calendar icon"></i> Submission Date:</label>
-                        <input type="date" name="submission_date" id="submission_date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="file"><i class="fas fa-file-pdf icon"></i> Upload File (PDF only):</label>
-                        <input type="file" name="file" id="file" accept="application/pdf" required>
-                    </div>
-                    <button type="submit"><i class="fas fa-upload icon"></i> Upload</button>
-                </form>
-            </div>
+                <!-- Tab Navigation -->
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="switchTab('teacher')" id="teacherTab">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        Homework from Teachers
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('submit')" id="submitTab">
+                        <i class="fas fa-upload"></i>
+                        Submit Homework
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('submissions')" id="submissionsTab">
+                        <i class="fas fa-folder-open"></i>
+                        Your Submissions
+                    </button>
+                </div>
 
-            <div class="section">
-                <h2><i class="fas fa-folder-open icon"></i> Your Homework Submissions</h2>
-                {% for hw in homework_list %}
-                <div class="homework-card">
-                    <h3>{{ hw.title }}</h3>
-                    <p><strong><i class="fas fa-calendar icon"></i> Submitted on:</strong> {{ hw.submission_date }}</p>
-                    <div class="file-links">
-                        <a href="{% url 'serve_pdf' hw.file_path %}" target="_blank" class="file-link view-link">
-                            <i class="fas fa-eye icon"></i> View PDF
-                        </a>
-                        <a href="{% url 'serve_pdf' hw.file_path %}?download=true" target="_blank" class="file-link download-link">
-                            <i class="fas fa-download icon"></i> Download PDF
-                        </a>
+                <!-- SECTION 1: Teacher Assigned Homework -->
+                <div id="teacherContent" class="tab-content active">
+                    <div class="section">
+                        <h2>
+                            <i class="fas fa-chalkboard-teacher"></i> 
+                            Homework from Teachers
+                        </h2>
+                        <div class="homework-grid">
+                            {% for hw in teacher_homework %}
+                            <div class="homework-card">
+                                <h3>
+                                    <i class="fas fa-file-alt"></i>
+                                    {{ hw.title }}
+                                    {% if hw.file_type == '.pdf' %}
+                                        <span class="file-type-badge badge-pdf">PDF</span>
+                                    {% elif hw.file_type == '.docx' %}
+                                        <span class="file-type-badge badge-doc">DOCX</span>
+                                    {% elif hw.file_type in '.xlsx,.xls' %}
+                                        <span class="file-type-badge badge-excel">EXCEL</span>
+                                    {% else %}
+                                        <span class="file-type-badge badge-image">IMAGE</span>
+                                    {% endif %}
+                                </h3>
+                                {% if hw.description %}
+                                    <p>
+                                        <i class="fas fa-align-left" style="color: #9333ea;"></i>
+                                        <span><strong>Description:</strong> {{ hw.description }}</span>
+                                    </p>
+                                {% endif %}
+                                {% if hw.subject %}
+                                    <p>
+                                        <i class="fas fa-book-open" style="color: #3b82f6;"></i>
+                                        <span><strong>Subject:</strong> {{ hw.subject }}</span>
+                                    </p>
+                                {% endif %}
+                                {% if hw.due_date %}
+                                    <p>
+                                        <i class="fas fa-calendar-alt" style="color: #ef4444;"></i>
+                                        <span><strong>Due Date:</strong> {{ hw.due_date }}</span>
+                                    </p>
+                                {% endif %}
+                                <p>
+                                    <i class="fas fa-clock" style="color: #10b981;"></i>
+                                    <span><strong>Uploaded:</strong> {{ hw.date }}</span>
+                                </p>
+                                <div class="file-links">
+                                    <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}" target="_blank" class="view-btn">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}?download=true" class="download-btn">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="no-homework">
+                                <i class="fas fa-inbox"></i>
+                                <p>No homework assigned by teachers yet.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-                {% empty %}
-                <div class="no-submissions">
-                    <i class="fas fa-inbox icon"></i> No homework uploaded yet.
+
+                <!-- SECTION 2: Submit Homework -->
+                <div id="submitContent" class="tab-content">
+                    <div class="section">
+                        <h2>
+                            <i class="fas fa-upload"></i> 
+                            Submit Homework
+                        </h2>
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="title">
+                                    <i class="fas fa-heading" style="color: #9b59b6;"></i> 
+                                    Title
+                                </label>
+                                <input type="text" name="title" id="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="submission_date">
+                                    <i class="fas fa-calendar" style="color: #f59e0b;"></i> 
+                                    Submission Date
+                                </label>
+                                <input type="date" name="submission_date" id="submission_date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="file">
+                                    <i class="fas fa-file-pdf" style="color: #e74c3c;"></i> 
+                                    Upload File (PDF only)
+                                </label>
+                                <input type="file" name="file" id="file" accept="application/pdf" required>
+                            </div>
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-upload"></i> Submit Homework
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                {% endfor %}
-            </div>
+
+                <!-- SECTION 3: Your Submissions -->
+                <div id="submissionsContent" class="tab-content">
+                    <div class="section">
+                        <h2>
+                            <i class="fas fa-folder-open"></i> 
+                            Your Homework Submissions
+                        </h2>
+                        <div class="homework-grid">
+                            {% for hw in homework_list %}
+                            <div class="homework-card">
+                                <h3>
+                                    <i class="fas fa-file-pdf" style="color: #e74c3c;"></i>
+                                    {{ hw.title }}
+                                </h3>
+                                <p>
+                                    <i class="fas fa-calendar-check" style="color: #10b981;"></i>
+                                    <span><strong>Submitted on:</strong> {{ hw.submission_date }}</span>
+                                </p>
+                                <div class="file-links">
+                                    <a href="{% url 'serve_pdf' hw.file_path %}" target="_blank" class="view-btn">
+                                        <i class="fas fa-eye"></i> View PDF
+                                    </a>
+                                    <a href="{% url 'serve_pdf' hw.file_path %}?download=true" class="download-btn">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="no-homework">
+                                <i class="fas fa-inbox"></i>
+                                <p>No homework uploaded yet.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div style="text-align: center;">
+                    <a href="{% url 'parent_study_materials' %}" class="quick-action-btn">
+                        <i class="fas fa-book-open"></i> Go to Study Materials
+                    </a>
+                </div>
+            </main>
         </div>
     </div>
 
-    <a href="{% url 'parent_study_materials' %}" class="study-materials-btn">
-        <i class="fas fa-book-open icon"></i> Go to Study Materials
-    </a>
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" id="scrollTopBtn">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+            function openSidebar() {
+                sidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
+                });
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        closeSidebar();
+                    }
+                });
+            });
+
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    if (window.innerWidth > 768) {
+                        closeSidebar();
+                    }
+                }, 250);
+            });
+
+            if (window.innerWidth > 768) {
+                navLinks.forEach(item => {
+                    item.addEventListener('mouseenter', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) {
+                            icon.style.transform = 'scale(1.1) rotate(5deg)';
+                        }
+                    });
+                    item.addEventListener('mouseleave', function() {
+                        const icon = this.querySelector('img');
+                        if (icon) {
+                            icon.style.transform = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Scroll to top functionality
+            const pageWrapper = document.querySelector('.page-wrapper');
+            
+            if (pageWrapper) {
+                pageWrapper.addEventListener('scroll', function() {
+                    if (pageWrapper.scrollTop > 300) {
+                        scrollTopBtn.classList.add('show');
+                    } else {
+                        scrollTopBtn.classList.remove('show');
+                    }
+                });
+            }
+
+            if (scrollTopBtn) {
+                scrollTopBtn.addEventListener('click', function() {
+                    pageWrapper.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+        });
+
+        // Tab Switching Function
+        function switchTab(tab) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab content
+            if (tab === 'teacher') {
+                document.getElementById('teacherContent').classList.add('active');
+                document.getElementById('teacherTab').classList.add('active');
+            } else if (tab === 'submit') {
+                document.getElementById('submitContent').classList.add('active');
+                document.getElementById('submitTab').classList.add('active');
+            } else if (tab === 'submissions') {
+                document.getElementById('submissionsContent').classList.add('active');
+                document.getElementById('submissionsTab').classList.add('active');
+            }
+        }
+    </script>
 </body>
 </html>

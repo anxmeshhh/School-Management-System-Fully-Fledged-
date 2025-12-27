@@ -9526,36 +9526,119 @@ def parent_profile_view(request):
             # No file uploaded, redirect without error
             return redirect('parent_profile_view')
 
-    # Fetch only the 10 most important student details for display
+    # Fetch ALL student details from all tables
     student = {}
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT 
-                    s1.name, s1.admission_number, s1.class, s1.section, s1.roll_number,
-                    s3.email, s3.contact, s3.address,
-                    s2.dob, s2.gender
+                    s1.name, s1.admission_number, s1.class, s1.section, s1.roll_number, s1.emis,
+                    s2.tamil_name, s2.gender, s2.community, s2.dob, s2.nationality, 
+                    s2.blood_group, s2.mother_tongue, s2.caste, s2.religion, 
+                    s2.place_of_birth, s2.aadhaar, s2.disability, s2.id_mark1, 
+                    s2.id_mark2, s2.current_class, s2.admission_class, s2.admission_year, 
+                    s2.admission_date,
+                    s3.email, s3.address, s3.contact, s3.alt_contact, s3.country, 
+                    s3.state, s3.city, s3.pincode, s3.status, s3.house, 
+                    s3.teacher_ward, s3.rte, s3.sports_quota, s3.prev_school, 
+                    s3.prev_board,
+                    s4.father_name, s4.father_name_tamil, s4.mother_name, s4.mother_name_tamil,
+                    s4.father_contact, s4.mother_contact, s4.father_email, s4.mother_email,
+                    s4.father_qualification, s4.mother_qualification, s4.father_occupation,
+                    s4.mother_occupation, s4.father_income, s4.mother_income, s4.guardian_name,
+                    s4.guardian_contact, s4.guardian_email, s4.child_living, s4.rights_on_child,
+                    s4.med_blood_group, s4.diseases, s4.allergies, s4.medicines, 
+                    s4.hospital, s4.doctor
                 FROM student_page1 s1
                 LEFT JOIN student_page2 s2 ON s1.user_id = s2.user_id
                 LEFT JOIN student_page3 s3 ON s1.user_id = s3.user_id
+                LEFT JOIN student_page4 s4 ON s1.user_id = s4.user_id
                 WHERE s1.user_id = %s
             """, [user_id])
             student_data = cursor.fetchone()
+            
             if student_data:
                 student = {
+                    # From student_page1
                     'name': student_data[0],
                     'admission_number': student_data[1],
                     'class': student_data[2],
                     'section': student_data[3],
                     'roll_number': student_data[4],
-                    'email': student_data[5],
-                    'contact': student_data[6],
-                    'address': student_data[7],
-                    'dob': student_data[8],
-                    'gender': student_data[9],
+                    'emis': student_data[5],
+                    
+                    # From student_page2
+                    'tamil_name': student_data[6],
+                    'gender': student_data[7],
+                    'community': student_data[8],
+                    'dob': student_data[9],
+                    'nationality': student_data[10],
+                    'blood_group': student_data[11],
+                    'mother_tongue': student_data[12],
+                    'caste': student_data[13],
+                    'religion': student_data[14],
+                    'place_of_birth': student_data[15],
+                    'aadhaar': student_data[16],
+                    'disability': student_data[17],
+                    'id_mark1': student_data[18],
+                    'id_mark2': student_data[19],
+                    'current_class': student_data[20],
+                    'admission_class': student_data[21],
+                    'admission_year': student_data[22],
+                    'admission_date': student_data[23],
+                    
+                    # From student_page3
+                    'email': student_data[24],
+                    'address': student_data[25],
+                    'contact': student_data[26],
+                    'alt_contact': student_data[27],
+                    'country': student_data[28],
+                    'state': student_data[29],
+                    'city': student_data[30],
+                    'pincode': student_data[31],
+                    'status': student_data[32],
+                    'house': student_data[33],
+                    'teacher_ward': student_data[34],
+                    'rte': student_data[35],
+                    'sports_quota': student_data[36],
+                    'prev_school': student_data[37],
+                    'prev_board': student_data[38],
+                    
+                    # From student_page4
+                    'father_name': student_data[39],
+                    'father_name_tamil': student_data[40],
+                    'mother_name': student_data[41],
+                    'mother_name_tamil': student_data[42],
+                    'father_contact': student_data[43],
+                    'mother_contact': student_data[44],
+                    'father_email': student_data[45],
+                    'mother_email': student_data[46],
+                    'father_qualification': student_data[47],
+                    'mother_qualification': student_data[48],
+                    'father_occupation': student_data[49],
+                    'mother_occupation': student_data[50],
+                    'father_income': student_data[51],
+                    'mother_income': student_data[52],
+                    'guardian_name': student_data[53],
+                    'guardian_contact': student_data[54],
+                    'guardian_email': student_data[55],
+                    'child_living': student_data[56],
+                    'rights_on_child': student_data[57],
+                    'med_blood_group': student_data[58],
+                    'diseases': student_data[59],
+                    'allergies': student_data[60],
+                    'medicines': student_data[61],
+                    'hospital': student_data[62],
+                    'doctor': student_data[63],
                 }
+                
+                print(f"DEBUG: Fetched complete student data for user_id: {user_id}")
+            else:
+                print(f"DEBUG: No student data found for user_id: {user_id}")
+                
     except Exception as e:
         print(f"DEBUG: Error fetching student data: {e}")
+        messages.error(request, f"Error loading student information: {str(e)}")
 
     print(f"DEBUG: Rendering template with profile_picture: {profile_picture}")
     return render(request, "users/parent_profile_view.html", {
@@ -9616,20 +9699,43 @@ def parent_student_portal(request):
 
 
 def parent_student_leave(request):
-    """Handle parent student leave request submission and viewing."""
+    """Handle parent student leave request submission and viewing with auto-filled student data."""
     if "user_id" not in request.session:
         messages.error(request, "Please log in to access the parent student portal.")
         return redirect("/parent_login/")
 
     user_id = request.session["user_id"]
     
+    # Fetch student data from database to pre-fill the form
+    student_data = {}
+    with connection.cursor() as cursor:
+        try:
+            # Fetch student details from student_page1
+            cursor.execute("""
+                SELECT name, admission_number, class, section
+                FROM student_page1
+                WHERE user_id = %s
+                LIMIT 1
+            """, [user_id])
+            result = cursor.fetchone()
+            if result:
+                student_data = {
+                    'name': result[0],
+                    'admission_number': result[1],
+                    'class': result[2],
+                    'section': result[3]
+                }
+        except Exception as e:
+            messages.error(request, f"Error fetching student data: {str(e)}")
+    
     if request.method == "POST":
         try:
+            # Get data from readonly fields (already validated from database)
             form_data = {
-                "student_name": request.POST.get("student_name", "").strip(),
-                "reg_number": request.POST.get("reg_number", "").strip(),
-                "class_number": request.POST.get("class", "").strip(),
-                "section": request.POST.get("section", "").strip(),
+                "student_name": student_data.get('name', ''),
+                "reg_number": student_data.get('admission_number', ''),
+                "class_number": student_data.get('class', ''),
+                "section": student_data.get('section', ''),
                 "leave_reason": request.POST.get("leave_reason", "").strip(),
                 "leave_start_date": request.POST.get("leave_start_date", ""),
                 "leave_end_date": request.POST.get("leave_end_date", ""),
@@ -9637,21 +9743,25 @@ def parent_student_leave(request):
                 "half_day_type": request.POST.get("half_day_type", "")
             }
 
-            required_fields = ["student_name", "reg_number", "class_number", "section", "leave_reason", 
-                             "leave_start_date", "leave_end_date", "leave_duration"]
+            # Validate required fields
+            required_fields = ["student_name", "reg_number", "class_number", "section", 
+                             "leave_reason", "leave_start_date", "leave_end_date", "leave_duration"]
             missing_fields = [field for field in required_fields if not form_data[field]]
             if missing_fields:
                 messages.error(request, f"Missing required fields: {', '.join(missing_fields)}")
                 return redirect("parent_student_leave")
             
+            # Validate leave duration
             if form_data["leave_duration"] not in ["full", "half"]:
                 messages.error(request, "Invalid leave duration.")
                 return redirect("parent_student_leave")
                 
+            # Validate half day type if half day is selected
             if form_data["leave_duration"] == "half" and not form_data["half_day_type"]:
                 messages.error(request, "Please select half day type for half-day leave.")
                 return redirect("parent_student_leave")
 
+            # Validate dates
             try:
                 start_date = datetime.strptime(form_data["leave_start_date"], "%Y-%m-%d")
                 end_date = datetime.strptime(form_data["leave_end_date"], "%Y-%m-%d")
@@ -9662,6 +9772,7 @@ def parent_student_leave(request):
                 messages.error(request, "Invalid date format.")
                 return redirect("parent_student_leave")
 
+            # Insert leave request into database
             with connection.cursor() as cursor:
                 cursor.execute("""
                     INSERT INTO student_leave_requests 
@@ -9697,7 +9808,8 @@ def parent_student_leave(request):
             messages.error(request, f"Error fetching leave requests: {str(e)}")
 
     return render(request, "users/parent_student_leave.html", {
-        "leave_requests": leave_requests
+        "leave_requests": leave_requests,
+        "student_data": student_data
     })
 
 
