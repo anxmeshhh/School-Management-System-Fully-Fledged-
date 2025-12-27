@@ -35,6 +35,8 @@ urlpatterns = [
     path('teacher_progress_card/', views.teacher_progress_card, name='teacher_progress_card'),
     path('teacher_get_students/', views.teacher_get_students, name='teacher_get_students'),
     path('teacher_get_subjects/', views.teacher_get_subjects, name='teacher_get_subjects'),
+    path('api/get-teacher/<int:teacher_id>/', views.get_teacher_api, name='get_teacher_api'),
+
 
     path('homework/', views.homework_view, name='homework'),
     path('study_materials/', views.study_materials, name='study_materials'),

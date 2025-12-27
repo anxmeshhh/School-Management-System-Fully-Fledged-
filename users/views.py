@@ -5628,39 +5628,64 @@ def update_teacher(request):
                     is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
                 ]
 
-                if profile_exists:
-                    # Update
-                    cursor.execute("""
-                        UPDATE teacher_profiles SET
-                            full_name = %s, gender = %s, date_of_birth = %s, blood_group = %s, nationality = %s,
-                            mobile_number = %s, alternate_contact = %s, official_email = %s, 
-                            residential_address = %s, city_state_pin = %s,
-                            emergency_contact_name = %s, emergency_contact_number = %s,
-                            designation = %s, department = %s, subjects_taught = %s, 
-                            classes_assigned = %s, sections = %s,
-                            employee_type = %s, employment_status = %s, joining_date = %s,
-                            qualification = %s, specialization = %s, board_university = %s, year_of_passing = %s,
-                            bed_ctet_tet = %s, special_training = %s, workshops_attended = %s,
-                            is_class_teacher = %s, house_club_incharge = %s, 
-                            cocurricular_responsibilities = %s, exam_duties = %s,
-                            updated_at = NOW()
-                        WHERE teacher_id = %s
-                    """, profile_data[1:] + [teacher_id])  # Skip teacher_id in VALUES, add at end for WHERE
-                else:
-                    # Insert
-                    cursor.execute("""
-                        INSERT INTO teacher_profiles (
-                            teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
-                            mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
-                            emergency_contact_name, emergency_contact_number,
-                            designation, department, subjects_taught, classes_assigned, sections,
-                            employee_type, employment_status, joining_date,
-                            qualification, specialization, board_university, year_of_passing,
-                            bed_ctet_tet, special_training, workshops_attended,
-                            is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
-                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                                  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """, profile_data)
+                # Replace your if profile_exists block with this complete fixed version:
+
+                                if profile_exists:
+                                    # Update - Explicit parameters to avoid any mismatch
+                                    cursor.execute("""
+                                        UPDATE teacher_profiles SET
+                                            full_name = %s, gender = %s, date_of_birth = %s, blood_group = %s, 
+                                            nationality = %s, mobile_number = %s, alternate_contact = %s, 
+                                            official_email = %s, residential_address = %s, city_state_pin = %s,
+                                            emergency_contact_name = %s, emergency_contact_number = %s,
+                                            designation = %s, department = %s, subjects_taught = %s, 
+                                            classes_assigned = %s, sections = %s,
+                                            employee_type = %s, employment_status = %s, joining_date = %s,
+                                            qualification = %s, specialization = %s, board_university = %s, 
+                                            year_of_passing = %s, bed_ctet_tet = %s, special_training = %s, 
+                                            workshops_attended = %s, is_class_teacher = %s, house_club_incharge = %s, 
+                                            cocurricular_responsibilities = %s, exam_duties = %s,
+                                            updated_at = NOW()
+                                        WHERE teacher_id = %s
+                                    """, [
+                                        # Pass each variable explicitly in the exact order
+                                        full_name, gender, date_of_birth, blood_group, nationality,
+                                        mobile_number, alternate_contact, official_email, residential_address, 
+                                        city_state_pin, emergency_contact_name, emergency_contact_number,
+                                        designation, department, subjects_taught, classes_assigned, sections,
+                                        employee_type, employment_status, joining_date,
+                                        qualification, specialization, board_university, year_of_passing,
+                                        bed_ctet_tet, special_training, workshops_attended,
+                                        is_class_teacher, house_club_incharge, cocurricular_responsibilities, 
+                                        exam_duties,
+                                        teacher_id  # Last parameter for WHERE clause
+                                    ])
+                                else:
+                                    # Insert - Same explicit approach
+                                    cursor.execute("""
+                                        INSERT INTO teacher_profiles (
+                                            teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
+                                            mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
+                                            emergency_contact_name, emergency_contact_number,
+                                            designation, department, subjects_taught, classes_assigned, sections,
+                                            employee_type, employment_status, joining_date,
+                                            qualification, specialization, board_university, year_of_passing,
+                                            bed_ctet_tet, special_training, workshops_attended,
+                                            is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
+                                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                                                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                    """, [
+                                        # Pass each variable explicitly - teacher_id first for INSERT
+                                        teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
+                                        mobile_number, alternate_contact, official_email, residential_address, 
+                                        city_state_pin, emergency_contact_name, emergency_contact_number,
+                                        designation, department, subjects_taught, classes_assigned, sections,
+                                        employee_type, employment_status, joining_date,
+                                        qualification, specialization, board_university, year_of_passing,
+                                        bed_ctet_tet, special_training, workshops_attended,
+                                        is_class_teacher, house_club_incharge, cocurricular_responsibilities, 
+                                        exam_duties
+                                    ])
 
         messages.success(request, f'Teacher "{full_name}" has been updated successfully!')
         
@@ -5859,6 +5884,93 @@ def get_teacher_data(request, teacher_id):
             
     except Error as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+
+@require_http_methods(["GET"])
+def get_teacher_api(request, teacher_id):
+    """
+    API endpoint to fetch teacher data for editing.
+    """
+    if 'admin_id' not in request.session:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    t.id, t.name, t.email, t.subject, t.class_teacher_of, t.password,
+                    tp.full_name, tp.gender, tp.date_of_birth, tp.blood_group, tp.nationality,
+                    tp.mobile_number, tp.alternate_contact, tp.official_email,
+                    tp.residential_address, tp.city_state_pin,
+                    tp.emergency_contact_name, tp.emergency_contact_number,
+                    tp.designation, tp.department, tp.subjects_taught, 
+                    tp.classes_assigned, tp.sections,
+                    tp.employee_type, tp.employment_status, tp.joining_date,
+                    tp.qualification, tp.specialization, tp.board_university, 
+                    tp.year_of_passing, tp.bed_ctet_tet, tp.special_training, 
+                    tp.workshops_attended,
+                    tp.is_class_teacher, tp.house_club_incharge, 
+                    tp.cocurricular_responsibilities, tp.exam_duties
+                FROM teachers t
+                LEFT JOIN teacher_profiles tp ON t.id = tp.teacher_id
+                WHERE t.id = %s
+            """, [teacher_id])
+            
+            row = cursor.fetchone()
+            if not row:
+                return JsonResponse({'error': 'Teacher not found'}, status=404)
+            
+            teacher = {
+                'id': row[0],
+                'name': row[1],
+                'email': row[2],
+                'subject': row[3],
+                'class_teacher_of': row[4] or '',
+                'password': row[5],
+                'full_name': row[6] or row[1],
+                'gender': row[7] or '',
+                'date_of_birth': str(row[8]) if row[8] else '',
+                'blood_group': row[9] or '',
+                'nationality': row[10] or 'Indian',
+                'mobile_number': row[11] or '',
+                'alternate_contact': row[12] or '',
+                'official_email': row[13] or row[2],
+                'residential_address': row[14] or '',
+                'city_state_pin': row[15] or '',
+                'emergency_contact_name': row[16] or '',
+                'emergency_contact_number': row[17] or '',
+                'designation': row[18] or '',
+                'department': row[19] or '',
+                'subjects_taught': row[20] or '',
+                'classes_assigned': row[21] or '',
+                'sections': row[22] or '',
+                'employee_type': row[23] or '',
+                'employment_status': row[24] or 'Active',
+                'joining_date': str(row[25]) if row[25] else '',
+                'qualification': row[26] or '',
+                'specialization': row[27] or '',
+                'board_university': row[28] or '',
+                'year_of_passing': row[29] if row[29] else '',
+                'bed_ctet_tet': row[30] or '',
+                'special_training': row[31] or '',
+                'workshops_attended': row[32] or '',
+                'is_class_teacher': row[33] or 'No',
+                'house_club_incharge': row[34] or '',
+                'cocurricular_responsibilities': row[35] or '',
+                'exam_duties': row[36] or '',
+            }
+            
+            return JsonResponse(teacher)
+            
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+
 
 
 
@@ -10294,7 +10406,7 @@ def parent_student_progress_card(request):
     user_id = request.session['user_id']
     
     with connection.cursor() as cursor:
-        # === Fetch Student Details (with admission_number fallback) ===
+        # === Fetch Student Details ===
         try:
             cursor.execute("""
                 SELECT 
@@ -10341,7 +10453,7 @@ def parent_student_progress_card(request):
             messages.error(request, 'Invalid class or section information.')
             return redirect('parent_dashboard')
         
-        # === Fetch ALL Subjects and Marks (LEFT JOIN so all subjects appear even if no marks) ===
+        # === Fetch ALL Subjects and Marks ===
         cursor.execute("""
             SELECT 
                 ss.name AS subject_name,
@@ -10367,17 +10479,41 @@ def parent_student_progress_card(request):
             for row in marks_rows
         ]
         
-        # === Fetch Class Teacher's Signature ===
+        # === CRITICAL FIX: Find Class Teacher by class_teacher_of field ===
+        class_section_key = f"{class_name}-{section}"
+        
         cursor.execute("""
-            SELECT ts.signature
+            SELECT t.id, t.name
             FROM teachers t
-            JOIN teacher_signature ts ON ts.teacher_id = t.id
             WHERE t.class_teacher_of = %s
             LIMIT 1
-        """, [f"{class_name}-{section}"])
+        """, [class_section_key])
         
-        teacher_sig_row = cursor.fetchone()
-        teacher_signature = teacher_sig_row[0] if teacher_sig_row else None
+        class_teacher_row = cursor.fetchone()
+        
+        teacher_signature = None
+        class_teacher_name = None
+        
+        if class_teacher_row:
+            class_teacher_id = class_teacher_row[0]
+            class_teacher_name = class_teacher_row[1]
+            
+            # Fetch Class Teacher's Signature using their ID
+            cursor.execute("""
+                SELECT signature
+                FROM teacher_signature
+                WHERE teacher_id = %s
+                LIMIT 1
+            """, [class_teacher_id])
+            
+            teacher_sig_row = cursor.fetchone()
+            teacher_signature = teacher_sig_row[0] if teacher_sig_row else None
+        else:
+            # Log warning if no class teacher found
+            messages.warning(
+                request, 
+                f'No class teacher assigned for Class {class_name}-{section}. Please contact administration.'
+            )
         
         # === Fetch Principal Signature (global) ===
         cursor.execute("SELECT signature FROM principal_signature LIMIT 1")
@@ -10385,7 +10521,7 @@ def parent_student_progress_card(request):
         principal_signature = principal_sig_row[0] if principal_sig_row else None
         
         # === Calculate Performance Summary ===
-        has_marks = any(m['marks'] > 0 for m in marks)  # True if at least one subject has marks
+        has_marks = any(m['marks'] > 0 for m in marks)
         total_marks = sum(m['marks'] for m in marks)
         total_max_marks = sum(m['max_marks'] for m in marks)
         
@@ -10406,7 +10542,7 @@ def parent_student_progress_card(request):
         else:
             overall_grade = 'E'
         
-        # Pass/Fail Status (must pass minimum 33% in ALL subjects)
+        # Pass/Fail Status
         passed = all(m['marks'] >= (0.33 * m['max_marks']) for m in marks) if marks else False
         status = 'Pass' if passed else 'Fail'
         
@@ -10422,7 +10558,7 @@ def parent_student_progress_card(request):
                 'class': class_name,
                 'section': section,
                 'admission_number': admission_number,
-                'image_path': image_path,  # Will be used as /media/{{ image_path }} in template
+                'image_path': image_path,
             },
             'marks': marks,
             'total_marks': total_marks,
@@ -10432,6 +10568,7 @@ def parent_student_progress_card(request):
             'status': status,
             'teacher_signature': teacher_signature,
             'principal_signature': principal_signature,
+            'class_teacher_name': class_teacher_name,  # NEW: For display
             'has_marks': has_marks,
             'class_name': class_name,
             'section': section or 'N/A',

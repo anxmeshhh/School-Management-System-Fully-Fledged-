@@ -963,21 +963,27 @@
                                     <input type="date" name="joining_date">
                                 </div>
                                 <div class="form-group">
-                                    <label><i class="fas fa-chalkboard-teacher" style="color: #10b981;"></i> Class Teacher Of</label>
-                                    <select name="class_teacher_of">
-                                        <option value="">Not Assigned</option>
-                                        {% for i in "123456789" %}
-                                            {% for section in "ABC" %}
-                                                <option value="Class {{ i }}-{{ section }}">Class {{ i }}-{{ section }}</option>
-                                            {% endfor %}
-                                        {% endfor %}
-                                        {% for i in "1012" %}
-                                            {% for section in "ABC" %}
-                                                <option value="Class 1{{ i }}-{{ section }}">Class 1{{ i }}-{{ section }}</option>
-                                            {% endfor %}
-                                        {% endfor %}
-                                    </select>
-                                </div>
+    <label><i class="fas fa-chalkboard-teacher" style="color: #10b981;"></i> Class Teacher Of</label>
+    <select name="class_teacher_of">
+        <option value="">Not Assigned</option>
+        <!-- Classes 1-9 -->
+        {% for i in "123456789" %}
+            {% for section in "ABC" %}
+                <option value="{{ i }}-{{ section }}">Class {{ i }}-{{ section }}</option>
+            {% endfor %}
+        {% endfor %}
+        <!-- Classes 10-12 -->
+        <option value="10-A">Class 10-A</option>
+        <option value="10-B">Class 10-B</option>
+        <option value="10-C">Class 10-C</option>
+        <option value="11-A">Class 11-A</option>
+        <option value="11-B">Class 11-B</option>
+        <option value="11-C">Class 11-C</option>
+        <option value="12-A">Class 12-A</option>
+        <option value="12-B">Class 12-B</option>
+        <option value="12-C">Class 12-C</option>
+    </select>
+</div>
                             </div>
                         </div>
 
@@ -1537,9 +1543,10 @@
             let options = '';
             for (let i = 1; i <= 12; i++) {
                 for (let section of ['A', 'B', 'C']) {
-                    const value = `Class ${i}-${section}`;
+                    const value = `${i}-${section}`;  // ✅ CORRECT FORMAT: "12-A"
+                    const displayValue = `Class ${i}-${section}`;  // For display only
                     const selected = value === selectedClass ? 'selected' : '';
-                    options += `<option value="${value}" ${selected}>${value}</option>`;
+                    options += `<option value="${value}" ${selected}>${displayValue}</option>`;
                 }
             }
             return options;
