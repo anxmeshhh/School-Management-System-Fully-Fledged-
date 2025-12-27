@@ -2943,8 +2943,44 @@ def teacher_homework_panel(request):
 def teacher_view(request):
     return render(request, "users/teacher.html")
 
-def fees(request):
-    return render(request, "users/fees.html")
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+# Admin Fees Panel
+def fees_admin(request):
+    if 'admin_id' not in request.session:
+        messages.error(request, 'Admin login required.')
+        return redirect('admin_login')
+    
+    return render(request, 'users/fees_admin.html', {
+        'user_type': 'admin',
+        'user_id': request.session['admin_id']
+    })
+
+# Parent Fees Panel
+def fees_parent(request):
+    if 'user_id' not in request.session:
+        messages.error(request, 'Please log in.')
+        return redirect('login')  # or parent_login
+    
+    # Optional: verify it's a parent (if you have role check)
+    # ...
+    
+    return render(request, 'users/fees_parent.html', {
+        'user_type': 'parent',
+        'user_id': request.session['user_id']
+    })
+
+# Student Fees Panel
+def fees_student(request):
+    if 'user_id' not in request.session:
+        messages.error(request, 'Please log in.')
+        return redirect('login')  # or student_login
+    
+    return render(request, 'users/fees_student.html', {
+        'user_type': 'student',
+        'user_id': request.session['user_id']
+    })
 
 
 from django.shortcuts import render, redirect

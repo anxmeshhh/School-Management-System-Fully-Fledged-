@@ -1,0 +1,855 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Admission & Fees Payment</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #ffffff;
+            color: #495057;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        :root {
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #a8d5c2;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #ced4da;
+            --darker-border: #495057;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --dull-highlighter: #d4edda;
+            --username-bg: #e6f4ea;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: var(--transition);
+            border-right: 2px solid var(--sidebar-border);
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            background: var(--white);
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid var(--sidebar-border);
+        }
+
+        .logo-container {
+            width: 100px;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border);
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: var(--transition);
+        }
+
+        .logo-container:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .sidebar-header:hover {
+            background: var(--light-bg);
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: var(--dull-highlighter);
+            border-left: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav a img {
+            margin-right: 1rem;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .sidebar-nav a:hover img {
+            transform: scale(1.1);
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            background: var(--white);
+            border: 2px solid var(--sidebar-border);
+            cursor: pointer;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            width: 50px;
+            height: 50px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: scale(1.05);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .page-wrapper {
+            margin-left: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+
+        .page-header {
+            background: var(--white);
+            color: var(--text-color);
+            padding: 1.5rem;
+            border: 2px solid var(--darker-border);
+            box-shadow: var(--shadow-sm);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 0.75rem 2rem;
+            background: var(--white);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .tab:hover {
+            background: var(--dull-highlighter);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        .form-section {
+            display: none;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-section h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light-bg);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+        }
+
+        .payment-methods label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .payment-methods input[type="radio"] {
+            width: auto;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        button {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            width: 100%;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            border: 2px solid var(--darker-border);
+            position: relative;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .modal-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .modal-content p {
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .modal-buttons button {
+            width: auto;
+            padding: 0.75rem 2rem;
+        }
+
+        .cancel-btn {
+            background: var(--light-bg);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+        }
+
+        .cancel-btn:hover {
+            background: var(--border-color);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 250px; }
+            .page-wrapper { margin-left: 250px; }
+            .logo-container { width: 80px; height: 64px; }
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: flex; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .sidebar-overlay { display: block; }
+            .page-wrapper { margin-left: 0; }
+
+            .container {
+                padding: 1.5rem 15px;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                width: 100%;
+                text-align: center;
+            }
+
+            .form-section {
+                padding: 1.5rem;
+            }
+
+            .form-section h2 {
+                font-size: 1.3rem;
+            }
+
+            .payment-methods {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+            }
+
+            .modal-buttons button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar { width: 100%; max-width: 320px; }
+
+            .page-header h1 {
+                font-size: 1.25rem;
+            }
+
+            .form-section h2 {
+                font-size: 1.1rem;
+            }
+
+            input, select, button {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media print {
+            .sidebar, .menu-toggle, .tabs, button {
+                display: none;
+            }
+            .page-wrapper {
+                margin-left: 0;
+            }
+            body {
+                padding: 0;
+            }
+        }
+
+        @media (hover: none) {
+            .form-section:hover, .sidebar:hover, .page-header:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .logo-container:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .sidebar-nav a:hover {
+                transform: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'admin_dashboard' %}" style="text-decoration: none; color: inherit;">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
+                </div>
+            </a>
+            <span>Manavargal SMS</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'admin_master' %}">
+                <img src="https://img.icons8.com/fluency/24/home.png" alt="Master Data">
+                <span>Master Data</span>
+            </a>
+            <a href="{% url 'admin_accept_portal' %}">
+                <img src="https://img.icons8.com/color/24/000000/calendar--v1.png" alt="Leave Reports">
+                <span>Students Leave Reports</span>
+            </a>
+            <a href="{% url 'admin_attendance_portal' %}">
+                <img src="https://img.icons8.com/color/48/todo-list.png" alt="Attendance">
+                <span>Students Attendance Reports</span>
+            </a>
+            <a href="{% url 'admin_circular_upload' %}">
+                <img src="https://img.icons8.com/color/24/000000/classroom.png" alt="Circulars">
+                <span>Circulars</span>
+            </a>
+            <a href="{% url 'admin_study_materials_upload' %}">
+                <img src="https://img.icons8.com/color/24/000000/graduation-cap.png" alt="Materials">
+                <span>Student Materials</span>
+            </a>
+            <a href="{% url 'admin_homework_panel' %}">
+                <img src="https://img.icons8.com/color/24/000000/homework.png" alt="Homework">
+                <span>Homework</span>
+            </a>
+            <a href="{% url 'admin_timetable' %}">
+                <img src="https://img.icons8.com/color/24/000000/add-user-male.png" alt="Timetable">
+                <span>Timetable/Exam Scheduler</span>
+            </a>
+            <a href="{% url 'mark_entry' %}">
+                <img src="https://img.icons8.com/color/24/000000/user-group-man-woman.png" alt="Progress Card">
+                <span>Progress Card</span>
+            </a>
+            <a href="{% url 'fees_admin' %}" class="active">
+                <img src="https://img.icons8.com/color/24/000000/edit--v1.png" alt="Fees">
+                <span>Fees Collection</span>
+            </a>
+            <a href="{% url 'manage_teachers' %}">
+                <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="Teachers">
+                <span>Teacher Management</span>
+            </a>
+            <a href="{% url 'admin_send_student_pdf' %}">
+                <img src="https://img.icons8.com/color/24/000000/whatsapp.png" alt="WhatsApp">
+                <span>WHATSAPP BETA TESTING</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="page-wrapper">
+        <div class="container">
+        <header class="page-header">
+            <h1><i class="fas fa-money-check-alt" style="color: #00a676;"></i> School Admission & Fees Management</h1>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showForm('admission')">
+                <i class="fas fa-user-plus"></i> Online Admission
+            </div>
+            <div class="tab" onclick="showForm('fees')">
+                <i class="fas fa-credit-card"></i> Fees Payment
+            </div>
+        </div>
+
+        <div id="admission" class="form-section active">
+            <h2><i class="fas fa-user-graduate" style="color: #3b82f6;"></i> Online Admission Form</h2>
+            <form id="admission-form" onsubmit="event.preventDefault(); showConfirmation('admission');">
+                <div class="form-group">
+                    <label for="student-name">Student Name</label>
+                    <input type="text" id="student-name" placeholder="Enter student's full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="parent-name">Parent/Guardian Name</label>
+                    <input type="text" id="parent-name" placeholder="Enter parent/guardian name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter email address" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="Enter 10-digit phone number" required>
+                </div>
+                <div class="form-group">
+                    <label for="admission-grade">Grade Applying For</label>
+                    <select id="admission-grade" required>
+                        <option value="">Select Grade</option>
+                        <option value="1">Grade 1</option>
+                        <option value="2">Grade 2</option>
+                        <option value="3">Grade 3</option>
+                        <option value="4">Grade 4</option>
+                        <option value="5">Grade 5</option>
+                        <option value="6">Grade 6</option>
+                        <option value="7">Grade 7</option>
+                        <option value="8">Grade 8</option>
+                        <option value="9">Grade 9</option>
+                        <option value="10">Grade 10</option>
+                        <option value="11">Grade 11</option>
+                        <option value="12">Grade 12</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="admission-fee">Admission Fee (₹)</label>
+                    <input type="number" id="admission-fee" value="2000" required>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <div class="payment-methods">
+                        <label>
+                            <input type="radio" name="admission-payment" value="card" required>
+                            <i class="fas fa-credit-card"></i> Credit/Debit Card
+                        </label>
+                        <label>
+                            <input type="radio" name="admission-payment" value="upi">
+                            <i class="fab fa-google-pay"></i> UPI
+                        </label>
+                        <label>
+                            <input type="radio" name="admission-payment" value="netbanking">
+                            <i class="fas fa-university"></i> Net Banking
+                        </label>
+                    </div>
+                </div>
+                <button type="submit">
+                    <i class="fas fa-arrow-right"></i> Proceed to Payment
+                </button>
+            </form>
+        </div>
+
+        <div id="fees" class="form-section">
+            <h2><i class="fas fa-wallet" style="color: #f59e0b;"></i> Fees Payment Form</h2>
+            <form id="fees-form" onsubmit="event.preventDefault(); showConfirmation('fees');">
+                <div class="form-group">
+                    <label for="student-id">Student ID</label>
+                    <input type="text" id="student-id" placeholder="Enter student ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="fees-student-name">Student Name</label>
+                    <input type="text" id="fees-student-name" placeholder="Enter student's full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="fees-grade">Current Grade</label>
+                    <select id="fees-grade" required>
+                        <option value="">Select Grade</option>
+                        <option value="1">Grade 1</option>
+                        <option value="2">Grade 2</option>
+                        <option value="3">Grade 3</option>
+                        <option value="4">Grade 4</option>
+                        <option value="5">Grade 5</option>
+                        <option value="6">Grade 6</option>
+                        <option value="7">Grade 7</option>
+                        <option value="8">Grade 8</option>
+                        <option value="9">Grade 9</option>
+                        <option value="10">Grade 10</option>
+                        <option value="11">Grade 11</option>
+                        <option value="12">Grade 12</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="term">Term</label>
+                    <select id="term" required>
+                        <option value="">Select Term</option>
+                        <option value="1">Term 1</option>
+                        <option value="2">Term 2</option>
+                        <option value="3">Term 3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fee-amount">Fee Amount (₹)</label>
+                    <input type="number" id="fee-amount" placeholder="Enter fee amount" required>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <div class="payment-methods">
+                        <label>
+                            <input type="radio" name="fees-payment" value="card" required>
+                            <i class="fas fa-credit-card"></i> Credit/Debit Card
+                        </label>
+                        <label>
+                            <input type="radio" name="fees-payment" value="upi">
+                            <i class="fab fa-google-pay"></i> UPI
+                        </label>
+                        <label>
+                            <input type="radio" name="fees-payment" value="netbanking">
+                            <i class="fas fa-university"></i> Net Banking
+                        </label>
+                    </div>
+                </div>
+                <button type="submit">
+                    <i class="fas fa-arrow-right"></i> Proceed to Payment
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-question-circle" style="color: #00a676;"></i> Confirm Payment</h3>
+            <p>Are you sure you want to proceed with this payment?</p>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closeModal()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button onclick="proceedToPayment()">
+                    <i class="fas fa-check"></i> Yes, Proceed
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentForm = '';
+
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+            function openSidebar() {
+                sidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
+                });
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        closeSidebar();
+                    }
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        function showForm(formId) {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(formId).classList.add('active');
+            event.target.closest('.tab').classList.add('active');
+        }
+
+        function showConfirmation(formId) {
+            currentForm = formId;
+            document.getElementById('confirmation-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('confirmation-modal').style.display = 'none';
+        }
+
+        function proceedToPayment() {
+            const form = document.getElementById(currentForm + '-form');
+            alert('Redirecting to payment gateway...');
+            // form.submit(); // Uncomment when ready to submit
+            closeModal();
+        }
+    </script>
+</body>
+</html>

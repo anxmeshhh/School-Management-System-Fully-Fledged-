@@ -43,7 +43,9 @@ urlpatterns = [
     
     path('teacher-view/', views.teacher_view, name='teacher'),
     path('teacher_profile/', views.teacher_profile, name='teacher_profile'),
-    path('fees/', views.fees, name='fees'),
+    path('fees/admin/', views.fees_admin, name='fees_admin'),
+    path('fees/parent/', views.fees_parent, name='fees_parent'),
+    path('fees/student/', views.fees_student, name='fees_student'),
     
     path('generate-id-card/', views.generate_id_card, name='generate_id_card'),
     path('qr_page/', views.qr_page, name='qr_page'),
