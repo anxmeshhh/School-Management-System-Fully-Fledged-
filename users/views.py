@@ -7464,42 +7464,47 @@ def teacher_mark_entry(request):
     teacher_id = request.session['teacher_id']
 
     with connection.cursor() as cursor:
-        # Get teacher details including assigned class
+        # Get teacher details
         cursor.execute(
             "SELECT name, subject, class_teacher_of FROM teachers WHERE id = %s",
             [teacher_id]
         )
         teacher = cursor.fetchone()
+
         if not teacher:
-            messages.error(request, 'Teacher not found.')
+            messages.error(request, 'Teacher account not found. Please contact admin.')
             return redirect('teacher_login')
 
         teacher_name, teacher_subject, class_teacher_of = teacher
-        is_class_teacher = bool(class_teacher_of)
 
-        if not is_class_teacher:
-            messages.error(request, 'You are not assigned as a class teacher. Contact admin.')
-            return redirect('teacher_login')  # Or show a different page
+        # CRITICAL CHECK: Teacher must be assigned as class teacher
+        if not class_teacher_of:
+            messages.error(request, 'You are not assigned as a Class Teacher for any class/section. Please contact the admin to assign you a class.')
+            return render(request, 'users/teacher_mark_entry.html', {
+                'error_message': 'No class assigned',
+                'teacher_name': teacher_name,
+            })
 
-        # Parse assigned class-section
+        # Parse class and section (e.g., "12-A" → class="12", section="A")
         try:
-            assigned_class, assigned_section = class_teacher_of.split('-')
-        except:
-            messages.error(request, 'Invalid class assignment format.')
+            selected_class, selected_section = class_teacher_of.split('-')
+            selected_class = selected_class.strip()
+            selected_section = selected_section.strip()
+        except ValueError:
+            messages.error(request, f'Invalid class format: "{class_teacher_of}". Expected format: "12-A". Contact admin.')
             return redirect('teacher_login')
-
-        # Force teacher to only work on their assigned class/section
-        selected_class = assigned_class
-        selected_section = assigned_section
 
         # Get subjects for this class
         cursor.execute(
             "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
             [selected_class]
         )
-        subjects = [{'id': r[0], 'name': r[1], 'max_marks': r[2]} for r in cursor.fetchall()]
+        subjects = [
+            {'id': row[0], 'name': row[1], 'max_marks': row[2]}
+            for row in cursor.fetchall()
+        ]
 
-        # Get students
+        # Get students in this class-section
         students = []
         try:
             cursor.execute("""
@@ -7509,10 +7514,17 @@ def teacher_mark_entry(request):
                 WHERE class = %s AND section = %s
                 ORDER BY name
             """, [selected_class, selected_section])
+
             students = [
-                {'id': r[0], 'name': r[1], 'roll_number': r[2],
-                 'class': r[3], 'section': r[4], 'admission_number': r[5]}
-                for r in cursor.fetchall()
+                {
+                    'id': row[0],
+                    'name': row[1],
+                    'roll_number': row[2],
+                    'class': row[3],
+                    'section': row[4],
+                    'admission_number': row[5]
+                }
+                for row in cursor.fetchall()
             ]
         except Exception as e:
             if "admission_number" in str(e):
@@ -7523,14 +7535,24 @@ def teacher_mark_entry(request):
                     ORDER BY name
                 """, [selected_class, selected_section])
                 students = [
-                    {'id': r[0], 'name': r[1], 'roll_number': r[2],
-                     'class': r[3], 'section': r[4], 'admission_number': ''}
-                    for r in cursor.fetchall()
+                    {
+                        'id': row[0],
+                        'name': row[1],
+                        'roll_number': row[2],
+                        'class': row[3],
+                        'section': row[4],
+                        'admission_number': ''
+                    }
+                    for row in cursor.fetchall()
                 ]
 
-        # Get actual class teacher name for display (should be this teacher)
-        cursor.execute("SELECT name FROM teachers WHERE class_teacher_of = %s", [class_teacher_of])
-        class_teacher_name = cursor.fetchone()[0] if cursor.fetchone() else teacher_name
+        # Get class teacher name for display (should be this teacher)
+        cursor.execute(
+            "SELECT name FROM teachers WHERE class_teacher_of = %s",
+            [class_teacher_of]
+        )
+        class_teacher_row = cursor.fetchone()
+        class_teacher_name = class_teacher_row[0] if class_teacher_row else teacher_name
 
     return render(request, 'users/teacher_mark_entry.html', {
         'subjects': subjects,
@@ -7543,7 +7565,6 @@ def teacher_mark_entry(request):
         'selected_section': selected_section,
         'assigned_class_section': class_teacher_of,
     })
-
 
 from django.db import connection, transaction
 from django.http import JsonResponse
