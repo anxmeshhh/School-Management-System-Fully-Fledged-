@@ -7477,24 +7477,34 @@ def teacher_mark_entry(request):
 
         teacher_name, teacher_subject, class_teacher_of = teacher
 
-        # CRITICAL CHECK: Teacher must be assigned as class teacher
+        # Check if teacher is assigned as class teacher
         if not class_teacher_of:
-            messages.error(request, 'You are not assigned as a Class Teacher for any class/section. Please contact the admin to assign you a class.')
+            messages.error(request, 'You are not assigned as a Class Teacher for any class/section. Please contact the admin.')
             return render(request, 'users/teacher_mark_entry.html', {
-                'error_message': 'No class assigned',
                 'teacher_name': teacher_name,
+                'error_message': 'No class assigned yet.',
+                'subjects': [],
+                'students': [],
             })
 
-        # Parse class and section (e.g., "12-A" → class="12", section="A")
-        try:
-            selected_class, selected_section = class_teacher_of.split('-')
-            selected_class = selected_class.strip()
-            selected_section = selected_section.strip()
-        except ValueError:
-            messages.error(request, f'Invalid class format: "{class_teacher_of}". Expected format: "12-A". Contact admin.')
+        # === SMART PARSING: Handle common format mistakes ===
+        clean_value = class_teacher_of.strip()
+
+        # Remove "Class " or "class " prefix if present
+        if clean_value.lower().startswith('class '):
+            clean_value = clean_value[6:].strip()
+
+        # Split by dash, ignore empty parts
+        parts = [part.strip() for part in clean_value.split('-') if part.strip()]
+
+        if len(parts) != 2:
+            messages.error(request, f'Invalid class format: "{class_teacher_of}". Expected format: "12-A". Contact admin to correct it.')
             return redirect('teacher_login')
 
-        # Get subjects for this class
+        selected_class = parts[0]                    # e.g., "12" or "2"
+        selected_section = parts[1].upper()          # e.g., "A" → always uppercase
+
+        # === Get subjects for this class ===
         cursor.execute(
             "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
             [selected_class]
@@ -7504,7 +7514,7 @@ def teacher_mark_entry(request):
             for row in cursor.fetchall()
         ]
 
-        # Get students in this class-section
+        # === Get students in this class-section ===
         students = []
         try:
             cursor.execute("""
@@ -7546,7 +7556,7 @@ def teacher_mark_entry(request):
                     for row in cursor.fetchall()
                 ]
 
-        # Get class teacher name for display (should be this teacher)
+        # === Get class teacher name for display (safe) ===
         cursor.execute(
             "SELECT name FROM teachers WHERE class_teacher_of = %s",
             [class_teacher_of]
@@ -7554,6 +7564,7 @@ def teacher_mark_entry(request):
         class_teacher_row = cursor.fetchone()
         class_teacher_name = class_teacher_row[0] if class_teacher_row else teacher_name
 
+    # === Render the page ===
     return render(request, 'users/teacher_mark_entry.html', {
         'subjects': subjects,
         'students': students,
@@ -7563,7 +7574,7 @@ def teacher_mark_entry(request):
         'teacher_subject': teacher_subject,
         'selected_class': selected_class,
         'selected_section': selected_section,
-        'assigned_class_section': class_teacher_of,
+        'assigned_class_section': class_teacher_of,  # Original value for display if needed
     })
 
 from django.db import connection, transaction
