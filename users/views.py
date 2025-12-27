@@ -7482,19 +7482,12 @@ def teacher_mark_entry(request):
 
         teacher_name, teacher_subject, class_teacher_of = teacher
 
-        # Get all classes and sections for dropdowns (same as admin page)
-        cursor.execute("SELECT DISTINCT class FROM student_page1 ORDER BY class")
-        classes = [row[0] for row in cursor.fetchall() if row[0]]
-
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL ORDER BY section")
-        sections = [row[0] for row in cursor.fetchall() if row[0]]
-
-        # Default selected values
+        # Default values
         selected_class = ''
         selected_section = ''
 
         if class_teacher_of:
-            # Smart parsing: handles "Class 12-A", "12-A", "12 - A", etc.
+            # Smart parsing
             clean_value = class_teacher_of.strip()
             if clean_value.lower().startswith('class '):
                 clean_value = clean_value[6:].strip()
@@ -7504,23 +7497,29 @@ def teacher_mark_entry(request):
                 selected_class = parts[0]
                 selected_section = parts[1].upper()
             else:
-                messages.warning(request, f'Your assigned class format is invalid: "{class_teacher_of}". Contact admin.')
+                messages.warning(request, f'Invalid class format: "{class_teacher_of}". Contact admin.')
         else:
-            messages.warning(request, 'You are not assigned as a class teacher yet. Contact admin.')
+            messages.warning(request, 'You are not assigned as a class teacher. No class available.')
 
-        # Load subjects and students only for the assigned class (if valid)
+        # === ONLY SHOW TEACHER'S ASSIGNED CLASS IN DROPDOWN ===
+        if selected_class and selected_section:
+            classes = [selected_class]          # Only their class
+            sections = [selected_section]       # Only their section
+        else:
+            classes = []
+            sections = []
+
+        # Load subjects and students
         subjects = []
         students = []
 
         if selected_class and selected_section:
-            # Get subjects
             cursor.execute(
                 "SELECT id, name, max_marks FROM school_subjects WHERE class = %s ORDER BY name",
                 [selected_class]
             )
             subjects = [{'id': row[0], 'name': row[1], 'max_marks': row[2]} for row in cursor.fetchall()]
 
-            # Get students
             try:
                 cursor.execute("""
                     SELECT user_id, name, roll_number, class, section,
@@ -7530,14 +7529,8 @@ def teacher_mark_entry(request):
                     ORDER BY name
                 """, [selected_class, selected_section])
                 students = [
-                    {
-                        'id': row[0],
-                        'name': row[1],
-                        'roll_number': row[2],
-                        'class': row[3],
-                        'section': row[4],
-                        'admission_number': row[5]
-                    }
+                    {'id': row[0], 'name': row[1], 'roll_number': row[2],
+                     'class': row[3], 'section': row[4], 'admission_number': row[5]}
                     for row in cursor.fetchall()
                 ]
             except Exception as e:
@@ -7549,18 +7542,12 @@ def teacher_mark_entry(request):
                         ORDER BY name
                     """, [selected_class, selected_section])
                     students = [
-                        {
-                            'id': row[0],
-                            'name': row[1],
-                            'roll_number': row[2],
-                            'class': row[3],
-                            'section': row[4],
-                            'admission_number': ''
-                        }
+                        {'id': row[0], 'name': row[1], 'roll_number': row[2],
+                         'class': row[3], 'section': row[4], 'admission_number': ''}
                         for row in cursor.fetchall()
                     ]
 
-        # Get class teacher name for display
+        # Class teacher name
         cursor.execute("SELECT name FROM teachers WHERE class_teacher_of = %s", [class_teacher_of])
         class_teacher_row = cursor.fetchone()
         class_teacher_name = class_teacher_row[0] if class_teacher_row else teacher_name
@@ -7572,13 +7559,12 @@ def teacher_mark_entry(request):
         'class_teacher_name': class_teacher_name,
         'role': 'classTeacher',
         'teacher_subject': teacher_subject,
-        'classes': classes,               # Dropdown populated
-        'sections': sections,             # Dropdown populated
-        'selected_class': selected_class,  # Auto-selected
-        'selected_section': selected_section,  # Auto-selected
+        'classes': classes,                   # Only 1 class
+        'sections': sections,                 # Only 1 section
+        'selected_class': selected_class,
+        'selected_section': selected_section,
         'assigned_class_section': class_teacher_of,
     })
-
 from django.db import connection, transaction
 from django.http import JsonResponse
 import json
