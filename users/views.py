@@ -6966,7 +6966,13 @@ from django.http import JsonResponse
 from django.db import connection
 import json
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import connection
+
+
 def mark_entry(request):
+    # Check if admin is logged in
     if 'admin_id' not in request.session:
         messages.error(request, 'Please log in to access the mark entry system.')
         return redirect('admin_login')
@@ -6982,15 +6988,16 @@ def mark_entry(request):
         admin_id = admin[0]
         admin_name = admin[1] if admin[1] else 'Admin'
 
-        # Safe defaults for admins (full access)
-        role = 'classTeacher'  # Admins have full access like class teachers
+        # Admins get full access (treated like class teachers)
+        role = 'classTeacher'
         teacher_subject = None
         teacher_name = admin_name
 
-        # Get distinct classes and sections
+        # Get distinct classes from student_page1
         cursor.execute("SELECT DISTINCT class FROM student_page1 ORDER BY class")
         classes = [row[0] for row in cursor.fetchall()]
         
+        # Get distinct sections
         cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL ORDER BY section")
         sections = [row[0] for row in cursor.fetchall()]
 
@@ -6998,16 +7005,16 @@ def mark_entry(request):
         selected_class = request.GET.get('class', classes[0] if classes else '')
         selected_section = request.GET.get('section', sections[0] if sections else '')
 
-        # Validate selected values
-        if selected_class not in classes:
+        # Validate selected values to prevent invalid input
+        if selected_class and selected_class not in [c for c in classes if c]:
             selected_class = classes[0] if classes else ''
-        if selected_section not in sections:
+        if selected_section and selected_section not in [s for s in sections if s]:
             selected_section = sections[0] if sections else ''
         
         if not classes or not sections:
             messages.warning(request, 'No classes or sections found in the system.')
 
-        # Get subjects for selected class
+        # Get subjects for the selected class
         subjects = []
         if selected_class:
             cursor.execute(
@@ -7023,13 +7030,18 @@ def mark_entry(request):
                 for row in cursor.fetchall()
             ]
 
-        # Get students for selected class and section (with admission_number fallback)
+        # Get students for selected class and section
         students = []
         if selected_class and selected_section:
             try:
                 cursor.execute("""
-                    SELECT user_id AS id, name, roll_number, class, section, 
-                           COALESCE(admission_number, '') AS admission_number 
+                    SELECT 
+                        user_id AS id, 
+                        name, 
+                        roll_number, 
+                        class, 
+                        section, 
+                        COALESCE(admission_number, '') AS admission_number 
                     FROM student_page1 
                     WHERE class = %s AND section = %s 
                     ORDER BY name
@@ -7048,9 +7060,14 @@ def mark_entry(request):
                 ]
             except Exception as col_err:
                 # Fallback if admission_number column doesn't exist
-                if "Unknown column 'admission_number'" in str(col_err) or "admission_number" in str(col_err):
+                if "Unknown column 'admission_number'" in str(col_err):
                     cursor.execute("""
-                        SELECT user_id AS id, name, roll_number, class, section
+                        SELECT 
+                            user_id AS id, 
+                            name, 
+                            roll_number, 
+                            class, 
+                            section
                         FROM student_page1 
                         WHERE class = %s AND section = %s 
                         ORDER BY name
@@ -7068,13 +7085,15 @@ def mark_entry(request):
                         for row in cursor.fetchall()
                     ]
                 else:
+                    # Re-raise if it's a different error
                     raise col_err
 
+    # Render the mark entry template
     return render(request, 'users/mark.html', {
         'subjects': subjects,
         'students': students,
         'teacher_name': teacher_name,
-        'admin_name': admin_name,  # Added for consistency
+        'admin_name': admin_name,
         'role': role,
         'teacher_subject': teacher_subject,
         'classes': classes,
@@ -7106,22 +7125,35 @@ def save_marks(request):
             if not all([student_id, role, marks_data, class_name, section]):
                 return JsonResponse({'success': False, 'message': 'Missing required fields.'}, status=400)
 
+            class_section_key = f"{class_name}-{section}"
+
             with connection.cursor() as cursor:
                 # Verify user exists
                 if user_type == 'admin':
                     cursor.execute("SELECT id FROM admins WHERE id = %s", [user_id])
                     if not cursor.fetchone():
                         return JsonResponse({'success': False, 'message': 'Admin not found.'}, status=403)
+                    # Use a fixed valid teacher_id for admin signatures
+                    signature_teacher_id = 1  # Make sure ID 1 exists in teachers table!
                 else:
-                    cursor.execute("SELECT id FROM teachers WHERE id = %s", [user_id])
-                    if not cursor.fetchone():
+                    cursor.execute("SELECT id, class_teacher_of FROM teachers WHERE id = %s", [user_id])
+                    teacher = cursor.fetchone()
+                    if not teacher:
                         return JsonResponse({'success': False, 'message': 'Teacher not found.'}, status=403)
+                    teacher_id, assigned_class = teacher
+                    # Verify teacher is class teacher of this section
+                    if assigned_class != class_section_key:
+                        return JsonResponse({
+                            'success': False,
+                            'message': f'You are not assigned as class teacher for {class_section_key}.'
+                        }, status=403)
+                    signature_teacher_id = teacher_id
 
                 # Only allow classTeacher role
                 if role != 'classTeacher':
                     return JsonResponse({'success': False, 'message': 'Invalid role.'}, status=403)
 
-                # Verify student belongs to the class/section
+                # Verify student belongs to class/section
                 cursor.execute(
                     "SELECT user_id FROM student_page1 WHERE user_id = %s AND class = %s AND section = %s",
                     [student_id, class_name, section]
@@ -7129,14 +7161,8 @@ def save_marks(request):
                 if not cursor.fetchone():
                     return JsonResponse({'success': False, 'message': 'Invalid student or class/section.'}, status=400)
 
-                # Normalize marks_data to list
-                if isinstance(marks_data, dict):
-                    marks_data = [marks_data]
-                if not marks_data:
-                    return JsonResponse({'success': False, 'message': 'No marks data provided.'}, status=400)
-
                 # Extract signatures
-                teacher_signature_data = marks_data[0].get('signature')
+                teacher_signature_data = marks_data[0].get('signature') if marks_data else None
                 principal_signature_data = data.get('principalSignature')
 
                 if not teacher_signature_data:
@@ -7144,62 +7170,19 @@ def save_marks(request):
                 if not principal_signature_data:
                     return JsonResponse({'success': False, 'message': 'Principal signature is required.'}, status=400)
 
-                # === SIGNATURE HANDLING: Different for Admin vs Teacher ===
-                class_section_key = f"{class_name}-{section}"
-                
-                if user_type == 'admin':
-                    # ADMIN: Store signatures with teacher_id = 0
-                    # Try with class_section column first, fallback if doesn't exist
-                    try:
-                        cursor.execute(
-                            """INSERT INTO teacher_signature (teacher_id, signature, class_section) 
-                               VALUES (%s, %s, %s) 
-                               ON DUPLICATE KEY UPDATE signature = %s, class_section = %s""",
-                            [0, teacher_signature_data, class_section_key, teacher_signature_data, class_section_key]
-                        )
-                    except Exception as col_err:
-                        # Column doesn't exist - use fallback (just teacher_id = 0)
-                        if "Unknown column 'class_section'" in str(col_err) or "class_section" in str(col_err):
-                            cursor.execute(
-                                """INSERT INTO teacher_signature (teacher_id, signature) 
-                                   VALUES (%s, %s) 
-                                   ON DUPLICATE KEY UPDATE signature = %s""",
-                                [0, teacher_signature_data, teacher_signature_data]
-                            )
-                        else:
-                            raise col_err
-                    
-                else:
-                    # TEACHER: Must be assigned as class teacher
-                    cursor.execute(
-                        "SELECT id FROM teachers WHERE class_teacher_of = %s",
-                        [class_section_key]
-                    )
-                    teacher_row = cursor.fetchone()
-                    
-                    if not teacher_row:
-                        return JsonResponse({
-                            'success': False,
-                            'message': f'You are not assigned as class teacher for {class_section_key}. Please contact admin.'
-                        }, status=400)
-                    
-                    class_teacher_id = teacher_row[0]
-                    
-                    # Save teacher signature
-                    cursor.execute(
-                        """INSERT INTO teacher_signature (teacher_id, signature) 
-                           VALUES (%s, %s) 
-                           ON DUPLICATE KEY UPDATE signature = %s""",
-                        [class_teacher_id, teacher_signature_data, teacher_signature_data]
-                    )
+                # === SAVE TEACHER SIGNATURE (using composite key) ===
+                cursor.execute("""
+                    INSERT INTO teacher_signature (teacher_id, class_section, signature)
+                    VALUES (%s, %s, %s)
+                    ON DUPLICATE KEY UPDATE signature = %s
+                """, [signature_teacher_id, class_section_key, teacher_signature_data, teacher_signature_data])
 
-                # Save Principal Signature (global for all)
-                cursor.execute(
-                    """INSERT INTO principal_signature (principal_id, signature) 
-                       VALUES (1, %s) 
-                       ON DUPLICATE KEY UPDATE signature = %s""",
-                    [principal_signature_data, principal_signature_data]
-                )
+                # === SAVE PRINCIPAL SIGNATURE ===
+                cursor.execute("""
+                    INSERT INTO principal_signature (principal_id, signature) 
+                    VALUES (1, %s) 
+                    ON DUPLICATE KEY UPDATE signature = %s
+                """, [principal_signature_data, principal_signature_data])
 
                 # Grade calculation
                 def calculate_grade(marks, max_marks):
@@ -7217,72 +7200,63 @@ def save_marks(request):
                     else:
                         return 'E'
 
-                marks_updated = False
-                marks_inserted = False
+                marks_updated = marks_inserted = False
 
-                # Process each subject
+                # Normalize marks_data
+                if isinstance(marks_data, dict):
+                    marks_data = [marks_data]
+
                 for subject in marks_data:
                     subject_id = subject.get('subjectId')
                     marks_val = subject.get('marks')
                     max_marks_val = subject.get('maxMarks')
 
                     if not all([subject_id, marks_val is not None, max_marks_val]):
-                        return JsonResponse({'success': False, 'message': 'Invalid subject data.'}, status=400)
-
-                    # Verify subject exists for this class
-                    cursor.execute(
-                        "SELECT name, max_marks FROM school_subjects WHERE id = %s AND class = %s",
-                        [subject_id, class_name]
-                    )
-                    subject_row = cursor.fetchone()
-                    if not subject_row:
-                        return JsonResponse({'success': False, 'message': 'Subject not found or not for this class.'}, status=404)
+                        continue  # Skip invalid
 
                     marks = int(marks_val)
                     max_marks = int(max_marks_val)
 
-                    if marks < 0 or marks > max_marks or max_marks < 1:
-                        return JsonResponse({'success': False, 'message': 'Invalid marks value.'}, status=400)
+                    if marks < 0 or marks > max_marks:
+                        continue
 
                     grade = calculate_grade(marks, max_marks)
 
-                    # Check if marks already exist
+                    # Verify subject
                     cursor.execute(
-                        "SELECT id FROM school_marks WHERE student_id = %s AND subject_id = %s",
-                        [student_id, subject_id]
+                        "SELECT id FROM school_subjects WHERE id = %s AND class = %s",
+                        [subject_id, class_name]
                     )
-                    existing_marks = cursor.fetchone()
+                    if not cursor.fetchone():
+                        continue
 
-                    # Insert or update marks
-                    cursor.execute(
-                        """INSERT INTO school_marks 
-                           (student_id, subject_id, marks, max_marks, grade) 
-                           VALUES (%s, %s, %s, %s, %s) 
-                           ON DUPLICATE KEY UPDATE 
-                           marks = %s, max_marks = %s, grade = %s""",
-                        [student_id, subject_id, marks, max_marks, grade,
-                         marks, max_marks, grade]
-                    )
+                    # Insert/Update marks
+                    cursor.execute("""
+                        INSERT INTO school_marks (student_id, subject_id, marks, max_marks, grade)
+                        VALUES (%s, %s, %s, %s, %s)
+                        ON DUPLICATE KEY UPDATE
+                        marks = %s, max_marks = %s, grade = %s
+                    """, [student_id, subject_id, marks, max_marks, grade,
+                          marks, max_marks, grade])
 
-                    if existing_marks:
+                    # Track if any were inserted/updated
+                    cursor.execute("SELECT ROW_COUNT()")
+                    if cursor.fetchone()[0] > 1:  # UPDATE affects 2 rows in ON DUPLICATE
                         marks_updated = True
                     else:
                         marks_inserted = True
 
                 connection.commit()
 
-                # Success message
+                message = 'Marks saved successfully!'
                 if marks_updated and marks_inserted:
-                    message = 'Marks saved successfully! Some updated, some newly added.'
+                    message += ' (Some updated, some added)'
                 elif marks_updated:
                     message = 'Marks updated successfully!'
-                else:
-                    message = 'Marks saved successfully!'
+                elif marks_inserted:
+                    message = 'Marks added successfully!'
 
-                return JsonResponse({
-                    'success': True,
-                    'message': message
-                })
+                return JsonResponse({'success': True, 'message': message})
 
         except Exception as e:
             connection.rollback()
