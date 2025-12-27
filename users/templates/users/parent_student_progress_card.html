@@ -6,16 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Progress Card - Manavargal School Management System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Poppins', sans-serif;
             font-weight: 400;
@@ -24,11 +21,9 @@
             color: var(--text-color);
             overflow: hidden;
         }
-
         h1, h2, h3 {
             font-family: 'Montserrat', sans-serif;
         }
-
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
@@ -48,13 +43,11 @@
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             --dull-highlighter: #d4edda;
         }
-
         html {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
         }
-
         /* Sidebar */
         .sidebar {
             width: 280px;
@@ -71,7 +64,6 @@
             border-right: 2px solid var(--sidebar-border);
             transform: translateX(0);
         }
-
         .sidebar-header {
             padding: 2rem 1.5rem;
             background: var(--white);
@@ -87,7 +79,6 @@
             gap: 1rem;
             border-bottom: 2px solid var(--sidebar-border);
         }
-
         .logo-container {
             width: 100px;
             height: 80px;
@@ -101,23 +92,19 @@
             box-shadow: var(--shadow-sm);
             border: 2px solid var(--sidebar-border);
         }
-
         .logo-container img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             transition: var(--transition);
         }
-
         .logo-container:hover {
             transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
-
         .sidebar-header:hover {
             background: var(--light-bg);
         }
-
         .sidebar-nav a {
             display: flex;
             align-items: center;
@@ -129,7 +116,6 @@
             font-weight: 500;
             border-left: 3px solid transparent;
         }
-
         .sidebar-nav a:hover,
         .sidebar-nav a.active {
             background: var(--dull-highlighter);
@@ -137,7 +123,6 @@
             color: var(--primary-color);
             transform: translateX(4px);
         }
-
         .sidebar-nav a img {
             margin-right: 1rem;
             width: 20px;
@@ -145,11 +130,9 @@
             flex-shrink: 0;
             transition: var(--transition);
         }
-
         .sidebar-nav a:hover img {
             transform: scale(1.1);
         }
-
         .menu-toggle {
             display: none;
             font-size: 1.5rem;
@@ -169,13 +152,11 @@
             align-items: center;
             justify-content: center;
         }
-
         .menu-toggle:hover {
             background: var(--primary-color);
             color: var(--white);
             transform: scale(1.05);
         }
-
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -189,13 +170,11 @@
             transition: var(--transition);
             pointer-events: none;
         }
-
         .sidebar-overlay.active {
             display: block;
             opacity: 1;
             pointer-events: all;
         }
-
         .page-wrapper {
             margin-left: 280px;
             height: 100vh;
@@ -203,13 +182,11 @@
             overflow-x: hidden;
             transition: var(--transition);
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem 20px;
         }
-
         .header {
             background: var(--white);
             padding: 1.5rem;
@@ -218,7 +195,6 @@
             border-radius: var(--border-radius);
             margin-bottom: 2rem;
         }
-
         .header h1 {
             font-size: 2rem;
             font-weight: 700;
@@ -231,7 +207,6 @@
             gap: 0.5rem;
             flex-wrap: wrap;
         }
-
         .main-content {
             background: var(--white);
             border: 2px solid var(--border-color);
@@ -239,11 +214,9 @@
             box-shadow: var(--shadow-sm);
             padding: 2rem;
         }
-
         .messages {
             margin-bottom: 1.5rem;
         }
-
         .messages .success,
         .messages .error,
         .messages .warning {
@@ -254,25 +227,21 @@
             gap: 0.5rem;
             margin-bottom: 0.5rem;
         }
-
         .messages .success {
             background: #d4edda;
             color: var(--primary-color);
             border-left: 4px solid var(--primary-color);
         }
-
         .messages .error {
             background: #f8d7da;
             color: #dc3545;
             border-left: 4px solid #dc3545;
         }
-
         .messages .warning {
             background: #fff3cd;
             color: #856404;
             border-left: 4px solid #ffc107;
         }
-
         .section {
             background: var(--light-bg);
             padding: 1.5rem;
@@ -282,11 +251,9 @@
             margin-bottom: 2rem;
             transition: var(--transition);
         }
-
         .section:hover {
             box-shadow: var(--shadow-md);
         }
-
         .section h2 {
             color: var(--primary-color);
             font-size: 1.5rem;
@@ -298,13 +265,11 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .student-info {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
         }
-
         .info-card {
             background: var(--white);
             padding: 1.5rem;
@@ -316,35 +281,206 @@
             gap: 1rem;
             box-shadow: var(--shadow-sm);
         }
-
         .info-card:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
-
         .info-card i {
             font-size: 2rem;
             color: var(--primary-color);
         }
-
         .info-card .info-content {
             flex: 1;
         }
-
         .info-card .info-label {
             font-weight: 600;
             color: #6c757d;
             font-size: 0.85rem;
             margin-bottom: 0.3rem;
         }
-
         .info-card .info-value {
             color: var(--text-color);
             font-size: 1.1rem;
             font-weight: 500;
         }
-
-        .progress-card-message {
+        /* Progress Card Styles */
+        .progress-card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #00b88d 100%);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 0;
+        }
+        .student-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--white);
+            object-fit: cover;
+            box-shadow: var(--shadow-lg);
+        }
+        .student-details {
+            flex: 1;
+        }
+        .student-details h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .student-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .student-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .marks-table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        .marks-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            box-shadow: var(--shadow-sm);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .marks-table thead {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #00b88d 100%);
+            color: var(--white);
+        }
+        .marks-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .marks-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .marks-table tbody tr:hover {
+            background: var(--light-bg);
+        }
+        .grade-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .grade-A { background: #d4edda; color: #155724; }
+        .grade-B { background: #d1ecf1; color: #0c5460; }
+        .grade-C { background: #fff3cd; color: #856404; }
+        .grade-D { background: #f8d7da; color: #721c24; }
+        .grade-E { background: #f5c6cb; color: #491217; }
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .summary-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            text-align: center;
+            transition: var(--transition);
+        }
+        .summary-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+        .summary-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .summary-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        .summary-card-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .status-pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .signatures-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+        .signature-box {
+            text-align: center;
+        }
+        .signature-image {
+            width: 150px;
+            height: 80px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-bg);
+            overflow: hidden;
+        }
+        .signature-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .signature-label {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .print-btn {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 2rem auto 0;
+        }
+        .print-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .no-marks-message {
             text-align: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: var(--white);
@@ -356,8 +492,7 @@
             position: relative;
             overflow: hidden;
         }
-
-        .progress-card-message::before {
+        .no-marks-message::before {
             content: '';
             position: absolute;
             top: -50%;
@@ -368,18 +503,15 @@
             background-size: 30px 30px;
             animation: moveBackground 20s linear infinite;
         }
-
-        .progress-card-message i {
+        .no-marks-message i {
             display: block;
             font-size: 3rem;
             margin-bottom: 1rem;
         }
-
         @keyframes moveBackground {
             0% { transform: translate(0, 0); }
             100% { transform: translate(30px, 30px); }
         }
-
         .scroll-top-btn {
             position: fixed;
             bottom: 1.5rem;
@@ -400,24 +532,20 @@
             border: none;
             cursor: pointer;
         }
-
         .scroll-top-btn:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
-
         .scroll-top-btn.show {
             display: flex;
         }
-
         /* Responsive Design */
         @media (max-width: 1024px) {
             .sidebar { width: 250px; }
             .page-wrapper { margin-left: 250px; }
             .logo-container { width: 80px; height: 64px; }
         }
-
         @media (max-width: 768px) {
             .menu-toggle { display: flex; }
             .sidebar { transform: translateX(-100%); }
@@ -430,20 +558,26 @@
             .main-content { padding: 1.5rem; }
             .section { padding: 1rem; }
             .section h2 { font-size: 1.3rem; }
+            .progress-card-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+            }
+            .student-photo {
+                width: 100px;
+                height: 100px;
+            }
+            .student-details h3 { font-size: 1.4rem; }
+            .marks-table th,
+            .marks-table td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
             .student-info { grid-template-columns: 1fr; }
-            .progress-card-message { 
-                font-size: 1.25rem; 
-                padding: 2rem 1.5rem;
-            }
-            .progress-card-message i { font-size: 2.5rem; }
-            .scroll-top-btn {
-                bottom: 1rem;
-                right: 1rem;
-                width: 45px;
-                height: 45px;
-            }
         }
-
         @media (max-width: 480px) {
             .sidebar { width: 100%; max-width: 320px; }
             .container { padding: 1rem; }
@@ -451,7 +585,17 @@
             .header h1 { font-size: 1.25rem; }
             .main-content { padding: 1rem; }
             .section { padding: 0.75rem; }
-            .section h2 { font-size: 1.1rem; }
+            .progress-card-header { padding: 1rem; }
+            .student-photo {
+                width: 80px;
+                height: 80px;
+            }
+            .student-details h3 { font-size: 1.2rem; }
+            .marks-table th,
+            .marks-table td {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.85rem;
+            }
             .info-card {
                 flex-direction: column;
                 text-align: center;
@@ -459,51 +603,41 @@
             }
             .info-card i { font-size: 1.75rem; }
             .info-card .info-value { font-size: 1rem; }
-            .progress-card-message { 
-                font-size: 1.1rem; 
-                padding: 1.5rem 1rem;
+        }
+        @media print {
+            .sidebar,
+            .menu-toggle,
+            .sidebar-overlay,
+            .scroll-top-btn,
+            .print-btn {
+                display: none !important;
             }
-            .progress-card-message i { font-size: 2rem; }
-            .scroll-top-btn {
-                bottom: 0.75rem;
-                right: 0.75rem;
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
+            .page-wrapper { margin-left: 0; }
+            .container { padding: 0; }
+            .main-content {
+                box-shadow: none;
+                border: none;
+            }
+            .section {
+                page-break-inside: avoid;
             }
         }
-
         @media (hover: none) {
             .section:hover,
             .info-card:hover,
             .logo-container:hover,
-            .scroll-top-btn:hover {
+            .scroll-top-btn:hover,
+            .summary-card:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
         }
-
         @media (prefers-reduced-motion: reduce) {
-            * { 
-                transition: none !important; 
-                animation: none !important; 
+            * {
+                transition: none !important;
+                animation: none !important;
             }
             html { scroll-behavior: auto; }
-        }
-
-        @media print {
-            .sidebar, 
-            .menu-toggle, 
-            .sidebar-overlay,
-            .scroll-top-btn { 
-                display: none; 
-            }
-            .page-wrapper { margin-left: 0; }
-            .container { padding: 0; }
-            .main-content { 
-                box-shadow: none; 
-                border: none; 
-            }
         }
     </style>
 </head>
@@ -512,10 +646,8 @@
     <button class="menu-toggle" id="menuToggle">
         <i class="fas fa-bars"></i>
     </button>
-
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
     <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -561,17 +693,15 @@
             </a>
         </nav>
     </aside>
-
     <!-- Main Content Wrapper -->
     <div class="page-wrapper">
         <div class="container">
             <header class="header">
                 <h1>
-                    <i class="fas fa-chart-line"></i> 
+                    <i class="fas fa-chart-line"></i>
                     <span>Student Progress Card</span>
                 </h1>
             </header>
-
             <main class="main-content">
                 <!-- Messages -->
                 <div class="messages">
@@ -585,41 +715,193 @@
                     {% endif %}
                 </div>
 
-                <!-- Student Information -->
+                <!-- Always show progress card if subjects exist -->
+                {% if marks %}
+                    <div class="section" style="padding: 0; border: none;">
+                        <!-- Student Header -->
+                        <div class="progress-card-header">
+                            <img src="{% if student.image_path %}/media/{{ student.image_path }}{% else %}{% static 'users/images/default_profile.jpg' %}{% endif %}"
+                                 alt="{{ student.name }}"
+                                 class="student-photo"
+                                 onerror="this.src='{% static 'users/images/default_profile.jpg' %}'">
+                            <div class="student-details">
+                                <h3>{{ student.name }}</h3>
+                                <div class="student-meta">
+                                    <div class="student-meta-item">
+                                        <i class="fas fa-id-card"></i>
+                                        <span>Roll No: {{ student.roll_number }}</span>
+                                    </div>
+                                    <div class="student-meta-item">
+                                        <i class="fas fa-school"></i>
+                                        <span>Class: {{ student.class }}</span>
+                                    </div>
+                                    <div class="student-meta-item">
+                                        <i class="fas fa-th-large"></i>
+                                        <span>Section: {{ student.section }}</span>
+                                    </div>
+                                    {% if student.admission_number %}
+                                    <div class="student-meta-item">
+                                        <i class="fas fa-hashtag"></i>
+                                        <span>Admission: {{ student.admission_number }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary Cards -->
+                        <div style="padding: 2rem;">
+                            <div class="summary-cards">
+                                <div class="summary-card">
+                                    <div class="summary-card-icon">📊</div>
+                                    <div class="summary-card-value">{{ total_marks }}/{{ total_max_marks }}</div>
+                                    <div class="summary-card-label">Total Marks</div>
+                                </div>
+                                <div class="summary-card">
+                                    <div class="summary-card-icon">📈</div>
+                                    <div class="summary-card-value">{{ percentage }}%</div>
+                                    <div class="summary-card-label">Percentage</div>
+                                </div>
+                                <div class="summary-card">
+                                    <div class="summary-card-icon">🏆</div>
+                                    <div class="summary-card-value">{{ overall_grade }}</div>
+                                    <div class="summary-card-label">Overall Grade</div>
+                                </div>
+                                <div class="summary-card">
+                                    <div class="summary-card-icon">{% if status == 'Pass' %}✅{% else %}❌{% endif %}</div>
+                                    <div class="summary-card-value">
+                                        <span class="status-badge status-{{ status|lower }}">{{ status }}</span>
+                                    </div>
+                                    <div class="summary-card-label">Result Status</div>
+                                </div>
+                            </div>
+
+                            <!-- Marks Table -->
+                            <h2 style="margin-top: 2rem;">
+                                <i class="fas fa-list-alt" style="color: #3b82f6;"></i>
+                                Subject-wise Performance
+                            </h2>
+                            <div class="marks-table-container">
+                                <table class="marks-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject</th>
+                                            <th>Marks Obtained</th>
+                                            <th>Maximum Marks</th>
+                                            <th>Grade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for mark in marks %}
+                                        <tr>
+                                            <td><strong>{{ mark.subject }}</strong></td>
+                                            <td>{{ mark.marks }}</td>
+                                            <td>{{ mark.max_marks }}</td>
+                                            <td><span class="grade-badge grade-{{ mark.grade }}">{{ mark.grade }}</span></td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-light);">
+                                                No subjects found for this class.
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% if marks %}
+                                        <tr style="background: var(--light-bg); font-weight: 600;">
+                                            <td><strong>TOTAL</strong></td>
+                                            <td><strong>{{ total_marks }}</strong></td>
+                                            <td><strong>{{ total_max_marks }}</strong></td>
+                                            <td><span class="grade-badge grade-{{ overall_grade }}">{{ overall_grade }}</span></td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Signatures - Fixed with |safe for base64 -->
+                            <div class="signatures-section">
+                                <div class="signature-box">
+                                    <div class="signature-image">
+                                        {% if teacher_signature %}
+                                            <img src="{{ teacher_signature|safe }}" alt="Class Teacher Signature">
+                                        {% else %}
+                                            <span style="color: var(--text-light); font-style: italic;">Signature Not Provided</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="signature-label">Class Teacher</div>
+                                </div>
+                                <div class="signature-box">
+                                    <div class="signature-image">
+                                        {% if principal_signature %}
+                                            <img src="{{ principal_signature|safe }}" alt="Principal Signature">
+                                        {% else %}
+                                            <span style="color: var(--text-light); font-style: italic;">Signature Not Provided</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="signature-label">Principal</div>
+                                </div>
+                            </div>
+
+                            <!-- Print Button -->
+                            <button class="print-btn" onclick="window.print()">
+                                <i class="fas fa-print"></i>
+                                Print Progress Card
+                            </button>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- No Subjects/Marks Available -->
+                    <div class="section">
+                        <h2>
+                            <i class="fas fa-info-circle" style="color: #9333ea;"></i>
+                            Progress Update
+                        </h2>
+                        <div class="no-marks-message">
+                            <i class="fas fa-hourglass-half"></i>
+                            <div style="position: relative; z-index: 1;">
+                                The results will be announced soon.
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Student Information - Always Visible -->
                 <div class="section">
                     <h2>
-                        <i class="fas fa-user-graduate" style="color: #3b82f6;"></i> 
+                        <i class="fas fa-user-graduate" style="color: #3b82f6;"></i>
                         Student Information
                     </h2>
                     <div class="student-info">
                         <div class="info-card">
-                            <i class="fas fa-school" style="color: #10b981;"></i>
+                            <i class="fas fa-user" style="color: #10b981;"></i>
                             <div class="info-content">
-                                <div class="info-label">Class</div>
-                                <div class="info-value">{{ class_name }}</div>
+                                <div class="info-label">Name</div>
+                                <div class="info-value">{{ student.name }}</div>
                             </div>
                         </div>
                         <div class="info-card">
-                            <i class="fas fa-th-large" style="color: #f59e0b;"></i>
+                            <i class="fas fa-school" style="color: #f59e0b;"></i>
                             <div class="info-content">
-                                <div class="info-label">Section</div>
-                                <div class="info-value">{{ section|default:"N/A" }}</div>
+                                <div class="info-label">Class & Section</div>
+                                <div class="info-value">{{ student.class }} - {{ student.section }}</div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Progress Update -->
-                <div class="section">
-                    <h2>
-                        <i class="fas fa-info-circle" style="color: #9333ea;"></i> 
-                        Progress Update
-                    </h2>
-                    <div class="progress-card-message">
-                        <i class="fas fa-hourglass-half"></i>
-                        <div style="position: relative; z-index: 1;">
-                            The results will be announced soon.
+                        <div class="info-card">
+                            <i class="fas fa-id-card" style="color: #8b5cf6;"></i>
+                            <div class="info-content">
+                                <div class="info-label">Roll Number</div>
+                                <div class="info-value">{{ student.roll_number }}</div>
+                            </div>
                         </div>
+                        {% if student.admission_number %}
+                        <div class="info-card">
+                            <i class="fas fa-hashtag" style="color: #ef4444;"></i>
+                            <div class="info-content">
+                                <div class="info-label">Admission Number</div>
+                                <div class="info-value">{{ student.admission_number }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </main>
@@ -644,7 +926,6 @@
                 sidebar.classList.add('active');
                 sidebarOverlay.classList.add('active');
             }
-
             function closeSidebar() {
                 sidebar.classList.remove('active');
                 sidebarOverlay.classList.remove('active');
@@ -656,11 +937,9 @@
                     sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
                 });
             }
-
             if (sidebarOverlay) {
                 sidebarOverlay.addEventListener('click', closeSidebar);
             }
-
             navLinks.forEach(link => {
                 link.addEventListener('click', function() {
                     if (window.innerWidth <= 768) {
@@ -696,7 +975,7 @@
                 });
             }
 
-            // Scroll to top functionality
+            // Scroll to top
             if (pageWrapper) {
                 pageWrapper.addEventListener('scroll', function() {
                     if (pageWrapper.scrollTop > 300) {
@@ -706,15 +985,37 @@
                     }
                 });
             }
-
             if (scrollTopBtn) {
                 scrollTopBtn.addEventListener('click', function() {
-                    pageWrapper.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
+                    pageWrapper.scrollTo({ top: 0, behavior: 'smooth' });
                 });
             }
+
+            // Animation on summary cards
+            const summaryCards = document.querySelectorAll('.summary-card');
+            summaryCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.5s ease';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 100);
+            });
+
+            // Table row hover
+            const tableRows = document.querySelectorAll('.marks-table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.01)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
         });
     </script>
 </body>
