@@ -5509,6 +5509,11 @@ def add_teacher(request):
 
 from django.db.utils import IntegrityError  # For better error handling
 
+from django.db import transaction, connection
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.db.utils import IntegrityError
+
 def update_teacher(request):
     """
     Handles updating an existing teacher's comprehensive profile.
@@ -5537,7 +5542,7 @@ def update_teacher(request):
         return redirect('manage_teachers')
 
     # Optional fields with defaults
-    class_teacher_of = request.POST.get('class_teacher_of') or None  # Can be empty → None
+    class_teacher_of = request.POST.get('class_teacher_of') or None
 
     full_name = request.POST.get('full_name') or name
     gender = request.POST.get('gender')
@@ -5610,82 +5615,67 @@ def update_teacher(request):
                     WHERE email = %s AND role = 'teacher'
                 """, [name, email, password, old_email])
 
-                # Update or Insert into teacher_profiles
+                # Check if profile exists
                 cursor.execute(
                     "SELECT 1 FROM teacher_profiles WHERE teacher_id = %s",
                     [teacher_id]
                 )
                 profile_exists = cursor.fetchone()
 
-                profile_data = [
-                    teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
-                    mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
-                    emergency_contact_name, emergency_contact_number,
-                    designation, department, subjects_taught, classes_assigned, sections,
-                    employee_type, employment_status, joining_date,
-                    qualification, specialization, board_university, year_of_passing,
-                    bed_ctet_tet, special_training, workshops_attended,
-                    is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
-                ]
-
-                # Replace your if profile_exists block with this complete fixed version:
-
-                                if profile_exists:
-                                    # Update - Explicit parameters to avoid any mismatch
-                                    cursor.execute("""
-                                        UPDATE teacher_profiles SET
-                                            full_name = %s, gender = %s, date_of_birth = %s, blood_group = %s, 
-                                            nationality = %s, mobile_number = %s, alternate_contact = %s, 
-                                            official_email = %s, residential_address = %s, city_state_pin = %s,
-                                            emergency_contact_name = %s, emergency_contact_number = %s,
-                                            designation = %s, department = %s, subjects_taught = %s, 
-                                            classes_assigned = %s, sections = %s,
-                                            employee_type = %s, employment_status = %s, joining_date = %s,
-                                            qualification = %s, specialization = %s, board_university = %s, 
-                                            year_of_passing = %s, bed_ctet_tet = %s, special_training = %s, 
-                                            workshops_attended = %s, is_class_teacher = %s, house_club_incharge = %s, 
-                                            cocurricular_responsibilities = %s, exam_duties = %s,
-                                            updated_at = NOW()
-                                        WHERE teacher_id = %s
-                                    """, [
-                                        # Pass each variable explicitly in the exact order
-                                        full_name, gender, date_of_birth, blood_group, nationality,
-                                        mobile_number, alternate_contact, official_email, residential_address, 
-                                        city_state_pin, emergency_contact_name, emergency_contact_number,
-                                        designation, department, subjects_taught, classes_assigned, sections,
-                                        employee_type, employment_status, joining_date,
-                                        qualification, specialization, board_university, year_of_passing,
-                                        bed_ctet_tet, special_training, workshops_attended,
-                                        is_class_teacher, house_club_incharge, cocurricular_responsibilities, 
-                                        exam_duties,
-                                        teacher_id  # Last parameter for WHERE clause
-                                    ])
-                                else:
-                                    # Insert - Same explicit approach
-                                    cursor.execute("""
-                                        INSERT INTO teacher_profiles (
-                                            teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
-                                            mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
-                                            emergency_contact_name, emergency_contact_number,
-                                            designation, department, subjects_taught, classes_assigned, sections,
-                                            employee_type, employment_status, joining_date,
-                                            qualification, specialization, board_university, year_of_passing,
-                                            bed_ctet_tet, special_training, workshops_attended,
-                                            is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
-                                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                                                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                    """, [
-                                        # Pass each variable explicitly - teacher_id first for INSERT
-                                        teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
-                                        mobile_number, alternate_contact, official_email, residential_address, 
-                                        city_state_pin, emergency_contact_name, emergency_contact_number,
-                                        designation, department, subjects_taught, classes_assigned, sections,
-                                        employee_type, employment_status, joining_date,
-                                        qualification, specialization, board_university, year_of_passing,
-                                        bed_ctet_tet, special_training, workshops_attended,
-                                        is_class_teacher, house_club_incharge, cocurricular_responsibilities, 
-                                        exam_duties
-                                    ])
+                if profile_exists:
+                    # Update existing profile - Explicit parameters to avoid any mismatch
+                    cursor.execute("""
+                        UPDATE teacher_profiles SET
+                            full_name = %s, gender = %s, date_of_birth = %s, blood_group = %s, 
+                            nationality = %s, mobile_number = %s, alternate_contact = %s, 
+                            official_email = %s, residential_address = %s, city_state_pin = %s,
+                            emergency_contact_name = %s, emergency_contact_number = %s,
+                            designation = %s, department = %s, subjects_taught = %s, 
+                            classes_assigned = %s, sections = %s,
+                            employee_type = %s, employment_status = %s, joining_date = %s,
+                            qualification = %s, specialization = %s, board_university = %s, 
+                            year_of_passing = %s, bed_ctet_tet = %s, special_training = %s, 
+                            workshops_attended = %s, is_class_teacher = %s, house_club_incharge = %s, 
+                            cocurricular_responsibilities = %s, exam_duties = %s,
+                            updated_at = NOW()
+                        WHERE teacher_id = %s
+                    """, [
+                        full_name, gender, date_of_birth, blood_group, nationality,
+                        mobile_number, alternate_contact, official_email, residential_address, 
+                        city_state_pin, emergency_contact_name, emergency_contact_number,
+                        designation, department, subjects_taught, classes_assigned, sections,
+                        employee_type, employment_status, joining_date,
+                        qualification, specialization, board_university, year_of_passing,
+                        bed_ctet_tet, special_training, workshops_attended,
+                        is_class_teacher, house_club_incharge, cocurricular_responsibilities, 
+                        exam_duties,
+                        teacher_id  # Last parameter for WHERE clause
+                    ])
+                else:
+                    # Insert new profile - Same explicit approach
+                    cursor.execute("""
+                        INSERT INTO teacher_profiles (
+                            teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
+                            mobile_number, alternate_contact, official_email, residential_address, city_state_pin,
+                            emergency_contact_name, emergency_contact_number,
+                            designation, department, subjects_taught, classes_assigned, sections,
+                            employee_type, employment_status, joining_date,
+                            qualification, specialization, board_university, year_of_passing,
+                            bed_ctet_tet, special_training, workshops_attended,
+                            is_class_teacher, house_club_incharge, cocurricular_responsibilities, exam_duties
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                                  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, [
+                        teacher_id, full_name, gender, date_of_birth, blood_group, nationality,
+                        mobile_number, alternate_contact, official_email, residential_address, 
+                        city_state_pin, emergency_contact_name, emergency_contact_number,
+                        designation, department, subjects_taught, classes_assigned, sections,
+                        employee_type, employment_status, joining_date,
+                        qualification, specialization, board_university, year_of_passing,
+                        bed_ctet_tet, special_training, workshops_attended,
+                        is_class_teacher, house_club_incharge, cocurricular_responsibilities, 
+                        exam_duties
+                    ])
 
         messages.success(request, f'Teacher "{full_name}" has been updated successfully!')
         
