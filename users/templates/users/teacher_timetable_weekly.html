@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,7 +48,6 @@
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 20px;
-        width: 100%;
     }
 
     .header {
@@ -92,7 +90,6 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        white-space: nowrap;
     }
 
     .back-btn:hover {
@@ -113,7 +110,6 @@
         overflow: hidden;
         box-shadow: var(--shadow-sm);
         border: 2px solid var(--sidebar-border);
-        flex-shrink: 0;
     }
 
     .logo-container img {
@@ -129,8 +125,6 @@
         box-shadow: var(--shadow-sm);
         padding: 2rem;
         margin-top: 20px;
-        width: 100%;
-        overflow-x: hidden;
     }
 
     .alert-message {
@@ -146,7 +140,6 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        word-wrap: break-word;
     }
 
     .alert-message .success {
@@ -158,7 +151,6 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        word-wrap: break-word;
     }
 
     .alert-message .warning {
@@ -170,7 +162,6 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        word-wrap: break-word;
     }
 
     .section {
@@ -180,8 +171,6 @@
         border: 2px solid var(--border-color);
         box-shadow: var(--shadow-sm);
         margin-bottom: 2rem;
-        width: 100%;
-        overflow-x: hidden;
     }
 
     h2 {
@@ -189,7 +178,6 @@
         font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 1.5rem;
-        word-wrap: break-word;
     }
 
     .form-row {
@@ -197,14 +185,11 @@
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
         margin-bottom: 1.5rem;
-        width: 100%;
     }
 
     .form-group {
         display: flex;
         flex-direction: column;
-        width: 100%;
-        min-width: 0;
     }
 
     .form-group label {
@@ -213,7 +198,6 @@
         font-size: 0.95rem;
         font-weight: 500;
         margin-bottom: 0.5rem;
-        word-wrap: break-word;
     }
 
     .form-group input,
@@ -225,7 +209,6 @@
         background: var(--white);
         font-size: 0.95rem;
         transition: var(--transition);
-        min-width: 0;
     }
 
     .form-group select {
@@ -234,7 +217,6 @@
         background-repeat: no-repeat;
         background-position: right 0.75rem center;
         background-size: 12px;
-        padding-right: 2.5rem;
     }
 
     .form-group input:focus,
@@ -250,8 +232,6 @@
         border-radius: 12px;
         border: 2px solid var(--border-color);
         margin-bottom: 1.5rem;
-        width: 100%;
-        overflow-x: hidden;
     }
 
     .period-grid {
@@ -259,7 +239,6 @@
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         gap: 0.5rem;
         margin-top: 1rem;
-        width: 100%;
     }
 
     .period-checkbox {
@@ -272,7 +251,6 @@
         border: 1px solid var(--border-color);
         cursor: pointer;
         transition: var(--transition);
-        min-width: 0;
     }
 
     .period-checkbox:hover {
@@ -284,13 +262,6 @@
         width: 18px;
         height: 18px;
         cursor: pointer;
-        flex-shrink: 0;
-    }
-
-    .period-checkbox span {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 
     .period-checkbox.selected {
@@ -304,8 +275,6 @@
         border-radius: 12px;
         border: 2px solid var(--border-color);
         margin-bottom: 1.5rem;
-        width: 100%;
-        overflow-x: hidden;
     }
 
     .day-header {
@@ -316,7 +285,6 @@
         margin-bottom: 1rem;
         font-weight: 600;
         font-size: 1.1rem;
-        word-wrap: break-word;
     }
 
     .period-entry {
@@ -325,29 +293,23 @@
         border-radius: 8px;
         border: 1px solid var(--border-color);
         margin-bottom: 1rem;
-        width: 100%;
-        overflow-x: hidden;
     }
 
     .period-entry h4 {
         color: var(--primary-color);
         margin-bottom: 0.75rem;
         font-size: 1rem;
-        word-wrap: break-word;
     }
 
     .period-fields {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 0.75rem;
-        width: 100%;
     }
 
     .field-group {
         display: flex;
         flex-direction: column;
-        width: 100%;
-        min-width: 0;
     }
 
     .field-group label {
@@ -355,7 +317,6 @@
         color: var(--text-color);
         margin-bottom: 0.25rem;
         font-weight: 500;
-        word-wrap: break-word;
     }
 
     .field-group input,
@@ -365,8 +326,6 @@
         border: 1px solid var(--border-color);
         background: var(--white);
         font-size: 0.9rem;
-        width: 100%;
-        min-width: 0;
     }
 
     .submit-btn {
@@ -400,7 +359,6 @@
         border-radius: 8px;
         margin-bottom: 1.5rem;
         color: #004080;
-        word-wrap: break-word;
     }
 
     .info-box i {
@@ -409,190 +367,53 @@
 
     @media (max-width: 768px) {
         body {
-            padding-top: 160px;
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-
-        .container {
-            padding: 0 10px;
+            padding-top: 140px;
         }
 
         .header {
-            flex-direction: column;
+            flex-wrap: wrap;
             padding: 0.75rem;
-            align-items: stretch;
-            gap: 0.75rem;
         }
 
         .header h1 {
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             order: 1;
             width: 100%;
             margin-left: 0;
-            text-align: center;
-            line-height: 1.3;
         }
 
         .back-btn {
             order: 2;
-            width: 100%;
-            justify-content: center;
-            font-size: 0.85rem;
-            padding: 0.5rem 1rem;
+            flex: 1;
         }
 
         .logo-container {
             order: 3;
-            width: 50px;
-            height: 40px;
-            align-self: center;
-        }
-
-        .main-content {
-            padding: 1rem;
-            border-radius: 12px;
-        }
-
-        .section {
-            padding: 1rem;
-        }
-
-        h2 {
-            font-size: 1.2rem;
+            width: 60px;
+            height: 50px;
         }
 
         .form-row {
             grid-template-columns: 1fr;
-            gap: 0.75rem;
-        }
-
-        .form-group label {
-            font-size: 0.9rem;
-        }
-
-        .form-group input,
-        .form-group select {
-            font-size: 0.9rem;
-            padding: 0.65rem;
-        }
-
-        .period-selector {
-            padding: 1rem;
         }
 
         .period-grid {
-            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-            gap: 0.4rem;
-        }
-
-        .period-checkbox {
-            padding: 0.4rem;
-            font-size: 0.85rem;
-        }
-
-        .period-checkbox input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-        }
-
-        .day-section {
-            padding: 1rem;
-        }
-
-        .day-header {
-            font-size: 1rem;
-            padding: 0.6rem 0.8rem;
-        }
-
-        .period-entry {
-            padding: 0.75rem;
-        }
-
-        .period-entry h4 {
-            font-size: 0.95rem;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         }
 
         .period-fields {
             grid-template-columns: 1fr;
-            gap: 0.5rem;
-        }
-
-        .field-group label {
-            font-size: 0.8rem;
-        }
-
-        .field-group input,
-        .field-group select {
-            font-size: 0.85rem;
-            padding: 0.55rem;
-        }
-
-        .submit-btn {
-            font-size: 0.9rem;
-            padding: 0.7rem 1.2rem;
-        }
-
-        .info-box {
-            padding: 0.75rem;
-            font-size: 0.85rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        body {
-            padding-top: 170px;
-        }
-
-        .header h1 {
-            font-size: 1rem;
-        }
-
-        .back-btn {
-            font-size: 0.8rem;
-        }
-
-        .logo-container {
-            width: 45px;
-            height: 35px;
-        }
-
-        .main-content {
-            padding: 0.75rem;
-        }
-
-        .section {
-            padding: 0.75rem;
-        }
-
-        h2 {
-            font-size: 1.1rem;
-        }
-
-        .period-grid {
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-        }
-
-        .period-checkbox {
-            font-size: 0.8rem;
-            padding: 0.35rem;
-        }
-    }
-
-    @media (max-width: 360px) {
-        .period-grid {
-            grid-template-columns: repeat(2, 1fr);
         }
     }
 </style>
 </head>
 <body>
     <header class="header">
-        <a href="#" class="back-btn">
+        <a href="{% url 'teacher_timetable' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Timetable
         </a>
         <h1><i class="fas fa-calendar-week"></i> Create Weekly Timetable</h1>
-        <a href="#">
+        <a href="{% url 'teacher_dashboard' %}">
             <div class="logo-container">
                 <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
             </div>
@@ -601,6 +422,17 @@
 
     <div class="container">
         <div class="main-content">
+            {% if messages %}
+                <div class="alert-message">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-check-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <div class="info-box">
                 <i class="fas fa-info-circle"></i>
                 <strong>Tip:</strong> Select only the periods you need. You can schedule this timetable for multiple consecutive weeks at once!
@@ -608,6 +440,7 @@
 
             <div class="section">
                 <form method="post" id="timetableForm">
+                    {% csrf_token %}
                     
                     <h2><i class="fas fa-cog"></i> Basic Configuration</h2>
                     <div class="form-row">
@@ -617,11 +450,9 @@
                             </label>
                             <select id="class" name="class" required>
                                 <option value="">Select a class</option>
-                                <option value="1">Class 1</option>
-                                <option value="2">Class 2</option>
-                                <option value="3">Class 3</option>
-                                <option value="4">Class 4</option>
-                                <option value="5">Class 5</option>
+                                {% for cls in classes %}
+                                <option value="{{ cls }}">{{ cls }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
@@ -630,14 +461,14 @@
                             </label>
                             <select id="section" name="section">
                                 <option value="">None</option>
-                                <option value="a">Section A</option>
-                                <option value="b">Section B</option>
-                                <option value="c">Section C</option>
+                                {% for sec in sections %}
+                                <option value="{{ sec }}">{{ sec|capfirst }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="week_start_date">
-                                <i class="fas fa-calendar-alt"></i> Week Start Date:
+                                <i class="fas fa-calendar-alt"></i> Week Start Date (Monday):
                             </label>
                             <input type="date" id="week_start_date" name="week_start_date" required>
                         </div>
@@ -707,55 +538,61 @@
 
                     <h2><i class="fas fa-table"></i> Timetable Details</h2>
                     
+                    {% for day in days %}
                     <div class="day-section">
                         <div class="day-header">
-                            <i class="fas fa-calendar-day"></i> Monday
+                            <i class="fas fa-calendar-day"></i> {{ day }}
                         </div>
-                        <div id="periods_Monday">
-                            <div class="period-entry" id="entry_Monday_1" style="display: block;">
-                                <h4><i class="fas fa-clock"></i> Period 1</h4>
+                        <div id="periods_{{ day }}">
+                            {% for period in "123456"|make_list %}
+                            <div class="period-entry" id="entry_{{ day }}_{{ forloop.counter }}" style="display: block;">
+                                <h4><i class="fas fa-clock"></i> Period {{ forloop.counter }}</h4>
                                 <div class="period-fields">
                                     <div class="field-group">
                                         <label>Subject</label>
-                                        <input type="text" name="subject_Monday_1" placeholder="e.g., Mathematics">
+                                        <input type="text" name="subject_{{ day }}_{{ forloop.counter }}" placeholder="e.g., Mathematics">
                                     </div>
                                     <div class="field-group">
                                         <label>Start Time</label>
-                                        <input type="time" name="start_time_Monday_1">
+                                        <input type="time" name="start_time_{{ day }}_{{ forloop.counter }}">
                                     </div>
                                     <div class="field-group">
                                         <label>End Time</label>
-                                        <input type="time" name="end_time_Monday_1">
+                                        <input type="time" name="end_time_{{ day }}_{{ forloop.counter }}">
                                     </div>
                                     <div class="field-group">
                                         <label>Room</label>
-                                        <input type="text" name="room_Monday_1" placeholder="e.g., Room 101">
+                                        <input type="text" name="room_{{ day }}_{{ forloop.counter }}" placeholder="e.g., Room 101">
                                     </div>
                                 </div>
                             </div>
-                            <div class="period-entry" id="entry_Monday_2" style="display: block;">
-                                <h4><i class="fas fa-clock"></i> Period 2</h4>
+                            {% endfor %}
+                            {% for period in "78910"|make_list %}
+                            <div class="period-entry" id="entry_{{ day }}_{{ forloop.counter|add:6 }}" style="display: none;">
+                                <h4><i class="fas fa-clock"></i> Period {{ forloop.counter|add:6 }}</h4>
                                 <div class="period-fields">
                                     <div class="field-group">
                                         <label>Subject</label>
-                                        <input type="text" name="subject_Monday_2" placeholder="e.g., English">
+                                        <input type="text" name="subject_{{ day }}_{{ forloop.counter|add:6 }}" placeholder="e.g., Mathematics">
                                     </div>
                                     <div class="field-group">
                                         <label>Start Time</label>
-                                        <input type="time" name="start_time_Monday_2">
+                                        <input type="time" name="start_time_{{ day }}_{{ forloop.counter|add:6 }}">
                                     </div>
                                     <div class="field-group">
                                         <label>End Time</label>
-                                        <input type="time" name="end_time_Monday_2">
+                                        <input type="time" name="end_time_{{ day }}_{{ forloop.counter|add:6 }}">
                                     </div>
                                     <div class="field-group">
                                         <label>Room</label>
-                                        <input type="text" name="room_Monday_2" placeholder="e.g., Room 102">
+                                        <input type="text" name="room_{{ day }}_{{ forloop.counter|add:6 }}" placeholder="e.g., Room 101">
                                     </div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
+                    {% endfor %}
 
                     <button type="submit" class="submit-btn">
                         <i class="fas fa-save"></i> Create Timetable
@@ -777,6 +614,7 @@
                 if (entry) {
                     entry.style.display = isChecked ? 'block' : 'none';
                     
+                    // Clear fields if unchecked
                     if (!isChecked) {
                         const inputs = entry.querySelectorAll('input, select');
                         inputs.forEach(input => {
@@ -788,7 +626,10 @@
                 }
             });
             
+            // Update period count
             updatePeriodCount();
+            
+            // Update checkbox styling
             checkbox.parentElement.classList.toggle('selected', isChecked);
         }
         
@@ -797,7 +638,9 @@
             document.getElementById('num_periods').value = checkedBoxes.length;
         }
         
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Set minimum date to today
             const dateInput = document.getElementById('week_start_date');
             const today = new Date();
             const year = today.getFullYear();
@@ -805,6 +648,7 @@
             const day = String(today.getDate()).padStart(2, '0');
             dateInput.min = `${year}-${month}-${day}`;
             
+            // Initialize checkboxes
             for (let i = 1; i <= 10; i++) {
                 togglePeriod(i);
             }
