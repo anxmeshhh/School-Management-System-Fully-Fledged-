@@ -704,16 +704,7 @@
             </header>
             <main class="main-content">
                 <!-- Messages -->
-                <div class="messages">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="{{ message.tags }}">
-                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
+                
 
                 <!-- Always show progress card if subjects exist -->
                 {% if marks %}

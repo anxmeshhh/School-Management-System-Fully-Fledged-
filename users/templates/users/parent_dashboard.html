@@ -410,26 +410,53 @@
             100% { transform: scale(1); }
         }
 
+        /* FIXED: Menu toggle positioning */
         .menu-toggle {
             display: none;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             color: var(--primary-color);
             background: var(--white);
-            border: none;
+            border: 2px solid var(--sidebar-border);
             cursor: pointer;
-            position: absolute;
-            top: 1.5rem;
+            position: fixed;
+            top: 1rem;
             left: 1rem;
-            z-index: 30;
+            z-index: 25;
             padding: 0.75rem;
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-md);
             transition: var(--transition);
+            width: 50px;
+            height: 50px;
+            align-items: center;
+            justify-content: center;
         }
 
         .menu-toggle:hover {
             background: var(--primary-color);
             color: var(--white);
+            transform: scale(1.05);
+        }
+        
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 15;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+        }
+        
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+            pointer-events: all;
         }
 
         .ripple {
@@ -476,15 +503,21 @@
             .sidebar {
                 width: 280px;
                 transform: translateX(-100%);
+                z-index: 1000;
             }
 
             .sidebar.active {
                 transform: translateX(0);
             }
+            
+            .sidebar-overlay {
+                display: block;
+            }
 
             .main-content {
                 margin-left: 0;
                 padding: 1rem;
+                padding-top: 5rem;
             }
 
             .title {
@@ -515,6 +548,7 @@
 
             .sidebar-header {
                 font-size: 1.125rem;
+                padding-top: 5rem;
             }
 
             .sidebar-nav a {
@@ -529,7 +563,8 @@
 
             .sidebar {
                 width: 100%;
-                height: auto;
+                max-width: 320px;
+                height: 100vh;
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -544,6 +579,7 @@
             .main-content {
                 margin-left: 0;
                 padding: 1rem;
+                padding-top: 5rem;
             }
 
             .card-container {
@@ -573,6 +609,7 @@
             .header-right {
                 justify-content: center;
                 gap: 1rem;
+                flex-wrap: wrap;
             }
 
             .username-box {
@@ -605,10 +642,21 @@
 
             .sidebar-header {
                 font-size: 1.125rem;
+                padding-top: 5rem;
             }
+        }
 
-            .sidebar-nav a {
-                font-size: 0.95rem;
+        @media (max-width: 480px) {
+            .main-content {
+                padding-top: 4.5rem;
+            }
+            
+            .header-text {
+                font-size: 0.9rem;
+            }
+            
+            .header-right {
+                gap: 0.75rem;
             }
         }
 
@@ -644,6 +692,9 @@
     <div class="container">
         <!-- Mobile Menu Toggle -->
         <button class="menu-toggle" id="menuToggle">☰</button>
+        
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
@@ -786,15 +837,36 @@
 
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            function openSidebar() {
+                sidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
 
             menuToggle.addEventListener('click', (e) => {
                 e.stopPropagation();
-                sidebar.classList.toggle('active');
+                sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
             });
 
+            sidebarOverlay.addEventListener('click', closeSidebar);
+
             document.addEventListener('click', (e) => {
-                if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                    sidebar.classList.remove('active');
+                if (window.innerWidth <= 768 && 
+                    !sidebar.contains(e.target) && 
+                    !menuToggle.contains(e.target)) {
+                    closeSidebar();
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
                 }
             });
 
