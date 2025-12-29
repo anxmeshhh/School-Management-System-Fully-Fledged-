@@ -717,6 +717,7 @@
                                 <label for="section"><i class="fas fa-th-large" style="color: #f39c12;"></i> Select Section:</label>
                                 <select id="section" name="section" required>
                                     <option value="">Select Section</option>
+                                    <option value="all">All Sections</option>
                                     {% for section in sections %}
                                         <option value="{{ section }}">{{ section|capfirst }}</option>
                                     {% endfor %}
@@ -856,6 +857,13 @@
                         icon.style.transform = 'none';
                     }
                 });
+            });
+
+            document.querySelector('form').addEventListener('submit', function(e) {
+                const sectionSelect = document.getElementById('section');
+                if (sectionSelect.value === 'all') {
+                    console.log("[v0] Uploading to all sections for selected class");
+                }
             });
         });
     </script>
