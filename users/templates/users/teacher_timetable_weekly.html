@@ -6,411 +6,463 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Weekly Timetable - Teacher</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Poppins', sans-serif;
-        background: #ffffff;
-        min-height: 100vh;
-        color: #495057;
-        padding-top: 100px;
-        padding-bottom: 40px;
-    }
-
-    h1, h2, h3 {
-        font-family: 'Montserrat', sans-serif;
-        text-align: center;
-    }
-
-    :root {
-        --primary-color: #00a676;
-        --primary-hover: #00b88d;
-        --sidebar-bg: #f0f9f4;
-        --sidebar-border: #a8d5c2;
-        --white: #ffffff;
-        --light-bg: #f8f9fa;
-        --border-color: #adb5bd;
-        --text-color: #495057;
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        --border-radius: 16px;
-        --transition: all 0.2s ease;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
-
-    .header {
-        background: var(--white);
-        padding: 0.75rem 1rem;
-        border-bottom: 2px solid var(--border-color);
-        box-shadow: var(--shadow-md);
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-    }
-
-    .header h1 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        text-align: center;
-        flex-grow: 1;
-        color: var(--primary-color);
-        margin: 0;
-        margin-left: -10%;
-    }
-
-    .back-btn {
-        padding: 0.6rem 1.2rem;
-        border: 2px solid var(--border-color);
-        border-radius: 8px;
-        font-size: 0.95rem;
-        font-weight: 500;
-        cursor: pointer;
-        background: var(--sidebar-bg);
-        color: var(--text-color);
-        text-decoration: none;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .back-btn:hover {
-        background: var(--primary-color);
-        color: var(--white);
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-    }
-
-    .logo-container {
-        width: 90px;
-        height: 70px;
-        background: var(--white);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        box-shadow: var(--shadow-sm);
-        border: 2px solid var(--sidebar-border);
-    }
-
-    .logo-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-
-    .main-content {
-        background: var(--white);
-        border: 2px solid var(--border-color);
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow-sm);
-        padding: 2rem;
-        margin-top: 20px;
-    }
-
-    .alert-message {
-        margin-bottom: 1.5rem;
-    }
-
-    .alert-message .error {
-        background: #fef2f2;
-        color: #dc3545;
-        padding: 0.75rem;
-        border-radius: 8px;
-        border-left: 4px solid #dc3545;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .alert-message .success {
-        background: #d4edda;
-        color: var(--primary-color);
-        padding: 0.75rem;
-        border-radius: 8px;
-        border-left: 4px solid var(--primary-color);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .alert-message .warning {
-        background: #fff3cd;
-        color: #856404;
-        padding: 0.75rem;
-        border-radius: 8px;
-        border-left: 4px solid #ffc107;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .section {
-        background: var(--light-bg);
-        padding: 1.5rem;
-        border-radius: 12px;
-        border: 2px solid var(--border-color);
-        box-shadow: var(--shadow-sm);
-        margin-bottom: 2rem;
-    }
-
-    h2 {
-        color: var(--primary-color);
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .form-group label {
-        display: block;
-        color: var(--text-color);
-        font-size: 0.95rem;
-        font-weight: 500;
-        margin-bottom: 0.5rem;
-    }
-
-    .form-group input,
-    .form-group select {
-        width: 100%;
-        padding: 0.75rem;
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        background: var(--white);
-        font-size: 0.95rem;
-        transition: var(--transition);
-    }
-
-    .form-group select {
-        appearance: none;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
-        background-repeat: no-repeat;
-        background-position: right 0.75rem center;
-        background-size: 12px;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
-        outline: none;
-    }
-
-    .period-selector {
-        background: var(--white);
-        padding: 1.5rem;
-        border-radius: 12px;
-        border: 2px solid var(--border-color);
-        margin-bottom: 1.5rem;
-    }
-
-    .period-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 0.5rem;
-        margin-top: 1rem;
-    }
-
-    .period-checkbox {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem;
-        background: var(--light-bg);
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        cursor: pointer;
-        transition: var(--transition);
-    }
-
-    .period-checkbox:hover {
-        background: var(--sidebar-bg);
-        border-color: var(--primary-color);
-    }
-
-    .period-checkbox input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-    }
-
-    .period-checkbox.selected {
-        background: var(--sidebar-bg);
-        border-color: var(--primary-color);
-    }
-
-    .day-section {
-        background: var(--white);
-        padding: 1.5rem;
-        border-radius: 12px;
-        border: 2px solid var(--border-color);
-        margin-bottom: 1.5rem;
-    }
-
-    .day-header {
-        background: var(--primary-color);
-        color: var(--white);
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-
-    .period-entry {
-        background: var(--light-bg);
-        padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        margin-bottom: 1rem;
-    }
-
-    .period-entry h4 {
-        color: var(--primary-color);
-        margin-bottom: 0.75rem;
-        font-size: 1rem;
-    }
-
-    .period-fields {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 0.75rem;
-    }
-
-    .field-group {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .field-group label {
-        font-size: 0.85rem;
-        color: var(--text-color);
-        margin-bottom: 0.25rem;
-        font-weight: 500;
-    }
-
-    .field-group input,
-    .field-group select {
-        padding: 0.6rem;
-        border-radius: 6px;
-        border: 1px solid var(--border-color);
-        background: var(--white);
-        font-size: 0.9rem;
-    }
-
-    .submit-btn {
-        padding: 0.75rem 1.5rem;
-        background: var(--primary-color);
-        border: 2px solid var(--border-color);
-        border-radius: 8px;
-        color: var(--white);
-        font-size: 0.95rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        width: 100%;
-        margin-top: 1rem;
-    }
-
-    .submit-btn:hover {
-        background: var(--primary-hover);
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-    }
-
-    .info-box {
-        background: #e7f3ff;
-        border-left: 4px solid #0066cc;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
-        color: #004080;
-    }
-
-    .info-box i {
-        margin-right: 0.5rem;
-    }
-
-    @media (max-width: 768px) {
-        body {
-            padding-top: 140px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #495057;
+            padding-top: 140px;
+            padding-bottom: 40px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+        }
+
+        :root {
+            --primary-color: #00a676;
+            --primary-hover: #00b88d;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #a8d5c2;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #adb5bd;
+            --text-color: #495057;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --border-radius: 16px;
+            --transition: all 0.2s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Updated Header - Matches Add Timetable Entry Page */
         .header {
-            flex-wrap: wrap;
-            padding: 0.75rem;
+            background: var(--white);
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
         }
 
         .header h1 {
-            font-size: 1.25rem;
-            order: 1;
-            width: 100%;
-            margin-left: 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+            margin-left: -10%; /* Centers title perfectly between back button and logo */
         }
 
         .back-btn {
-            order: 2;
-            flex: 1;
+            padding: 0.6rem 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            background: var(--sidebar-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .logo-container {
-            order: 3;
-            width: 60px;
-            height: 50px;
+            width: 90px;
+            height: 70px;
+            background: var(--white);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+            border: 2px solid var(--sidebar-border);
+            flex-shrink: 0;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .main-content {
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            margin-top: 20px;
+        }
+
+        .alert-message {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-message .error {
+            background: #fef2f2;
+            color: #dc3545;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-message .success {
+            background: #d4edda;
+            color: var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-message .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .section {
+            background: var(--light-bg);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
         }
 
         .form-row {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4z" fill="%2300a676"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+            outline: none;
+        }
+
+        .period-selector {
+            background: var(--white);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .period-selector h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
         }
 
         .period-grid {
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+
+        .period-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+            min-height: 44px;
+        }
+
+        .period-checkbox:hover {
+            background: var(--sidebar-bg);
+            border-color: var(--primary-color);
+        }
+
+        .period-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            min-width: 20px;
+        }
+
+        .period-checkbox span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .period-checkbox.selected {
+            background: var(--sidebar-bg);
+            border-color: var(--primary-color);
+        }
+
+        .day-section {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            margin-bottom: 1.25rem;
+        }
+
+        .day-header {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .period-entry {
+            background: var(--light-bg);
+            padding: 0.9rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .period-entry h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.6rem;
+            font-size: 0.95rem;
         }
 
         .period-fields {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.6rem;
         }
-    }
-</style>
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field-group label {
+            font-size: 0.8rem;
+            color: var(--text-color);
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+        }
+
+        .field-group input,
+        .field-group select {
+            padding: 0.6rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 0.9rem;
+            min-height: 40px;
+        }
+
+        .submit-btn {
+            padding: 0.85rem 1.5rem;
+            background: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            margin-top: 1.5rem;
+            min-height: 48px;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            color: #004080;
+            font-size: 0.95rem;
+        }
+
+        .info-box i {
+            margin-right: 0.5rem;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 140px;
+            }
+
+            .header {
+                flex-wrap: wrap;
+                padding: 0.75rem;
+                gap: 0.75rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+                order: 1;
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .back-btn {
+                order: 2;
+                flex: 1;
+            }
+
+            .logo-container {
+                order: 3;
+                width: 60px;
+                height: 50px;
+            }
+
+            .container {
+                padding: 0 12px;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.1rem;
+            }
+
+            .back-btn {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.9rem;
+            }
+
+            .logo-container {
+                width: 50px;
+                height: 45px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+
+            .form-row {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+
+            .period-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+
+            .period-fields {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Updated Header -->
     <header class="header">
         <a href="{% url 'teacher_timetable' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Timetable
+            <i class="fas fa-arrow-left"></i> Back To Timetable
         </a>
         <h1><i class="fas fa-calendar-week"></i> Create Weekly Timetable</h1>
         <a href="{% url 'teacher_dashboard' %}">
@@ -614,7 +666,6 @@
                 if (entry) {
                     entry.style.display = isChecked ? 'block' : 'none';
                     
-                    // Clear fields if unchecked
                     if (!isChecked) {
                         const inputs = entry.querySelectorAll('input, select');
                         inputs.forEach(input => {
@@ -626,10 +677,7 @@
                 }
             });
             
-            // Update period count
             updatePeriodCount();
-            
-            // Update checkbox styling
             checkbox.parentElement.classList.toggle('selected', isChecked);
         }
         
@@ -638,9 +686,7 @@
             document.getElementById('num_periods').value = checkedBoxes.length;
         }
         
-        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            // Set minimum date to today
             const dateInput = document.getElementById('week_start_date');
             const today = new Date();
             const year = today.getFullYear();
@@ -648,7 +694,6 @@
             const day = String(today.getDate()).padStart(2, '0');
             dateInput.min = `${year}-${month}-${day}`;
             
-            // Initialize checkboxes
             for (let i = 1; i <= 10; i++) {
                 togglePeriod(i);
             }
