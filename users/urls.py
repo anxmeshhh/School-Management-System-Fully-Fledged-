@@ -27,6 +27,7 @@ urlpatterns = [
     path('progress_card/', views.progress_card, name='progress_card'),
     path('get_students/', views.get_students, name='get_students'),
     path('get_subjects/', views.get_subjects, name='get_subjects'),
+    path('save-parent-signature/', views.save_parent_signature, name='save_parent_signature'),
 
     path('teacher_mark_entry/', views.teacher_mark_entry, name='teacher_mark_entry'),
     path('teacher_save_marks/', views.teacher_save_marks, name='teacher_save_marks'),

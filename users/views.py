@@ -10341,13 +10341,13 @@ def parent_student_progress_card(request):
             for row in marks_rows
         ]
         
-        # === UPDATED: Fetch Teacher Signature (Admin OR Class Teacher) ===
+        # === Fetch Teacher Signature ===
         class_section_key = f"{class_name}-{section}"
         
         teacher_signature = None
         class_teacher_name = None
         
-        # First, try to get signature from assigned class teacher
+        # Try to get signature from assigned class teacher
         cursor.execute("""
             SELECT t.id, t.name, ts.signature
             FROM teachers t
@@ -10359,13 +10359,11 @@ def parent_student_progress_card(request):
         teacher_row = cursor.fetchone()
         
         if teacher_row and teacher_row[2]:
-            # Class teacher exists and has signature
             class_teacher_name = teacher_row[1]
             teacher_signature = teacher_row[2]
         else:
-            # No class teacher OR no signature - Check for admin signature (teacher_id = 0)
+            # Check for admin signature (teacher_id = 0)
             try:
-                # Try with class_section column first (if it exists)
                 cursor.execute("""
                     SELECT signature
                     FROM teacher_signature
@@ -10378,7 +10376,6 @@ def parent_student_progress_card(request):
                     teacher_signature = admin_sig_row[0]
                     class_teacher_name = "Class Teacher"
             except Exception as col_err:
-                # class_section column doesn't exist - fallback to just teacher_id = 0
                 if "Unknown column 'class_section'" in str(col_err) or "class_section" in str(col_err):
                     cursor.execute("""
                         SELECT signature
@@ -10394,10 +10391,26 @@ def parent_student_progress_card(request):
                 else:
                     raise col_err
         
-        # === Fetch Principal Signature (global) ===
+        # === Fetch Principal Signature ===
         cursor.execute("SELECT signature FROM principal_signature LIMIT 1")
         principal_sig_row = cursor.fetchone()
         principal_signature = principal_sig_row[0] if principal_sig_row else None
+        
+        # === NEW: Fetch Parent Signature ===
+        # Get parent_id from session (assuming it's stored when parent logs in)
+        parent_id = request.session.get('parent_id', user_id)  # Fallback to user_id if parent_id not set
+        
+        parent_signature = None
+        cursor.execute("""
+            SELECT signature
+            FROM parent_signature
+            WHERE student_id = %s AND parent_id = %s
+            LIMIT 1
+        """, [user_id, parent_id])
+        parent_sig_row = cursor.fetchone()
+        
+        if parent_sig_row:
+            parent_signature = parent_sig_row[0]
         
         # === Calculate Performance Summary ===
         has_marks = any(m['marks'] > 0 for m in marks)
@@ -10447,16 +10460,82 @@ def parent_student_progress_card(request):
             'status': status,
             'teacher_signature': teacher_signature,
             'principal_signature': principal_signature,
+            'parent_signature': parent_signature,  # NEW
             'class_teacher_name': class_teacher_name,
             'has_marks': has_marks,
             'class_name': class_name,
             'section': section or 'N/A',
+            'parent_id': parent_id,  # NEW: For signature saving
         }
     
     return render(request, 'users/parent_student_progress_card.html', context)
 
 
     
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.db import connection
+import json
+
+@csrf_exempt
+def save_parent_signature(request):
+    """API endpoint to save parent signature"""
+    if 'user_id' not in request.session:
+        return JsonResponse({'success': False, 'message': 'Please log in.'}, status=403)
+    
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            signature_data = data.get('signature')
+            student_id = request.session.get('user_id')
+            parent_id = request.session.get('parent_id', student_id)
+            
+            if not signature_data:
+                return JsonResponse({
+                    'success': False, 
+                    'message': 'Signature data is required.'
+                }, status=400)
+            
+            with connection.cursor() as cursor:
+                # Verify student exists
+                cursor.execute(
+                    "SELECT user_id FROM student_page1 WHERE user_id = %s",
+                    [student_id]
+                )
+                if not cursor.fetchone():
+                    return JsonResponse({
+                        'success': False, 
+                        'message': 'Student not found.'
+                    }, status=400)
+                
+                # Save or update parent signature
+                cursor.execute("""
+                    INSERT INTO parent_signature (student_id, parent_id, signature)
+                    VALUES (%s, %s, %s)
+                    ON DUPLICATE KEY UPDATE 
+                        signature = %s,
+                        updated_at = CURRENT_TIMESTAMP
+                """, [student_id, parent_id, signature_data, signature_data])
+                
+                connection.commit()
+                
+                return JsonResponse({
+                    'success': True, 
+                    'message': 'Parent signature saved successfully!'
+                })
+        
+        except Exception as e:
+            connection.rollback()
+            return JsonResponse({
+                'success': False,
+                'message': f'Error saving signature: {str(e)}'
+            }, status=500)
+    
+    return JsonResponse({
+        'success': False, 
+        'message': 'Invalid request method.'
+    }, status=405)
+
 
 
 from django.shortcuts import render, redirect
