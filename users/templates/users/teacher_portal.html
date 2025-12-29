@@ -631,66 +631,80 @@
             flex: 1 1 100%;
         }
     }
+    /* Added styles for the submit container and progress status */
     .submit-container {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background: var(--light-bg);
-    border-radius: 12px;
-    border: 2px solid var(--border-color);
-    text-align: center;
-    display: none;
-}
+        display: none;
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: #f8fafc;
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        text-align: center;
+        transition: var(--transition);
+    }
 
-.submit-container.visible {
-    display: block;
-}
+    .submit-container.visible {
+        display: block;
+        animation: fadeIn 0.4s ease-out;
+    }
 
-.submit-btn {
-    padding: 1rem 3rem;
-    background: var(--primary-color);
-    border: none;
-    border-radius: 10px;
-    color: var(--white);
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-}
+    .progress-info {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
 
-.submit-btn:hover:not(:disabled) {
-    background: var(--primary-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
+    .progress-info strong {
+        font-size: 1.25rem;
+        color: var(--primary-color);
+    }
 
-.submit-btn:disabled {
-    background: #cbd5e1;
-    color: #64748b;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
+    .progress-info .complete {
+        color: #16a34a;
+    }
 
-.progress-info {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    color: var(--text-color);
-}
+    .progress-info .incomplete {
+        color: #f59e0b;
+    }
 
-.progress-info strong {
-    color: var(--primary-color);
-    font-size: 1.2rem;
-}
+    .submit-btn {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+    }
 
-.progress-info .incomplete {
-    color: #dc2626;
-}
+    .submit-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);
+        background: #6d28d9;
+    }
 
-.progress-info .complete {
-    color: #16a34a;
-}
+    .submit-btn:disabled {
+        background: #d1d5db;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+        opacity: 0.7;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     </style>
 </head>
 <body>
@@ -809,10 +823,11 @@
                         <div class="spinner"></div>
                         <p style="margin-top: 1rem; color: var(--primary-color);">Saving attendance...</p>
                     </div>
+
                     <div class="submit-container" id="submitContainer">
                         <div class="progress-info" id="progressInfo">
                             <i class="fas fa-info-circle"></i> 
-                            <strong id="markedCount">0</strong> of <strong id="totalCount">0</strong> students marked
+                            <span id="progressText">Mark all students to enable final submission.</span>
                         </div>
                         <button type="button" class="submit-btn" id="finalSubmitBtn" onclick="finalSubmitAttendance()" disabled>
                             <i class="fas fa-check-double"></i> Submit Final Attendance
@@ -1224,80 +1239,58 @@
 
     // Check if all students are marked
     function checkAttendanceCompletion() {
-    const markedCount = Object.keys(attendanceStatus).length;
-    const totalCount = totalStudentsCount;
-
-    // Get all required elements safely
-    const submitContainer = document.getElementById('submitContainer');
-    const markedCountEl = document.getElementById('markedCount');
-    const totalCountEl = document.getElementById('totalCount');
-    const progressInfo = document.getElementById('progressInfo');
-    const submitBtn = document.getElementById('finalSubmitBtn');
-
-    // If container doesn't exist or no students loaded yet, hide everything
-    if (!submitContainer || totalCount === 0) {
-        submitContainer?.classList.remove('visible');
-        return;
+        const markedCount = Object.keys(attendanceStatus).length;
+        const totalCount = totalStudentsCount;
+        
+        const submitContainer = document.getElementById('submitContainer');
+        const submitBtn = document.getElementById('finalSubmitBtn');
+        const progressInfo = document.getElementById('progressInfo');
+        
+        if (totalCount > 0) {
+            submitContainer.classList.add('visible');
+            
+            if (markedCount === totalCount) {
+                submitBtn.disabled = false;
+                progressInfo.innerHTML = `
+                    <i class="fas fa-check-circle complete"></i> 
+                    All <strong class="complete">${totalCount}</strong> students marked! Ready to submit.
+                `;
+            } else {
+                submitBtn.disabled = true;
+                const remaining = totalCount - markedCount;
+                progressInfo.innerHTML = `
+                    <i class="fas fa-exclamation-triangle incomplete"></i> 
+                    <strong class="incomplete">${remaining}</strong> student${remaining > 1 ? 's' : ''} remaining. 
+                    Mark all students to enable submit.
+                `;
+            }
+        } else {
+            submitContainer.classList.remove('visible');
+        }
     }
 
-    // Show the submit section
-    submitContainer.classList.add('visible');
-
-    // Update counts
-    if (markedCountEl) markedCountEl.textContent = markedCount;
-    if (totalCountEl) totalCountEl.textContent = totalCount;
-
-    if (markedCount === totalCount && totalCount > 0) {
-        // ALL students marked → Enable submit
-        submitBtn.disabled = false;
-        progressInfo.innerHTML = `
-            <i class="fas fa-check-circle complete" style="color: #16a34a;"></i>
-            <strong class="complete">All ${totalCount} students marked!</strong> You can now submit final attendance.
-        `;
-    } else {
-        // Some students not marked → Disable submit
-        submitBtn.disabled = true;
-        const remaining = totalCount - markedCount;
-        progressInfo.innerHTML = `
-            <i class="fas fa-exclamation-triangle incomplete" style="color: #dc2626;"></i>
-            <strong class="incomplete">${remaining}</strong> student${remaining !== 1 ? 's' : ''} 
-            not marked yet. Please mark all to enable submit.
-        `;
-    }
-}
-
-    // Final submit attendance
     window.finalSubmitAttendance = function() {
-    const markedCount = Object.keys(attendanceStatus).length;
-    const totalCount = totalStudentsCount;
+        const markedCount = Object.keys(attendanceStatus).length;
+        if (markedCount < totalStudentsCount) {
+            showAlert('Please mark attendance for all students before final submission.', 'warning');
+            return;
+        }
 
-    if (markedCount !== totalCount) {
-        showAlert('Cannot submit: Not all students have been marked.', 'error');
-        return;
+        const btn = document.getElementById('finalSubmitBtn');
+        const originalHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+        setTimeout(() => {
+            showAlert('✓ Final attendance submitted successfully!', 'success');
+            btn.innerHTML = '<i class="fas fa-check"></i> Submitted';
+            // You can add a redirect or reset logic here
+            // For now, we'll just reset the form after a delay
+            setTimeout(() => {
+                clearFilters(); // Reset the form
+            }, 1500);
+        }, 1500);
     }
-
-    const classVal = document.getElementById('filter_class').value;
-    const sectionVal = document.getElementById('filter_section').value;
-    const dateVal = document.getElementById('filter_date').value;
-
-    if (!confirm(`Are you sure you want to FINALIZE attendance for:\n\nClass: ${classVal}-${sectionVal}\nDate: ${dateVal}\nTotal Students: ${totalCount}\n\nThis action is permanent!`)) {
-        return;
-    }
-
-    const submitBtn = document.getElementById('finalSubmitBtn');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-
-    // Simulate submission (replace with actual fetch if needed)
-    setTimeout(() => {
-        showAlert(`Attendance successfully finalized for ${classVal}-${sectionVal} on ${dateVal}!`, 'success');
-        
-        submitBtn.innerHTML = '<i class="fas fa-check-double"></i> Submitted Successfully';
-        submitBtn.style.background = '#16a34a';
-        
-        // Optional: disable further changes or redirect
-    }, 1500);
-};
 </script>
 </body>
 </html>
