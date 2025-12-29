@@ -412,6 +412,8 @@
         text-align: center;
         transition: var(--transition);
         box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        user-select: none;
     }
 
     .stat-card:hover {
@@ -419,16 +421,32 @@
         box-shadow: var(--shadow-md);
     }
 
+    .stat-card:active {
+        transform: translateY(-2px);
+    }
+
     .stat-card.pending {
         border-color: var(--warning-color);
+    }
+
+    .stat-card.pending:hover {
+        background: #fef3c7;
     }
 
     .stat-card.approved {
         border-color: var(--success-color);
     }
 
+    .stat-card.approved:hover {
+        background: #d1fae5;
+    }
+
     .stat-card.rejected {
         border-color: var(--danger-color);
+    }
+
+    .stat-card.rejected:hover {
+        background: #fee2e2;
     }
 
     .stat-number {
@@ -723,15 +741,15 @@
 
                         <!-- Stats Summary -->
                         <div class="stats-summary">
-                            <div class="stat-card pending">
+                            <div class="stat-card pending" onclick="handleStatClick('pending')">
                                 <div class="stat-number">{{ pending_count }}</div>
                                 <div class="stat-label">Pending</div>
                             </div>
-                            <div class="stat-card approved">
+                            <div class="stat-card approved" onclick="handleStatClick('approved')">
                                 <div class="stat-number">{{ approved_count }}</div>
                                 <div class="stat-label">Approved Today</div>
                             </div>
-                            <div class="stat-card rejected">
+                            <div class="stat-card rejected" onclick="handleStatClick('rejected')">
                                 <div class="stat-number">{{ rejected_count }}</div>
                                 <div class="stat-label">Rejected Today</div>
                             </div>
@@ -1163,6 +1181,25 @@
         // Initial filter on page load
         filterPendingCards();
         filterHistoryCards();
+
+        function handleStatClick(status) {
+            if (status === 'pending') {
+                // Switch to pending tab and show all pending requests
+                switchTab('pending');
+                clearPendingFilters();
+            } else if (status === 'approved' || status === 'rejected') {
+                // Switch to history tab and filter by approved/rejected status
+                switchTab('history');
+                clearHistoryFilters();
+                
+                // Set the status filter
+                const historyStatusFilter = document.getElementById('history_filter_status');
+                historyStatusFilter.value = status.charAt(0).toUpperCase() + status.slice(1);
+                
+                // Apply the filter
+                filterHistoryCards();
+            }
+        }
     </script>
 </body>
 </html>
