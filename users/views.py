@@ -2126,8 +2126,9 @@ def admin_study_materials_upload(request):
         selected_class = request.POST.get("class")
         selected_section = request.POST.get("section")
 
-        if not all([title, uploaded_file, selected_class, selected_section]):
-            messages.error(request, "Title, file, class, and section are required.")
+        # Allow 'all' as a valid section choice (uploads to every section of the selected class)
+        if not title or not uploaded_file or not selected_class or selected_section is None:
+            messages.error(request, "Title, file, and class are required; choose a section or 'All Sections'.")
             return redirect("admin_study_materials_upload")
 
         validator = FileExtensionValidator(allowed_extensions=['pdf'])
@@ -2152,14 +2153,39 @@ def admin_study_materials_upload(request):
 
         try:
             with connection.cursor() as cursor:
-                cursor.execute(
-                    """
-                    INSERT INTO study_materials (title, file_path, upload_date, class, section)
-                    VALUES (%s, %s, %s, %s, %s)
-                    """,
-                    [title, f"study_materials/{filename}", datetime.now(), selected_class, selected_section]
-                )
-            messages.success(request, "Study material uploaded successfully!")
+                # If admin selected 'all', create an entry for each section in that class
+                if selected_section == 'all':
+                    cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE class = %s AND section IS NOT NULL", [selected_class])
+                    sections_for_class = [row[0] for row in cursor.fetchall()]
+
+                    if sections_for_class:
+                        for sec in sections_for_class:
+                            cursor.execute(
+                                """
+                                INSERT INTO study_materials (title, file_path, upload_date, class, section)
+                                VALUES (%s, %s, %s, %s, %s)
+                                """,
+                                [title, f"study_materials/{filename}", datetime.now(), selected_class, sec]
+                            )
+                    else:
+                        # No sections found for this class - insert a single record with empty section
+                        cursor.execute(
+                            """
+                            INSERT INTO study_materials (title, file_path, upload_date, class, section)
+                            VALUES (%s, %s, %s, %s, %s)
+                            """,
+                            [title, f"study_materials/{filename}", datetime.now(), selected_class, '']
+                        )
+                    messages.success(request, "Study material uploaded to all sections successfully!")
+                else:
+                    cursor.execute(
+                        """
+                        INSERT INTO study_materials (title, file_path, upload_date, class, section)
+                        VALUES (%s, %s, %s, %s, %s)
+                        """,
+                        [title, f"study_materials/{filename}", datetime.now(), selected_class, selected_section]
+                    )
+                    messages.success(request, "Study material uploaded successfully!")
         except Exception as e:
             messages.error(request, f"Error saving to database: {str(e)}")
             if os.path.exists(file_path):

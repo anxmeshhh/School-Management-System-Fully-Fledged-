@@ -709,6 +709,7 @@
                                 <label for="section"><i class="fas fa-th-large" style="color: #f39c12;"></i> Select Section:</label>
                                 <select id="section" name="section" required>
                                     <option value="">Select Section</option>
+                                    <option value="all">All Sections</option>
                                     {% for section in sections %}
                                         <option value="{{ section }}">{{ section|capfirst }}</option>
                                     {% endfor %}
