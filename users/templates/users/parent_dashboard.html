@@ -197,10 +197,11 @@
         }
 
         .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
 
         .header-text {
             color: var(--text-color);
@@ -312,24 +313,26 @@
         }
 
         .parent-button {
-            position: relative;
-            background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
-            border: 1px solid #8b5cf6;
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow:
-                0 8px 18px rgba(139, 92, 246, 0.30),
-                inset 0 2px 4px rgba(255, 255, 255, 0.85),
-                inset 0 -3px 6px rgba(139, 92, 246, 0.20);
-        }
+    position: relative;
+    background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+    border: 1px solid #8b5cf6;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow:
+        0 8px 18px rgba(139, 92, 246, 0.30),
+        inset 0 2px 4px rgba(255, 255, 255, 0.85),
+        inset 0 -3px 6px rgba(139, 92, 246, 0.20);
+    transition: all 0.2s ease;
+}
 
         .parent-button:hover {
-            box-shadow:
-                0 10px 22px rgba(139, 92, 246, 0.35),
-                inset 0 2px 5px rgba(255, 255, 255, 0.9),
-                inset 0 -3px 6px rgba(139, 92, 246, 0.25);
-        }
+    box-shadow:
+        0 10px 22px rgba(139, 92, 246, 0.35),
+        inset 0 2px 5px rgba(255, 255, 255, 0.9),
+        inset 0 -3px 6px rgba(139, 92, 246, 0.25);
+    transform: scale(1.05);
+}
 
         .title {
             color: var(--primary-color);
@@ -601,15 +604,17 @@
             }
 
             .header {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem;
-            }
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
 
             .header-right {
                 justify-content: center;
                 gap: 1rem;
                 flex-wrap: wrap;
+                order: 2;
             }
 
             .username-box {
@@ -644,6 +649,9 @@
                 font-size: 1.125rem;
                 padding-top: 5rem;
             }
+            .parent-button {
+        position: relative;
+    }
         }
 
         @media (max-width: 480px) {
@@ -744,43 +752,45 @@
         <div class="main-content">
             <!-- Header Section -->
             <header class="header">
-                <div class="header-left">
-                    <span class="header-text">Manavargal School Management System v1.0</span>
-                </div>
-                <div class="header-right">
-                    <button class="bell-button" id="notificationBell" aria-label="Notifications">
-                        <svg viewBox="0 0 64 64" width="28" height="28">
-                            <path d="M32 6 C22 6 16 14 16 24 V38 L10 44 H54 L48 38 V24 C48 14 42 6 32 6Z" fill="#8bd3dd" stroke="#1f2937" stroke-width="2" stroke-linejoin="round"/>
-                            <circle cx="32" cy="6" r="3" fill="#8bd3dd" stroke="#1f2937" stroke-width="2"/>
-                            <circle cx="32" cy="46" r="4" fill="#1f2937"/>
-                            <line x1="24" y1="54" x2="22" y2="58" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="32" y1="55" x2="32" y2="60" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="40" y1="54" x2="42" y2="58" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </button>
+    <div class="header-left">
+        <span class="header-text">Manavargal School Management System v1.0</span>
+    </div>
+    <div class="header-right">
+        <button class="bell-button" id="notificationBell" aria-label="Notifications">
+            <svg viewBox="0 0 64 64" width="28" height="28">
+                <path d="M32 6 C22 6 16 14 16 24 V38 L10 44 H54 L48 38 V24 C48 14 42 6 32 6Z" fill="#8bd3dd" stroke="#1f2937" stroke-width="2" stroke-linejoin="round"/>
+                <circle cx="32" cy="6" r="3" fill="#8bd3dd" stroke="#1f2937" stroke-width="2"/>
+                <circle cx="32" cy="46" r="4" fill="#1f2937"/>
+                <line x1="24" y1="54" x2="22" y2="58" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
+                <line x1="32" y1="55" x2="32" y2="60" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
+                <line x1="40" y1="54" x2="42" y2="58" stroke="#1f2937" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
 
-                    <div id="notificationPanel" class="notification-panel">
-                        <h3>Notifications</h3>
-                        <ul>
-                            <li>New circular: School Event - 10:00 AM, Nov 15, 2025</li>
-                            <li>Homework submission deadline - 8:00 PM, Nov 14, 2025</li>
-                            <li>Study material uploaded - 3:00 PM, Nov 13, 2025</li>
-                            <li>Fee payment reminder - 1:00 PM, Nov 13, 2025</li>
-                        </ul>
-                    </div>
-                    <span class="header-text">Welcome</span>
-                    <span class="username-box">{{ admin_name|default:"Guest" }}</span>
-                    <button class="parent-button" aria-label="Parent Profile">
-                        <svg viewBox="0 0 64 64" width="28" height="28">
-                            <circle cx="32" cy="18" r="8" fill="#c4b5fd" stroke="#8b5cf6" stroke-width="3"/>
-                            <path d="M16 50 C18 25 48 25 48 50Z" fill="#c4b5fd" stroke="#8b5cf6" stroke-width="3" stroke-linejoin="round"/>
-                            <path d="M28 28 L32 36 L36 28" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round"/>
-                            <circle cx="28" cy="16" r="1.5" fill="#8b5cf6"/>
-                            <circle cx="36" cy="16" r="1.5" fill="#8b5cf6"/>
-                        </svg>
-                    </button>
-                </div>
-            </header>
+        <div id="notificationPanel" class="notification-panel">
+            <h3>Notifications</h3>
+            <ul>
+                <li>New circular: School Event - 10:00 AM, Nov 15, 2025</li>
+                <li>Homework submission deadline - 8:00 PM, Nov 14, 2025</li>
+                <li>Study material uploaded - 3:00 PM, Nov 13, 2025</li>
+                <li>Fee payment reminder - 1:00 PM, Nov 13, 2025</li>
+            </ul>
+        </div>
+        
+        <button class="parent-button" aria-label="Parent Profile">
+            <svg viewBox="0 0 64 64" width="28" height="28">
+                <circle cx="32" cy="18" r="8" fill="#c4b5fd" stroke="#8b5cf6" stroke-width="3"/>
+                <path d="M16 50 C18 25 48 25 48 50Z" fill="#c4b5fd" stroke="#8b5cf6" stroke-width="3" stroke-linejoin="round"/>
+                <path d="M28 28 L32 36 L36 28" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="28" cy="16" r="1.5" fill="#8b5cf6"/>
+                <circle cx="36" cy="16" r="1.5" fill="#8b5cf6"/>
+            </svg>
+        </button>
+        
+        <span class="header-text">Welcome</span>
+        <span class="username-box">{{ admin_name|default:"Guest" }}</span>
+    </div>
+</header>
 
             <!-- Title Section -->
             <h1 class="title">Parent Dashboard</h1>
