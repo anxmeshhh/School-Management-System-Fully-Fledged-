@@ -10184,14 +10184,23 @@ def parent_student_timetable(request):
                 'timetable_data': [], 'class_id': class_id
             })
         
-        # Fetch timetable with teacher details
+        # Fetch timetable with teacher details - FIXED QUERY
         query = """
-            SELECT t.id, t.class_id, t.subject, tch.name, t.day_of_week, 
-                   t.start_time, t.end_time, t.room
+            SELECT DISTINCT
+                t.id, 
+                t.class_id, 
+                t.subject, 
+                tch.name, 
+                t.day_of_week, 
+                t.start_time, 
+                t.end_time, 
+                t.room
             FROM timetable t
             JOIN teachers tch ON t.teacher_id = tch.id
             WHERE t.class_id = %s
-            ORDER BY FIELD(t.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
+            ORDER BY 
+                FIELD(t.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'),
+                t.start_time ASC
         """
         cursor.execute(query, [class_id])
         timetables = [
@@ -10217,7 +10226,6 @@ def parent_student_timetable(request):
     return render(request, 'users/parent_student_timetable.html', {
         'timetable_data': timetable_data, 'class_id': class_id
     })
-
 
 def student_progress_card(request):
     if 'user_id' not in request.session:
