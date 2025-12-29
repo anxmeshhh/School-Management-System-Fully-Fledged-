@@ -44,6 +44,11 @@
         --transition: all 0.2s ease;
     }
 
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+
     .container {
         max-width: 1200px;
         margin: 0 auto;
@@ -74,6 +79,7 @@
         color: var(--primary-color);
         margin: 0;
         margin-left: -10%;
+        word-break: break-word;
     }
 
     .back-btn {
@@ -90,6 +96,8 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .back-btn:hover {
@@ -110,12 +118,19 @@
         overflow: hidden;
         box-shadow: var(--shadow-sm);
         border: 2px solid var(--sidebar-border);
+        flex-shrink: 0;
     }
 
     .logo-container img {
         width: 100%;
         height: 100%;
         object-fit: contain;
+        transition: var(--transition);
+    }
+
+    .logo-container:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
     }
 
     .main-content {
@@ -134,6 +149,11 @@
         border: 2px solid var(--border-color);
         box-shadow: var(--shadow-sm);
         margin-bottom: 2rem;
+        transition: var(--transition);
+    }
+
+    .section:hover {
+        box-shadow: var(--shadow-md);
     }
 
     h2 {
@@ -141,6 +161,15 @@
         font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 1.5rem;
+        word-break: break-word;
+    }
+
+    h3 {
+        color: var(--text-color);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        word-break: break-word;
     }
 
     .form-row {
@@ -156,11 +185,14 @@
     }
 
     .form-group label {
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
         color: var(--text-color);
         font-size: 0.95rem;
         font-weight: 500;
         margin-bottom: 0.5rem;
+        word-break: break-word;
     }
 
     .form-group input,
@@ -168,10 +200,11 @@
         width: 100%;
         padding: 0.75rem;
         border-radius: 8px;
-        border: 1px solid var(--border-color);
+        border: 2px solid var(--border-color);
         background: var(--white);
         font-size: 0.95rem;
         transition: var(--transition);
+        font-family: 'Poppins', sans-serif;
     }
 
     .form-group select {
@@ -214,6 +247,7 @@
         border: 1px solid var(--border-color);
         cursor: pointer;
         transition: var(--transition);
+        user-select: none;
     }
 
     .period-checkbox:hover {
@@ -225,6 +259,12 @@
         width: 18px;
         height: 18px;
         cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .period-checkbox span {
+        font-size: 0.9rem;
+        white-space: nowrap;
     }
 
     .period-checkbox.selected {
@@ -248,6 +288,9 @@
         margin-bottom: 1rem;
         font-weight: 600;
         font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .period-entry {
@@ -262,6 +305,9 @@
         color: var(--primary-color);
         margin-bottom: 0.75rem;
         font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .period-fields {
@@ -286,9 +332,17 @@
     .field-group select {
         padding: 0.6rem;
         border-radius: 6px;
-        border: 1px solid var(--border-color);
+        border: 2px solid var(--border-color);
         background: var(--white);
         font-size: 0.9rem;
+        transition: var(--transition);
+    }
+
+    .field-group input:focus,
+    .field-group select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+        outline: none;
     }
 
     .submit-btn {
@@ -307,6 +361,7 @@
         gap: 0.5rem;
         width: 100%;
         margin-top: 1rem;
+        font-family: 'Montserrat', sans-serif;
     }
 
     .submit-btn:hover {
@@ -322,32 +377,76 @@
         border-radius: 8px;
         margin-bottom: 1.5rem;
         color: #004080;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
 
     .info-box i {
-        margin-right: 0.5rem;
+        flex-shrink: 0;
+        margin-top: 0.2rem;
     }
 
+    /* ============================================ */
+    /* ENHANCED MOBILE RESPONSIVE DESIGN */
+    /* ============================================ */
+
+    /* Tablets */
+    @media (max-width: 1024px) {
+        .container {
+            padding: 0 18px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin-left: -5%;
+        }
+
+        .logo-container {
+            width: 80px;
+            height: 60px;
+        }
+
+        .main-content {
+            padding: 1.75rem;
+        }
+
+        .form-row {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        .period-grid {
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        }
+    }
+
+    /* Mobile Landscape & Portrait */
     @media (max-width: 768px) {
         body {
-            padding-top: 140px;
+            padding-top: 160px;
+            padding-bottom: 30px;
         }
 
         .header {
             flex-wrap: wrap;
             padding: 0.75rem;
+            gap: 0.75rem;
         }
 
         .header h1 {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             order: 1;
             width: 100%;
             margin-left: 0;
+            line-height: 1.3;
         }
 
         .back-btn {
             order: 2;
             flex: 1;
+            justify-content: center;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
         }
 
         .logo-container {
@@ -356,16 +455,407 @@
             height: 50px;
         }
 
+        .container {
+            padding: 0 15px;
+        }
+
+        .main-content {
+            padding: 1.5rem;
+            margin-top: 15px;
+        }
+
+        .section {
+            padding: 1.25rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+        }
+
         .form-row {
             grid-template-columns: 1fr;
+            gap: 0.85rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.65rem;
+            font-size: 0.9rem;
+        }
+
+        .period-selector {
+            padding: 1.25rem;
         }
 
         .period-grid {
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.65rem;
+        }
+
+        .period-checkbox {
+            padding: 0.6rem 0.5rem;
+        }
+
+        .period-checkbox span {
+            font-size: 0.85rem;
+        }
+
+        .day-section {
+            padding: 1.25rem;
+        }
+
+        .day-header {
+            font-size: 1rem;
+            padding: 0.65rem 0.85rem;
+        }
+
+        .period-entry {
+            padding: 0.85rem;
+        }
+
+        .period-entry h4 {
+            font-size: 0.95rem;
         }
 
         .period-fields {
             grid-template-columns: 1fr;
+            gap: 0.65rem;
+        }
+
+        .field-group label {
+            font-size: 0.8rem;
+        }
+
+        .field-group input,
+        .field-group select {
+            padding: 0.55rem;
+            font-size: 0.85rem;
+        }
+
+        .submit-btn {
+            padding: 0.7rem 1.25rem;
+            font-size: 0.9rem;
+        }
+
+        .info-box {
+            padding: 0.85rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Small Mobile Devices */
+    @media (max-width: 640px) {
+        body {
+            padding-top: 170px;
+        }
+
+        .header {
+            padding: 0.65rem;
+        }
+
+        .header h1 {
+            font-size: 1.1rem;
+        }
+
+        .back-btn {
+            padding: 0.55rem 0.85rem;
+            font-size: 0.85rem;
+        }
+
+        .logo-container {
+            width: 55px;
+            height: 45px;
+        }
+
+        .main-content {
+            padding: 1.25rem;
+        }
+
+        .section {
+            padding: 1rem;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+        }
+
+        h3 {
+            font-size: 1rem;
+        }
+
+        .period-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .day-header {
+            font-size: 0.95rem;
+        }
+    }
+
+    /* Extra Small Mobile Devices */
+    @media (max-width: 480px) {
+        body {
+            padding-top: 180px;
+            padding-bottom: 25px;
+        }
+
+        .header {
+            padding: 0.6rem;
+        }
+
+        .header h1 {
+            font-size: 1rem;
+        }
+
+        .back-btn {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            gap: 0.35rem;
+        }
+
+        .logo-container {
+            width: 50px;
+            height: 42px;
+        }
+
+        .container {
+            padding: 0 12px;
+        }
+
+        .main-content {
+            padding: 1rem;
+        }
+
+        .section {
+            padding: 0.85rem;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+
+        .period-selector {
+            padding: 1rem;
+        }
+
+        .period-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .period-checkbox {
+            padding: 0.5rem 0.4rem;
+        }
+
+        .period-checkbox span {
+            font-size: 0.8rem;
+        }
+
+        .day-section {
+            padding: 1rem;
+        }
+
+        .day-header {
+            font-size: 0.9rem;
+            padding: 0.6rem 0.75rem;
+        }
+
+        .period-entry {
+            padding: 0.75rem;
+        }
+
+        .period-entry h4 {
+            font-size: 0.9rem;
+        }
+
+        .field-group label {
+            font-size: 0.75rem;
+        }
+
+        .field-group input,
+        .field-group select {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .submit-btn {
+            padding: 0.65rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .info-box {
+            padding: 0.75rem;
+            font-size: 0.85rem;
+            flex-direction: column;
+        }
+    }
+
+    /* Extra Extra Small Devices */
+    @media (max-width: 360px) {
+        body {
+            padding-top: 190px;
+        }
+
+        .header h1 {
+            font-size: 0.95rem;
+        }
+
+        .back-btn {
+            font-size: 0.75rem;
+            padding: 0.45rem 0.65rem;
+        }
+
+        .logo-container {
+            width: 45px;
+            height: 38px;
+        }
+
+        .main-content {
+            padding: 0.85rem;
+        }
+
+        .section {
+            padding: 0.75rem;
+        }
+
+        h2 {
+            font-size: 1rem;
+        }
+
+        .period-checkbox span {
+            font-size: 0.75rem;
+        }
+    }
+
+    /* Mobile Landscape Optimization */
+    @media (max-width: 768px) and (orientation: landscape) {
+        body {
+            padding-top: 140px;
+        }
+
+        .header {
+            padding: 0.6rem 0.75rem;
+        }
+
+        .header h1 {
+            font-size: 1.1rem;
+        }
+
+        .back-btn {
+            padding: 0.5rem 0.9rem;
+        }
+
+        .logo-container {
+            width: 55px;
+            height: 48px;
+        }
+
+        .period-grid {
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        }
+    }
+
+    /* Touch Device Optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .back-btn:active,
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Disable hover effects on touch devices */
+        .section:hover,
+        .back-btn:hover,
+        .submit-btn:hover,
+        .logo-container:hover,
+        .period-checkbox:hover {
+            transform: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Increase touch target sizes */
+        .back-btn,
+        .submit-btn {
+            min-height: 44px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .field-group input,
+        .field-group select {
+            min-height: 44px;
+        }
+
+        .period-checkbox {
+            min-height: 44px;
+        }
+    }
+
+    /* Safe Area Insets for Notched Devices */
+    @supports (padding: max(0px)) {
+        body {
+            padding-left: max(0px, env(safe-area-inset-left));
+            padding-right: max(0px, env(safe-area-inset-right));
+            padding-bottom: max(40px, env(safe-area-inset-bottom));
+        }
+
+        .header {
+            padding-left: max(1rem, env(safe-area-inset-left));
+            padding-right: max(1rem, env(safe-area-inset-right));
+        }
+    }
+
+    /* Accessibility - Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            transition: none !important;
+            animation: none !important;
+        }
+
+        html {
+            scroll-behavior: auto;
+        }
+    }
+
+    /* Print Styles */
+    @media print {
+        .header,
+        .back-btn,
+        .logo-container,
+        .submit-btn,
+        .info-box {
+            display: none;
+        }
+
+        body {
+            padding-top: 0;
+        }
+
+        .main-content {
+            border: none;
+            box-shadow: none;
         }
     }
 </style>

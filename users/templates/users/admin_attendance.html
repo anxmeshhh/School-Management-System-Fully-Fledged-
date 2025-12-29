@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
 
     * {
         margin: 0;
@@ -180,42 +180,37 @@
     }
 
     .sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    opacity: 0;
-    transition: var(--transition);
-    pointer-events: none;      /* ← NEW */
-}
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: var(--transition);
+        pointer-events: none;
+    }
 
-.sidebar-overlay.active {
-    display: block;
-    opacity: 1;
-    pointer-events: all;       /* ← NEW: Allows clicks when open */
-}
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+        pointer-events: all;
+    }
 
     /* Main Content Area */
     .page-wrapper {
+        margin-left: 280px;
+        min-height: 100vh;
+        transition: var(--transition);
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
 
-    margin-left: 280px;
-
-    min-height: 100vh;
-
-    transition: var(--transition);
-
-    height: 100vh;             
-
-    overflow-y: auto;   
-    overflow-x: hidden;       
-
-}
     .container {
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
         padding: 2rem 20px;
     }
@@ -250,16 +245,37 @@
         margin-bottom: 1.5rem;
     }
 
+    .alert-box {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     .alert-message .error {
-        background: #fef2f2;
-        color: #dc3545;
+        background: #fee2e2;
+        color: #991b1b;
         padding: 0.75rem;
         border-radius: 8px;
         border-left: 4px solid #dc3545;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        border: 2px solid var(--border-color);
+        border: 2px solid #ef4444;
     }
 
     .alert-message .success {
@@ -271,7 +287,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        border: 2px solid var(--border-color);
+        border: 2px solid var(--primary-color);
     }
 
     .section {
@@ -356,6 +372,7 @@
     .form-row .form-group {
         flex: 1;
         min-width: 150px;
+        margin-bottom: 0;
     }
 
     .load-btn {
@@ -372,13 +389,74 @@
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        transform: translateY(-25px);
+        margin-bottom: 1.5rem;
+        min-width: 120px;
     }
 
     .load-btn:hover {
         background: var(--primary-hover);
-       
+        transform: translateY(-2px);
         box-shadow: var(--shadow-md);
+    }
+
+    /* Enhanced Table Container */
+    .table-section {
+        margin-top: 2rem;
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .table-header h2 {
+        margin: 0;
+        text-align: left;
+    }
+
+    .table-stats {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 2px solid;
+    }
+
+    .stat-badge.total {
+        background: #dbeafe;
+        border-color: #3b82f6;
+        color: #1e40af;
+    }
+
+    .stat-badge.present {
+        background: #d1fae5;
+        border-color: #10b981;
+        color: #065f46;
+    }
+
+    .stat-badge.absent {
+        background: #fef3c7;
+        border-color: #f59e0b;
+        color: #92400e;
+    }
+
+    .stat-badge.leave {
+        background: #fce7f3;
+        border-color: #ec4899;
+        color: #9f1239;
     }
 
     .table-container {
@@ -388,6 +466,7 @@
         box-shadow: var(--shadow-sm);
         margin-bottom: 1.5rem;
         transition: var(--transition);
+        background: var(--white);
     }
 
     .table-container:hover {
@@ -396,56 +475,75 @@
 
     .attendance-table {
         width: 100%;
-        min-width: 600px;
+        min-width: 800px;
         border-collapse: collapse;
         background: var(--white);
     }
 
     .attendance-table th,
     .attendance-table td {
-        padding: 0.75rem;
+        padding: 1rem 0.75rem;
         text-align: left;
-        border: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
         font-size: 0.9rem;
     }
 
     .attendance-table th {
-        background: var(--light-bg);
+        background: linear-gradient(135deg, #f0f9f7 0%, #f8fcfb 100%);
         color: var(--primary-color);
         font-weight: 600;
         position: sticky;
         top: 0;
         z-index: 10;
+        border-bottom: 2px solid var(--primary-color);
     }
 
     .attendance-table td {
         color: var(--text-color);
     }
 
-    .attendance-table tr:nth-child(even) {
-        background: var(--light-bg);
+    .attendance-table tbody tr {
+        transition: var(--transition);
     }
 
-    .attendance-table tr:hover {
+    .attendance-table tbody tr:nth-child(even) {
+        background: #fafbfc;
+    }
+
+    .attendance-table tbody tr:hover {
         background: #f0f9f4;
+        transform: scale(1.001);
+    }
+
+    .attendance-table tbody tr.hidden-row {
+        display: none;
+    }
+
+    .student-name-cell {
+        font-weight: 500;
+        color: #1e293b;
     }
 
     .attendance-btn {
         padding: 0.5rem 1rem;
         border: none;
-        border-radius: 5px;
+        border-radius: 6px;
         color: var(--white);
         font-size: 0.85rem;
         font-weight: 500;
         cursor: pointer;
         transition: var(--transition);
         margin: 0 0.25rem;
-        min-width: 70px;
+        min-width: 75px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
     }
 
     .attendance-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-sm);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
     }
 
     .present {
@@ -474,8 +572,9 @@
     }
 
     .selected {
-        border: 2px solid var(--primary-color);
-        box-shadow: 0 0 5px rgba(0, 166, 118, 0.5);
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.4);
+        transform: scale(1.05);
     }
 
     .no-sections,
@@ -490,14 +589,21 @@
         border: 2px solid var(--border-color);
     }
 
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
     .pdf-button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        margin-top: 1.5rem;
         padding: 0.75rem 1.5rem;
-        background: var(--primary-color);
+        background: #dc2626;
         border: 2px solid var(--border-color);
         border-radius: 8px;
         color: var(--white);
@@ -509,9 +615,34 @@
     }
 
     .pdf-button:hover {
-        background: var(--primary-hover);
+        background: #ef4444;
         transform: translateY(-2px);
         box-shadow: var(--shadow-md);
+    }
+
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .loading-spinner.active {
+        display: block;
+    }
+
+    .spinner {
+        border: 4px solid #f3f4f6;
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
     /* Responsive */
@@ -523,27 +654,22 @@
 
     @media (max-width: 768px) {
         .menu-toggle { display: flex; }
-        .sidebar {
-        transform: translateX(-100%);   /* ← NEW: Hide sidebar off-screen */
-    }
-
-    .sidebar.active {
-        transform: translateX(0);       /* ← NEW: Slide in when active */
-    }
-
-    .sidebar-overlay {
-        display: block;                 /* ← Changed from 'none' to 'block' (JS controls visibility) */
-    }
-
-    .page-wrapper {
-        margin-left: 0;                 /* ← NEW: Full width on mobile */
-    }
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-overlay { display: block; }
+        .page-wrapper { margin-left: 0; }
         .container { padding: 1.5rem 15px; }
         .header h1 { font-size: 1.5rem; }
         .main-content { padding: 1.5rem; }
         .section { padding: 1.2rem; }
         h2 { font-size: 1.3rem; }
         .form-row { flex-direction: column; align-items: stretch; }
+        .form-row .form-group { min-width: 100%; }
+        .load-btn { width: 100%; margin-top: 1rem; }
+        .table-header { flex-direction: column; align-items: flex-start; }
+        .table-stats { width: 100%; }
+        .action-buttons { flex-direction: column; }
+        .pdf-button { width: 100%; }
     }
 
     @media (max-width: 480px) {
@@ -555,10 +681,15 @@
         .section { padding: 1rem; }
         h2 { font-size: 1.15rem; }
         .menu-toggle { width: 45px; height: 45px; font-size: 1.25rem; }
+        .stat-badge { font-size: 0.8rem; padding: 0.4rem 0.75rem; }
+        .attendance-table th,
+        .attendance-table td { padding: 0.75rem 0.5rem; font-size: 0.85rem; }
+        .attendance-btn { padding: 0.4rem 0.75rem; font-size: 0.8rem; min-width: 65px; }
     }
 
     @media (hover: none) {
-        .section:hover, .load-btn:hover, .attendance-btn:hover, .logo-container:hover, .pdf-button:hover {
+        .section:hover, .load-btn:hover, .attendance-btn:hover, 
+        .logo-container:hover, .pdf-button:hover {
             transform: none;
             box-shadow: var(--shadow-sm);
         }
@@ -640,143 +771,162 @@
     </aside>
 
     <!-- Main Content Wrapper -->
-   <div class="page-wrapper">
-    <div class="container">
-        <header class="header">
-            <h1><i class="fas fa-table"></i> Admin Attendance Portal</h1>
-        </header>
+    <div class="page-wrapper">
+        <div class="container">
+            <header class="header">
+                <h1><i class="fas fa-clipboard-check"></i> Admin Attendance Portal</h1>
+            </header>
 
-        <main class="main-content">
-            {% if messages %}
-                <div class="alert-message">
-                    {% for message in messages %}
-                        <div class="{{ message.tags }}">
-                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-
-            <section class="section">
-                <h2><i class="fas fa-search" style="color: #6366f1; margin-right: 8px;"></i> Select Attendance Details</h2>
-                <form id="classSelectForm" method="GET" action="{% url 'admin_attendance_portal' %}">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="class">
-                                <i class="fas fa-chalkboard" style="color: #10b981; margin-right: 8px;"></i> Select Class
-                            </label>
-                            <select id="class" name="class" required onchange="updateSections()">
-                                <option value="">Select a Class</option>
-                                {% for class in classes %}
-                                    <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="section">
-                                <i class="fas fa-chalkboard-teacher" style="color: #f59e0b; margin-right: 8px;"></i> Select Section
-                            </label>
-                            <select id="section" name="section" required onchange="loadStudents()">
-                                <option value="">Select a Section</option>
-                            </select>
-                            <div id="no-sections-message" class="no-sections" style="display: none;">No sections available for this class.</div>
-                        </div>
-
-                        <!-- New: Student Name Filter -->
-                        <div class="form-group">
-                            <label for="filter_student">
-                                <i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Student Name
-                            </label>
-                            <select id="filter_student" onchange="filterTable()">
-                                <option value="">All Students</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="date">
-                                <i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Select Date
-                            </label>
-                            <input type="date" id="date" name="date" value="{{ selected_date }}" required>
-                        </div>
-
-                        <button type="submit" class="load-btn">
-                            <i class="fas fa-search" style="color: #ffffff;"></i> Load
-                        </button>
+            <main class="main-content">
+                {% if messages %}
+                    <div class="alert-message">
+                        {% for message in messages %}
+                            <div class="{{ message.tags }}">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
                     </div>
-                </form>
+                {% endif %}
 
-                {% if students %}
-                    <form id="attendanceForm" method="POST" action="{% url 'admin_mark_attendance' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="class" value="{{ selected_class }}">
-                        <input type="hidden" name="section" value="{{ selected_section }}">
-                        <input type="hidden" name="date" value="{{ selected_date }}">
-
-                        <h2><i class="fas fa-table" style="color: #8b5cf6; margin-right: 8px;"></i> 
-                            Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }} on {{ selected_date }}
-                        </h2>
-
-                        <div class="table-container">
-                            <table class="attendance-table">
-                                <thead>
-                                    <tr>
-                                        <th><i class="fas fa-hashtag" style="color: #94a3b8;"></i> Student ID</th>
-                                        <th><i class="fas fa-user" style="color: #3b82f6;"></i> Name</th>
-                                        <th><i class="fas fa-id-card" style="color: #8b5cf6;"></i> Admission Number</th>
-                                        <th><i class="fas fa-graduation-cap" style="color: #10b981;"></i> Class</th>
-                                        <th><i class="fas fa-layer-group" style="color: #f59e0b;"></i> Section</th>
-                                        <th><i class="fas fa-check-square" style="color: #6366f1;"></i> Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="attendanceTableBody">
-                                    {% for student in students %}
-                                        <tr data-student="{{ student.name }}">
-                                            <td>{{ student.user_id }}</td>
-                                            <td>{{ student.name }}</td>
-                                            <td>{{ student.admission_number }}</td>
-                                            <td>{{ student.class }}</td>
-                                            <td>{{ student.section|default:"N/A" }}</td>
-                                            <td>
-                                                <button type="submit" name="student_{{ student.user_id }}" value="present" 
-                                                        class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">
-                                                    <i class="fas fa-check-circle" style="color: #10b981;"></i> Present
-                                                </button>
-                                                <button type="submit" name="student_{{ student.user_id }}" value="absent" 
-                                                        class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">
-                                                    <i class="fas fa-times-circle" style="color: #ef4444;"></i> Absent
-                                                </button>
-                                                <button type="submit" name="student_{{ student.user_id }}" value="leave" 
-                                                        class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">
-                                                    <i class="fas fa-calendar-times" style="color: #f59e0b;"></i> Leave
-                                                </button>
-                                            </td>
-                                        </tr>
+                <section class="section">
+                    <h2><i class="fas fa-filter" style="color: #6366f1; margin-right: 8px;"></i> Select Attendance Details</h2>
+                    <form id="classSelectForm" method="GET" action="{% url 'admin_attendance_portal' %}">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="class">
+                                    <i class="fas fa-chalkboard" style="color: #10b981; margin-right: 8px;"></i> Select Class
+                                </label>
+                                <select id="class" name="class" required onchange="updateSections()">
+                                    <option value="">Select a Class</option>
+                                    {% for class in classes %}
+                                        <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
                                     {% endfor %}
-                                </tbody>
-                            </table>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="section">
+                                    <i class="fas fa-chalkboard-teacher" style="color: #f59e0b; margin-right: 8px;"></i> Select Section
+                                </label>
+                                <select id="section" name="section" required onchange="loadStudents()">
+                                    <option value="">Select a Section</option>
+                                </select>
+                                <div id="no-sections-message" class="no-sections" style="display: none;">No sections available for this class.</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="filter_student">
+                                    <i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Student Name
+                                </label>
+                                <select id="filter_student" onchange="filterTable()">
+                                    <option value="">All Students</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="date">
+                                    <i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Select Date
+                                </label>
+                                <input type="date" id="date" name="date" value="{{ selected_date }}" required>
+                            </div>
                         </div>
+                        
+                        <button type="submit" class="load-btn">
+                            <i class="fas fa-search"></i> Load Students
+                        </button>
                     </form>
 
-                    <a href="{% url 'admin_generate_attendance_pdf' %}?class={{ selected_class|urlencode }}&section={{ selected_section|urlencode }}&date={{ selected_date|urlencode }}" 
-                       class="pdf-button">
-                        <i class="fas fa-file-pdf" style="color: #ef4444;"></i> Generate PDF Report
-                    </a>
-                {% else %}
-                    <p class="no-requests">
-                        <i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> 
-                        No students found for the selected criteria.
-                    </p>
-                {% endif %}
-            </section>
-        </main>
+                    {% if students %}
+                        <div class="table-section">
+                            <div class="table-header">
+                                <h2><i class="fas fa-users" style="color: #8b5cf6; margin-right: 8px;"></i> 
+                                    Attendance for {{ selected_class }} - {{ selected_section|default:"N/A" }}
+                                </h2>
+                                <div class="table-stats">
+                                    <span class="stat-badge total">
+                                        <i class="fas fa-users"></i> Total: <span id="totalCount">{{ students|length }}</span>
+                                    </span>
+                                    <span class="stat-badge present">
+                                        <i class="fas fa-check"></i> Present: <span id="presentCount">0</span>
+                                    </span>
+                                    <span class="stat-badge absent">
+                                        <i class="fas fa-times"></i> Absent: <span id="absentCount">0</span>
+                                    </span>
+                                    <span class="stat-badge leave">
+                                        <i class="fas fa-calendar-times"></i> Leave: <span id="leaveCount">0</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <form id="attendanceForm" method="POST" action="{% url 'admin_mark_attendance' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="class" value="{{ selected_class }}">
+                                <input type="hidden" name="section" value="{{ selected_section }}">
+                                <input type="hidden" name="date" value="{{ selected_date }}">
+
+                                <div class="table-container">
+                                    <table class="attendance-table">
+                                        <thead>
+                                            <tr>
+                                                <th><i class="fas fa-hashtag" style="color: #94a3b8;"></i> Student ID</th>
+                                                <th><i class="fas fa-user" style="color: #3b82f6;"></i> Name</th>
+                                                <th><i class="fas fa-id-card" style="color: #8b5cf6;"></i> Admission Number</th>
+                                                <th><i class="fas fa-graduation-cap" style="color: #10b981;"></i> Class</th>
+                                                <th><i class="fas fa-layer-group" style="color: #f59e0b;"></i> Section</th>
+                                                <th style="text-align: center;"><i class="fas fa-check-square" style="color: #6366f1;"></i> Mark Attendance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="attendanceTableBody">
+                                            {% for student in students %}
+                                                <tr data-student="{{ student.name }}" data-status="{{ student.status }}">
+                                                    <td>{{ student.user_id }}</td>
+                                                    <td class="student-name-cell">{{ student.name }}</td>
+                                                    <td>{{ student.admission_number }}</td>
+                                                    <td>{{ student.class }}</td>
+                                                    <td>{{ student.section|default:"N/A" }}</td>
+                                                    <td style="text-align: center;">
+                                                        <button type="submit" name="student_{{ student.user_id }}" value="present" 
+                                                                class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">
+                                                            <i class="fas fa-check-circle"></i> Present
+                                                        </button>
+                                                        <button type="submit" name="student_{{ student.user_id }}" value="absent" 
+                                                                class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">
+                                                            <i class="fas fa-times-circle"></i> Absent
+                                                        </button>
+                                                        <button type="submit" name="student_{{ student.user_id }}" value="leave" 
+                                                                class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">
+                                                            <i class="fas fa-calendar-times"></i> Leave
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </form>
+
+                            <div class="action-buttons">
+                                <a href="{% url 'admin_generate_attendance_pdf' %}?class={{ selected_class|urlencode }}&section={{ selected_section|urlencode }}&date={{ selected_date|urlencode }}" 
+                                   class="pdf-button">
+                                    <i class="fas fa-file-pdf"></i> Generate PDF Report
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="no-requests">
+                            <i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> 
+                            No students found for the selected criteria.
+                        </p>
+                    {% endif %}
+                </section>
+            </main>
+        </div>
     </div>
-</div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Sidebar toggle (keep your existing code)
+        // Sidebar toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -787,7 +937,6 @@
                 e.stopPropagation();
                 sidebar.classList.toggle('active');
                 sidebarOverlay.classList.toggle('active');
-                
             });
         }
 
@@ -795,7 +944,6 @@
             sidebarOverlay.addEventListener('click', function() {
                 sidebar.classList.remove('active');
                 sidebarOverlay.classList.remove('active');
-                
             });
         }
 
@@ -804,7 +952,6 @@
                 if (window.innerWidth <= 768) {
                     sidebar.classList.remove('active');
                     sidebarOverlay.classList.remove('active');
-                    
                 }
             });
         });
@@ -825,8 +972,10 @@
             });
         });
 
-        // === NEW: Dynamic Student Filter Logic ===
+        // Update statistics on page load
+        updateStatistics();
 
+        // Dynamic Student Filter Logic
         function updateSections() {
             const classSelect = document.getElementById('class');
             const sectionSelect = document.getElementById('section');
@@ -922,20 +1071,49 @@
                 const studentName = row.getAttribute('data-student');
                 if (!selectedStudent || studentName === selectedStudent) {
                     row.style.display = '';
+                    row.classList.remove('hidden-row');
                 } else {
                     row.style.display = 'none';
+                    row.classList.add('hidden-row');
                 }
             });
+
+            // Update statistics after filtering
+            updateStatistics();
+        }
+
+        function updateStatistics() {
+            const rows = document.querySelectorAll('.attendance-table tbody tr:not(.hidden-row)');
+            let presentCount = 0;
+            let absentCount = 0;
+            let leaveCount = 0;
+
+            rows.forEach(row => {
+                const status = row.getAttribute('data-status');
+                if (status === 'present') presentCount++;
+                else if (status === 'absent') absentCount++;
+                else if (status === 'leave') leaveCount++;
+            });
+
+            const totalCountElem = document.getElementById('totalCount');
+            const presentCountElem = document.getElementById('presentCount');
+            const absentCountElem = document.getElementById('absentCount');
+            const leaveCountElem = document.getElementById('leaveCount');
+
+            if (totalCountElem) totalCountElem.textContent = rows.length;
+            if (presentCountElem) presentCountElem.textContent = presentCount;
+            if (absentCountElem) absentCountElem.textContent = absentCount;
+            if (leaveCountElem) leaveCountElem.textContent = leaveCount;
         }
 
         // Event Listeners
-        document.getElementById('class').addEventListener('change', updateSections);
-        document.getElementById('section').addEventListener('change', loadStudents);
-        document.getElementById('filter_student').addEventListener('change', filterTable);
+        window.updateSections = updateSections;
+        window.loadStudents = loadStudents;
+        window.filterTable = filterTable;
 
         // Initial load
         updateSections();
     });
-</script>
+    </script>
 </body>
 </html>
