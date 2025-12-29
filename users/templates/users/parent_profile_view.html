@@ -207,24 +207,24 @@
             margin: 0 auto;
             padding: 2rem 20px;
         }
-            .page-header {
-        background: white;
-        color: #495057;
-        padding: 1.5rem;
-        border: 2px solid #495057;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        border-radius: 16px;
-        margin-bottom: 2rem;
-    }
-
-    .page-header h1 {
-        font-size: 2rem;
-        font-weight: 700;
-        text-align: center;
-        color: #00a676;
-        margin: 0;
-    }
         
+        .page-header {
+            background: white;
+            color: #495057;
+            padding: 1.5rem;
+            border: 2px solid #495057;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            color: #00a676;
+            margin: 0;
+        }
 
         .back-btn {
             display: inline-flex;
@@ -280,14 +280,17 @@
             border-left: 4px solid #dc3545;
         }
 
+        /* FIXED: Centered Header Layout */
         .header {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 2rem;
+            justify-content: center;
+            text-align: center;
+            gap: 1.5rem;
             margin-bottom: 2rem;
             padding-bottom: 2rem;
             border-bottom: 2px solid #e9ecef;
-            flex-wrap: wrap;
         }
 
         .profile-pic-container {
@@ -308,14 +311,23 @@
         }
 
         .header-info {
-            flex: 1;
-            min-width: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .header-info h1 {
             color: var(--primary-color);
             font-size: 2rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0;
+        }
+        
+        .badges-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .badge {
@@ -326,8 +338,6 @@
             border-radius: 20px;
             font-size: 0.9rem;
             font-weight: 500;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
         }
 
         .badge.secondary {
@@ -472,7 +482,6 @@
             .page-wrapper { margin-left: 0; }
             .container { padding: 1.5rem 15px; }
             .main-content { padding: 1.5rem; }
-            .header { flex-direction: column; text-align: center; }
             .header img { width: 100px; height: 100px; }
             .header-info h1 { font-size: 1.5rem; }
             .info-grid { grid-template-columns: 1fr; }
@@ -575,8 +584,8 @@
     <div class="page-wrapper">
         <div class="container">
             <header class="page-header">
-    <h1><i class="fas fa-user-graduate" style="color: #00a676;"></i> My Profile</h1>
-</header>
+                <h1><i class="fas fa-user-graduate" style="color: #00a676;"></i> My Profile</h1>
+            </header>
 
             <main class="main-content">
                 <!-- Messages -->
@@ -591,15 +600,17 @@
                     {% endif %}
                 </div>
 
-                <!-- Header with Profile Picture -->
+                <!-- Header with Profile Picture - NOW CENTERED -->
                 <div class="header">
                     <div class="profile-pic-container">
                         <img src="{{ profile_picture|default:'/static/users/images/default-profile.png' }}" alt="{{ student.name }}" id="current-pic">
                     </div>
                     <div class="header-info">
                         <h1>{{ student.name|default:"N/A" }}</h1>
-                        <span class="badge">Admission No: {{ student.admission_number|default:"N/A" }}</span>
-                        <span class="badge secondary">Class: {{ student.class|default:"N/A" }}-{{ student.section|default:"N/A" }}</span>
+                        <div class="badges-container">
+                            <span class="badge">Admission No: {{ student.admission_number|default:"N/A" }}</span>
+                            <span class="badge secondary">Class: {{ student.class|default:"N/A" }}-{{ student.section|default:"N/A" }}</span>
+                        </div>
                     </div>
                 </div>
 
