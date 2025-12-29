@@ -55,7 +55,6 @@
         overflow-x: hidden;
     }
 
-    /* Sidebar styles */
     .sidebar {
         width: 280px;
         height: 100vh;
@@ -239,7 +238,6 @@
         text-align: center;
     }
 
-    /* Alert Messages */
     .alert-message {
         margin-bottom: 1.5rem;
     }
@@ -283,7 +281,6 @@
         color: #92400e;
     }
 
-    /* Filters */
     .filters-container {
         display: flex;
         align-items: flex-end;
@@ -391,14 +388,14 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        background: #fef3c7;
-        color: #92400e;
+        background: #d1fae5;
+        color: #065f46;
         padding: 0.5rem 1rem;
         border-radius: 8px;
         font-size: 0.9rem;
         font-weight: 500;
         margin-bottom: 1rem;
-        border: 1px solid #fbbf24;
+        border: 1px solid #10b981;
     }
 
     .action-buttons {
@@ -530,7 +527,95 @@
         100% { transform: rotate(360deg); }
     }
 
-    /* Mobile Optimizations */
+    /* Improved submit container styles */
+    .submit-container {
+        display: none;
+        margin-top: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #f0f9f7 0%, #f8fcfb 100%);
+        border: 2px solid var(--primary-color);
+        border-radius: 12px;
+        text-align: center;
+        transition: var(--transition);
+        box-shadow: 0 4px 12px rgba(0, 166, 118, 0.15);
+    }
+
+    .submit-container.visible {
+        display: block;
+        animation: slideUpFade 0.4s ease-out;
+    }
+
+    @keyframes slideUpFade {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .progress-info {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+    }
+
+    .progress-info strong {
+        font-size: 1.25rem;
+        color: var(--primary-color);
+    }
+
+    .progress-info .complete {
+        color: #16a34a;
+        font-weight: 700;
+    }
+
+    .progress-info .incomplete {
+        color: #f59e0b;
+        font-weight: 700;
+    }
+
+    .submit-btn {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        box-shadow: 0 4px 12px rgba(0, 166, 118, 0.3);
+    }
+
+    .submit-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        background: var(--primary-hover);
+        box-shadow: 0 8px 16px rgba(0, 166, 118, 0.4);
+    }
+
+    .submit-btn:disabled {
+        background: #d1d5db;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+        opacity: 0.6;
+    }
+
+    .submit-btn.success {
+        background: #16a34a;
+    }
+
     @media (max-width: 768px) {
         .menu-toggle { 
             display: flex; 
@@ -611,6 +696,20 @@
             padding: 0.75rem;
             font-size: 0.9rem;
         }
+
+        .submit-container {
+            padding: 1.5rem;
+        }
+
+        .progress-info {
+            font-size: 1rem;
+        }
+
+        .submit-btn {
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+            width: 100%;
+        }
     }
 
     @media (max-width: 480px) {
@@ -630,80 +729,6 @@
         .status-btn:last-child {
             flex: 1 1 100%;
         }
-    }
-    /* Added styles for the submit container and progress status */
-    .submit-container {
-        display: none;
-        margin-top: 2rem;
-        padding: 1.5rem;
-        background: #f8fafc;
-        border: 2px solid var(--border-color);
-        border-radius: 12px;
-        text-align: center;
-        transition: var(--transition);
-    }
-
-    .submit-container.visible {
-        display: block;
-        animation: fadeIn 0.4s ease-out;
-    }
-
-    .progress-info {
-        margin-bottom: 1.5rem;
-        font-size: 1.1rem;
-        color: var(--text-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-
-    .progress-info strong {
-        font-size: 1.25rem;
-        color: var(--primary-color);
-    }
-
-    .progress-info .complete {
-        color: #16a34a;
-    }
-
-    .progress-info .incomplete {
-        color: #f59e0b;
-    }
-
-    .submit-btn {
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        padding: 1rem 2.5rem;
-        border-radius: 8px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.8rem;
-        box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
-    }
-
-    .submit-btn:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);
-        background: #6d28d9;
-    }
-
-    .submit-btn:disabled {
-        background: #d1d5db;
-        cursor: not-allowed;
-        box-shadow: none;
-        transform: none;
-        opacity: 0.7;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
     }
     </style>
 </head>
@@ -790,13 +815,6 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="filter_student"><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> Student Name</label>
-                            <select id="filter_student">
-                                <option value="">All Students</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
                             <label for="filter_date"><i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> Date</label>
                             <input type="date" id="filter_date" value="{{ selected_date }}">
                         </div>
@@ -824,6 +842,7 @@
                         <p style="margin-top: 1rem; color: var(--primary-color);">Saving attendance...</p>
                     </div>
 
+                    <!-- Enhanced submit container with real-time counter -->
                     <div class="submit-container" id="submitContainer">
                         <div class="progress-info" id="progressInfo">
                             <i class="fas fa-info-circle"></i> 
@@ -839,14 +858,14 @@
     </div>
 
     <script>
-    // Track attendance status locally
     let attendanceStatus = {};
     let allStudents = [];
     let totalStudentsCount = 0;
+    let currentClass = '';
+    let currentSection = '';
+    let currentDate = '';
 
-    
     document.addEventListener('DOMContentLoaded', function() {
-        // Sidebar toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -865,26 +884,14 @@
             });
         }
 
-        // Set today's date as default
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('filter_date').value = today;
-
-        // Add event listener to student filter
-        const studentFilter = document.getElementById('filter_student');
-        if (studentFilter) {
-            studentFilter.addEventListener('change', filterCardsByStudent);
-        }
     });
 
-    // Load sections when class is selected
     window.loadSections = function() {
         const sectionSelect = document.getElementById('filter_section');
         sectionSelect.innerHTML = '<option value="">Select Section</option>';
         
-        // Reset student filter
-        document.getElementById('filter_student').innerHTML = '<option value="">All Students</option>';
-        
-        // Hardcoded sections (you can make this dynamic via API if needed)
         const sections = ['A', 'B', 'C'];
         sections.forEach(sec => {
             const opt = document.createElement('option');
@@ -894,32 +901,17 @@
         });
     };
 
-    // Load student filter when class and section are selected
     window.loadStudentFilter = function() {
         const classVal = document.getElementById('filter_class').value;
         const sectionVal = document.getElementById('filter_section').value;
-        const studentSelect = document.getElementById('filter_student');
-
-        studentSelect.innerHTML = '<option value="">All Students</option>';
 
         if (!classVal || !sectionVal) return;
 
         fetch(`/teacher/leave-get-students/?class=${classVal}&section=${sectionVal}`)
             .then(response => response.json())
-            .then(data => {
-                if (data.students) {
-                    data.students.forEach(student => {
-                        const option = document.createElement('option');
-                        option.value = student;
-                        option.textContent = student;
-                        studentSelect.appendChild(option);
-                    });
-                }
-            })
             .catch(err => console.error('Error loading students:', err));
     };
 
-    // Show alert message
     window.showAlert = function(message, type = 'success') {
         const alertContainer = document.getElementById('alertContainer');
         const iconClass = type === 'error' || type === 'warning' ? 'fa-exclamation-circle' : 'fa-check-circle';
@@ -934,10 +926,9 @@
         
         setTimeout(() => {
             alertContainer.style.display = 'none';
-        }, 5000);
+        }, 4000);
     };
 
-    // Get CSRF token
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -953,7 +944,6 @@
         return cookieValue;
     }
 
-    // Get button HTML based on status
     function getButtonHTML(status) {
         const icons = {
             'present': '<i class="fas fa-check"></i> Present',
@@ -963,19 +953,16 @@
         return icons[status] || status;
     }
 
-    // Mark attendance for single student
     window.markStudentAttendance = function(studentName, status, button) {
         const classVal = document.getElementById('filter_class').value;
         const sectionVal = document.getElementById('filter_section').value;
         const dateVal = document.getElementById('filter_date').value;
 
-        // Check if already marked
         if (attendanceStatus[studentName]) {
-            showAlert(`Attendance for ${studentName} is already marked as ${attendanceStatus[studentName].toUpperCase()}. Cannot change.`, 'warning');
+            showAlert(`Attendance for ${studentName} already marked.`, 'warning');
             return;
         }
 
-        // Disable all buttons for this student immediately
         const safeName = studentName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
         const card = document.querySelector(`[data-student="${safeName}"]`);
         const allButtons = card.querySelectorAll('.status-btn');
@@ -984,7 +971,6 @@
             btn.disabled = true;
         });
 
-        // Show saving state on clicked button
         const originalHTML = button.innerHTML;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
@@ -1007,23 +993,19 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Mark as saved locally
                 attendanceStatus[studentName] = status;
                 
-                // Update UI with a slight delay for better UX
                 setTimeout(() => {
                     updateStudentCardUI(studentName, status);
                     showAlert(data.message, 'success');
-                    checkAttendanceCompletion(); // Update progress after marking
+                    updateProgressDisplay(data.marked_count, data.total_count, data.remaining_count);
                     
-                    // If all students marked, show completion message
                     if (data.all_marked) {
-                        showAlert(`✓ Attendance completed for all ${data.total_count} students in ${classVal}-${sectionVal}!`, 'success');
+                        showAlert(`✓ All ${data.total_count} students marked!`, 'success');
                     }
                 }, 300);
             } else {
                 showAlert(data.message, 'error');
-                // Re-enable buttons if failed
                 allButtons.forEach(btn => {
                     btn.disabled = false;
                 });
@@ -1033,7 +1015,6 @@
         .catch(err => {
             console.error('Error:', err);
             showAlert('Network error. Please try again.', 'error');
-            // Re-enable buttons on error
             allButtons.forEach(btn => {
                 btn.disabled = false;
             });
@@ -1041,22 +1022,19 @@
         });
     };
 
-    // Update student card UI after marking
     function updateStudentCardUI(studentName, status) {
         const safeName = studentName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
         const card = document.querySelector(`[data-student="${safeName}"]`);
         
         if (!card) return;
 
-        // Add locked badge
         if (!card.querySelector('.locked-badge')) {
             const badge = document.createElement('div');
             badge.className = 'locked-badge';
-            badge.innerHTML = '<i class="fas fa-lock"></i> Attendance Marked';
+            badge.innerHTML = '<i class="fas fa-check-circle"></i> Attendance Marked';
             card.insertBefore(badge, card.firstChild);
         }
 
-        // Add status display
         const statusColors = {
             'present': '#16a34a',
             'absent': '#00a676',
@@ -1079,7 +1057,6 @@
             </span>
         `;
 
-        // Update buttons - highlight active, keep all disabled
         const buttons = card.querySelectorAll('.status-btn');
         buttons.forEach(btn => {
             btn.disabled = true;
@@ -1090,26 +1067,33 @@
             }
         });
 
-        // Add locked styling
         card.classList.add('locked');
     }
 
-    // Filter displayed cards by student name
-    window.filterCardsByStudent = function() {
-        const studentFilter = document.getElementById('filter_student').value;
-        const cards = document.querySelectorAll('.attendance-card');
+    function updateProgressDisplay(markedCount, totalCount, remainingCount) {
+        const submitContainer = document.getElementById('submitContainer');
+        const submitBtn = document.getElementById('finalSubmitBtn');
+        const progressInfo = document.getElementById('progressInfo');
         
-        cards.forEach(card => {
-            const studentName = card.getAttribute('data-student-name');
-            if (!studentFilter || studentName === studentFilter) {
-                card.style.display = 'flex';
+        if (totalCount > 0) {
+            submitContainer.classList.add('visible');
+            
+            if (remainingCount === 0) {
+                submitBtn.disabled = false;
+                progressInfo.innerHTML = `
+                    <i class="fas fa-check-circle complete"></i> 
+                    <span>All <strong class="complete">${totalCount}</strong> students marked!</span>
+                `;
             } else {
-                card.style.display = 'none';
+                submitBtn.disabled = true;
+                progressInfo.innerHTML = `
+                    <i class="fas fa-hourglass-half incomplete"></i> 
+                    <span><strong class="complete">${markedCount}</strong>/${totalCount} marked | <strong class="incomplete">${remainingCount}</strong> remaining</span>
+                `;
             }
-        });
-    };
+        }
+    }
 
-    // Load attendance
     window.loadAttendance = function() {
         const classVal = document.getElementById('filter_class').value;
         const sectionVal = document.getElementById('filter_section').value;
@@ -1121,15 +1105,15 @@
             return;
         }
 
-        // Reset status
+        currentClass = classVal;
+        currentSection = sectionVal;
+        currentDate = dateVal;
         attendanceStatus = {};
         allStudents = [];
         totalStudentsCount = 0;
 
-        // Show loading
         container.innerHTML = '<div class="loading-spinner active"><div class="spinner"></div><p style="margin-top: 1rem; color: var(--primary-color);">Loading students...</p></div>';
 
-        // Fetch students
         fetch(`/teacher/leave-get-students/?class=${classVal}&section=${sectionVal}`)
             .then(response => response.json())
             .then(data => {
@@ -1142,7 +1126,6 @@
                 allStudents = data.students;
                 totalStudentsCount = data.students.length;
 
-                // Fetch existing attendance
                 return fetch(`/teacher/get-attendance/?class=${classVal}&section=${sectionVal}&date=${dateVal}`)
                     .then(response => response.json())
                     .then(attendanceData => {
@@ -1163,7 +1146,7 @@
 
                             cardsHTML += `
                             <div class="attendance-card ${isLocked ? 'locked' : ''}" data-student="${safeName}" data-student-name="${name}">
-                                ${isLocked ? '<div class="locked-badge"><i class="fas fa-lock"></i> Attendance Marked</div>' : ''}
+                                ${isLocked ? '<div class="locked-badge"><i class="fas fa-check-circle"></i> Attendance Marked</div>' : ''}
                                 <p><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> <strong>Student:</strong> ${name}</p>
                                 <p><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> <strong>Class:</strong> ${classVal}</p>
                                 <p><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> <strong>Section:</strong> ${sectionVal}</p>
@@ -1198,17 +1181,13 @@
 
                         container.innerHTML = cardsHTML;
                         
-                        // Update progress tracking
-                        checkAttendanceCompletion();
-                        
-                        // Apply student filter if selected
-                        filterCardsByStudent();
-                        
                         const markedCount = Object.keys(existingRecords).length;
+                        updateProgressDisplay(markedCount, totalStudentsCount, totalStudentsCount - markedCount);
+                        
                         if (markedCount > 0) {
-                            showAlert(`Loaded ${data.students.length} students. ${markedCount} already have attendance marked.`, 'warning');
+                            showAlert(`Loaded ${data.students.length} students. ${markedCount} already marked.`, 'warning');
                         } else {
-                            showAlert(`Loaded ${data.students.length} students. Ready to mark attendance.`, 'success');
+                            showAlert(`Loaded ${data.students.length} students.`, 'success');
                         }
                     });
             })
@@ -1219,60 +1198,22 @@
             });
     };
 
-    // Clear filters
     window.clearFilters = function() {
         document.getElementById('filter_class').value = '';
         document.getElementById('filter_section').innerHTML = '<option value="">Select Section</option>';
-        document.getElementById('filter_student').innerHTML = '<option value="">All Students</option>';
         document.getElementById('filter_date').value = new Date().toISOString().split('T')[0];
         document.getElementById('attendanceCards').innerHTML = '<p class="no-students"><i class="fas fa-info-circle"></i> Select class, section, and date above to load students.</p>';
         attendanceStatus = {};
         allStudents = [];
         totalStudentsCount = 0;
         document.getElementById('alertContainer').style.display = 'none';
-        
-        const submitContainer = document.getElementById('submitContainer');
-        if (submitContainer) {
-            submitContainer.classList.remove('visible');
-        }
+        document.getElementById('submitContainer').classList.remove('visible');
     };
-
-    // Check if all students are marked
-    function checkAttendanceCompletion() {
-        const markedCount = Object.keys(attendanceStatus).length;
-        const totalCount = totalStudentsCount;
-        
-        const submitContainer = document.getElementById('submitContainer');
-        const submitBtn = document.getElementById('finalSubmitBtn');
-        const progressInfo = document.getElementById('progressInfo');
-        
-        if (totalCount > 0) {
-            submitContainer.classList.add('visible');
-            
-            if (markedCount === totalCount) {
-                submitBtn.disabled = false;
-                progressInfo.innerHTML = `
-                    <i class="fas fa-check-circle complete"></i> 
-                    All <strong class="complete">${totalCount}</strong> students marked! Ready to submit.
-                `;
-            } else {
-                submitBtn.disabled = true;
-                const remaining = totalCount - markedCount;
-                progressInfo.innerHTML = `
-                    <i class="fas fa-exclamation-triangle incomplete"></i> 
-                    <strong class="incomplete">${remaining}</strong> student${remaining > 1 ? 's' : ''} remaining. 
-                    Mark all students to enable submit.
-                `;
-            }
-        } else {
-            submitContainer.classList.remove('visible');
-        }
-    }
 
     window.finalSubmitAttendance = function() {
         const markedCount = Object.keys(attendanceStatus).length;
         if (markedCount < totalStudentsCount) {
-            showAlert('Please mark attendance for all students before final submission.', 'warning');
+            showAlert('Please mark attendance for all students.', 'warning');
             return;
         }
 
@@ -1281,16 +1222,43 @@
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
 
-        setTimeout(() => {
-            showAlert('✓ Final attendance submitted successfully!', 'success');
-            btn.innerHTML = '<i class="fas fa-check"></i> Submitted';
-            // You can add a redirect or reset logic here
-            // For now, we'll just reset the form after a delay
-            setTimeout(() => {
-                clearFilters(); // Reset the form
-            }, 1500);
-        }, 1500);
-    }
-</script>
+        const csrfToken = getCookie('csrftoken');
+        const formData = new FormData();
+        formData.append('csrfmiddlewaretoken', csrfToken);
+        formData.append('class', currentClass);
+        formData.append('section', currentSection);
+        formData.append('date', currentDate);
+
+        fetch('/teacher/submit-attendance-batch/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                btn.classList.add('success');
+                btn.innerHTML = '<i class="fas fa-check"></i> Submitted Successfully';
+                showAlert(data.message, 'success');
+                
+                setTimeout(() => {
+                    clearFilters();
+                }, 2000);
+            } else {
+                showAlert(data.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            showAlert('Network error during submission.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+        });
+    };
+    </script>
 </body>
 </html>

@@ -28,6 +28,7 @@ urlpatterns = [
     path('get_students/', views.get_students, name='get_students'),
     path('get_subjects/', views.get_subjects, name='get_subjects'),
     path('save-parent-signature/', views.save_parent_signature, name='save_parent_signature'),
+    
 
     path('teacher_mark_entry/', views.teacher_mark_entry, name='teacher_mark_entry'),
     path('teacher_save_marks/', views.teacher_save_marks, name='teacher_save_marks'),
@@ -37,6 +38,7 @@ urlpatterns = [
     path('teacher_get_students/', views.teacher_get_students, name='teacher_get_students'),
     path('teacher_get_subjects/', views.teacher_get_subjects, name='teacher_get_subjects'),
     path('api/get-teacher/<int:teacher_id>/', views.get_teacher_api, name='get_teacher_api'),
+    path('teacher/submit-attendance-batch/', views.submit_attendance_batch, name='submit_attendance_batch'),  # ← THIS WAS MISSING OR WRONG
 
 
     path('homework/', views.homework_view, name='homework'),

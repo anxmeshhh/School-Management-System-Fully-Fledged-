@@ -6199,13 +6199,14 @@ def teacher_dashboard(request):
 
 
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.db import connection, IntegrityError
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
 import json
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.db import connection, IntegrityError
+from datetime import datetime
+from django.contrib import messages
 
 def teacher_portal(request):
     """
@@ -6215,7 +6216,7 @@ def teacher_portal(request):
         messages.error(request, 'Please log in to access this page.')
         return redirect('teacher_login')
 
-    today_date = datetime.now().date().strftime('%Y-%m-%d')  # Changed this line
+    today_date = datetime.now().date().strftime('%Y-%m-%d')
     selected_date = request.GET.get('date', today_date)
     
     # Get all unique classes
@@ -6237,7 +6238,7 @@ def teacher_portal(request):
 def mark_single_attendance(request):
     """
     Mark attendance for a single student via AJAX
-    This is called every time a teacher clicks Present/Absent/Leave
+    Returns real-time count of marked vs total students
     """
     if not request.session.get('teacher_id'):
         return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=401)
@@ -6287,7 +6288,6 @@ def mark_single_attendance(request):
             existing = cursor.fetchone()
             
             if existing:
-                # Attendance already exists - don't allow changes
                 return JsonResponse({
                     'success': False, 
                     'message': f'Attendance for {name} on {selected_date} is already marked as {existing[1].upper()}. Cannot modify existing records.',
@@ -6307,7 +6307,6 @@ def mark_single_attendance(request):
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """, [student_id, name, admission_number, selected_class, section, selected_date, status])
                 
-                # Check if all students in this class/section now have attendance
                 cursor.execute("""
                     SELECT COUNT(*) FROM student_page1 
                     WHERE class = %s AND section = %s
@@ -6320,15 +6319,17 @@ def mark_single_attendance(request):
                 """, [selected_class, selected_section, selected_date])
                 marked_students = cursor.fetchone()[0]
                 
-                all_marked = (marked_students == total_students)
+                remaining_students = total_students - marked_students
+                all_marked = (remaining_students == 0)
                 
                 return JsonResponse({
                     'success': True,
-                    'message': f'✓ Attendance saved for {name}: {status.upper()}',
+                    'message': f'✓ {name}: {status.upper()}',
                     'status': status,
                     'all_marked': all_marked,
                     'marked_count': marked_students,
-                    'total_count': total_students
+                    'total_count': total_students,
+                    'remaining_count': remaining_students
                 })
                 
             except IntegrityError:
@@ -6348,7 +6349,6 @@ def mark_single_attendance(request):
 def get_attendance(request):
     """
     Fetch existing attendance records for a specific class, section, and date
-    Called when loading students to show previously marked attendance
     """
     if not request.session.get('teacher_id'):
         return JsonResponse({'error': 'Unauthorized'}, status=401)
@@ -6371,7 +6371,7 @@ def get_attendance(request):
         """, [class_name, section, date])
         
         for row in cursor.fetchall():
-            attendance_dict[row[0]] = row[1]  # {student_name: status}
+            attendance_dict[row[0]] = row[1]
     
     return JsonResponse({'attendance': attendance_dict})
 
@@ -6379,7 +6379,6 @@ def get_attendance(request):
 def get_students_by_class_section(request):
     """
     Get list of student names for a specific class and section
-    Used for populating the student dropdown
     """
     if not request.session.get('teacher_id'):
         return JsonResponse({'error': 'Unauthorized'}, status=401)
@@ -6401,6 +6400,61 @@ def get_students_by_class_section(request):
         students = [row[0] for row in cursor.fetchall()]
     
     return JsonResponse({'students': students})
+
+
+def submit_attendance_batch(request):
+    """
+    Final submission endpoint - confirms all attendance is saved
+    """
+    if not request.session.get('teacher_id'):
+        return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=401)
+
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+
+    try:
+        selected_class = request.POST.get('class')
+        selected_section = request.POST.get('section')
+        selected_date = request.POST.get('date')
+
+        if not all([selected_class, selected_section, selected_date]):
+            return JsonResponse({
+                'success': False, 
+                'message': 'Missing required fields'
+            }, status=400)
+
+        with connection.cursor() as cursor:
+            # Get counts
+            cursor.execute("""
+                SELECT COUNT(*) FROM student_page1 
+                WHERE class = %s AND section = %s
+            """, [selected_class, selected_section])
+            total_count = cursor.fetchone()[0]
+
+            cursor.execute("""
+                SELECT COUNT(*) FROM attendance 
+                WHERE class = %s AND section = %s AND date = %s
+            """, [selected_class, selected_section, selected_date])
+            marked_count = cursor.fetchone()[0]
+
+            if marked_count != total_count:
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Cannot submit: {total_count - marked_count} students still need attendance marked.'
+                }, status=400)
+
+            return JsonResponse({
+                'success': True,
+                'message': f'✓ Attendance submitted successfully for {marked_count} students',
+                'total_count': total_count,
+                'marked_count': marked_count
+            })
+
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Server error: {str(e)}'
+        }, status=500)
 
 
 
