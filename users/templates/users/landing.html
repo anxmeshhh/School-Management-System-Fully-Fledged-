@@ -1,1070 +1,1709 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manavargal School Management System - Information at Ease</title>
-    <link rel="stylesheet" href="{% static 'users/landing.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Manavargal SMS — Information at Ease</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
-    <meta name="theme-color" content="#10b981">
-    <link rel="icon" type="image/svg+xml" href="/placeholder.svg?height=32&width=32">
+    <style>
+        :root {
+            --emerald: #10b981;
+            --emerald-dark: #059669;
+            --emerald-light: #34d399;
+            --emerald-glow: rgba(16, 185, 129, 0.25);
+            --emerald-ultra: rgba(16, 185, 129, 0.08);
+            --teal: #0d9488;
+            --ink: #030d0a;
+            --ink-mid: #0a1f17;
+            --ink-soft: #0f2d20;
+            --text-primary: #f0fdf4;
+            --text-secondary: rgba(240, 253, 244, 0.7);
+            --text-muted: rgba(240, 253, 244, 0.4);
+            --border: rgba(16, 185, 129, 0.15);
+            --border-hover: rgba(16, 185, 129, 0.4);
+            --glass: rgba(16, 185, 129, 0.06);
+            --glass-hover: rgba(16, 185, 129, 0.12);
+            --radius: 20px;
+            --radius-sm: 12px;
+            --transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--ink);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* ===================== CURSOR ===================== */
+        .cursor-dot {
+            position: fixed;
+            top: 0; left: 0;
+            width: 6px; height: 6px;
+            background: var(--emerald);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background 0.2s;
+            box-shadow: 0 0 10px var(--emerald), 0 0 20px var(--emerald-glow);
+        }
+        .cursor-ring {
+            position: fixed;
+            top: 0; left: 0;
+            width: 36px; height: 36px;
+            border: 1.5px solid var(--emerald-light);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            transition: width 0.35s cubic-bezier(0.23,1,0.32,1),
+                        height 0.35s cubic-bezier(0.23,1,0.32,1),
+                        border-color 0.3s, opacity 0.3s;
+            opacity: 0.6;
+        }
+        .cursor-ring.expand { width: 56px; height: 56px; opacity: 0.9; border-color: var(--emerald); }
+        body:has(a:hover) .cursor-dot,
+        body:has(button:hover) .cursor-dot { width: 10px; height: 10px; }
+
+        /* ===================== SCROLLBAR ===================== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--ink); }
+        ::-webkit-scrollbar-thumb { background: var(--emerald-dark); border-radius: 3px; }
+
+        /* ===================== NOISE OVERLAY ===================== */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.4;
+        }
+
+        /* ===================== NAV ===================== */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 0 40px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.4s, backdrop-filter 0.4s, border-color 0.4s;
+        }
+        nav.scrolled {
+            background: rgba(3, 13, 10, 0.85);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+        }
+        .nav-logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--emerald), var(--teal));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 0 20px var(--emerald-glow);
+            flex-shrink: 0;
+        }
+        .nav-brand-text .name {
+            display: block;
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+        .nav-brand-text .sub {
+            display: block;
+            font-size: 10px;
+            color: var(--emerald-light);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            line-height: 1.4;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            list-style: none;
+        }
+        .nav-links a {
+            padding: 8px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: color 0.3s, background 0.3s;
+            letter-spacing: 0.01em;
+        }
+        .nav-links a:hover { color: var(--text-primary); background: var(--glass); }
+        .nav-cta {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-outline {
+            padding: 9px 20px;
+            border: 1px solid var(--border-hover);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'DM Sans', sans-serif;
+            cursor: none;
+            transition: var(--transition);
+        }
+        .btn-outline:hover { border-color: var(--emerald); color: var(--emerald-light); background: var(--glass); }
+        .btn-nav-primary {
+            padding: 9px 22px;
+            background: linear-gradient(135deg, var(--emerald), var(--teal));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: none;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px var(--emerald-glow);
+        }
+        .btn-nav-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(16,185,129,0.4); }
+
+        /* ===================== HERO ===================== */
+        .hero {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 60px;
+            padding: 120px 80px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 60% at 70% 50%, rgba(16,185,129,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 50% at 10% 80%, rgba(13,148,136,0.08) 0%, transparent 60%),
+                linear-gradient(180deg, var(--ink) 0%, var(--ink-mid) 50%, var(--ink) 100%);
+        }
+        .hero-grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(16,185,129,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16,185,129,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+        .hero-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+        }
+        .hero-orb-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(16,185,129,0.15), transparent 70%);
+            right: -100px; top: 50%;
+            transform: translateY(-50%);
+        }
+        .hero-orb-2 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(13,148,136,0.1), transparent 70%);
+            left: 100px; bottom: 0;
+        }
+        .hero-content { position: relative; z-index: 2; }
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px 6px 8px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--emerald-light);
+            letter-spacing: 0.05em;
+            margin-bottom: 28px;
+        }
+        .hero-eyebrow span.dot {
+            width: 6px; height: 6px;
+            background: var(--emerald);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--emerald);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--emerald); }
+            50% { opacity: 0.6; box-shadow: 0 0 16px var(--emerald); }
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(42px, 5vw, 68px);
+            font-weight: 900;
+            line-height: 1.05;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+        .hero-title em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--emerald-light), var(--emerald), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-desc {
+            font-size: 17px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin-bottom: 40px;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 56px;
+        }
+        .btn-hero-primary {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, var(--emerald), var(--teal));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: none;
+            transition: var(--transition);
+            box-shadow: 0 8px 30px rgba(16,185,129,0.35);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .btn-hero-primary:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(16,185,129,0.45); }
+        .btn-hero-secondary {
+            padding: 14px 28px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+            font-family: 'DM Sans', sans-serif;
+            cursor: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .btn-hero-secondary:hover { border-color: var(--emerald-light); color: var(--text-primary); background: var(--glass); transform: translateY(-2px); }
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+        }
+        .stat-item { text-align: left; }
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+        .stat-number span { color: var(--emerald-light); }
+        .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+        /* ===================== HERO VISUAL ===================== */
+        .hero-visual { position: relative; z-index: 2; }
+        .dashboard-card {
+            background: linear-gradient(145deg, rgba(15,45,32,0.8), rgba(3,13,10,0.9));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow:
+                0 40px 80px rgba(0,0,0,0.5),
+                0 0 0 1px var(--border),
+                inset 0 1px 0 rgba(16,185,129,0.1);
+            backdrop-filter: blur(20px);
+        }
+        .dash-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(16,185,129,0.04);
+        }
+        .dash-dots { display: flex; gap: 7px; }
+        .dash-dot {
+            width: 11px; height: 11px;
+            border-radius: 50%;
+        }
+        .dash-dot:nth-child(1) { background: #ff5f57; }
+        .dash-dot:nth-child(2) { background: #febc2e; }
+        .dash-dot:nth-child(3) { background: #28c840; }
+        .dash-title-bar {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .dash-body { padding: 20px; }
+        .dash-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .metric {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+        }
+        .metric-icon { font-size: 16px; color: var(--emerald-light); margin-bottom: 8px; }
+        .metric-val {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+        .metric-lbl { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+        .metric-trend {
+            font-size: 11px;
+            color: var(--emerald);
+            margin-top: 4px;
+        }
+        .chart-area {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+        .chart-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-family: 'DM Mono', monospace;
+        }
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            height: 60px;
+        }
+        .chart-bar-item {
+            flex: 1;
+            background: linear-gradient(to top, var(--emerald), var(--emerald-light));
+            border-radius: 4px 4px 0 0;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            animation: bar-grow 1s ease-out forwards;
+            transform-origin: bottom;
+        }
+        .chart-bar-item:hover { opacity: 1; }
+        @keyframes bar-grow {
+            from { transform: scaleY(0); }
+            to { transform: scaleY(1); }
+        }
+        .dash-portals-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .mini-portal {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: none;
+            transition: var(--transition);
+        }
+        .mini-portal:hover { border-color: var(--emerald-light); background: var(--glass-hover); }
+        .mini-portal-icon {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        .mini-portal-text { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+        .floating-notif {
+            position: absolute;
+            background: rgba(3, 13, 10, 0.92);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+            white-space: nowrap;
+        }
+        .notif-1 {
+            top: -20px; right: -40px;
+            animation: float-1 6s ease-in-out infinite;
+        }
+        .notif-2 {
+            bottom: 40px; left: -50px;
+            animation: float-2 7s ease-in-out infinite;
+        }
+        @keyframes float-1 {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+        }
+        @keyframes float-2 {
+            0%, 100% { transform: translateY(0) rotate(1deg); }
+            50% { transform: translateY(10px) rotate(-2deg); }
+        }
+        .notif-icon-w {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* ===================== SECTIONS ===================== */
+        section { position: relative; }
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 14px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--emerald-light);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .section-tag::before {
+            content: '';
+            width: 5px; height: 5px;
+            background: var(--emerald);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--emerald);
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(34px, 4vw, 54px);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+        .section-title em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--emerald-light), var(--emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .section-desc {
+            font-size: 17px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            max-width: 560px;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+
+        /* ===================== FEATURES BAR ===================== */
+        .features-bar {
+            padding: 60px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            background: var(--glass);
+        }
+        .features-bar-inner {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+        }
+        .feature-pill {
+            background: var(--ink);
+            padding: 32px 28px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: background 0.3s;
+        }
+        .feature-pill:hover { background: var(--ink-soft); }
+        .pill-icon {
+            width: 44px; height: 44px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--emerald-light);
+            flex-shrink: 0;
+        }
+        .pill-title { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+        .pill-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+        /* ===================== PORTALS SECTION ===================== */
+        .portals-section {
+            padding: 120px 0;
+        }
+        .portals-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 50% 50%, rgba(16,185,129,0.06) 0%, transparent 70%);
+        }
+        .portals-header {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+        .portals-header .section-desc { margin: 0 auto; }
+        .portals-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .portal-card {
+            background: linear-gradient(145deg, rgba(15,45,32,0.5), rgba(3,13,10,0.7));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px 28px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            cursor: none;
+            transition: var(--transition);
+        }
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--card-gradient, linear-gradient(135deg, var(--emerald), var(--teal)));
+            opacity: 0;
+            transition: opacity 0.4s;
+            border-radius: inherit;
+        }
+        .portal-card:hover::before { opacity: 0.06; }
+        .portal-card:hover {
+            border-color: var(--card-accent, var(--emerald));
+            transform: translateY(-6px);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.4), 0 0 0 1px var(--card-accent, var(--emerald)), 0 0 40px rgba(16,185,129,0.1);
+        }
+        .portal-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+        .portal-icon-box {
+            width: 54px; height: 54px;
+            background: var(--card-bg, var(--glass));
+            border: 1px solid var(--card-accent, var(--emerald));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--card-accent, var(--emerald-light));
+            box-shadow: 0 0 20px var(--card-glow, var(--emerald-glow));
+            transition: transform 0.4s, box-shadow 0.4s;
+        }
+        .portal-card:hover .portal-icon-box { transform: scale(1.1) rotate(-5deg); box-shadow: 0 0 30px var(--card-glow, var(--emerald-glow)); }
+        .portal-for-badge {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--card-accent, var(--emerald-light));
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 100px;
+        }
+        .portal-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .portal-desc {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .portal-features-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+        .portal-features-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .portal-features-list li::before {
+            content: '';
+            width: 5px; height: 5px;
+            background: var(--card-accent, var(--emerald));
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .portal-cta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .portal-cta-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--card-accent, var(--emerald-light));
+        }
+        .portal-cta-arrow {
+            width: 32px; height: 32px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--card-accent, var(--emerald-light));
+            transition: var(--transition);
+        }
+        .portal-card:hover .portal-cta-arrow {
+            background: var(--card-accent, var(--emerald));
+            border-color: var(--card-accent, var(--emerald));
+            color: white;
+            transform: translateX(3px);
+        }
+
+        /* Card color themes */
+        .portal-student { --card-accent: #34d399; --card-glow: rgba(52,211,153,0.25); --card-bg: rgba(52,211,153,0.08); }
+        .portal-teacher { --card-accent: #60a5fa; --card-glow: rgba(96,165,250,0.25); --card-bg: rgba(96,165,250,0.08); }
+        .portal-parent  { --card-accent: #f472b6; --card-glow: rgba(244,114,182,0.25); --card-bg: rgba(244,114,182,0.08); }
+        .portal-admin   { --card-accent: #fbbf24; --card-glow: rgba(251,191,36,0.25);  --card-bg: rgba(251,191,36,0.08);  }
+
+        /* ===================== FEATURES SECTION ===================== */
+        .features-section {
+            padding: 120px 0;
+            background: linear-gradient(180deg, var(--ink) 0%, var(--ink-mid) 50%, var(--ink) 100%);
+        }
+        .features-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+        .features-left {}
+        .features-right {}
+        .feature-tabs {
+            display: flex;
+            gap: 8px;
+            margin: 36px 0 32px;
+        }
+        .ftab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            cursor: none;
+            transition: var(--transition);
+            background: none;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .ftab.active, .ftab:hover {
+            background: var(--glass);
+            border-color: var(--border);
+            color: var(--emerald-light);
+        }
+        .ftab.active { border-color: var(--emerald); }
+        .feature-list { display: flex; flex-direction: column; gap: 4px; }
+        .feature-item-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 18px;
+            border-radius: 16px;
+            transition: background 0.3s, border-color 0.3s;
+            border: 1px solid transparent;
+            cursor: none;
+        }
+        .feature-item-row:hover, .feature-item-row.active-feat {
+            background: var(--glass);
+            border-color: var(--border);
+        }
+        .feat-icon {
+            width: 40px; height: 40px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--emerald-light);
+            flex-shrink: 0;
+        }
+        .feat-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .feat-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+        .features-visual {
+            position: relative;
+        }
+        .feature-showcase-card {
+            background: linear-gradient(145deg, rgba(15,45,32,0.7), rgba(3,13,10,0.8));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+        }
+        .showcase-metric-big {
+            text-align: center;
+            padding: 30px;
+        }
+        .big-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 72px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--emerald-light), var(--emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        .big-label { font-size: 14px; color: var(--text-muted); margin-top: 8px; }
+        .showcase-rows { display: flex; flex-direction: column; gap: 10px; }
+        .showcase-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .sr-left { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+        .sr-icon { color: var(--emerald-light); width: 20px; text-align: center; }
+        .sr-val {
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            color: var(--emerald);
+        }
+        .progress-track {
+            height: 4px;
+            background: rgba(16,185,129,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--emerald), var(--emerald-light));
+            border-radius: 2px;
+            transition: width 1s ease;
+        }
+
+        /* ===================== ABOUT / TRUST ===================== */
+        .trust-section {
+            padding: 100px 0;
+            text-align: center;
+        }
+        .trust-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(16,185,129,0.05) 0%, transparent 70%);
+        }
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 60px;
+            text-align: left;
+        }
+        .trust-card {
+            background: linear-gradient(145deg, rgba(15,45,32,0.4), rgba(3,13,10,0.6));
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            transition: var(--transition);
+        }
+        .trust-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+        .trust-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--emerald-light);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .trust-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .trust-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+        /* ===================== FOOTER ===================== */
+        footer {
+            background: var(--ink-mid);
+            border-top: 1px solid var(--border);
+            padding: 80px 0 40px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+        .footer-brand-col {}
+        .footer-logo-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .footer-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.65;
+            margin-bottom: 28px;
+        }
+        .footer-socials { display: flex; gap: 10px; }
+        .social-btn {
+            width: 38px; height: 38px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            cursor: none;
+            transition: var(--transition);
+        }
+        .social-btn:hover { border-color: var(--emerald); color: var(--emerald-light); background: var(--glass-hover); }
+        .footer-col-title {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+        .footer-links-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .footer-links-list a {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-links-list a:hover { color: var(--emerald-light); }
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .fci-icon { color: var(--emerald); font-size: 14px; margin-top: 2px; }
+        .fci-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding-top: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer-bottom-text { font-size: 13px; color: var(--text-muted); }
+        .footer-bottom-links { display: flex; gap: 24px; }
+        .footer-bottom-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.3s; }
+        .footer-bottom-links a:hover { color: var(--emerald-light); }
+
+        /* ===================== SCROLL REVEAL ===================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s cubic-bezier(0.23,1,0.32,1), transform 0.7s cubic-bezier(0.23,1,0.32,1);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ===================== RESPONSIVE ===================== */
+        @media (max-width: 1100px) {
+            .portals-grid { grid-template-columns: repeat(2, 1fr); }
+            .features-layout { grid-template-columns: 1fr; gap: 50px; }
+            .hero { grid-template-columns: 1fr; padding: 120px 40px 60px; gap: 60px; }
+            .hero-visual { display: none; }
+        }
+        @media (max-width: 768px) {
+            .hero { padding: 110px 24px 60px; }
+            .container { padding: 0 24px; }
+            nav { padding: 0 24px; }
+            .nav-links, .nav-cta { display: none; }
+            .portals-grid { grid-template-columns: 1fr; }
+            .features-bar-inner { grid-template-columns: 1fr 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 40px; }
+            .trust-grid { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Advanced Loading Screen -->
-    <div class="loading-screen" id="loading-screen">
-        <div class="loading-container">
-            <div class="loading-logo-wrapper">
-                <div class="loading-logo">
-                    <div class="logo-ring"></div>
-                    <div class="logo-ring"></div>
-                    <div class="logo-ring"></div>
-                    <img src="{% static 'users/images/verrgroup.png' %}" alt="Manavargal SMS Logo" class="logo-center">
-                </div>
-                <div class="loading-text">
-                    <span class="loading-title">Manavargal</span>
-                    <span class="loading-subtitle">School Management System</span>
-                </div>
-            </div>
-            <div class="loading-progress-container">
-                <div class="loading-progress-bar">
-                    <div class="loading-progress-fill"></div>
-                    <div class="loading-progress-glow"></div>
-                </div>
-                <div class="loading-percentage">0%</div>
-            </div>
-            <div class="loading-status">Initializing System...</div>
+
+<!-- CURSOR -->
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+    <a href="#home" class="nav-brand">
+        <div class="nav-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div class="nav-brand-text">
+            <span class="name">Manavargal</span>
+            <span class="sub">School Management System</span>
         </div>
-        <div class="loading-background">
-            <div class="loading-particles"></div>
-            <div class="loading-waves"></div>
-            <div class="loading-grid"></div>
+    </a>
+    <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#portals">Portals</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+        <button class="btn-outline">Request Demo</button>
+        <button class="btn-nav-primary" onclick="document.getElementById('portals').scrollIntoView({behavior:'smooth'})">Get Started</button>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section id="home" class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid-pattern"></div>
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+
+    <div class="hero-content reveal">
+        <div class="hero-eyebrow">
+            <span class="dot"></span>
+            Trusted & Secured by VERRGROUP
+        </div>
+        <h1 class="hero-title">
+            Transform Your<br>
+            <em>School Management</em><br>
+            Experience
+        </h1>
+        <p class="hero-desc">
+            A comprehensive, intelligent platform built for modern educational institutions. Streamline administration, amplify learning, and connect every stakeholder — all in one place.
+        </p>
+        <div class="hero-actions">
+            <a href="#portals" class="btn-hero-primary" onclick="event.preventDefault(); document.getElementById('portals').scrollIntoView({behavior:'smooth'})">
+                <i class="fas fa-rocket"></i> Access Portal
+            </a>
+            <a href="#features" class="btn-hero-secondary" onclick="event.preventDefault(); document.getElementById('features').scrollIntoView({behavior:'smooth'})">
+                <i class="fas fa-play"></i> Explore Features
+            </a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat-item">
+                <div class="stat-number"><span class="counter" data-target="500">0</span><span>+</span></div>
+                <div class="stat-label">Schools</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number"><span class="counter" data-target="50000">0</span><span>+</span></div>
+                <div class="stat-label">Students</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number"><span class="counter" data-target="99">0</span><span>%</span></div>
+                <div class="stat-label">Satisfaction</div>
+            </div>
         </div>
     </div>
 
-    <!-- Advanced Cursor System -->
-    <div class="cursor-system">
-        <div class="cursor-dot" id="cursor-dot"></div>
-        <div class="cursor-outline" id="cursor-outline"></div>
-        <div class="cursor-trail" id="cursor-trail"></div>
+    <div class="hero-visual">
+        <div style="position:relative; padding: 20px 50px 20px 20px;">
+            <div class="dashboard-card reveal reveal-delay-2">
+                <div class="dash-header">
+                    <div class="dash-dots">
+                        <div class="dash-dot"></div>
+                        <div class="dash-dot"></div>
+                        <div class="dash-dot"></div>
+                    </div>
+                    <div class="dash-title-bar">manavargal.sms / dashboard</div>
+                    <div style="color:var(--emerald);font-size:12px;"><i class="fas fa-circle" style="font-size:8px;"></i> Live</div>
+                </div>
+                <div class="dash-body">
+                    <div class="dash-metrics">
+                        <div class="metric">
+                            <div class="metric-icon"><i class="fas fa-users"></i></div>
+                            <div class="metric-val">1,247</div>
+                            <div class="metric-lbl">Students</div>
+                            <div class="metric-trend"><i class="fas fa-arrow-up"></i> +8%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="metric-val">94.5%</div>
+                            <div class="metric-lbl">Attendance</div>
+                            <div class="metric-trend"><i class="fas fa-arrow-up"></i> +2%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-icon"><i class="fas fa-rupee-sign"></i></div>
+                            <div class="metric-val">₹2.4M</div>
+                            <div class="metric-lbl">Fees</div>
+                            <div class="metric-trend"><i class="fas fa-arrow-up"></i> +12%</div>
+                        </div>
+                    </div>
+                    <div class="chart-area">
+                        <div class="chart-label">Monthly Attendance Overview</div>
+                        <div class="chart-bars">
+                            <div class="chart-bar-item" style="height:65%;animation-delay:0.1s"></div>
+                            <div class="chart-bar-item" style="height:80%;animation-delay:0.15s"></div>
+                            <div class="chart-bar-item" style="height:55%;animation-delay:0.2s"></div>
+                            <div class="chart-bar-item" style="height:90%;animation-delay:0.25s"></div>
+                            <div class="chart-bar-item" style="height:75%;animation-delay:0.3s"></div>
+                            <div class="chart-bar-item" style="height:85%;animation-delay:0.35s"></div>
+                            <div class="chart-bar-item" style="height:70%;animation-delay:0.4s"></div>
+                            <div class="chart-bar-item" style="height:95%;animation-delay:0.45s"></div>
+                        </div>
+                    </div>
+                    <div class="dash-portals-row">
+                        <div class="mini-portal" onclick="window.open('https://www.manavargalsms.com/student','_blank')">
+                            <div class="mini-portal-icon" style="background:rgba(52,211,153,0.12);color:#34d399"><i class="fas fa-user-graduate"></i></div>
+                            <div class="mini-portal-text">Student Portal</div>
+                        </div>
+                        <div class="mini-portal" onclick="window.open('https://www.manavargalsms.com/teacher','_blank')">
+                            <div class="mini-portal-icon" style="background:rgba(96,165,250,0.12);color:#60a5fa"><i class="fas fa-chalkboard-teacher"></i></div>
+                            <div class="mini-portal-text">Teacher Portal</div>
+                        </div>
+                        <div class="mini-portal" onclick="window.open('https://www.manavargalsms.com/parent','_blank')">
+                            <div class="mini-portal-icon" style="background:rgba(244,114,182,0.12);color:#f472b6"><i class="fas fa-heart"></i></div>
+                            <div class="mini-portal-text">Parent Portal</div>
+                        </div>
+                        <div class="mini-portal" onclick="window.open('https://www.manavargalsms.com/admin','_blank')">
+                            <div class="mini-portal-icon" style="background:rgba(251,191,36,0.12);color:#fbbf24"><i class="fas fa-crown"></i></div>
+                            <div class="mini-portal-text">Admin Portal</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="floating-notif notif-1">
+                <div class="notif-icon-w" style="background:rgba(52,211,153,0.15);color:#34d399"><i class="fas fa-bell"></i></div>
+                <div>
+                    <div style="font-size:11px;font-weight:600;">New Attendance Report</div>
+                    <div style="font-size:10px;color:var(--text-muted);">Class 10-A — Just now</div>
+                </div>
+            </div>
+            <div class="floating-notif notif-2">
+                <div class="notif-icon-w" style="background:rgba(96,165,250,0.15);color:#60a5fa"><i class="fas fa-check"></i></div>
+                <div>
+                    <div style="font-size:11px;font-weight:600;">Fee Payment Received</div>
+                    <div style="font-size:10px;color:var(--text-muted);">₹12,500 — 2 min ago</div>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    <!-- Page Transition Overlay -->
-    <div class="page-transition" id="page-transition">
-        <div class="transition-layer"></div>
-        <div class="transition-layer"></div>
-        <div class="transition-layer"></div>
+<!-- FEATURES BAR -->
+<div class="features-bar">
+    <div class="container">
+        <div class="features-bar-inner">
+            <div class="feature-pill reveal">
+                <div class="pill-icon"><i class="fas fa-shield-alt"></i></div>
+                <div>
+                    <div class="pill-title">Enterprise Security</div>
+                    <div class="pill-desc">Bank-grade encryption with 99.9% uptime SLA</div>
+                </div>
+            </div>
+            <div class="feature-pill reveal reveal-delay-1">
+                <div class="pill-icon"><i class="fas fa-mobile-alt"></i></div>
+                <div>
+                    <div class="pill-title">Mobile First</div>
+                    <div class="pill-desc">Fully responsive across all devices</div>
+                </div>
+            </div>
+            <div class="feature-pill reveal reveal-delay-2">
+                <div class="pill-icon"><i class="fas fa-bolt"></i></div>
+                <div>
+                    <div class="pill-title">Lightning Fast</div>
+                    <div class="pill-desc">Real-time sync and instant updates</div>
+                </div>
+            </div>
+            <div class="feature-pill reveal reveal-delay-3">
+                <div class="pill-icon"><i class="fas fa-headset"></i></div>
+                <div>
+                    <div class="pill-title">24/7 Support</div>
+                    <div class="pill-desc">Round-the-clock expert assistance</div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <!-- Enhanced Navigation -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-background">
-            <div class="nav-blur"></div>
-            <div class="nav-gradient"></div>
+<!-- PORTALS SECTION -->
+<section id="portals" class="portals-section">
+    <div class="portals-bg"></div>
+    <div class="container" style="position:relative;z-index:2;">
+        <div class="portals-header reveal">
+            <div class="section-tag">Access Portals</div>
+            <h2 class="section-title">Your Dedicated <em>Dashboard</em></h2>
+            <p class="section-desc">Tailored experiences for every role in your educational ecosystem, intelligently designed for maximum efficiency.</p>
         </div>
-        <div class="nav-container">
-            <div class="nav-logo" data-aos="fade-right">
-                <div class="logo-container">
-                    <img src="{% static 'users/images/verrgroup.png' %}" alt="Manavargal SMS Logo" class="logo">
-                    <div class="logo-glow"></div>
+
+        <div class="portals-grid">
+            <a href="https://www.manavargalsms.com/student" target="_blank" class="portal-card portal-student reveal">
+                <div class="portal-top">
+                    <div class="portal-icon-box"><i class="fas fa-user-graduate"></i></div>
+                    <div class="portal-for-badge">For Students</div>
                 </div>
-                <div class="nav-brand">
-                    <span class="nav-title">Manavargal</span>
-                    <span class="nav-subtitle">SMS</span>
+                <h3 class="portal-name">Student Portal</h3>
+                <p class="portal-desc">Personalized learning dashboard with real-time progress tracking and interactive tools.</p>
+                <ul class="portal-features-list">
+                    <li>Interactive Assignments</li>
+                    <li>Progress Analytics</li>
+                    <li>Smart Timetable</li>
+                    <li>Resource Library</li>
+                </ul>
+                <div class="portal-cta">
+                    <span class="portal-cta-text">Student Login</span>
+                    <div class="portal-cta-arrow"><i class="fas fa-arrow-right"></i></div>
                 </div>
-            </div>
-            
-            <div class="nav-menu" id="nav-menu">
-                <div class="nav-menu-background"></div>
-                <a href="#home" class="nav-link" data-text="Home">
-                    <span class="nav-link-text">Home</span>
-                    <span class="nav-link-bg"></span>
-                </a>
-                <a href="#features" class="nav-link" data-text="Features">
-                    <span class="nav-link-text">Features</span>
-                    <span class="nav-link-bg"></span>
-                </a>
-                <a href="#portals" class="nav-link" data-text="Portals">
-                    <span class="nav-link-text">Portals</span>
-                    <span class="nav-link-bg"></span>
-                </a>
-                <a href="#about" class="nav-link" data-text="About">
-                    <span class="nav-link-text">About</span>
-                    <span class="nav-link-bg"></span>
-                </a>
-                <a href="#contact" class="nav-link" data-text="Contact">
-                    <span class="nav-link-text">Contact</span>
-                    <span class="nav-link-bg"></span>
-                </a>
-                <div class="nav-indicator"></div>
-            </div>
-            
-            <div class="nav-actions" data-aos="fade-left">
-                <button class="btn btn-ghost">
-                    <span class="btn-text">Demo</span>
-                    <span class="btn-icon"><i class="fas fa-play"></i></span>
-                    <div class="btn-particles"></div>
-                </button>
-                <button class="btn btn-primary">
-                    <span class="btn-text">Get Started</span>
-                    <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
-                    <div class="btn-shine"></div>
-                </button>
-            </div>
-            
-            <div class="nav-toggle" id="nav-toggle">
-                <div class="hamburger">
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
+            </a>
+
+            <a href="https://www.manavargalsms.com/teacher" target="_blank" class="portal-card portal-teacher reveal reveal-delay-1">
+                <div class="portal-top">
+                    <div class="portal-icon-box"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <div class="portal-for-badge">For Teachers</div>
                 </div>
-            </div>
+                <h3 class="portal-name">Teacher Portal</h3>
+                <p class="portal-desc">Comprehensive classroom management with AI-powered insights and automated grading.</p>
+                <ul class="portal-features-list">
+                    <li>AI-Powered Grading</li>
+                    <li>Class Management</li>
+                    <li>Resource Sharing</li>
+                    <li>Parent Communication</li>
+                </ul>
+                <div class="portal-cta">
+                    <span class="portal-cta-text">Teacher Login</span>
+                    <div class="portal-cta-arrow"><i class="fas fa-arrow-right"></i></div>
+                </div>
+            </a>
+
+            <a href="https://www.manavargalsms.com/parent" target="_blank" class="portal-card portal-parent reveal reveal-delay-2">
+                <div class="portal-top">
+                    <div class="portal-icon-box"><i class="fas fa-heart"></i></div>
+                    <div class="portal-for-badge">For Parents</div>
+                </div>
+                <h3 class="portal-name">Parent Portal</h3>
+                <p class="portal-desc">Stay connected with real-time insights, secure messaging, and complete progress transparency.</p>
+                <ul class="portal-features-list">
+                    <li>Real-time Monitoring</li>
+                    <li>Online Payments</li>
+                    <li>Smart Notifications</li>
+                    <li>Event Calendar</li>
+                </ul>
+                <div class="portal-cta">
+                    <span class="portal-cta-text">Parent Login</span>
+                    <div class="portal-cta-arrow"><i class="fas fa-arrow-right"></i></div>
+                </div>
+            </a>
+
+            <a href="https://www.manavargalsms.com/admin" target="_blank" class="portal-card portal-admin reveal reveal-delay-3">
+                <div class="portal-top">
+                    <div class="portal-icon-box"><i class="fas fa-crown"></i></div>
+                    <div class="portal-for-badge">For Admins</div>
+                </div>
+                <h3 class="portal-name">Admin Portal</h3>
+                <p class="portal-desc">Complete institutional oversight with advanced analytics and predictive intelligence.</p>
+                <ul class="portal-features-list">
+                    <li>Predictive Analytics</li>
+                    <li>System Control</li>
+                    <li>Security Management</li>
+                    <li>Advanced Reports</li>
+                </ul>
+                <div class="portal-cta">
+                    <span class="portal-cta-text">Admin Login</span>
+                    <div class="portal-cta-arrow"><i class="fas fa-arrow-right"></i></div>
+                </div>
+            </a>
         </div>
-    </nav>
+    </div>
+</section>
 
-    <!-- Ultra Enhanced Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-background">
-            <div class="hero-gradient-1"></div>
-            <div class="hero-gradient-2"></div>
-            <div class="hero-pattern"></div>
-            <div class="hero-particles" id="hero-particles"></div>
-            <div class="hero-waves"></div>
-            <div class="hero-grid"></div>
-        </div>
-        
-        <div class="hero-container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <div class="hero-badge" data-aos="fade-up" data-aos-delay="100">
-                        <div class="badge-icon">
-                            <i class="fas fa-star"></i>
-                            <div class="icon-sparkle"></div>
-                        </div>
-                        <span class="badge-text">Trusted and Secured By VERRGROUP</span>
-                        <div class="badge-glow"></div>
-                    </div>
-                    
-                    <h1 class="hero-title" data-aos="fade-up" data-aos-delay="200">
-                        <div class="title-line">
-                            <span class="title-word" data-word="Transform">Transform</span>
-                            <span class="title-word" data-word="Your">Your</span>
-                        </div>
-                        <div class="title-line">
-                            <span class="title-word highlight" data-word="School">School</span>
-                            <span class="title-word" data-word="Management">Management</span>
-                        </div>
-                        <div class="title-decoration">
-                            <div class="decoration-line"></div>
-                            <div class="decoration-dot"></div>
-                        </div>
-                    </h1>
-                    
-                    <div class="hero-tagline" data-aos="fade-up" data-aos-delay="300">
-                        <div class="tagline-container">
-                            <span class="tagline-text">Information at Ease</span>
-                            <div class="tagline-effects">
-                                <div class="tagline-underline"></div>
-                                <div class="tagline-glow"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <p class="hero-description" data-aos="fade-up" data-aos-delay="400">
-                        Experience the future of educational administration with our comprehensive platform. 
-                        Streamline every aspect of school management from attendance tracking to fee collection, 
-                        all powered by cutting-edge technology and intuitive design.
-                    </p>
-                    
-                    <div class="hero-stats" data-aos="fade-up" data-aos-delay="500">
-                        <div class="stat-item">
-                            <div class="stat-container">
-                                <div class="stat-number" data-count="500">0</div>
-                                <div class="stat-plus">+</div>
-                            </div>
-                            <div class="stat-label">Schools</div>
-                            <div class="stat-glow"></div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-container">
-                                <div class="stat-number" data-count="50000">0</div>
-                                <div class="stat-plus">+</div>
-                            </div>
-                            <div class="stat-label">Students</div>
-                            <div class="stat-glow"></div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-container">
-                                <div class="stat-number" data-count="99">0</div>
-                                <div class="stat-plus">%</div>
-                            </div>
-                            <div class="stat-label">Satisfaction</div>
-                            <div class="stat-glow"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="hero-buttons" data-aos="fade-up" data-aos-delay="600">
-                        <button class="btn btn-primary btn-hero" onclick="scrollToSection('portals')">
-                            <span class="btn-text">Access Portal</span>
-                            <span class="btn-icon"><i class="fas fa-rocket"></i></span>
-                            <div class="btn-ripple"></div>
-                            <div class="btn-glow"></div>
-                        </button>
-                        <button class="btn btn-secondary btn-hero" onclick="scrollToSection('features')">
-                            <span class="btn-text">Watch Demo</span>
-                            <span class="btn-icon"><i class="fas fa-play"></i></span>
-                            <div class="btn-ripple"></div>
-                        </button>
-                    </div>
-                    
-                    
+<!-- FEATURES SECTION -->
+<section id="features" class="features-section">
+    <div class="container">
+        <div class="features-layout">
+            <div class="features-left">
+                <div class="reveal">
+                    <div class="section-tag">Core Features</div>
+                    <h2 class="section-title">Everything Your<br><em>School Needs</em></h2>
+                    <p class="section-desc">A complete management suite powered by intelligent automation and intuitive design principles.</p>
                 </div>
-                
-                <div class="hero-visual" data-aos="fade-left" data-aos-delay="800">
-                    <div class="visual-container">
-                        <div class="dashboard-3d">
-                            <div class="dashboard-frame">
-                                <div class="frame-header">
-                                    <div class="frame-controls">
-                                        <span class="control red"></span>
-                                        <span class="control yellow"></span>
-                                        <span class="control green"></span>
-                                    </div>
-                                    <div class="frame-title">Manavargal Dashboard</div>
-                                    <div class="frame-actions">
-                                        <i class="fas fa-expand"></i>
-                                    </div>
-                                </div>
-                                <div class="frame-content">
-                                    <div class="dashboard-main">
-                                        <img src="/placeholder.svg?height=500&width=700" alt="Dashboard Preview" class="dashboard-img">
-                                        <div class="dashboard-overlay">
-                                            <div class="overlay-grid">
-                                                <div class="grid-item analytics">
-                                                    <div class="item-icon"><i class="fas fa-chart-line"></i></div>
-                                                    <div class="item-content">
-                                                        <div class="item-title">Analytics</div>
-                                                        <div class="item-value">Real-time</div>
-                                                    </div>
-                                                    <div class="item-chart">
-                                                        <div class="chart-bar" style="height: 60%"></div>
-                                                        <div class="chart-bar" style="height: 80%"></div>
-                                                        <div class="chart-bar" style="height: 40%"></div>
-                                                        <div class="chart-bar" style="height: 90%"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid-item attendance">
-                                                    <div class="item-icon"><i class="fas fa-users"></i></div>
-                                                    <div class="item-content">
-                                                        <div class="item-title">Attendance</div>
-                                                        <div class="item-value">94.5%</div>
-                                                    </div>
-                                                    <div class="item-progress">
-                                                        <div class="progress-bar" style="width: 94.5%"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid-item fees">
-                                                    <div class="item-icon"><i class="fas fa-money-bill-wave"></i></div>
-                                                    <div class="item-content">
-                                                        <div class="item-title">Fees Collected</div>
-                                                        <div class="item-value">₹2.4M</div>
-                                                    </div>
-                                                    <div class="item-trend">
-                                                        <i class="fas fa-arrow-up"></i>
-                                                        <span>+12%</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="dashboard-glow"></div>
-                        </div>
-                        
-                        <div class="floating-elements">
-                            <div class="floating-card card-1">
-                                <div class="card-icon"><i class="fas fa-graduation-cap"></i></div>
-                                <div class="card-content">
-                                    <div class="card-title">Students</div>
-                                    <div class="card-value">1,247</div>
-                                </div>
-                                <div class="card-glow"></div>
-                            </div>
-                            <div class="floating-card card-2">
-                                <div class="card-icon"><i class="fas fa-bell"></i></div>
-                                <div class="card-content">
-                                    <div class="card-title">Notifications</div>
-                                    <div class="card-value">12</div>
-                                </div>
-                                <div class="card-glow"></div>
-                            </div>
-                            <div class="floating-card card-3">
-                                <div class="card-icon"><i class="fas fa-calendar"></i></div>
-                                <div class="card-content">
-                                    <div class="card-title">Events</div>
-                                    <div class="card-value">5</div>
-                                </div>
-                                <div class="card-glow"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="geometric-shapes">
-                            <div class="shape shape-1"></div>
-                            <div class="shape shape-2"></div>
-                            <div class="shape shape-3"></div>
-                            <div class="shape shape-4"></div>
-                        </div>
-                    </div>
+                <div class="feature-tabs reveal reveal-delay-1">
+                    <button class="ftab active" onclick="switchTab(this,'management')">Management</button>
+                    <button class="ftab" onclick="switchTab(this,'academic')">Academic</button>
+                    <button class="ftab" onclick="switchTab(this,'analytics')">Analytics</button>
                 </div>
-            </div>
-        </div>
-        
-        <div class="hero-scroll-indicator" data-aos="fade-up" data-aos-delay="1000">
-            <div class="scroll-container">
-                <div class="scroll-text">Discover More</div>
-                <div class="scroll-arrow">
-                    <div class="arrow-line"></div>
-                    <div class="arrow-head"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Advanced Features Overview -->
-    <section class="features-overview">
-        <div class="section-background">
-            <div class="bg-pattern"></div>
-            <div class="bg-gradient"></div>
-        </div>
-        <div class="container">
-            <div class="features-grid">
-                <div class="feature-highlight" data-aos="fade-up" data-aos-delay="100">
-                    <div class="highlight-container">
-                        <div class="highlight-icon">
-                            <i class="fas fa-shield-alt"></i>
-                            <div class="icon-orbit"></div>
-                        </div>
-                        <h3 class="highlight-title">Enterprise Security</h3>
-                        <p class="highlight-description">Bank-grade encryption with 99.9% uptime SLA</p>
-                        <div class="highlight-glow"></div>
-                    </div>
-                </div>
-                <div class="feature-highlight" data-aos="fade-up" data-aos-delay="200">
-                    <div class="highlight-container">
-                        <div class="highlight-icon">
-                            <i class="fas fa-mobile-alt"></i>
-                            <div class="icon-orbit"></div>
-                        </div>
-                        <h3 class="highlight-title">Mobile First Design</h3>
-                        <p class="highlight-description">Responsive across all devices and platforms</p>
-                        <div class="highlight-glow"></div>
-                    </div>
-                </div>
-                <div class="feature-highlight" data-aos="fade-up" data-aos-delay="300">
-                    <div class="highlight-container">
-                        <div class="highlight-icon">
-                            <i class="fas fa-bolt"></i>
-                            <div class="icon-orbit"></div>
-                        </div>
-                        <h3 class="highlight-title">Lightning Fast</h3>
-                        <p class="highlight-description">Real-time updates with instant synchronization</p>
-                        <div class="highlight-glow"></div>
-                    </div>
-                </div>
-                <div class="feature-highlight" data-aos="fade-up" data-aos-delay="400">
-                    <div class="highlight-container">
-                        <div class="highlight-icon">
-                            <i class="fas fa-headset"></i>
-                            <div class="icon-orbit"></div>
-                        </div>
-                        <h3 class="highlight-title">24/7 Expert Support</h3>
-                        <p class="highlight-description">Round-the-clock assistance and training</p>
-                        <div class="highlight-glow"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Ultra Enhanced Portal Section -->
-    <section id="portals" class="portals-section">
-        <div class="section-background">
-            <div class="bg-mesh"></div>
-            <div class="bg-particles"></div>
-            <div class="bg-waves"></div>
-        </div>
-        
-        <div class="container">
-            <div class="section-header" data-aos="fade-up">
-                <div class="section-badge">
-                    <span class="badge-text">Access Portals</span>
-                    <div class="badge-shine"></div>
-                </div>
-                <h2 class="section-title">
-                    <span class="title-main">Choose Your</span>
-                    <span class="title-highlight">Dashboard Experience</span>
-                </h2>
-                <p class="section-subtitle">
-                    Tailored interfaces designed for every role in your educational ecosystem, 
-                    powered by intelligent automation and intuitive design.
-                </p>
-            </div>
-            
-            <div class="portals-grid">
-                <div class="portal-card student-portal" data-aos="fade-up" data-aos-delay="100">
-                    <div class="card-background">
-                        <div class="card-gradient"></div>
-                        <div class="card-pattern"></div>
-                        <div class="card-glow"></div>
-                    </div>
-                    
-                    <div class="card-header">
-                        <div class="portal-icon">
-                            <i class="fas fa-user-graduate"></i>
-                            <div class="icon-bg"></div>
-                            <div class="icon-pulse"></div>
-                        </div>
-                        <div class="portal-badge">For Students</div>
-                    </div>
-                    
-                    <div class="card-content">
-                        <h3 class="portal-title">Student Portal</h3>
-                        <p class="portal-description">
-                            Personalized learning dashboard with real-time progress tracking, 
-                            interactive assignments, and seamless communication tools.
-                        </p>
-                        
-                        <div class="portal-features">
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-tasks"></i></div>
-                                <span>Interactive Assignments</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
-                                <span>Progress Analytics</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-calendar-alt"></i></div>
-                                <span>Smart Timetable</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-download"></i></div>
-                                <span>Resource Library</span>
+                <div class="feature-list" id="feature-list">
+                    <!-- Management -->
+                    <div class="feat-group" id="group-management">
+                        <div class="feature-item-row reveal">
+                            <div class="feat-icon"><i class="fas fa-database"></i></div>
+                            <div>
+                                <div class="feat-title">Master Data Management</div>
+                                <div class="feat-desc">Centralized database with advanced security and automated backups.</div>
                             </div>
                         </div>
-                        
-                        <div class="portal-stats">
-                            <div class="stat">
-                                <div class="stat-value">98%</div>
-                                <div class="stat-label">Engagement</div>
+                        <div class="feature-item-row reveal reveal-delay-1">
+                            <div class="feat-icon"><i class="fas fa-calendar-check"></i></div>
+                            <div>
+                                <div class="feat-title">Smart Attendance System</div>
+                                <div class="feat-desc">AI-powered tracking with biometric integration and instant alerts.</div>
                             </div>
-                            <div class="stat">
-                                <div class="stat-value">24/7</div>
-                                <div class="stat-label">Access</div>
+                        </div>
+                        <div class="feature-item-row reveal reveal-delay-2">
+                            <div class="feat-icon"><i class="fas fa-money-bill-wave"></i></div>
+                            <div>
+                                <div class="feat-title">Advanced Fee Management</div>
+                                <div class="feat-desc">Multi-gateway payments, auto-reminders, and financial reports.</div>
+                            </div>
+                        </div>
+                        <div class="feature-item-row reveal reveal-delay-3">
+                            <div class="feat-icon"><i class="fas fa-user-tie"></i></div>
+                            <div>
+                                <div class="feat-title">Faculty Management Suite</div>
+                                <div class="feat-desc">Complete HR tools with performance tracking and scheduling.</div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="card-footer">
-                        <button class="portal-btn">
-                            <span class="btn-text">Student Login</span>
-                            <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
-                            <div class="btn-glow"></div>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="portal-card teacher-portal" data-aos="fade-up" data-aos-delay="200">
-                    <div class="card-background">
-                        <div class="card-gradient"></div>
-                        <div class="card-pattern"></div>
-                        <div class="card-glow"></div>
-                    </div>
-                    
-                    <div class="card-header">
-                        <div class="portal-icon">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <div class="icon-bg"></div>
-                            <div class="icon-pulse"></div>
-                        </div>
-                        <div class="portal-badge">For Teachers</div>
-                    </div>
-                    
-                    <div class="card-content">
-                        <h3 class="portal-title">Teacher Portal</h3>
-                        <p class="portal-description">
-                            Comprehensive classroom management with AI-powered insights, 
-                            automated grading, and enhanced student engagement tools.
-                        </p>
-                        
-                        <div class="portal-features">
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-robot"></i></div>
-                                <span>AI-Powered Grading</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-users"></i></div>
-                                <span>Class Management</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-share-alt"></i></div>
-                                <span>Resource Sharing</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-comments"></i></div>
-                                <span>Parent Communication</span>
+                    <!-- Academic -->
+                    <div class="feat-group" id="group-academic" style="display:none;">
+                        <div class="feature-item-row reveal">
+                            <div class="feat-icon"><i class="fas fa-book-open"></i></div>
+                            <div>
+                                <div class="feat-title">Digital Learning Platform</div>
+                                <div class="feat-desc">Interactive lessons with multimedia and personalized paths.</div>
                             </div>
                         </div>
-                        
-                        <div class="portal-stats">
-                            <div class="stat">
-                                <div class="stat-value">75%</div>
-                                <div class="stat-label">Time Saved</div>
+                        <div class="feature-item-row reveal reveal-delay-1">
+                            <div class="feat-icon"><i class="fas fa-tasks"></i></div>
+                            <div>
+                                <div class="feat-title">Assignment Management</div>
+                                <div class="feat-desc">Create, submit, and grade assignments with AI assistance.</div>
                             </div>
-                            <div class="stat">
-                                <div class="stat-value">AI</div>
-                                <div class="stat-label">Powered</div>
+                        </div>
+                        <div class="feature-item-row reveal reveal-delay-2">
+                            <div class="feat-icon"><i class="fas fa-clipboard-list"></i></div>
+                            <div>
+                                <div class="feat-title">Exam & Result Portal</div>
+                                <div class="feat-desc">Comprehensive exam management and instant result publishing.</div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="card-footer">
-                        <button class="portal-btn">
-                            <span class="btn-text">Teacher Login</span>
-                            <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
-                            <div class="btn-glow"></div>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="portal-card parent-portal" data-aos="fade-up" data-aos-delay="300">
-                    <div class="card-background">
-                        <div class="card-gradient"></div>
-                        <div class="card-pattern"></div>
-                        <div class="card-glow"></div>
-                    </div>
-                    
-                    <div class="card-header">
-                        <div class="portal-icon">
-                            <i class="fas fa-heart"></i>
-                            <div class="icon-bg"></div>
-                            <div class="icon-pulse"></div>
-                        </div>
-                        <div class="portal-badge">For Parents</div>
-                    </div>
-                    
-                    <div class="card-content">
-                        <h3 class="portal-title">Parent Portal</h3>
-                        <p class="portal-description">
-                            Stay connected with your child's educational journey through 
-                            real-time insights, secure messaging, and comprehensive progress tracking.
-                        </p>
-                        
-                        <div class="portal-features">
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-eye"></i></div>
-                                <span>Real-time Monitoring</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-credit-card"></i></div>
-                                <span>Online Payments</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-bell"></i></div>
-                                <span>Smart Notifications</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-calendar-check"></i></div>
-                                <span>Event Calendar</span>
+                    <!-- Analytics -->
+                    <div class="feat-group" id="group-analytics" style="display:none;">
+                        <div class="feature-item-row reveal">
+                            <div class="feat-icon"><i class="fas fa-chart-pie"></i></div>
+                            <div>
+                                <div class="feat-title">Advanced Analytics Dashboard</div>
+                                <div class="feat-desc">Predictive insights with actionable recommendations.</div>
                             </div>
                         </div>
-                        
-                        <div class="portal-stats">
-                            <div class="stat">
-                                <div class="stat-value">100%</div>
-                                <div class="stat-label">Transparency</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-value">Instant</div>
-                                <div class="stat-label">Updates</div>
+                        <div class="feature-item-row reveal reveal-delay-1">
+                            <div class="feat-icon"><i class="fas fa-brain"></i></div>
+                            <div>
+                                <div class="feat-title">AI-Powered Insights</div>
+                                <div class="feat-desc">Machine learning models to predict student performance.</div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="card-footer">
-                        <button class="portal-btn">
-                            <span class="btn-text">Parent Login</span>
-                            <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
-                            <div class="btn-glow"></div>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="portal-card admin-portal" data-aos="fade-up" data-aos-delay="400">
-                    <div class="card-background">
-                        <div class="card-gradient"></div>
-                        <div class="card-pattern"></div>
-                        <div class="card-glow"></div>
-                    </div>
-                    
-                    <div class="card-header">
-                        <div class="portal-icon">
-                            <i class="fas fa-crown"></i>
-                            <div class="icon-bg"></div>
-                            <div class="icon-pulse"></div>
-                        </div>
-                        <div class="portal-badge">For Administrators</div>
-                    </div>
-                    
-                    <div class="card-content">
-                        <h3 class="portal-title">Admin Portal</h3>
-                        <p class="portal-description">
-                            Complete institutional oversight with advanced analytics, 
-                            predictive insights, and comprehensive system management capabilities.
-                        </p>
-                        
-                        <div class="portal-features">
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-brain"></i></div>
-                                <span>Predictive Analytics</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-cogs"></i></div>
-                                <span>System Control</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
-                                <span>Security Management</span>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
-                                <span>Advanced Reports</span>
-                            </div>
-                        </div>
-                        
-                        <div class="portal-stats">
-                            <div class="stat">
-                                <div class="stat-value">360°</div>
-                                <div class="stat-label">Overview</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-value">Smart</div>
-                                <div class="stat-label">Insights</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card-footer">
-                        <button class="portal-btn">
-                            <span class="btn-text">Admin Login</span>
-                            <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
-                            <div class="btn-glow"></div>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Advanced Features Showcase -->
-    <section id="features" class="features-section">
-        <div class="section-background">
-            <div class="bg-gradient"></div>
-            <div class="bg-mesh"></div>
-        </div>
-        
-        <div class="container">
-            <div class="section-header" data-aos="fade-up">
-                <div class="section-badge">
-                    <span class="badge-text">Core Features</span>
-                    <div class="badge-shine"></div>
-                </div>
-                <h2 class="section-title">
-                    <span class="title-main">Comprehensive School</span>
-                    <span class="title-highlight">Management Suite</span>
-                </h2>
-                <p class="section-subtitle">
-                    Everything you need to run your educational institution efficiently, 
-                    powered by artificial intelligence and modern technology.
-                </p>
-            </div>
-            
-            <div class="features-showcase">
-                <div class="features-navigation" data-aos="fade-right">
-                    <div class="nav-item active" data-category="management">
-                        <div class="nav-icon">
-                            <i class="fas fa-cogs"></i>
-                            <div class="icon-glow"></div>
-                        </div>
-                        <div class="nav-content">
-                            <div class="nav-title">Management</div>
-                            <div class="nav-subtitle">Core Operations</div>
-                        </div>
-                        <div class="nav-indicator"></div>
-                    </div>
-                    <div class="nav-item" data-category="academic">
-                        <div class="nav-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                            <div class="icon-glow"></div>
-                        </div>
-                        <div class="nav-content">
-                            <div class="nav-title">Academic</div>
-                            <div class="nav-subtitle">Learning Tools</div>
-                        </div>
-                        <div class="nav-indicator"></div>
-                    </div>
-                    <div class="nav-item" data-category="communication">
-                        <div class="nav-icon">
-                            <i class="fas fa-comments"></i>
-                            <div class="icon-glow"></div>
-                        </div>
-                        <div class="nav-content">
-                            <div class="nav-title">Communication</div>
-                            <div class="nav-subtitle">Stay Connected</div>
-                        </div>
-                        <div class="nav-indicator"></div>
-                    </div>
-                    <div class="nav-item" data-category="analytics">
-                        <div class="nav-icon">
-                            <i class="fas fa-chart-bar"></i>
-                            <div class="icon-glow"></div>
-                        </div>
-                        <div class="nav-content">
-                            <div class="nav-title">Analytics</div>
-                            <div class="nav-subtitle">Data Insights</div>
-                        </div>
-                        <div class="nav-indicator"></div>
-                    </div>
-                </div>
-
-                <div class="features-content" data-aos="fade-left">
-                    <div class="feature-category active" id="management">
-                        <div class="category-header">
-                            <h3 class="category-title">Management Features</h3>
-                            <p class="category-description">Streamline your administrative processes</p>
-                        </div>
-                        <div class="features-grid">
-                            <div class="feature-card">
-                                <div class="card-background">
-                                    <div class="card-glow"></div>
-                                </div>
-                                <div class="feature-icon">
-                                    <i class="fas fa-database"></i>
-                                    <div class="icon-orbit"></div>
-                                </div>
-                                <div class="feature-content">
-                                    <h4 class="feature-title">Master Data Management</h4>
-                                    <p class="feature-description">
-                                        Centralized database with advanced security, automated backups, 
-                                        and intelligent data validation systems.
-                                    </p>
-                                    <div class="feature-tags">
-                                        <span class="tag">Secure</span>
-                                        <span class="tag">Scalable</span>
-                                        <span class="tag">Automated</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="feature-card">
-                                <div class="card-background">
-                                    <div class="card-glow"></div>
-                                </div>
-                                <div class="feature-icon">
-                                    <i class="fas fa-calendar-check"></i>
-                                    <div class="icon-orbit"></div>
-                                </div>
-                                <div class="feature-content">
-                                    <h4 class="feature-title">Smart Attendance System</h4>
-                                    <p class="feature-description">
-                                        AI-powered attendance tracking with biometric integration, 
-                                        automated notifications, and predictive analytics.
-                                    </p>
-                                    <div class="feature-tags">
-                                        <span class="tag">AI-Powered</span>
-                                        <span class="tag">Real-time</span>
-                                        <span class="tag">Biometric</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="feature-card">
-                                <div class="card-background">
-                                    <div class="card-glow"></div>
-                                </div>
-                                <div class="feature-icon">
-                                    <i class="fas fa-money-bill-wave"></i>
-                                    <div class="icon-orbit"></div>
-                                </div>
-                                <div class="feature-content">
-                                    <h4 class="feature-title">Advanced Fee Management</h4>
-                                    <p class="feature-description">
-                                        Multi-gateway payment processing, automated reminders, 
-                                        installment plans, and comprehensive financial reporting.
-                                    </p>
-                                    <div class="feature-tags">
-                                        <span class="tag">Multi-Gateway</span>
-                                        <span class="tag">Automated</span>
-                                        <span class="tag">Flexible</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="feature-card">
-                                <div class="card-background">
-                                    <div class="card-glow"></div>
-                                </div>
-                                <div class="feature-icon">
-                                    <i class="fas fa-user-tie"></i>
-                                    <div class="icon-orbit"></div>
-                                </div>
-                                <div class="feature-content">
-                                    <h4 class="feature-title">Faculty Management Suite</h4>
-                                    <p class="feature-description">
-                                        Complete HR management with performance tracking, 
-                                        professional development, and automated scheduling.
-                                    </p>
-                                    <div class="feature-tags">
-                                        <span class="tag">Comprehensive</span>
-                                        <span class="tag">Performance</span>
-                                        <span class="tag">Automated</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="feature-category" id="academic">
-                        <div class="category-header">
-                            <h3 class="category-title">Academic Features</h3>
-                            <p class="category-description">Enhance learning experiences</p>
-                        </div>
-                        <div class="features-grid">
-                            <div class="feature-card">
-                                <div class="card-background">
-                                    <div class="card-glow"></div>
-                                </div>
-                                <div class="feature-icon">
-                                    <i class="fas fa-book-open"></i>
-                                    <div class="icon-orbit"></div>
-                                </div>
-                                <div class="feature-content">
-                                    <h4 class="feature-title">Digital Learning Platform</h4>
-                                    <p class="feature-description">
-                                        Interactive lessons, multimedia content, and personalized 
-                                        learning paths for enhanced student engagement.
-                                    </p>
-                                    <div class="feature-tags">
-                                        <span class="tag">Interactive</span>
-                                        <span class="tag">Multimedia</span>
-                                        <span class="tag">Personalized</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="feature-category" id="communication">
-                        <div class="category-header">
-                            <h3 class="category-title">Communication Features</h3>
-                            <p class="category-description">Connect your community</p>
-                        </div>
-                        <div class="features-grid">
-                            <div class="feature-card">
-                                <div class="card-background">
-                                    <div class="card-glow"></div>
-                                </div>
-                                <div class="feature-icon">
-                                    <i class="fas fa-envelope"></i>
-                                    <div class="icon-orbit"></div>
-                                </div>
-                                <div class="feature-content">
-                                    <h4 class="feature-title">Smart Messaging System</h4>
-                                    <p class="feature-description">
-                                        Automated notifications, group messaging, and real-time 
-                                        communication between all stakeholders.
-                                    </p>
-                                    <div class="feature-tags">
-                                        <span class="tag">Automated</span>
-                                        <span class="tag">Real-time</span>
-                                        <span class="tag">Multi-channel</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="feature-category" id="analytics">
-                        <div class="category-header">
-                            <h3 class="category-title">Analytics Features</h3>
-                            <p class="category-description">Data-driven insights</p>
-                        </div>
-                        <div class="features-grid">
-                            <div class="feature-card">
-                                <div class="card-background">
-                                    <div class="card-glow"></div>
-                                </div>
-                                <div class="feature-icon">
-                                    <i class="fas fa-chart-pie"></i>
-                                    <div class="icon-orbit"></div>
-                                </div>
-                                <div class="feature-content">
-                                    <h4 class="feature-title">Advanced Analytics Dashboard</h4>
-                                    <p class="feature-description">
-                                        Comprehensive reporting with predictive insights, 
-                                        performance metrics, and actionable recommendations.
-                                    </p>
-                                    <div class="feature-tags">
-                                        <span class="tag">Predictive</span>
-                                        <span class="tag">Comprehensive</span>
-                                        <span class="tag">Actionable</span>
-                                    </div>
-                                </div>
+                        <div class="feature-item-row reveal reveal-delay-2">
+                            <div class="feat-icon"><i class="fas fa-file-export"></i></div>
+                            <div>
+                                <div class="feat-title">Custom Report Builder</div>
+                                <div class="feat-desc">Generate and export any report with drag-and-drop ease.</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Ultra Enhanced Footer -->
-    <footer class="footer">
-        <div class="footer-background">
-            <div class="footer-gradient"></div>
-            <div class="footer-pattern"></div>
-            <div class="footer-glow"></div>
-        </div>
-        
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-main">
-                    <div class="footer-brand" data-aos="fade-up">
-                        <div class="brand-logo">
-                            <div class="logo-container">
-                                <img src="{% static 'users/images/verrgroup.png' %}" alt="Manavargal SMS Logo" class="logo">
-                                <div class="logo-glow"></div>
-                            </div>
-                            <div class="brand-text">
-                                <span class="brand-name">Manavargal</span>
-                                <span class="brand-tagline">School Management System</span>
-                            </div>
-                        </div>
-                        
-                        <p class="footer-description">
-                            Empowering educational institutions with innovative technology solutions 
-                            for better learning outcomes, operational efficiency, and community building.
-                        </p>
-                        
-                        <div class="social-links">
-                            <a href="#" class="social-link">
-                                <i class="fab fa-facebook-f"></i>
-                                <div class="link-glow"></div>
-                            </a>
-                            <a href="#" class="social-link">
-                                <i class="fab fa-twitter"></i>
-                                <div class="link-glow"></div>
-                            </a>
-                            <a href="#" class="social-link">
-                                <i class="fab fa-linkedin-in"></i>
-                                <div class="link-glow"></div>
-                            </a>
-                            <a href="#" class="social-link">
-                                <i class="fab fa-instagram"></i>
-                                <div class="link-glow"></div>
-                            </a>
-                        </div>
+            <div class="features-right reveal reveal-delay-2">
+                <div class="feature-showcase-card">
+                    <div class="showcase-metric-big">
+                        <div class="big-num">94.5%</div>
+                        <div class="big-label">Average System Efficiency Improvement</div>
                     </div>
-                    
-                    <div class="footer-links">
-                        <div class="footer-section" data-aos="fade-up" data-aos-delay="100">
-                            <h4 class="footer-heading">Product</h4>
-                            <ul class="footer-list">
-                                <li><a href="#features">Features</a></li>
-                                <li><a href="#portals">Access Portals</a></li>
-                                <li><a href="#">Pricing</a></li>
-                                <li><a href="#">API Documentation</a></li>
-                                <li><a href="#">Integrations</a></li>
-                                <li><a href="#">Security</a></li>
-                            </ul>
+                    <div class="showcase-rows">
+                        <div class="showcase-row">
+                            <div class="sr-left"><i class="fas fa-clock sr-icon"></i> Time Saved on Admin Tasks</div>
+                            <div class="sr-val">75%</div>
                         </div>
-                        
-                        <div class="footer-section" data-aos="fade-up" data-aos-delay="200">
-                            <h4 class="footer-heading">Support</h4>
-                            <ul class="footer-list">
-                                <li><a href="#">Help Center</a></li>
-                                <li><a href="#">Training Resources</a></li>
-                                <li><a href="#">System Status</a></li>
-                                <li><a href="#">Contact Support</a></li>
-                                <li><a href="#">Community Forum</a></li>
-                                <li><a href="#">Video Tutorials</a></li>
-                            </ul>
+                        <div style="padding: 0 16px 4px;">
+                            <div class="progress-track"><div class="progress-fill" style="width:75%"></div></div>
                         </div>
-                        
-                        <div class="footer-section" data-aos="fade-up" data-aos-delay="300">
-                            <h4 class="footer-heading">Company</h4>
-                            <ul class="footer-list">
-                                <li><a href="#">About Us</a></li>
-                                <li><a href="#">Careers</a></li>
-                                <li><a href="#">Press Kit</a></li>
-                                <li><a href="#">Blog</a></li>
-                                <li><a href="#">Partners</a></li>
-                                <li><a href="#">Investors</a></li>
-                            </ul>
+                        <div class="showcase-row">
+                            <div class="sr-left"><i class="fas fa-smile sr-icon"></i> Parent Satisfaction Rate</div>
+                            <div class="sr-val">98%</div>
                         </div>
-                        
-                        <div class="footer-section" data-aos="fade-up" data-aos-delay="400">
-                            <h4 class="footer-heading">Contact</h4>
-                            <div class="contact-info">
-                                <div class="contact-item">
-                                    <div class="contact-icon"><i class="fas fa-envelope"></i></div>
-                                    <div class="contact-details">
-                                        <span class="contact-label">Email</span>
-                                        <span class="contact-value">info@manavargalsms.com</span>
-                                    </div>
-                                </div>
-                                <div class="contact-item">
-                                    <div class="contact-icon"><i class="fas fa-phone"></i></div>
-                                    <div class="contact-details">
-                                        <span class="contact-label">Phone</span>
-                                        <span class="contact-value">+91 98944 27757</span>
-                                    </div>
-                                </div>
-                                <div class="contact-item">
-                                    <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
-                                    <div class="contact-details">
-                                        <span class="contact-label">Address</span>
-                                        <span class="contact-value">Chennai , Tamil Nadu</span>
-                                    </div>
-                                </div>
+                        <div style="padding: 0 16px 4px;">
+                            <div class="progress-track"><div class="progress-fill" style="width:98%"></div></div>
+                        </div>
+                        <div class="showcase-row">
+                            <div class="sr-left"><i class="fas fa-bolt sr-icon"></i> Faster Fee Collection</div>
+                            <div class="sr-val">3x</div>
+                        </div>
+                        <div style="padding: 0 16px 14px;">
+                            <div class="progress-track"><div class="progress-fill" style="width:85%"></div></div>
+                        </div>
+                        <div class="showcase-row" style="background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(13,148,136,0.08)); border-color: var(--border-hover);">
+                            <div class="sr-left" style="font-weight:600; color:var(--text-primary);">
+                                <i class="fas fa-shield-alt sr-icon"></i> Security Score
                             </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="footer-bottom">
-                    <div class="footer-bottom-content">
-                        <div class="copyright">
-                            <p>&copy; 2025 Manavargal School Management System. All rights reserved.</p>
-                        </div>
-                        <div class="footer-bottom-links">
-                            <a href="#">Privacy Policy</a>
-                            <a href="#">Terms of Service</a>
-                            <a href="#">Cookie Policy</a>
-                            <a href="#">GDPR Compliance</a>
+                            <div class="sr-val" style="font-size:15px; font-weight:700;">A+</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </footer>
+    </div>
+</section>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="{% static 'users/landing.js' %}"></script>
+<!-- ABOUT / TRUST -->
+<section id="about" class="trust-section">
+    <div class="trust-bg"></div>
+    <div class="container" style="position:relative;z-index:2;">
+        <div class="reveal">
+            <div class="section-tag">Why Choose Us</div>
+            <h2 class="section-title">Built for <em>Real Schools</em></h2>
+            <p class="section-desc" style="margin:0 auto;">Designed with deep understanding of how Tamil Nadu schools operate — simple, robust, and trusted by hundreds of institutions.</p>
+        </div>
+        <div class="trust-grid">
+            <div class="trust-card reveal">
+                <div class="trust-num">500+</div>
+                <div class="trust-title">Schools Onboarded</div>
+                <div class="trust-desc">From small private schools to large government-aided institutions, all trusting Manavargal SMS for daily operations.</div>
+            </div>
+            <div class="trust-card reveal reveal-delay-1">
+                <div class="trust-num">50K+</div>
+                <div class="trust-title">Active Students</div>
+                <div class="trust-desc">Tens of thousands of students access their portals every day for assignments, timetables, and academic progress.</div>
+            </div>
+            <div class="trust-card reveal reveal-delay-2">
+                <div class="trust-num">99%</div>
+                <div class="trust-title">Customer Satisfaction</div>
+                <div class="trust-desc">Our schools consistently rate Manavargal SMS as transformative, reducing administrative burden significantly.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT FOOTER SECTION -->
+<section id="contact" style="padding: 80px 0; background: var(--ink-mid); border-top: 1px solid var(--border);">
+    <div class="container">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center;">
+            <div class="reveal">
+                <div class="section-tag">Get In Touch</div>
+                <h2 class="section-title" style="font-size: clamp(30px, 3vw, 44px);">Ready to <em>Transform</em><br>Your School?</h2>
+                <p class="section-desc">Connect with our team to see how Manavargal SMS can be tailored for your institution's specific needs.</p>
+                <div style="margin-top:40px; display:flex; flex-direction:column; gap:20px;">
+                    <div class="footer-contact-item">
+                        <i class="fas fa-envelope fci-icon" style="margin-top:3px;"></i>
+                        <div>
+                            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:3px;">Email</div>
+                            <div class="fci-text" style="color: var(--text-secondary);">info@manavargalsms.com</div>
+                        </div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone fci-icon" style="margin-top:3px;"></i>
+                        <div>
+                            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:3px;">Phone</div>
+                            <div class="fci-text" style="color: var(--text-secondary);">+91 98944 27757</div>
+                        </div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-map-marker-alt fci-icon" style="margin-top:3px;"></i>
+                        <div>
+                            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:3px;">Location</div>
+                            <div class="fci-text" style="color: var(--text-secondary);">Chennai, Tamil Nadu, India</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="reveal reveal-delay-2" style="background: linear-gradient(145deg, rgba(15,45,32,0.5), rgba(3,13,10,0.7)); border: 1px solid var(--border); border-radius: 24px; padding: 40px;">
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 28px;">Quick Portal Access</h3>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <a href="https://www.manavargalsms.com/student" target="_blank" style="display:flex; align-items:center; justify-content:space-between; padding: 16px 20px; background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); border-radius:14px; text-decoration:none; color:inherit; transition: var(--transition); cursor:none;" onmouseenter="this.style.borderColor='rgba(52,211,153,0.5)'" onmouseleave="this.style.borderColor='rgba(52,211,153,0.2)'">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <i class="fas fa-user-graduate" style="color:#34d399; width:20px;"></i>
+                            <span style="font-weight:500;">Student Portal</span>
+                        </div>
+                        <i class="fas fa-external-link-alt" style="font-size:12px; color:var(--text-muted);"></i>
+                    </a>
+                    <a href="https://www.manavargalsms.com/teacher" target="_blank" style="display:flex; align-items:center; justify-content:space-between; padding: 16px 20px; background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.2); border-radius:14px; text-decoration:none; color:inherit; transition: var(--transition); cursor:none;" onmouseenter="this.style.borderColor='rgba(96,165,250,0.5)'" onmouseleave="this.style.borderColor='rgba(96,165,250,0.2)'">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <i class="fas fa-chalkboard-teacher" style="color:#60a5fa; width:20px;"></i>
+                            <span style="font-weight:500;">Teacher Portal</span>
+                        </div>
+                        <i class="fas fa-external-link-alt" style="font-size:12px; color:var(--text-muted);"></i>
+                    </a>
+                    <a href="https://www.manavargalsms.com/parent" target="_blank" style="display:flex; align-items:center; justify-content:space-between; padding: 16px 20px; background: rgba(244,114,182,0.08); border: 1px solid rgba(244,114,182,0.2); border-radius:14px; text-decoration:none; color:inherit; transition: var(--transition); cursor:none;" onmouseenter="this.style.borderColor='rgba(244,114,182,0.5)'" onmouseleave="this.style.borderColor='rgba(244,114,182,0.2)'">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <i class="fas fa-heart" style="color:#f472b6; width:20px;"></i>
+                            <span style="font-weight:500;">Parent Portal</span>
+                        </div>
+                        <i class="fas fa-external-link-alt" style="font-size:12px; color:var(--text-muted);"></i>
+                    </a>
+                    <a href="https://www.manavargalsms.com/admin" target="_blank" style="display:flex; align-items:center; justify-content:space-between; padding: 16px 20px; background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); border-radius:14px; text-decoration:none; color:inherit; transition: var(--transition); cursor:none;" onmouseenter="this.style.borderColor='rgba(251,191,36,0.5)'" onmouseleave="this.style.borderColor='rgba(251,191,36,0.2)'">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <i class="fas fa-crown" style="color:#fbbf24; width:20px;"></i>
+                            <span style="font-weight:500;">Admin Portal</span>
+                        </div>
+                        <i class="fas fa-external-link-alt" style="font-size:12px; color:var(--text-muted);"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand-col">
+                <div class="footer-logo-row">
+                    <div class="nav-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="nav-brand-text">
+                        <span class="name" style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; display:block; line-height:1;">Manavargal</span>
+                        <span style="font-size:11px; color:var(--emerald-light); letter-spacing:0.12em; text-transform:uppercase; display:block; margin-top:2px;">School Management System</span>
+                    </div>
+                </div>
+                <p class="footer-desc">Empowering educational institutions across Tamil Nadu with innovative technology for better learning outcomes and operational excellence.</p>
+                <div class="footer-socials">
+                    <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div>
+                <div class="footer-col-title">Product</div>
+                <ul class="footer-links-list">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#portals">Access Portals</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">API Docs</a></li>
+                    <li><a href="#">Integrations</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-col-title">Support</div>
+                <ul class="footer-links-list">
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Training</a></li>
+                    <li><a href="#">System Status</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Community</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-col-title">Contact</div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-envelope fci-icon"></i>
+                    <div class="fci-text">info@manavargalsms.com</div>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-phone fci-icon"></i>
+                    <div class="fci-text">+91 98944 27757</div>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-map-marker-alt fci-icon"></i>
+                    <div class="fci-text">Chennai, Tamil Nadu</div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-text">© 2025 Manavargal School Management System. All rights reserved. Powered by VERRGROUP.</div>
+            <div class="footer-bottom-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">GDPR</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ===================== SMOOTH CURSOR =====================
+const dot = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+
+let mouseX = 0, mouseY = 0;
+let ringX = 0, ringY = 0;
+let raf;
+
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    dot.style.left = mouseX + 'px';
+    dot.style.top = mouseY + 'px';
+});
+
+function animateRing() {
+    ringX += (mouseX - ringX) * 0.12;
+    ringY += (mouseY - ringY) * 0.12;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    raf = requestAnimationFrame(animateRing);
+}
+animateRing();
+
+document.querySelectorAll('a, button, [onclick]').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('expand'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('expand'));
+});
+
+// Hide cursor when leaving window
+document.addEventListener('mouseleave', () => {
+    dot.style.opacity = '0'; ring.style.opacity = '0';
+});
+document.addEventListener('mouseenter', () => {
+    dot.style.opacity = '1'; ring.style.opacity = '0.6';
+});
+
+// ===================== NAVBAR SCROLL =====================
+window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ===================== SCROLL REVEAL =====================
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ===================== COUNTER ANIMATION =====================
+function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const duration = 2000;
+    const step = target / (duration / 16);
+    let current = 0;
+    const timer = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = Math.floor(current).toLocaleString();
+        if (current >= target) clearInterval(timer);
+    }, 16);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            animateCounter(e.target);
+            counterObserver.unobserve(e.target);
+        }
+    });
+});
+document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+// ===================== FEATURE TABS =====================
+function switchTab(btn, group) {
+    document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.feat-group').forEach(g => g.style.display = 'none');
+    const target = document.getElementById('group-' + group);
+    if (target) {
+        target.style.display = 'flex';
+        target.style.flexDirection = 'column';
+        target.style.gap = '4px';
+        // Re-trigger reveal
+        target.querySelectorAll('.reveal').forEach(el => {
+            el.classList.remove('visible');
+            setTimeout(() => el.classList.add('visible'), 50);
+        });
+    }
+}
+
+// ===================== SMOOTH SCROLL FOR ANCHOR LINKS =====================
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+        const href = a.getAttribute('href');
+        if (href === '#') return;
+        const target = document.querySelector(href);
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+});
+
+// Trigger initial reveals
+setTimeout(() => {
+    document.querySelectorAll('.reveal:not([class*="reveal-delay"])').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) el.classList.add('visible');
+    });
+}, 100);
+</script>
 </body>
 </html>
