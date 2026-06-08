@@ -235,6 +235,12 @@ urlpatterns = [
         name="serve_student_pdf"
     ),
 
+    # ─── Notification API Endpoints ──────────────────────────────────────
+    path('api/notifications/', views.api_get_notifications, name='api_notifications'),
+    path('api/notifications/count/', views.api_notification_count, name='api_notification_count'),
+    path('api/notifications/read/<int:notification_id>/', views.api_mark_read, name='api_mark_read'),
+    path('api/notifications/read-all/', views.api_mark_all_read, name='api_mark_all_read'),
+
 ]
 
 if settings.DEBUG:

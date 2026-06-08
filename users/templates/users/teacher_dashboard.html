@@ -686,8 +686,9 @@
         }
     }
 </style>
+    <link rel="stylesheet" href="{% static 'users/css/notifications.css' %}">
 </head>
-<body>
+<body data-user-type="{{ notification_user_type|default:'' }}" data-user-id="{{ notification_user_id|default:'' }}">
     <div class="container">
         <!-- Mobile Menu Toggle -->
         <button class="menu-toggle" id="menuToggle">☰</button>
@@ -758,10 +759,7 @@
                     <div id="notificationPanel" class="notification-panel">
                         <h3>Notifications</h3>
                         <ul>
-                            <li>New circular: School Event - 10:00 AM, Nov 15, 2025</li>
-                            <li>Homework submission deadline - 8:00 PM, Nov 14, 2025</li>
-                            <li>Leave request approved - 3:00 PM, Nov 13, 2025</li>
-                            <li>New study material uploaded - 1:00 PM, Nov 13, 2025</li>
+                            <li>Loading notifications...</li>
                         </ul>
                     </div>
                     <span class="header-text">Welcome</span>
@@ -880,5 +878,6 @@
             });
         });
     </script>
+    <script src="{% static 'users/js/notifications.js' %}"></script>
 </body>
 </html>

@@ -5,7 +5,15 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
+# ─── Notification Service Import ────────────────────────────────────────────
+from users.notifications import (
+    create_notification, notify, notify_all_admins, notify_all_teachers,
+    notify_class_students, notify_class_parents, notify_student_and_parents,
+    notify_class_teacher, create_bulk_notifications
+)
+
 # Database connection
+import requests
 import pymysql
 def get_db_connection():
     return pymysql.connect(
@@ -50,6 +58,9 @@ def signup_view(request):
                 query = "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)"
                 cursor.execute(query, (username, email, password))
                 connection.commit()
+
+                # ── Notification: New student registered ──
+                notify_all_admins('auth', 'New Student Registered', f'New student registered: {username}', '/admin_master/')
 
                 return HttpResponse("Success")
 
@@ -151,6 +162,11 @@ def change_password_view(request):
             else:
                 cursor.execute("UPDATE users SET password = %s WHERE username = %s", (new_password, current_username))
             connection.commit()
+
+            # ── Notification: Credentials updated ──
+            user_id_val = request.session.get('user_id')
+            if user_id_val:
+                notify('student', user_id_val, 'auth', 'Credentials Updated', 'Your credentials were updated successfully.')
 
         return HttpResponse("Success")
 
@@ -285,6 +301,10 @@ def profile_view(request):
                         return redirect('profile_view')
                     
                     messages.success(request, "Profile picture uploaded successfully!")
+                    try:
+                        notify('student', user_id, 'profile', 'Profile Picture Updated', 'Profile picture updated successfully.', '/profile/')
+                    except Exception:
+                        pass
                     return redirect('profile_view')
 
                 # Handle regular form submission (when no file is uploaded)
@@ -451,6 +471,10 @@ def profile_view(request):
                             ))
 
                         messages.success(request, "Profile updated successfully.")
+                        try:
+                            notify('student', user_id, 'profile', 'Profile Updated', 'Your profile details have been updated successfully.', '/profile/')
+                        except Exception:
+                            pass
                         return redirect('profile_view')
 
         except Exception as e:
@@ -623,7 +647,7 @@ def generate_id_card(request):
     # Generate QR code
     qr = qrcode.make(f"http://yourdomain.com/id_card/{admission_number or 'unknown'}/")  # Fallback for None
     qr_buffer = BytesIO()
-    qr.save(qr_buffer, format="PNG")
+    qr.save(qr_buffer)
     qr_buffer.seek(0)
     qr_image = PIL.Image.open(qr_buffer)
 
@@ -914,7 +938,7 @@ def bulk_id_card(request):
             # Generate QR code
             qr = qrcode.make(f"http://yourdomain.com/id_card/{admission_number or 'unknown'}/")
             qr_buffer = BytesIO()
-            qr.save(qr_buffer, format="PNG")
+            qr.save(qr_buffer)
             qr_buffer.seek(0)
             qr_image = PILImage.open(qr_buffer)
             qr_size = (175, 175)
@@ -1006,7 +1030,7 @@ def bulk_id_card(request):
             
             qr = qrcode.make(f"http://yourdomain.com/id_card/{admission_number or 'unknown'}/")
             qr_buffer_back = BytesIO()
-            qr.save(qr_buffer_back, format="PNG")
+            qr.save(qr_buffer_back)
             qr_buffer_back.seek(0)
             qr_image_back = PILImage.open(qr_buffer_back)
             qr_size_back = (175, 175)
@@ -1176,6 +1200,9 @@ def admin_signup(request):
                 cursor.execute(query, (full_name, email, password))
                 connection.commit()
 
+            # ── Notification: New admin registered ──
+            notify_all_admins('auth', 'New Admin Registered', f'New admin registered: {full_name}')
+
             messages.success(request, 'Signup successful! Please login.')
             return redirect('admin_login')
 
@@ -1272,6 +1299,23 @@ def admin_circular_upload(request):
                 print(f"Error saving metadata for {filename}: {e}")
                 messages.error(request, 'Error saving circular metadata.')
                 return redirect('admin_circular_upload')
+
+            # ── Notification: Circular uploaded ──
+            if target == 'specific' and class_name and section:
+                notify_class_students(class_name, section, 'circular', 'New Circular', f'New circular: {title}', '/student_circular/')
+                notify_class_parents(class_name, section, 'circular', 'New Circular', f'New circular: {title}', '/parent_student_circular/')
+            else:
+                # Broadcast to all students and parents
+                try:
+                    with connection.cursor() as c:
+                        c.execute("SELECT user_id FROM student_page1")
+                        for row in c.fetchall():
+                            notify('student', row[0], 'circular', 'New Circular', f'New circular: {title}', '/student_circular/')
+                        c.execute("SELECT id FROM parents")
+                        for row in c.fetchall():
+                            notify('parent', row[0], 'circular', 'New Circular', f'New circular: {title}', '/parent_student_circular/')
+                except Exception:
+                    pass
 
             messages.success(request, 'Circular uploaded successfully.')
             return redirect('admin_circular_upload')
@@ -1506,6 +1550,11 @@ def teacher_circular_upload(request):
             return redirect('teacher_circular_upload')
 
         messages.success(request, 'Circular uploaded successfully.')
+
+        # ── Notification: Teacher circular uploaded ──
+        notify_class_students(class_name, section, 'circular', 'New Circular', f'New circular from teacher: {title}', '/student_circular/')
+        notify_class_parents(class_name, section, 'circular', 'New Circular', f'New circular from teacher: {title}', '/parent_student_circular/')
+
         return redirect('teacher_circular_upload')
 
     # Prepare circulars list for display
@@ -1638,6 +1687,11 @@ def student_leave(request):
                       form_data["half_day_type"] if form_data["leave_duration"] == "half" else None,
                       "Pending"])
                 connection.commit()
+
+            # ── Notification: Leave request submitted ──
+            notify_all_admins('leave', 'New Leave Request', f'Leave request from {form_data["student_name"]} for {form_data["leave_start_date"]} to {form_data["leave_end_date"]}', '/admin_accept_portal/', 'student', user_id)
+            notify_all_teachers('leave', 'New Leave Request', f'Leave request from {form_data["student_name"]} for {form_data["leave_start_date"]} to {form_data["leave_end_date"]}', '/teacher_accept_portal/', 'student', user_id)
+
             messages.success(request, "Leave request submitted successfully.")
         except Exception as e:
             connection.rollback()
@@ -1770,6 +1824,15 @@ def admin_accept_portal(request):
                     if cursor.rowcount == 0:
                         messages.error(request, 'Cannot update: Request already processed or not found.')
                     else:
+                        # ── Notification: Leave approved/rejected by admin ──
+                        try:
+                            cursor.execute("SELECT user_id, student_name FROM student_leave_requests WHERE id = %s", [leave_id])
+                            lr = cursor.fetchone()
+                            if lr:
+                                status_emoji = '✅' if new_status == 'Approved' else '❌'
+                                notify('student', lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} {status_emoji}', '/student_leave/')
+                        except Exception:
+                            pass
                         messages.success(request, f'Leave request {new_status.lower()} successfully.')
             except Exception as e:
                 print(f"Error updating leave request: {str(e)}")
@@ -1949,6 +2012,15 @@ def teacher_accept_portal(request):
                     if cursor.rowcount == 0:
                         messages.error(request, 'Cannot update: Request already processed or not found.')
                     else:
+                        # ── Notification: Leave approved/rejected by teacher ──
+                        try:
+                            cursor.execute("SELECT user_id, student_name FROM student_leave_requests WHERE id = %s", [leave_id])
+                            lr = cursor.fetchone()
+                            if lr:
+                                status_emoji = '✅' if new_status == 'Approved' else '❌'
+                                notify('student', lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} by teacher {status_emoji}', '/student_leave/')
+                        except Exception:
+                            pass
                         action_text = 'approved' if action == 'approve' else 'rejected'
                         messages.success(request, f'Leave request {action_text} successfully.')
             except Exception as e:
@@ -2177,6 +2249,12 @@ def admin_study_materials_upload(request):
                             [title, f"study_materials/{filename}", datetime.now(), selected_class, '']
                         )
                     messages.success(request, "Study material uploaded to all sections successfully!")
+
+                    # ── Notification: Study material for all sections ──
+                    for sec in sections_for_class:
+                        notify_class_students(selected_class, sec, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{sec}', '/study_materials/')
+                        notify_class_parents(selected_class, sec, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{sec}', '/parent_study_materials/')
+
                 else:
                     cursor.execute(
                         """
@@ -2186,6 +2264,10 @@ def admin_study_materials_upload(request):
                         [title, f"study_materials/{filename}", datetime.now(), selected_class, selected_section]
                     )
                     messages.success(request, "Study material uploaded successfully!")
+
+                    # ── Notification: Study material for specific section ──
+                    notify_class_students(selected_class, selected_section, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{selected_section}', '/study_materials/')
+                    notify_class_parents(selected_class, selected_section, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{selected_section}', '/parent_study_materials/')
         except Exception as e:
             messages.error(request, f"Error saving to database: {str(e)}")
             if os.path.exists(file_path):
@@ -2485,6 +2567,12 @@ def homework_view(request):
                     [user_id, title, submission_date, file_path, student_class, student_section]
                 )
             messages.success(request, "Homework submitted successfully!")
+
+            # ── Notification: Student homework submitted ──
+            notify_all_admins('homework', 'Homework Submitted', f'Homework submitted by student: {title}', '/teacher_homework_panel/', 'student', user_id)
+            if student_class and student_section:
+                notify_class_teacher(student_class, student_section, 'homework', 'Homework Submitted', f'Homework submitted by student: {title}', '/teacher_homework_panel/', 'student', user_id)
+
         except Exception as e:
             messages.error(request, f"Error submitting homework: {str(e)}")
         return redirect("/homework/")
@@ -2786,6 +2874,20 @@ def teacher_homework_panel(request):
             return redirect('teacher_homework_panel')
 
         messages.success(request, f'Homework "{title}" uploaded successfully!')
+
+        # ── Notification: Teacher assigned homework ──
+        if target == 'specific' and class_name and section:
+            notify_class_students(class_name, section, 'homework', 'New Homework', f'New homework assigned: {title}' + (f' (Due: {due_date})' if due_date else ''), '/homework/')
+            notify_class_parents(class_name, section, 'homework', 'New Homework', f'New homework assigned: {title}' + (f' (Due: {due_date})' if due_date else ''), '/parent_homework/')
+        else:
+            try:
+                with connection.cursor() as c:
+                    c.execute("SELECT user_id FROM student_page1")
+                    for row in c.fetchall():
+                        notify('student', row[0], 'homework', 'New Homework', f'New homework assigned: {title}' + (f' (Due: {due_date})' if due_date else ''), '/homework/')
+            except Exception:
+                pass
+
         return redirect('teacher_homework_panel')
 
     # Prepare uploaded homework list for display
@@ -3069,6 +3171,8 @@ def add_class(request):
                         """, [admin_id, class_part, section])
                         
                         messages.success(request, f'Class {class_name} added successfully.')
+                        # ── Notification: Class added ──
+                        notify_all_admins('class', 'New Class Created', f'New class created: {class_name}', '/view_edit_class/')
                         return redirect('view_edit_class')
                         
             except ValueError:
@@ -3149,6 +3253,8 @@ def delete_class(request, class_id):
                 WHERE id = %s AND admin_id = %s
             """, [class_id, admin_id])
         messages.success(request, 'Class deleted successfully.')
+        # ── Notification: Class deleted ──
+        notify_all_admins('class', 'Class Deleted', 'A class has been deleted.', '/view_edit_class/')
     except Exception as e:
         messages.error(request, f'Error deleting class: {str(e)}')
     return redirect('view_edit_class')
@@ -3557,6 +3663,10 @@ def add_student(request):
                 """, [new_user_id, class_part, section])
 
             messages.success(request, f'Student {name} added successfully with Admission Number: {admission_number}')
+
+            # ── Notification: Student added ──
+            notify_all_admins('student', 'New Student Added', f'New student added: {name} to class {class_part}-{section}', '/student_info/')
+
             return redirect('student_info')
 
         except Exception as e:
@@ -4288,6 +4398,8 @@ def delete_student(request, admission_number):
                 cursor.execute("DELETE FROM users WHERE id = %s", [user_id])
 
         messages.success(request, f'Student {student_name} deleted successfully.')
+        # ── Notification: Student deleted ──
+        notify_all_admins('student', 'Student Removed', f'Student removed: {student_name}', '/student_info/')
     except IntegrityError as e:
         error_code, error_message = e.args
         if error_code == 1451:
@@ -5553,6 +5665,8 @@ def add_teacher(request):
                 ])
 
         messages.success(request, f'Teacher "{full_name}" added successfully!')
+        # ── Notification: Teacher added ──
+        notify_all_admins('user', 'New Teacher Added', f'New teacher added: {full_name}', '/manage_teachers/')
         
     except IntegrityError as e:
         messages.error(request, 'Database constraint violated (e.g., duplicate entry).')
@@ -5756,6 +5870,8 @@ def delete_teacher(request, teacher_id):
                 )
 
         messages.success(request, 'Teacher and all associated records deleted successfully.')
+        # ── Notification: Teacher deleted ──
+        notify_all_admins('user', 'Teacher Removed', 'A teacher and all associated records have been deleted.', '/manage_teachers/')
     except Error as e:
         messages.error(request, f'Error deleting teacher: {str(e)}')
     return redirect('manage_teachers')
@@ -6109,6 +6225,10 @@ def teacher_signup(request):
                 print(f"DEBUG: SUCCESS for Teacher ID '{teacher_id}' ({name}, {email})")
 
         messages.success(request, 'Registration successful! Please login.')
+
+        # ── Notification: New teacher registered ──
+        notify_all_admins('auth', 'New Teacher Registered', f'New teacher registered: {name} (ID: {teacher_id})', '/admin_master/')
+
         return redirect('teacher_login')
 
     except IntegrityError as e:
@@ -6358,6 +6478,8 @@ def mark_single_attendance(request):
                     'remaining_count': remaining_students
                 })
                 
+                # Note: Single attendance notification will be sent at batch submission
+                
             except IntegrityError:
                 return JsonResponse({
                     'success': False,
@@ -6468,6 +6590,14 @@ def submit_attendance_batch(request):
                     'success': False,
                     'message': f'Cannot submit: {total_count - marked_count} students still need attendance marked.'
                 }, status=400)
+
+            # ── Notification: Batch attendance submitted ──
+            try:
+                notify_class_students(selected_class, selected_section, 'attendance', 'Attendance Submitted', f'Attendance has been finalized for your class on {selected_date}.', '/student_timetable/')
+                notify_class_parents(selected_class, selected_section, 'attendance', 'Attendance Submitted', f'Attendance has been finalized for class {selected_class}-{selected_section} on {selected_date}.', '/parent_dashboard/')
+                notify_all_admins('attendance', 'Attendance Finalized', f'Attendance finalized for class {selected_class}-{selected_section} on {selected_date} by teacher.', '/admin_attendance/')
+            except Exception:
+                pass
 
             return JsonResponse({
                 'success': True,
@@ -6922,6 +7052,10 @@ def parent_signup(request):
                 )
 
                 connection.commit()
+
+                # ── Notification: New parent registered ──
+                notify_all_admins('auth', 'New Parent Registered', f'New parent registered for admission: {admission_number}')
+
                 messages.success(request, 'Account created successfully! Please log in.')
                 return redirect('parent_login')
         except Exception as e:
@@ -6953,6 +7087,7 @@ def parent_login(request):
 
         if user:
             request.session["user_id"] = user[0]  # Store user ID in session
+            request.session["parent_id"] = user[0]  # Store parent ID in session
             request.session["username"] = user[1]  # Store admission number in session
             
             return HttpResponse("Success") 
@@ -8372,6 +8507,14 @@ def admin_timetable_add(request):
             """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room or None, week_start, week_end])
         
         messages.success(request, 'Timetable entry added successfully.')
+        # ── Notification: Admin added timetable entry ──
+        try:
+            notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable updated for {class_name}-{section}: {subject} on {day_of_week}', '/student_timetable/')
+            notify_class_parents(class_name, section, 'timetable', 'Timetable Updated', f'Timetable updated for {class_name}-{section}: {subject} on {day_of_week}', '/parent-student-timetable/')
+            if teacher_id:
+                notify('teacher', teacher_id, 'timetable', 'Timetable Updated', f'You have been assigned to teach {subject} for class {class_name}-{section} on {day_of_week} ({start_time} - {end_time})', '/teacher_timetable/')
+        except Exception:
+            pass
         return redirect('admin_timetable')
     
     with connection.cursor() as cursor:
@@ -8463,6 +8606,14 @@ def admin_timetable_edit(request, id):
                 return redirect('admin_timetable_edit', id=id)
             
             messages.success(request, 'Timetable entry updated successfully.')
+            # ── Notification: Admin edited timetable entry ──
+            try:
+                notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable changed for {class_name}-{section}: {subject} on {day_of_week}', '/student_timetable/')
+                notify_class_parents(class_name, section, 'timetable', 'Timetable Updated', f'Timetable changed for {class_name}-{section}: {subject} on {day_of_week}', '/parent-student-timetable/')
+                if teacher_id:
+                    notify('teacher', teacher_id, 'timetable', 'Timetable Updated', f'Your teaching schedule has changed: {subject} for class {class_name}-{section} on {day_of_week}', '/teacher_timetable/')
+            except Exception:
+                pass
             return redirect('admin_timetable')
         
         cursor.execute("SELECT id, name, subject FROM teachers")
@@ -8481,11 +8632,37 @@ def admin_timetable_delete(request, id):
     if not request.session.get('admin_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
-    
+
+    # Fetch details before delete for notifications
+    class_name, section, subject, day_of_week, teacher_id = None, None, None, None, None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT class_id, subject, day_of_week, teacher_id FROM timetable WHERE id = %s", [id])
+            row = cursor.fetchone()
+            if row:
+                class_id, subject, day_of_week, teacher_id = row
+                if len(class_id) > 1 and class_id[-1].isalpha():
+                    class_name = class_id[:-1]
+                    section = class_id[-1]
+                else:
+                    class_name = class_id
+                    section = ''
+    except Exception:
+        pass
+
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM timetable WHERE id = %s", [id])
     
     messages.success(request, 'Timetable entry deleted successfully.')
+    # ── Notification: Admin deleted timetable entry ──
+    try:
+        if class_name:
+            notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable entry removed for {class_name}-{section}: {subject} on {day_of_week}', '/student_timetable/')
+            notify_class_parents(class_name, section, 'timetable', 'Timetable Updated', f'Timetable entry removed for {class_name}-{section}: {subject} on {day_of_week}', '/parent-student-timetable/')
+        if teacher_id:
+            notify('teacher', teacher_id, 'timetable', 'Timetable Updated', f'A class has been removed from your schedule: {subject} on {day_of_week}', '/teacher_timetable/')
+    except Exception:
+        pass
     return redirect('admin_timetable')
 
 def admin_timetable_weekly(request):
@@ -8939,6 +9116,13 @@ def teacher_timetable_add(request):
             """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room or None, week_start, week_end])
         
         messages.success(request, 'Timetable entry added successfully.')
+        # ── Notification: Teacher added timetable entry ──
+        try:
+            notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable updated by teacher: {class_name}-{section}: {subject} on {day_of_week}', '/student_timetable/')
+            notify_class_parents(class_name, section, 'timetable', 'Timetable Updated', f'Timetable updated by teacher: {class_name}-{section}: {subject} on {day_of_week}', '/parent-student-timetable/')
+            notify_all_admins('timetable', 'Teacher Timetable Update', f'Teacher updated timetable for class {class_name}-{section}: {subject} on {day_of_week}', '/admin_timetable/')
+        except Exception:
+            pass
         return redirect('teacher_timetable')
     
     with connection.cursor() as cursor:
@@ -9034,6 +9218,13 @@ def teacher_timetable_edit(request, id):
                 return redirect('teacher_timetable_edit', id=id)
             
             messages.success(request, 'Timetable entry updated successfully.')
+            # ── Notification: Teacher updated timetable entry ──
+            try:
+                notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable changed by teacher: {class_name}-{section}: {subject} on {day_of_week}', '/student_timetable/')
+                notify_class_parents(class_name, section, 'timetable', 'Timetable Updated', f'Timetable changed by teacher: {class_name}-{section}: {subject} on {day_of_week}', '/parent-student-timetable/')
+                notify_all_admins('timetable', 'Teacher Timetable Update', f'Teacher modified timetable for class {class_name}-{section}: {subject} on {day_of_week}', '/admin_timetable/')
+            except Exception:
+                pass
             return redirect('teacher_timetable')
         
         cursor.execute("SELECT DISTINCT class FROM student_page1")
@@ -9057,12 +9248,37 @@ def teacher_timetable_delete(request, id):
     
     teacher_id = request.session['teacher_id']
     
+    # Fetch details before delete for notifications
+    class_name, section, subject, day_of_week = None, None, None, None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT class_id, subject, day_of_week FROM timetable WHERE id = %s AND teacher_id = %s", [id, teacher_id])
+            row = cursor.fetchone()
+            if row:
+                class_id, subject, day_of_week = row
+                if len(class_id) > 1 and class_id[-1].isalpha():
+                    class_name = class_id[:-1]
+                    section = class_id[-1]
+                else:
+                    class_name = class_id
+                    section = ''
+    except Exception:
+        pass
+    
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM timetable WHERE id = %s AND teacher_id = %s", [id, teacher_id])
         if cursor.rowcount == 0:
             messages.error(request, 'Timetable entry not found or you do not have permission.')
         else:
             messages.success(request, 'Timetable entry deleted successfully.')
+            # ── Notification: Teacher deleted timetable entry ──
+            try:
+                if class_name:
+                    notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable entry removed by teacher: {subject} on {day_of_week}', '/student_timetable/')
+                    notify_class_parents(class_name, section, 'timetable', 'Timetable Updated', f'Timetable entry removed by teacher: {subject} on {day_of_week}', '/parent-student-timetable/')
+                    notify_all_admins('timetable', 'Teacher Timetable Update', f'Teacher removed timetable entry for class {class_name}-{section}: {subject} on {day_of_week}', '/admin_timetable/')
+            except Exception:
+                pass
     
     return redirect('teacher_timetable')
 
@@ -9408,6 +9624,10 @@ def teacher_profile(request):
                         return redirect('teacher_profile')
                     
                     messages.success(request, "Profile picture uploaded successfully!")
+                    try:
+                        notify('teacher', teacher_id, 'profile', 'Profile Picture Updated', 'Profile picture updated successfully.', '/teacher_profile/')
+                    except Exception:
+                        pass
                     return redirect('teacher_profile')
         except Exception as e:
             print(f"ERROR: Transaction failed: {e}")
@@ -9598,6 +9818,11 @@ def parent_profile_view(request):
                         return redirect('parent_profile_view')
                     
                     messages.success(request, "Profile picture uploaded successfully!")
+                    try:
+                        p_id = request.session.get('parent_id') or user_id
+                        notify('parent', p_id, 'profile', 'Profile Picture Updated', 'Profile picture updated successfully.', '/parent_profile_view/')
+                    except Exception:
+                        pass
                     return redirect('parent_profile_view')
             except Exception as e:
                 print(f"ERROR: Exception in POST processing: {e}")
@@ -10599,6 +10824,18 @@ def save_parent_signature(request):
                 
                 connection.commit()
                 
+                # ── Notification: Parent signature saved ──
+                try:
+                    cursor.execute("SELECT name, class, section FROM student_page1 WHERE user_id = %s", [student_id])
+                    student_info = cursor.fetchone()
+                    if student_info:
+                        student_name, student_class, student_section = student_info
+                        notify_all_admins('marks', 'Parent Signature Submitted', f'Parent signed progress card for {student_name} ({student_class}-{student_section})', '/admin_marks_portal/')
+                        if student_class and student_section:
+                            notify_class_teacher(student_class, student_section, 'marks', 'Parent Signature Submitted', f'Parent signed progress card for {student_name}', '/teacher_marks_panel/')
+                except Exception:
+                    pass
+                
                 return JsonResponse({
                     'success': True, 
                     'message': 'Parent signature saved successfully!'
@@ -11171,6 +11408,14 @@ def admin_exam_add(request):
             """, [class_id, subject, exam_date, start_time, end_time, room or None, invigilator_id])
         
         messages.success(request, 'Exam entry added successfully.')
+        # ── Notification: Admin scheduled new exam ──
+        try:
+            notify_class_students(class_name, section, 'exam', 'New Exam Scheduled', f'New exam scheduled: {subject} for class {class_name}-{section} on {exam_date}', '/student_timetable/')
+            notify_class_parents(class_name, section, 'exam', 'New Exam Scheduled', f'New exam scheduled: {subject} for class {class_name}-{section} on {exam_date}', '/parent-student-timetable/')
+            if invigilator_id:
+                notify('teacher', invigilator_id, 'exam', 'Invigilator Assignment', f'You are assigned as invigilator for exam: {subject} (Class: {class_name}-{section}) on {exam_date}', '/teacher_timetable/')
+        except Exception:
+            pass
         return redirect('admin_timetable')
     
     with connection.cursor() as cursor:
@@ -11422,6 +11667,14 @@ def admin_exam_edit(request, exam_id):
             """, [class_id_new, subject, exam_date, start_time, end_time, room or None, invigilator_id, exam_id])
         
         messages.success(request, 'Exam entry updated successfully.')
+        # ── Notification: Admin modified exam schedule ──
+        try:
+            notify_class_students(class_name, section, 'exam', 'Exam Schedule Changed', f'Exam schedule updated: {subject} for class {class_name}-{section} on {exam_date}', '/student_timetable/')
+            notify_class_parents(class_name, section, 'exam', 'Exam Schedule Changed', f'Exam schedule updated: {subject} for class {class_name}-{section} on {exam_date}', '/parent-student-timetable/')
+            if invigilator_id:
+                notify('teacher', invigilator_id, 'exam', 'Invigilator Assignment', f'Your invigilator duty has been updated: {subject} (Class: {class_name}-{section}) on {exam_date}', '/teacher_timetable/')
+        except Exception:
+            pass
         return redirect('admin_timetable')
     
     # Fetch data for form
@@ -11461,12 +11714,38 @@ def admin_exam_delete(request, exam_id):
             messages.error(request, 'Exam not found.')
             return redirect('admin_timetable')
     
+    # Fetch details before delete for notifications
+    class_name, section, subject, exam_date, invigilator_id = None, None, None, None, None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT class_id, subject, exam_date, invigilator_id FROM exams WHERE id = %s", [exam_id])
+            row = cursor.fetchone()
+            if row:
+                class_id, subject, exam_date, invigilator_id = row
+                if len(class_id) > 1 and class_id[-1].isalpha():
+                    class_name = class_id[:-1]
+                    section = class_id[-1]
+                else:
+                    class_name = class_id
+                    section = ''
+    except Exception:
+        pass
+
     if request.method == 'POST':
         with connection.cursor() as cursor:
             cursor.execute("DELETE FROM exams WHERE id = %s", [exam_id])
             # Removed the DELETE from exam_students since the table doesn't exist
         
         messages.success(request, 'Exam entry deleted successfully.')
+        # ── Notification: Admin deleted exam ──
+        try:
+            if class_name:
+                notify_class_students(class_name, section, 'exam', 'Exam Cancelled', f'Exam cancelled: {subject} on {exam_date}', '/student_timetable/')
+                notify_class_parents(class_name, section, 'exam', 'Exam Cancelled', f'Exam cancelled: {subject} on {exam_date}', '/parent-student-timetable/')
+            if invigilator_id:
+                notify('teacher', invigilator_id, 'exam', 'Invigilator Cancellation', f'Your invigilator duty for exam {subject} on {exam_date} has been cancelled.', '/teacher_timetable/')
+        except Exception:
+            pass
         return redirect('admin_timetable')
     
     return render(request, 'users/admin_exam_delete.html', {
@@ -12011,3 +12290,99 @@ def serve_student_pdf(request, filename):
         open(file_path, "rb"),
         content_type="application/pdf"
     )
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# NOTIFICATION API VIEWS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+from users.notifications import (
+    get_grouped_notifications, get_unread_count,
+    mark_as_read, mark_group_as_read, mark_all_as_read
+)
+
+
+def _get_notif_user(request):
+    """Extract user type and ID from query params or session."""
+    user_type = request.GET.get('type') or request.POST.get('type')
+    user_id = request.GET.get('id') or request.POST.get('id')
+
+    if not user_type or not user_id:
+        # Fallback to session
+        if request.session.get('admin_id'):
+            user_type = 'admin'
+            user_id = request.session['admin_id']
+        elif request.session.get('teacher_id'):
+            user_type = 'teacher'
+            user_id = request.session['teacher_id']
+        elif request.session.get('parent_id'):
+            user_type = 'parent'
+            user_id = request.session['parent_id']
+        elif request.session.get('user_id'):
+            user_type = 'student'
+            user_id = request.session['user_id']
+
+    if user_type and user_id:
+        try:
+            user_id = int(user_id)
+        except (ValueError, TypeError):
+            return None, None
+    return user_type, user_id
+
+
+@csrf_exempt
+def api_get_notifications(request):
+    """GET /api/notifications/ — Fetch notifications with grouping."""
+    user_type, user_id = _get_notif_user(request)
+    if not user_type or not user_id:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    limit = int(request.GET.get('limit', 20))
+    notifications = get_grouped_notifications(user_type, user_id, limit)
+    return JsonResponse({'notifications': notifications})
+
+
+@csrf_exempt
+def api_notification_count(request):
+    """GET /api/notifications/count/ — Get unread notification count."""
+    user_type, user_id = _get_notif_user(request)
+    if not user_type or not user_id:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    count = get_unread_count(user_type, user_id)
+    return JsonResponse({'count': count})
+
+
+@csrf_exempt
+def api_mark_read(request, notification_id):
+    """POST /api/notifications/read/<id>/ — Mark notification(s) as read."""
+    user_type, user_id = _get_notif_user(request)
+    if not user_type or not user_id:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    # Check for group IDs in the request body
+    group_ids = []
+    if request.body:
+        try:
+            data = json.loads(request.body)
+            group_ids = data.get('group_ids', [])
+        except (json.JSONDecodeError, Exception):
+            pass
+
+    if group_ids and len(group_ids) > 1:
+        success = mark_group_as_read(group_ids, user_type, user_id)
+    else:
+        success = mark_as_read(notification_id, user_type, user_id)
+
+    return JsonResponse({'success': success})
+
+
+@csrf_exempt
+def api_mark_all_read(request):
+    """POST /api/notifications/read-all/ — Mark all notifications as read."""
+    user_type, user_id = _get_notif_user(request)
+    if not user_type or not user_id:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    count = mark_all_as_read(user_type, user_id)
+    return JsonResponse({'success': True, 'marked': count})

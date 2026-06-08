@@ -1,0 +1,478 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * NOTIFICATION CLIENT — School Management System
+ * Handles: Polling, Badge, Dropdown, Toasts, Sound, Vibration, Grouping
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+(function () {
+    'use strict';
+
+    // ─── Config ────────────────────────────────────────────────────────────
+    const POLL_INTERVAL = 30000;     // Poll every 30 seconds
+    const TOAST_DURATION = 5000;     // Toast visible for 5 seconds
+    const MAX_TOASTS = 3;           // Max simultaneous toasts
+
+    // ─── Category Icons Map ────────────────────────────────────────────────
+    const CATEGORY_ICONS = {
+        leave: '📝',
+        attendance: '✅',
+        circular: '📢',
+        homework: '📝',
+        marks: '📊',
+        timetable: '📅',
+        exam: '📋',
+        fee: '💰',
+        study_material: '📚',
+        profile: '👤',
+        auth: '🔐',
+        student: '🎓',
+        class: '🏫',
+        user: '👥',
+    };
+
+    // ─── State ─────────────────────────────────────────────────────────────
+    let userType = null;
+    let userId = null;
+    let lastUnreadCount = 0;
+    let isPolling = false;
+    let pollTimer = null;
+    let notifAudioCtx = null;
+    let isPanelOpen = false;
+
+    // ─── Initialize ────────────────────────────────────────────────────────
+    function init() {
+        const body = document.body;
+        userType = body.dataset.userType || null;
+        userId = body.dataset.userId || null;
+
+        if (!userType || !userId) {
+            console.log('[Notif] No user context, notifications disabled.');
+            return;
+        }
+
+        setupUI();
+        setupToastContainer();
+        fetchUnreadCount();
+        startPolling();
+    }
+
+    // ─── UI Setup ──────────────────────────────────────────────────────────
+    function setupUI() {
+        const bell = document.getElementById('notificationBell');
+        const panel = document.getElementById('notificationPanel');
+
+        if (!bell || !panel) return;
+
+        // Wrap bell in a container for badge positioning
+        const wrapper = document.createElement('span');
+        wrapper.className = 'bell-wrapper';
+        bell.parentNode.insertBefore(wrapper, bell);
+        wrapper.appendChild(bell);
+
+        // Create badge
+        const badge = document.createElement('span');
+        badge.id = 'notifBadge';
+        badge.className = 'notification-badge';
+        badge.textContent = '0';
+        wrapper.appendChild(badge);
+
+        // Replace static panel content with dynamic structure
+        panel.innerHTML = `
+            <div class="notif-panel-header">
+                <h3>Notifications</h3>
+                <button class="notif-mark-all-btn" id="notifMarkAllBtn">Mark all read</button>
+            </div>
+            <div class="notif-panel-body" id="notifPanelBody">
+                ${getLoadingHTML()}
+            </div>
+        `;
+
+        // Restyle panel class
+        panel.classList.remove('notification-panel');
+        panel.classList.add('notif-panel');
+
+        // Bell click
+        bell.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isPanelOpen = !isPanelOpen;
+            panel.classList.toggle('active', isPanelOpen);
+            if (isPanelOpen) {
+                fetchNotifications();
+            }
+        });
+
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (!wrapper.contains(e.target) && !panel.contains(e.target)) {
+                panel.classList.remove('active');
+                isPanelOpen = false;
+            }
+        });
+
+        // Mark all read button
+        document.getElementById('notifMarkAllBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            markAllRead();
+        });
+    }
+
+    function setupToastContainer() {
+        if (document.getElementById('notifToastContainer')) return;
+        const container = document.createElement('div');
+        container.id = 'notifToastContainer';
+        container.className = 'notif-toast-container';
+        document.body.appendChild(container);
+    }
+
+    // ─── Polling ───────────────────────────────────────────────────────────
+    function startPolling() {
+        if (isPolling) return;
+        isPolling = true;
+        pollTimer = setInterval(fetchUnreadCount, POLL_INTERVAL);
+    }
+
+    function stopPolling() {
+        isPolling = false;
+        if (pollTimer) clearInterval(pollTimer);
+    }
+
+    // ─── API Calls ─────────────────────────────────────────────────────────
+    function fetchUnreadCount() {
+        fetch(`/api/notifications/count/?type=${userType}&id=${userId}`)
+            .then(r => r.json())
+            .then(data => {
+                const newCount = data.count || 0;
+                updateBadge(newCount);
+
+                // If count increased, trigger alerts
+                if (newCount > lastUnreadCount && lastUnreadCount >= 0) {
+                    const diff = newCount - lastUnreadCount;
+                    if (lastUnreadCount > 0) {
+                        // New notifications arrived
+                        playNotificationSound();
+                        triggerVibration();
+                        if (!isPanelOpen) {
+                            showNewNotifToast(diff);
+                        }
+                    }
+                }
+                lastUnreadCount = newCount;
+            })
+            .catch(err => console.warn('[Notif] Count fetch error:', err));
+    }
+
+    function fetchNotifications() {
+        const body = document.getElementById('notifPanelBody');
+        if (!body) return;
+        body.innerHTML = getLoadingHTML();
+
+        fetch(`/api/notifications/?type=${userType}&id=${userId}`)
+            .then(r => r.json())
+            .then(data => {
+                const notifications = data.notifications || [];
+                renderNotifications(notifications);
+            })
+            .catch(err => {
+                console.warn('[Notif] Fetch error:', err);
+                body.innerHTML = getEmptyHTML('Error loading notifications');
+            });
+    }
+
+    function markAsRead(notifId, groupIds) {
+        if (groupIds && groupIds.length > 1) {
+            // Mark group as read - send all IDs
+            fetch('/api/notifications/read/' + notifId + '/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken(),
+                },
+                body: JSON.stringify({ group_ids: groupIds }),
+            }).then(() => {
+                fetchUnreadCount();
+                if (isPanelOpen) fetchNotifications();
+            });
+        } else {
+            fetch('/api/notifications/read/' + notifId + '/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken(),
+                },
+            }).then(() => {
+                fetchUnreadCount();
+                if (isPanelOpen) fetchNotifications();
+            });
+        }
+    }
+
+    function markAllRead() {
+        fetch('/api/notifications/read-all/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+            },
+        }).then(() => {
+            fetchUnreadCount();
+            if (isPanelOpen) fetchNotifications();
+        });
+    }
+
+    // ─── Rendering ─────────────────────────────────────────────────────────
+    function renderNotifications(notifications) {
+        const body = document.getElementById('notifPanelBody');
+        if (!body) return;
+
+        if (!notifications.length) {
+            body.innerHTML = getEmptyHTML();
+            return;
+        }
+
+        let html = '';
+        notifications.forEach(n => {
+            const icon = CATEGORY_ICONS[n.category] || '🔔';
+            const catClass = 'cat-' + (n.category || 'default');
+            const readClass = n.is_read ? '' : 'unread';
+            const time = relativeTime(n.created_at);
+            const groupBadge = n.group_count > 1
+                ? `<span class="notif-group-badge">${n.group_count}×</span>`
+                : '';
+            const groupIds = n.group_ids ? JSON.stringify(n.group_ids) : '[]';
+
+            html += `
+                <div class="notif-item ${readClass}" 
+                     data-id="${n.id}" 
+                     data-url="${n.action_url || ''}"
+                     data-group-ids='${groupIds}'
+                     onclick="window.NotifClient.handleClick(this)">
+                    <div class="notif-icon ${catClass}">${icon}</div>
+                    <div class="notif-content">
+                        <div class="notif-title">${escapeHTML(n.title)} ${groupBadge}</div>
+                        <div class="notif-message">${escapeHTML(n.message)}</div>
+                        <div class="notif-time">${time}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+        body.innerHTML = html;
+    }
+
+    function updateBadge(count) {
+        const badge = document.getElementById('notifBadge');
+        if (!badge) return;
+
+        if (count > 0) {
+            badge.textContent = count > 99 ? '99+' : count;
+            badge.classList.add('visible');
+
+            // Pulse animation
+            if (count > lastUnreadCount && lastUnreadCount > 0) {
+                badge.classList.remove('pulse-badge');
+                void badge.offsetWidth; // Force reflow
+                badge.classList.add('pulse-badge');
+
+                // Ring the bell
+                const bell = document.getElementById('notificationBell');
+                if (bell) {
+                    bell.classList.remove('bell-ring');
+                    void bell.offsetWidth;
+                    bell.classList.add('bell-ring');
+                }
+            }
+        } else {
+            badge.classList.remove('visible');
+        }
+    }
+
+    // ─── Toast Notifications ───────────────────────────────────────────────
+    function showNewNotifToast(count) {
+        const container = document.getElementById('notifToastContainer');
+        if (!container) return;
+
+        // Limit toasts
+        const existing = container.querySelectorAll('.notif-toast');
+        if (existing.length >= MAX_TOASTS) {
+            existing[0].remove();
+        }
+
+        const toast = document.createElement('div');
+        toast.className = 'notif-toast';
+        toast.innerHTML = `
+            <span class="notif-toast-icon">🔔</span>
+            <div class="notif-toast-body">
+                <div class="notif-toast-title">${count === 1 ? 'New notification' : count + ' new notifications'}</div>
+                <div class="notif-toast-message">Click to view</div>
+            </div>
+            <button class="notif-toast-close" onclick="event.stopPropagation(); this.parentElement.classList.add('hiding'); setTimeout(() => this.parentElement.remove(), 400);">✕</button>
+        `;
+
+        toast.addEventListener('click', () => {
+            const bell = document.getElementById('notificationBell');
+            if (bell) bell.click();
+            toast.classList.add('hiding');
+            setTimeout(() => toast.remove(), 400);
+        });
+
+        container.appendChild(toast);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+        });
+
+        // Auto-dismiss
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 400);
+            }
+        }, TOAST_DURATION);
+    }
+
+    // ─── Sound & Vibration ─────────────────────────────────────────────────
+    function playNotificationSound() {
+        try {
+            // Use Web Audio API for a pleasant notification chime
+            if (!notifAudioCtx) {
+                notifAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            const ctx = notifAudioCtx;
+
+            // Two-tone chime
+            const now = ctx.currentTime;
+            
+            // Note 1
+            const osc1 = ctx.createOscillator();
+            const gain1 = ctx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.value = 880; // A5
+            gain1.gain.setValueAtTime(0.15, now);
+            gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc1.connect(gain1);
+            gain1.connect(ctx.destination);
+            osc1.start(now);
+            osc1.stop(now + 0.3);
+
+            // Note 2 (higher, slight delay)
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.value = 1175; // D6
+            gain2.gain.setValueAtTime(0.12, now + 0.15);
+            gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.start(now + 0.15);
+            osc2.stop(now + 0.45);
+        } catch (e) {
+            // Audio not supported or blocked by browser policy
+            console.log('[Notif] Sound not available:', e.message);
+        }
+    }
+
+    function triggerVibration() {
+        try {
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]); // Short double vibration
+            }
+        } catch (e) {
+            // Vibration not supported
+        }
+    }
+
+    // ─── Helpers ───────────────────────────────────────────────────────────
+    function relativeTime(isoStr) {
+        if (!isoStr) return '';
+        const date = new Date(isoStr);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffSec = Math.floor(diffMs / 1000);
+        const diffMin = Math.floor(diffSec / 60);
+        const diffHr = Math.floor(diffMin / 60);
+        const diffDay = Math.floor(diffHr / 24);
+
+        if (diffSec < 60) return 'Just now';
+        if (diffMin < 60) return diffMin + (diffMin === 1 ? ' min ago' : ' mins ago');
+        if (diffHr < 24) return diffHr + (diffHr === 1 ? ' hour ago' : ' hours ago');
+        if (diffDay < 7) return diffDay + (diffDay === 1 ? ' day ago' : ' days ago');
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function escapeHTML(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function getCSRFToken() {
+        const cookie = document.cookie.split(';')
+            .find(c => c.trim().startsWith('csrftoken='));
+        return cookie ? cookie.split('=')[1] : '';
+    }
+
+    function getLoadingHTML() {
+        let html = '<div class="notif-loading">';
+        for (let i = 0; i < 3; i++) {
+            html += `
+                <div class="notif-skeleton">
+                    <div class="notif-skeleton-icon"></div>
+                    <div class="notif-skeleton-content">
+                        <div class="notif-skeleton-line"></div>
+                        <div class="notif-skeleton-line short"></div>
+                        <div class="notif-skeleton-line tiny"></div>
+                    </div>
+                </div>
+            `;
+        }
+        html += '</div>';
+        return html;
+    }
+
+    function getEmptyHTML(text) {
+        return `
+            <div class="notif-empty">
+                <div class="notif-empty-icon">🎉</div>
+                <div class="notif-empty-text">${text || 'No notifications yet'}</div>
+                <div class="notif-empty-sub">You're all caught up!</div>
+            </div>
+        `;
+    }
+
+    // ─── Public: Click Handler ─────────────────────────────────────────────
+    function handleClick(el) {
+        const notifId = el.dataset.id;
+        const url = el.dataset.url;
+        let groupIds = [];
+        try {
+            groupIds = JSON.parse(el.dataset.groupIds || '[]');
+        } catch (e) { /* ignore */ }
+
+        // Mark as read
+        if (el.classList.contains('unread')) {
+            markAsRead(notifId, groupIds);
+        }
+
+        // Navigate if URL provided
+        if (url) {
+            window.location.href = url;
+        }
+    }
+
+    // ─── Expose Public API ─────────────────────────────────────────────────
+    window.NotifClient = {
+        handleClick: handleClick,
+        refresh: fetchUnreadCount,
+    };
+
+    // ─── Boot ──────────────────────────────────────────────────────────────
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})();
