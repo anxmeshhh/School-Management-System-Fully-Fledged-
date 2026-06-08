@@ -1303,7 +1303,7 @@ def admin_circular_upload(request):
             # ── Notification: Circular uploaded ──
             if target == 'specific' and class_name and section:
                 notify_class_students(class_name, section, 'circular', 'New Circular', f'New circular: {title}', '/student_circular/')
-                notify_class_parents(class_name, section, 'circular', 'New Circular', f'New circular: {title}', '/parent_student_circular/')
+                notify_class_parents(class_name, section, 'circular', 'New Circular', f'New circular: {title}', '/parent-student-circular/')
             else:
                 # Broadcast to all students and parents
                 try:
@@ -1313,7 +1313,7 @@ def admin_circular_upload(request):
                             notify('student', row[0], 'circular', 'New Circular', f'New circular: {title}', '/student_circular/')
                         c.execute("SELECT id FROM parents")
                         for row in c.fetchall():
-                            notify('parent', row[0], 'circular', 'New Circular', f'New circular: {title}', '/parent_student_circular/')
+                            notify('parent', row[0], 'circular', 'New Circular', f'New circular: {title}', '/parent-student-circular/')
                 except Exception:
                     pass
 
@@ -1830,7 +1830,7 @@ def admin_accept_portal(request):
                             lr = cursor.fetchone()
                             if lr:
                                 status_emoji = '✅' if new_status == 'Approved' else '❌'
-                                notify('student', lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} {status_emoji}', '/student_leave/')
+                                notify('student', lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} {status_emoji}', '/student-portal/leave/')
                         except Exception:
                             pass
                         messages.success(request, f'Leave request {new_status.lower()} successfully.')
@@ -2018,7 +2018,7 @@ def teacher_accept_portal(request):
                             lr = cursor.fetchone()
                             if lr:
                                 status_emoji = '✅' if new_status == 'Approved' else '❌'
-                                notify('student', lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} by teacher {status_emoji}', '/student_leave/')
+                                notify('student', lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} by teacher {status_emoji}', '/student-portal/leave/')
                         except Exception:
                             pass
                         action_text = 'approved' if action == 'approve' else 'rejected'
@@ -9820,7 +9820,7 @@ def parent_profile_view(request):
                     messages.success(request, "Profile picture uploaded successfully!")
                     try:
                         p_id = request.session.get('parent_id') or user_id
-                        notify('parent', p_id, 'profile', 'Profile Picture Updated', 'Profile picture updated successfully.', '/parent_profile_view/')
+                        notify('parent', p_id, 'profile', 'Profile Picture Updated', 'Profile picture updated successfully.', '/parent-profile/')
                     except Exception:
                         pass
                     return redirect('parent_profile_view')
