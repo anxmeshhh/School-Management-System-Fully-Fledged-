@@ -55,6 +55,72 @@
         setupToastContainer();
         fetchUnreadCount();
         startPolling();
+        setupPermissionTriggers();
+    }
+
+    // ─── System Notification Permissions & Popups ──────────────────────────
+    function setupPermissionTriggers() {
+        if (!("Notification" in window)) return;
+        
+        const requestPermissionOnce = () => {
+            if (Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    console.log('[Notif] System notification permission:', permission);
+                });
+            }
+            document.removeEventListener('click', requestPermissionOnce);
+            document.removeEventListener('touchstart', requestPermissionOnce);
+        };
+        document.addEventListener('click', requestPermissionOnce);
+        document.addEventListener('touchstart', requestPermissionOnce);
+    }
+
+    function requestSystemNotificationPermission() {
+        if (!("Notification" in window)) return;
+        if (Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }
+
+    function triggerSystemNotification(title, message, actionUrl) {
+        if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+        const options = {
+            body: message,
+            icon: '/static/users/images/adminlogo.jpg',
+            badge: '/static/users/images/adminlogo.jpg',
+            vibrate: [100, 50, 100],
+            requireInteraction: false
+        };
+
+        try {
+            const notification = new Notification(title, options);
+            if (actionUrl) {
+                notification.onclick = function (event) {
+                    event.preventDefault();
+                    window.focus();
+                    window.location.href = actionUrl;
+                    notification.close();
+                };
+            }
+        } catch (e) {
+            console.warn('[Notif] Error creating system notification:', e.message);
+        }
+    }
+
+    function fetchAndTriggerSystemNotifications(count) {
+        fetch(`/api/notifications/?type=${userType}&id=${userId}`)
+            .then(r => r.json())
+            .then(data => {
+                const notifications = data.notifications || [];
+                // Get the newest unread notifications up to count
+                const unreadNotifs = notifications.filter(n => !n.is_read).slice(0, count);
+                unreadNotifs.forEach(n => {
+                    const icon = CATEGORY_ICONS[n.category] || '🔔';
+                    triggerSystemNotification(`${icon} ${n.title}`, n.message, n.action_url);
+                });
+            })
+            .catch(err => console.warn('[Notif] Error fetching for system notification:', err));
     }
 
     // ─── UI Setup ──────────────────────────────────────────────────────────
@@ -95,6 +161,7 @@
         // Bell click
         bell.addEventListener('click', (e) => {
             e.stopPropagation();
+            requestSystemNotificationPermission();
             isPanelOpen = !isPanelOpen;
             panel.classList.toggle('active', isPanelOpen);
             if (isPanelOpen) {
@@ -155,6 +222,8 @@
                         if (!isPanelOpen) {
                             showNewNotifToast(diff);
                         }
+                        // Trigger native system notification
+                        fetchAndTriggerSystemNotifications(diff);
                     }
                 }
                 lastUnreadCount = newCount;
