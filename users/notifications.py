@@ -9,7 +9,9 @@ Usage:
 """
 
 from django.db import connection
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+import os
+from django.conf import settings
 
 
 # ─── Core CRUD Functions ──────────────────────────────────────────────────────
@@ -422,3 +424,157 @@ def cleanup_old_notifications(days=30):
 
 # Shorthand alias
 notify = create_notification
+
+
+def generate_dynamic_reminders(user_type, user_id):
+    """
+    Dynamically generates reminder notifications for upcoming/pending tasks.
+    Runs on notifications fetch to keep the alerts real-time without background cron tasks.
+    """
+    try:
+        with connection.cursor() as cursor:
+            # 1. Reminders for Students & Parents
+            if user_type in ('student', 'parent'):
+                # Resolve the student's user_id
+                student_user_id = user_id
+                if user_type == 'parent':
+                    # Parent user_id is the same as student's user_id in this schema
+                    student_user_id = user_id
+
+                # Fetch class and section
+                cursor.execute("SELECT class, section FROM student_page1 WHERE user_id = %s", [student_user_id])
+                stud_info = cursor.fetchone()
+                if stud_info:
+                    class_name, section = stud_info
+                    class_id = f"{class_name}{section}" if class_name and section else class_name
+
+                    # --- A. Upcoming Exam Reminders (Next 3 Days) ---
+                    if class_id:
+                        today_str = date.today().strftime('%Y-%m-%d')
+                        three_days_later_str = (date.today() + timedelta(days=3)).strftime('%Y-%m-%d')
+                        cursor.execute("""
+                            SELECT id, subject, exam_date, start_time 
+                            FROM exams 
+                            WHERE class_id = %s AND exam_date BETWEEN %s AND %s
+                        """, [class_id, today_str, three_days_later_str])
+                        exams = cursor.fetchall()
+                        for exam in exams:
+                            exam_db_id, subject, exam_date, start_time = exam
+                            title = f"Upcoming Exam: {subject}"
+                            # Check if already notified in last 24 hours
+                            cursor.execute("""
+                                SELECT COUNT(*) FROM notifications 
+                                WHERE recipient_type = %s AND recipient_id = %s 
+                                AND category = 'exam' AND title = %s 
+                                AND created_at >= NOW() - INTERVAL 1 DAY
+                            """, [user_type, user_id, title])
+                            if cursor.fetchone()[0] == 0:
+                                # Insert notification
+                                cursor.execute("""
+                                    INSERT INTO notifications (recipient_type, recipient_id, category, title, message, action_url)
+                                    VALUES (%s, %s, 'exam', %s, %s, %s)
+                                """, [user_type, user_id, title, f"Reminder: Your exam for {subject} is scheduled on {exam_date} at {start_time}.", '/student_timetable/'])
+
+                    # --- B. Upcoming Homework Due (Next 2 Days) ---
+                    # Scan media directory 'media/teacher_homework/' for metadata files
+                    homework_dir = os.path.join(settings.MEDIA_ROOT, 'teacher_homework')
+                    if os.path.exists(homework_dir):
+                        for filename in os.listdir(homework_dir):
+                            if filename.endswith('.txt') and not filename.endswith('_submission.txt'):
+                                txt_path = os.path.join(homework_dir, filename)
+                                try:
+                                    with open(txt_path, 'r', encoding='utf-8') as f:
+                                        lines = [line.strip() for line in f.readlines()]
+                                    if len(lines) >= 6:
+                                        hw_title = lines[0]
+                                        hw_desc = lines[1]
+                                        hw_subject = lines[2]
+                                        hw_due_date = lines[3]
+                                        hw_target = lines[4]
+                                        
+                                        # Check if targeting student's class
+                                        target_match = False
+                                        if hw_target == 'all':
+                                            target_match = True
+                                        elif hw_target == 'specific' and len(lines) >= 8:
+                                            hw_class = lines[6]
+                                            hw_section = lines[7] if len(lines) >= 8 else ''
+                                            if hw_class == class_name and hw_section == section:
+                                                target_match = True
+
+                                        if target_match and hw_due_date:
+                                            try:
+                                                due_dt = datetime.strptime(hw_due_date, '%Y-%m-%d').date()
+                                            except ValueError:
+                                                due_dt = None
+                                            
+                                            if due_dt and (date.today() <= due_dt <= date.today() + timedelta(days=2)):
+                                                # Check if the student has submitted this homework in student homework table
+                                                cursor.execute("""
+                                                    SELECT COUNT(*) FROM homework 
+                                                    WHERE user_id = %s AND title = %s
+                                                """, [student_user_id, hw_title])
+                                                if cursor.fetchone()[0] == 0:
+                                                    # Not submitted yet! Remind them.
+                                                    title = f"Homework Pending: {hw_title}"
+                                                    # Check if already notified in last 24 hours
+                                                    cursor.execute("""
+                                                        SELECT COUNT(*) FROM notifications 
+                                                        WHERE recipient_type = %s AND recipient_id = %s 
+                                                        AND category = 'homework' AND title = %s 
+                                                        AND created_at >= NOW() - INTERVAL 1 DAY
+                                                    """, [user_type, user_id, title])
+                                                    if cursor.fetchone()[0] == 0:
+                                                        cursor.execute("""
+                                                            INSERT INTO notifications (recipient_type, recipient_id, category, title, message, action_url)
+                                                            VALUES (%s, %s, 'homework', %s, %s, %s)
+                                                        """, [user_type, user_id, title, f"Reminder: Homework '{hw_title}' for {hw_subject} is due on {hw_due_date}.", '/homework/'])
+                                except Exception:
+                                    pass
+
+            # 2. Reminders for Teachers
+            elif user_type == 'teacher':
+                # --- A. Pending Leave Request Approvals ---
+                cursor.execute("""
+                    SELECT COUNT(*) FROM student_leave_requests 
+                    WHERE status = 'Pending'
+                """)
+                pending_count = cursor.fetchone()[0]
+                if pending_count > 0:
+                    title = "Pending Leave Requests"
+                    cursor.execute("""
+                        SELECT COUNT(*) FROM notifications 
+                        WHERE recipient_type = 'teacher' AND recipient_id = %s 
+                        AND category = 'leave' AND title = %s 
+                        AND created_at >= NOW() - INTERVAL 1 DAY
+                    """, [user_id, title])
+                    if cursor.fetchone()[0] == 0:
+                        cursor.execute("""
+                            INSERT INTO notifications (recipient_type, recipient_id, category, title, message, action_url)
+                            VALUES ('teacher', %s, 'leave', %s, %s, '/teacher_accept_portal/')
+                        """, [user_id, title, f"You have {pending_count} pending student leave request(s) awaiting approval.", '/teacher_accept_portal/'])
+
+            # 3. Reminders for Admins
+            elif user_type == 'admin':
+                # --- A. Pending Leave Request Approvals ---
+                cursor.execute("""
+                    SELECT COUNT(*) FROM student_leave_requests 
+                    WHERE status = 'Pending'
+                """)
+                pending_count = cursor.fetchone()[0]
+                if pending_count > 0:
+                    title = "Pending Leave Requests"
+                    cursor.execute("""
+                        SELECT COUNT(*) FROM notifications 
+                        WHERE recipient_type = 'admin' AND recipient_id = %s 
+                        AND category = 'leave' AND title = %s 
+                        AND created_at >= NOW() - INTERVAL 1 DAY
+                    """, [user_id, title])
+                    if cursor.fetchone()[0] == 0:
+                        cursor.execute("""
+                            INSERT INTO notifications (recipient_type, recipient_id, category, title, message, action_url)
+                            VALUES ('admin', %s, 'leave', %s, %s, '/admin_accept_portal/')
+                        """, [user_id, title, f"There are {pending_count} pending student leave request(s) awaiting approval.", '/admin_accept_portal/'])
+    except Exception as e:
+        print(f"[Dynamic Notifications Error]: {e}")
+

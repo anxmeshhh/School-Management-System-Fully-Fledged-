@@ -9,7 +9,7 @@ from django.contrib import messages
 from users.notifications import (
     create_notification, notify, notify_all_admins, notify_all_teachers,
     notify_class_students, notify_class_parents, notify_student_and_parents,
-    notify_class_teacher, create_bulk_notifications
+    notify_class_teacher, create_bulk_notifications, generate_dynamic_reminders
 )
 
 # Database connection
@@ -12337,6 +12337,9 @@ def api_get_notifications(request):
     if not user_type or not user_id:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
+    # Generate dynamic reminders
+    generate_dynamic_reminders(user_type, user_id)
+
     limit = int(request.GET.get('limit', 20))
     notifications = get_grouped_notifications(user_type, user_id, limit)
     return JsonResponse({'notifications': notifications})
@@ -12348,6 +12351,9 @@ def api_notification_count(request):
     user_type, user_id = _get_notif_user(request)
     if not user_type or not user_id:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    # Generate dynamic reminders
+    generate_dynamic_reminders(user_type, user_id)
 
     count = get_unread_count(user_type, user_id)
     return JsonResponse({'count': count})
