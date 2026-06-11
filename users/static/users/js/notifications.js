@@ -60,13 +60,17 @@
 
     // ─── System Notification Permissions & Popups ──────────────────────────
     function setupPermissionTriggers() {
-        if (!("Notification" in window)) return;
-        
         const requestPermissionOnce = () => {
-            if (Notification.permission === 'default') {
+            if ("Notification" in window && Notification.permission === 'default') {
                 Notification.requestPermission().then(permission => {
                     console.log('[Notif] System notification permission:', permission);
                 });
+            }
+            // Preload audio on first click to satisfy browser auto-play policies
+            if (!window.notifAudioEl) {
+                window.notifAudioEl = new Audio('/static/users/audio/notification.wav');
+                window.notifAudioEl.volume = 0.8;
+                window.notifAudioEl.load();
             }
             document.removeEventListener('click', requestPermissionOnce);
             document.removeEventListener('touchstart', requestPermissionOnce);
@@ -404,41 +408,19 @@
     // ─── Sound & Vibration ─────────────────────────────────────────────────
     function playNotificationSound() {
         try {
-            // Use Web Audio API for a pleasant notification chime
-            if (!notifAudioCtx) {
-                notifAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (!window.notifAudioEl) {
+                window.notifAudioEl = new Audio('/static/users/audio/notification.wav');
+                window.notifAudioEl.volume = 0.8;
             }
-            const ctx = notifAudioCtx;
-
-            // Two-tone chime
-            const now = ctx.currentTime;
-            
-            // Note 1
-            const osc1 = ctx.createOscillator();
-            const gain1 = ctx.createGain();
-            osc1.type = 'sine';
-            osc1.frequency.value = 880; // A5
-            gain1.gain.setValueAtTime(0.15, now);
-            gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-            osc1.connect(gain1);
-            gain1.connect(ctx.destination);
-            osc1.start(now);
-            osc1.stop(now + 0.3);
-
-            // Note 2 (higher, slight delay)
-            const osc2 = ctx.createOscillator();
-            const gain2 = ctx.createGain();
-            osc2.type = 'sine';
-            osc2.frequency.value = 1175; // D6
-            gain2.gain.setValueAtTime(0.12, now + 0.15);
-            gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
-            osc2.connect(gain2);
-            gain2.connect(ctx.destination);
-            osc2.start(now + 0.15);
-            osc2.stop(now + 0.45);
+            window.notifAudioEl.currentTime = 0;
+            const playPromise = window.notifAudioEl.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('[Notif] Audio blocked by browser policy:', error);
+                });
+            }
         } catch (e) {
-            // Audio not supported or blocked by browser policy
-            console.log('[Notif] Sound not available:', e.message);
+            console.log('[Notif] Sound error:', e.message);
         }
     }
 
