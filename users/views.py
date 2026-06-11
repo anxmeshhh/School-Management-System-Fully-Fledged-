@@ -12296,43 +12296,59 @@ def serve_student_pdf(request, filename):
         content_type="application/pdf"
     )
 
-
 # ═══════════════════════════════════════════════════════════════════════════════
 # NOTIFICATION API VIEWS
 # ═══════════════════════════════════════════════════════════════════════════════
 
 from users.notifications import (
     get_grouped_notifications, get_unread_count,
-    mark_as_read, mark_group_as_read, mark_all_as_read
+    mark_as_read, mark_group_as_read, mark_all_as_read,
+    generate_dynamic_reminders
 )
+
+# How often (seconds) dynamic reminders are generated per user per session
+REMINDER_INTERVAL = 300  # 5 minutes
 
 
 def _get_notif_user(request):
     """Extract user type and ID from query params or session."""
     user_type = request.GET.get('type') or request.POST.get('type')
-    user_id = request.GET.get('id') or request.POST.get('id')
+    user_id   = request.GET.get('id')   or request.POST.get('id')
 
     if not user_type or not user_id:
-        # Fallback to session
         if request.session.get('admin_id'):
-            user_type = 'admin'
-            user_id = request.session['admin_id']
+            user_type, user_id = 'admin',   request.session['admin_id']
         elif request.session.get('teacher_id'):
-            user_type = 'teacher'
-            user_id = request.session['teacher_id']
+            user_type, user_id = 'teacher', request.session['teacher_id']
         elif request.session.get('parent_id'):
-            user_type = 'parent'
-            user_id = request.session['parent_id']
+            user_type, user_id = 'parent',  request.session['parent_id']
         elif request.session.get('user_id'):
-            user_type = 'student'
-            user_id = request.session['user_id']
+            user_type, user_id = 'student', request.session['user_id']
 
     if user_type and user_id:
         try:
             user_id = int(user_id)
         except (ValueError, TypeError):
             return None, None
+
     return user_type, user_id
+
+
+def _maybe_generate_reminders(request, user_type, user_id):
+    """
+    FIX: Only run generate_dynamic_reminders at most once every
+    REMINDER_INTERVAL seconds per user, tracked in their session.
+    Previously it ran on every count poll (every 30s) which caused
+    a flood of DB queries for large numbers of concurrent users.
+    """
+    import time
+    session_key = f'last_reminder_{user_type}_{user_id}'
+    now = time.time()
+    last_run = request.session.get(session_key, 0)
+
+    if now - last_run >= REMINDER_INTERVAL:
+        generate_dynamic_reminders(user_type, user_id)
+        request.session[session_key] = now
 
 
 @csrf_exempt
@@ -12342,10 +12358,9 @@ def api_get_notifications(request):
     if not user_type or not user_id:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
-    # Generate dynamic reminders
-    generate_dynamic_reminders(user_type, user_id)
+    _maybe_generate_reminders(request, user_type, user_id)
 
-    limit = int(request.GET.get('limit', 20))
+    limit = max(1, min(int(request.GET.get('limit', 20)), 100))  # clamp 1–100
     notifications = get_grouped_notifications(user_type, user_id, limit)
     return JsonResponse({'notifications': notifications})
 
@@ -12357,8 +12372,8 @@ def api_notification_count(request):
     if not user_type or not user_id:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
-    # Generate dynamic reminders
-    generate_dynamic_reminders(user_type, user_id)
+    # FIX: reminders throttled — not on every 30s poll
+    _maybe_generate_reminders(request, user_type, user_id)
 
     count = get_unread_count(user_type, user_id)
     return JsonResponse({'count': count})
@@ -12367,11 +12382,13 @@ def api_notification_count(request):
 @csrf_exempt
 def api_mark_read(request, notification_id):
     """POST /api/notifications/read/<id>/ — Mark notification(s) as read."""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+
     user_type, user_id = _get_notif_user(request)
     if not user_type or not user_id:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
-    # Check for group IDs in the request body
     group_ids = []
     if request.body:
         try:
@@ -12391,6 +12408,9 @@ def api_mark_read(request, notification_id):
 @csrf_exempt
 def api_mark_all_read(request):
     """POST /api/notifications/read-all/ — Mark all notifications as read."""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+
     user_type, user_id = _get_notif_user(request)
     if not user_type or not user_id:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
@@ -12398,48 +12418,68 @@ def api_mark_all_read(request):
     count = mark_all_as_read(user_type, user_id)
     return JsonResponse({'success': True, 'marked': count})
 
+
 @csrf_exempt
 def api_push_subscribe(request):
-    """POST /api/notifications/subscribe/ — Save push subscription."""
+    """POST /api/notifications/subscribe/ — Save or update push subscription."""
     if request.method != 'POST':
         return JsonResponse({'error': 'POST required'}, status=405)
-    
+
     try:
         data = json.loads(request.body)
-        # Use fallback from data if _get_notif_user fails
+
         user_type, user_id = _get_notif_user(request)
         if not user_type or not user_id:
             user_type = data.get('type')
-            user_id = data.get('id')
-            
+            user_id   = data.get('id')
+
         if not user_type or not user_id:
             return JsonResponse({'error': 'Unauthorized'}, status=401)
-            
+
+        try:
+            user_id = int(user_id)
+        except (ValueError, TypeError):
+            return JsonResponse({'error': 'Invalid user id'}, status=400)
+
         subscription = data.get('subscription')
         if not subscription:
             return JsonResponse({'error': 'Missing subscription'}, status=400)
-            
+
         endpoint = subscription.get('endpoint')
-        p256dh = subscription.get('keys', {}).get('p256dh')
-        auth = subscription.get('keys', {}).get('auth')
-        
+        p256dh   = subscription.get('keys', {}).get('p256dh')
+        auth     = subscription.get('keys', {}).get('auth')
+
         if not endpoint or not p256dh or not auth:
             return JsonResponse({'error': 'Invalid subscription format'}, status=400)
-            
+
         with connection.cursor() as cursor:
-            cursor.execute('''
-                SELECT id FROM push_subscriptions
-                WHERE user_type = %s AND user_id = %s AND auth = %s
-            ''', [user_type, user_id, auth])
-            
-            if not cursor.fetchone():
+            cursor.execute(
+                'SELECT id FROM push_subscriptions WHERE endpoint = %s',
+                [endpoint]
+            )
+            existing = cursor.fetchone()
+
+            if existing:
+                cursor.execute('''
+                    UPDATE push_subscriptions
+                    SET user_type = %s, user_id = %s, p256dh = %s, auth = %s
+                    WHERE endpoint = %s
+                ''', [user_type, user_id, p256dh, auth, endpoint])
+            else:
+                # Remove any stale rows for this user+auth combo
+                cursor.execute('''
+                    DELETE FROM push_subscriptions
+                    WHERE user_type = %s AND user_id = %s AND auth = %s
+                ''', [user_type, user_id, auth])
                 cursor.execute('''
                     INSERT INTO push_subscriptions (user_type, user_id, endpoint, p256dh, auth)
                     VALUES (%s, %s, %s, %s, %s)
                 ''', [user_type, user_id, endpoint, p256dh, auth])
-                connection.commit()
-                
+
+            connection.commit()
+
         return JsonResponse({'success': True})
+
     except Exception as e:
         print(f"[Push Error] api_push_subscribe: {e}")
         return JsonResponse({'error': str(e)}, status=500)

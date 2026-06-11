@@ -9,11 +9,11 @@
     'use strict';
 
     // ─── Config ────────────────────────────────────────────────────────────
-    const POLL_INTERVAL = 30000;     // Poll every 30 seconds
-    const TOAST_DURATION = 5000;     // Toast visible for 5 seconds
-    const MAX_TOASTS = 3;           // Max simultaneous toasts
+    const POLL_INTERVAL = 30000;
+    const TOAST_DURATION = 5000;
+    const MAX_TOASTS = 3;
 
-    // ─── Category Icons Map ────────────────────────────────────────────────
+    // ─── Category Icons ────────────────────────────────────────────────────
     const CATEGORY_ICONS = {
         leave: '📝',
         attendance: '✅',
@@ -34,13 +34,15 @@
     // ─── State ─────────────────────────────────────────────────────────────
     let userType = null;
     let userId = null;
-    let lastUnreadCount = 0;
+    let lastUnreadCount = -1;   // FIX: -1 so first poll sets baseline silently
     let isPolling = false;
     let pollTimer = null;
-    let notifAudioCtx = null;
     let isPanelOpen = false;
+    let lastNotifIds = new Set(); // FIX: track seen IDs to detect truly new ones
 
-    // ─── Initialize ────────────────────────────────────────────────────────
+    const VAPID_PUBLIC_KEY = "BLNqmzATvl4GJpv1khAm8Uz1FoXC13H7-gEuD4XtY5JpqQIoGfL4g7_Gm5Mc2kejNgy67LTyWQRLozHhoWgQ7fI";
+
+    // ─── Init ──────────────────────────────────────────────────────────────
     function init() {
         const body = document.body;
         userType = body.dataset.userType || null;
@@ -56,70 +58,81 @@
         fetchUnreadCount();
         startPolling();
         setupPermissionTriggers();
-        if ("Notification" in window && Notification.permission === 'granted') {
-            subscribeToPush();
-        }
+
+        // FIX: resume polling immediately when tab becomes visible again
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                fetchUnreadCount();
+            }
+        });
     }
 
-    const VAPID_PUBLIC_KEY = "BLNqmzATvl4GJpv1khAm8Uz1FoXC13H7-gEuD4XtY5JpqQIoGfL4g7_Gm5Mc2kejNgy67LTyWQRLozHhoWgQ7fI";
-
+    // ─── VAPID Helper ──────────────────────────────────────────────────────
     function urlBase64ToUint8Array(base64String) {
         const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
         const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
-        return outputArray;
+        const output = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) output[i] = rawData.charCodeAt(i);
+        return output;
     }
 
-    // ─── System Notification Permissions & Popups ──────────────────────────
+    // ─── Permissions & Push ────────────────────────────────────────────────
     function setupPermissionTriggers() {
-        const requestPermissionOnce = () => {
-            if ("Notification" in window && Notification.permission === 'default') {
-                Notification.requestPermission().then(permission => {
-                    console.log('[Notif] System notification permission:', permission);
-                    if (permission === 'granted') {
-                        subscribeToPush();
-                    }
-                });
-            } else if ("Notification" in window && Notification.permission === 'granted') {
-                subscribeToPush();
-            }
-            
-            // Preload audio on first click to satisfy browser auto-play policies
+        const requestOnce = () => {
+            // Preload audio on first user gesture (satisfies autoplay policy)
             if (!window.notifAudioEl) {
                 window.notifAudioEl = new Audio('/static/users/audio/notification.wav');
                 window.notifAudioEl.volume = 0.8;
                 window.notifAudioEl.load();
             }
-            document.removeEventListener('click', requestPermissionOnce);
-            document.removeEventListener('touchstart', requestPermissionOnce);
+
+            if (!("Notification" in window)) return;
+
+            if (Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') subscribeToPush();
+                });
+            } else if (Notification.permission === 'granted') {
+                subscribeToPush();
+            }
+
+            document.removeEventListener('click', requestOnce);
+            document.removeEventListener('touchstart', requestOnce);
         };
-        document.addEventListener('click', requestPermissionOnce);
-        document.addEventListener('touchstart', requestPermissionOnce);
+        document.addEventListener('click', requestOnce);
+        document.addEventListener('touchstart', requestOnce);
     }
 
     function subscribeToPush() {
-        if ('serviceWorker' in navigator && 'PushManager' in window) {
-            navigator.serviceWorker.register('/sw.js').then(function(swReg) {
-                swReg.pushManager.getSubscription().then(function(subscription) {
-                    if (subscription) {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+        // FIX: wait for SW to be ready before subscribing
+        navigator.serviceWorker.ready.then(swReg => {
+            swReg.pushManager.getSubscription().then(subscription => {
+                if (subscription) {
+                    // FIX: only send to server if it's a fresh subscription
+                    // by storing a flag in sessionStorage
+                    const key = 'push_synced_' + userId;
+                    if (!sessionStorage.getItem(key)) {
                         sendSubscriptionToServer(subscription);
-                    } else {
-                        swReg.pushManager.subscribe({
-                            userVisibleOnly: true,
-                            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-                        }).then(function(newSubscription) {
-                            sendSubscriptionToServer(newSubscription);
-                        }).catch(function(err) {
-                            console.log('[Notif] Failed to subscribe to web push: ', err);
-                        });
+                        sessionStorage.setItem(key, '1');
                     }
-                });
-            }).catch(function(error) {
-                console.error('[Notif] Service Worker Error', error);
+                } else {
+                    swReg.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                    }).then(newSub => {
+                        sendSubscriptionToServer(newSub);
+                        sessionStorage.setItem('push_synced_' + userId, '1');
+                    }).catch(err => {
+                        console.warn('[Notif] Push subscribe failed:', err);
+                    });
+                }
             });
-        }
+        }).catch(err => {
+            console.warn('[Notif] SW not ready:', err);
+        });
     }
 
     function sendSubscriptionToServer(subscription) {
@@ -134,82 +147,49 @@
                 id: userId,
                 subscription: subscription
             })
-        }).catch(err => console.log('[Notif] Subscription sync error:', err));
-    }
-
-    function requestSystemNotificationPermission() {
-        if (!("Notification" in window)) return;
-        if (Notification.permission === 'default') {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') subscribeToPush();
-            });
-        } else if (Notification.permission === 'granted') {
-            subscribeToPush();
-        }
+        }).catch(err => console.warn('[Notif] Subscription sync error:', err));
     }
 
     function triggerSystemNotification(title, message, actionUrl) {
-        if (!("Notification" in window) || Notification.permission !== "granted") return;
-
-        const options = {
-            body: message,
-            icon: '/static/users/images/adminlogo.jpg',
-            badge: '/static/users/images/adminlogo.jpg',
-            vibrate: [100, 50, 100],
-            requireInteraction: false
-        };
-
+        if (!("Notification" in window) || Notification.permission !== 'granted') return;
         try {
-            const notification = new Notification(title, options);
+            const n = new Notification(title, {
+                body: message,
+                icon: '/static/users/images/adminlogo.jpg',
+                badge: '/static/users/images/adminlogo.jpg',
+                vibrate: [100, 50, 100],
+                requireInteraction: false
+            });
             if (actionUrl) {
-                notification.onclick = function (event) {
-                    event.preventDefault();
+                n.onclick = e => {
+                    e.preventDefault();
                     window.focus();
                     window.location.href = actionUrl;
-                    notification.close();
+                    n.close();
                 };
             }
         } catch (e) {
-            console.warn('[Notif] Error creating system notification:', e.message);
+            console.warn('[Notif] System notification error:', e.message);
         }
-    }
-
-    function fetchAndTriggerSystemNotifications(count) {
-        fetch(`/api/notifications/?type=${userType}&id=${userId}`)
-            .then(r => r.json())
-            .then(data => {
-                const notifications = data.notifications || [];
-                // Get the newest unread notifications up to count
-                const unreadNotifs = notifications.filter(n => !n.is_read).slice(0, count);
-                unreadNotifs.forEach(n => {
-                    const icon = CATEGORY_ICONS[n.category] || '🔔';
-                    triggerSystemNotification(`${icon} ${n.title}`, n.message, n.action_url);
-                });
-            })
-            .catch(err => console.warn('[Notif] Error fetching for system notification:', err));
     }
 
     // ─── UI Setup ──────────────────────────────────────────────────────────
     function setupUI() {
         const bell = document.getElementById('notificationBell');
         const panel = document.getElementById('notificationPanel');
-
         if (!bell || !panel) return;
 
-        // Wrap bell in a container for badge positioning
         const wrapper = document.createElement('span');
         wrapper.className = 'bell-wrapper';
         bell.parentNode.insertBefore(wrapper, bell);
         wrapper.appendChild(bell);
 
-        // Create badge
         const badge = document.createElement('span');
         badge.id = 'notifBadge';
         badge.className = 'notification-badge';
         badge.textContent = '0';
         wrapper.appendChild(badge);
 
-        // Replace static panel content with dynamic structure
         panel.innerHTML = `
             <div class="notif-panel-header">
                 <h3>Notifications</h3>
@@ -219,32 +199,24 @@
                 ${getLoadingHTML()}
             </div>
         `;
-
-        // Restyle panel class
         panel.classList.remove('notification-panel');
         panel.classList.add('notif-panel');
 
-        // Bell click
-        bell.addEventListener('click', (e) => {
+        bell.addEventListener('click', e => {
             e.stopPropagation();
-            requestSystemNotificationPermission();
             isPanelOpen = !isPanelOpen;
             panel.classList.toggle('active', isPanelOpen);
-            if (isPanelOpen) {
-                fetchNotifications();
-            }
+            if (isPanelOpen) fetchNotifications();
         });
 
-        // Close on outside click
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', e => {
             if (!wrapper.contains(e.target) && !panel.contains(e.target)) {
                 panel.classList.remove('active');
                 isPanelOpen = false;
             }
         });
 
-        // Mark all read button
-        document.getElementById('notifMarkAllBtn').addEventListener('click', (e) => {
+        document.getElementById('notifMarkAllBtn').addEventListener('click', e => {
             e.stopPropagation();
             markAllRead();
         });
@@ -252,10 +224,10 @@
 
     function setupToastContainer() {
         if (document.getElementById('notifToastContainer')) return;
-        const container = document.createElement('div');
-        container.id = 'notifToastContainer';
-        container.className = 'notif-toast-container';
-        document.body.appendChild(container);
+        const c = document.createElement('div');
+        c.id = 'notifToastContainer';
+        c.className = 'notif-toast-container';
+        document.body.appendChild(c);
     }
 
     // ─── Polling ───────────────────────────────────────────────────────────
@@ -265,98 +237,139 @@
         pollTimer = setInterval(fetchUnreadCount, POLL_INTERVAL);
     }
 
-    function stopPolling() {
-        isPolling = false;
-        if (pollTimer) clearInterval(pollTimer);
-    }
-
-    // ─── API Calls ─────────────────────────────────────────────────────────
+    // ─── Core Fetch: Unread Count ──────────────────────────────────────────
     function fetchUnreadCount() {
         fetch(`/api/notifications/count/?type=${userType}&id=${userId}`)
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) throw new Error('count fetch failed');
+                return r.json();
+            })
             .then(data => {
                 const newCount = data.count || 0;
+
+                // FIX: first poll just sets the baseline, no alerts
+                if (lastUnreadCount === -1) {
+                    lastUnreadCount = newCount;
+                    updateBadge(newCount);
+                    return;
+                }
+
                 updateBadge(newCount);
 
-                // If count increased, trigger alerts
-                if (newCount > lastUnreadCount && lastUnreadCount >= 0) {
+                if (newCount > lastUnreadCount) {
                     const diff = newCount - lastUnreadCount;
-                    if (lastUnreadCount > 0) {
-                        // New notifications arrived
-                        playNotificationSound();
-                        triggerVibration();
-                        
-                        const hasSystemNotif = ("Notification" in window && Notification.permission === "granted");
-                        
-                        if (!isPanelOpen && !hasSystemNotif) {
-                            showNewNotifToast(diff);
-                        }
-                        
-                        // Trigger native system notification
-                        if (hasSystemNotif) {
-                            fetchAndTriggerSystemNotifications(diff);
-                        }
+                    playNotificationSound();
+                    triggerVibration();
+
+                    const hasPermission = ("Notification" in window &&
+                        Notification.permission === 'granted');
+
+                    if (hasPermission) {
+                        // FIX: pass newNotifs directly from count response if available,
+                        // otherwise do ONE fetch to get them (not two)
+                        fetchNewNotificationsAndAlert(diff);
+                    } else if (!isPanelOpen) {
+                        showNewNotifToast(diff);
                     }
                 }
+
                 lastUnreadCount = newCount;
             })
             .catch(err => console.warn('[Notif] Count fetch error:', err));
     }
 
+    // FIX: single fetch for both toast data and system notification
+    function fetchNewNotificationsAndAlert(count) {
+        fetch(`/api/notifications/?type=${userType}&id=${userId}`)
+            .then(r => r.json())
+            .then(data => {
+                const notifications = data.notifications || [];
+
+                // FIX: find genuinely new ones by ID, not just unread status
+                const newNotifs = notifications
+                    .filter(n => !n.is_read && !lastNotifIds.has(String(n.id)))
+                    .slice(0, count);
+
+                // Update seen IDs
+                notifications.forEach(n => lastNotifIds.add(String(n.id)));
+
+                if (newNotifs.length === 0) {
+                    // Fallback: just show generic toast
+                    if (!isPanelOpen) showNewNotifToast(count);
+                    return;
+                }
+
+                newNotifs.forEach(n => {
+                    const icon = CATEGORY_ICONS[n.category] || '🔔';
+                    triggerSystemNotification(`${icon} ${n.title}`, n.message, n.action_url);
+                });
+
+                if (!isPanelOpen) {
+                    showRichToast(newNotifs[0], newNotifs.length);
+                }
+
+                if (isPanelOpen) fetchNotifications();
+            })
+            .catch(err => console.warn('[Notif] New notif fetch error:', err));
+    }
+
+    // ─── Fetch Full List ───────────────────────────────────────────────────
     function fetchNotifications() {
         const body = document.getElementById('notifPanelBody');
         if (!body) return;
         body.innerHTML = getLoadingHTML();
 
         fetch(`/api/notifications/?type=${userType}&id=${userId}`)
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) throw new Error('notif fetch failed');
+                return r.json();
+            })
             .then(data => {
                 const notifications = data.notifications || [];
+                // Update seen IDs cache
+                notifications.forEach(n => lastNotifIds.add(String(n.id)));
                 renderNotifications(notifications);
             })
             .catch(err => {
                 console.warn('[Notif] Fetch error:', err);
-                body.innerHTML = getEmptyHTML('Error loading notifications');
+                if (body) body.innerHTML = getEmptyHTML('Error loading notifications');
             });
     }
 
+    // ─── Mark Read ─────────────────────────────────────────────────────────
     function markAsRead(notifId, groupIds) {
-        if (groupIds && groupIds.length > 1) {
-            // Mark group as read - send all IDs
-            fetch(`/api/notifications/read/${notifId}/?type=${userType}&id=${userId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken(),
-                },
-                body: JSON.stringify({ group_ids: groupIds }),
-            }).then(() => {
+        const body = groupIds && groupIds.length > 1
+            ? JSON.stringify({ group_ids: groupIds })
+            : null;
+
+        const headers = { 'X-CSRFToken': getCSRFToken() };
+        if (body) headers['Content-Type'] = 'application/json';
+
+        fetch(`/api/notifications/read/${notifId}/?type=${userType}&id=${userId}`, {
+            method: 'POST',
+            headers: headers,
+            body: body || undefined,
+        })
+            .then(r => {
+                if (!r.ok) throw new Error('mark read failed');
                 fetchUnreadCount();
                 if (isPanelOpen) fetchNotifications();
-            });
-        } else {
-            fetch(`/api/notifications/read/${notifId}/?type=${userType}&id=${userId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCSRFToken(),
-                },
-            }).then(() => {
-                fetchUnreadCount();
-                if (isPanelOpen) fetchNotifications();
-            });
-        }
+            })
+            .catch(err => console.warn('[Notif] Mark read error:', err));
     }
 
     function markAllRead() {
         fetch(`/api/notifications/read-all/?type=${userType}&id=${userId}`, {
             method: 'POST',
-            headers: {
-                'X-CSRFToken': getCSRFToken(),
-            },
-        }).then(() => {
-            fetchUnreadCount();
-            if (isPanelOpen) fetchNotifications();
-        });
+            headers: { 'X-CSRFToken': getCSRFToken() },
+        })
+            .then(r => {
+                if (!r.ok) throw new Error('mark all read failed');
+                lastUnreadCount = 0;
+                updateBadge(0);
+                if (isPanelOpen) fetchNotifications();
+            })
+            .catch(err => console.warn('[Notif] Mark all read error:', err));
     }
 
     // ─── Rendering ─────────────────────────────────────────────────────────
@@ -381,9 +394,9 @@
             const groupIds = n.group_ids ? JSON.stringify(n.group_ids) : '[]';
 
             html += `
-                <div class="notif-item ${readClass}" 
-                     data-id="${n.id}" 
-                     data-url="${n.action_url || ''}"
+                <div class="notif-item ${readClass}"
+                     data-id="${n.id}"
+                     data-url="${escapeAttr(n.action_url || '')}"
                      data-group-ids='${groupIds}'
                      onclick="window.NotifClient.handleClick(this)">
                     <div class="notif-icon ${catClass}">${icon}</div>
@@ -407,13 +420,11 @@
             badge.textContent = count > 99 ? '99+' : count;
             badge.classList.add('visible');
 
-            // Pulse animation
-            if (count > lastUnreadCount && lastUnreadCount > 0) {
+            if (count > lastUnreadCount && lastUnreadCount >= 0) {
                 badge.classList.remove('pulse-badge');
-                void badge.offsetWidth; // Force reflow
+                void badge.offsetWidth;
                 badge.classList.add('pulse-badge');
 
-                // Ring the bell
                 const bell = document.getElementById('notificationBell');
                 if (bell) {
                     bell.classList.remove('bell-ring');
@@ -426,26 +437,44 @@
         }
     }
 
-    // ─── Toast Notifications ───────────────────────────────────────────────
+    // ─── Toasts ────────────────────────────────────────────────────────────
+    // Rich toast with actual notification title (when we have the data)
+    function showRichToast(notif, totalCount) {
+        const icon = CATEGORY_ICONS[notif.category] || '🔔';
+        const title = totalCount > 1
+            ? `${totalCount} new notifications`
+            : `${icon} ${notif.title}`;
+        const message = totalCount > 1
+            ? `Latest: ${notif.title}`
+            : notif.message;
+        _showToast(title, message);
+    }
+
+    // Generic toast when we only have a count
     function showNewNotifToast(count) {
+        _showToast(
+            count === 1 ? 'New notification' : `${count} new notifications`,
+            'Click to view'
+        );
+    }
+
+    function _showToast(title, message) {
         const container = document.getElementById('notifToastContainer');
         if (!container) return;
 
-        // Limit toasts
         const existing = container.querySelectorAll('.notif-toast');
-        if (existing.length >= MAX_TOASTS) {
-            existing[0].remove();
-        }
+        if (existing.length >= MAX_TOASTS) existing[0].remove();
 
         const toast = document.createElement('div');
         toast.className = 'notif-toast';
         toast.innerHTML = `
             <span class="notif-toast-icon">🔔</span>
             <div class="notif-toast-body">
-                <div class="notif-toast-title">${count === 1 ? 'New notification' : count + ' new notifications'}</div>
-                <div class="notif-toast-message">Click to view</div>
+                <div class="notif-toast-title">${escapeHTML(title)}</div>
+                <div class="notif-toast-message">${escapeHTML(message)}</div>
             </div>
-            <button class="notif-toast-close" onclick="event.stopPropagation(); this.parentElement.classList.add('hiding'); setTimeout(() => this.parentElement.remove(), 400);">✕</button>
+            <button class="notif-toast-close"
+                onclick="event.stopPropagation();this.parentElement.classList.add('hiding');setTimeout(()=>this.parentElement.remove(),400)">✕</button>
         `;
 
         toast.addEventListener('click', () => {
@@ -456,15 +485,8 @@
         });
 
         container.appendChild(toast);
+        requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('show')));
 
-        // Animate in
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                toast.classList.add('show');
-            });
-        });
-
-        // Auto-dismiss
         setTimeout(() => {
             if (toast.parentElement) {
                 toast.classList.add('hiding');
@@ -481,107 +503,85 @@
                 window.notifAudioEl.volume = 0.8;
             }
             window.notifAudioEl.currentTime = 0;
-            const playPromise = window.notifAudioEl.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log('[Notif] Audio blocked by browser policy:', error);
-                });
-            }
+            const p = window.notifAudioEl.play();
+            if (p) p.catch(() => { });
         } catch (e) {
             console.log('[Notif] Sound error:', e.message);
         }
     }
 
     function triggerVibration() {
-        try {
-            if (navigator.vibrate) {
-                navigator.vibrate([100, 50, 100]); // Short double vibration
-            }
-        } catch (e) {
-            // Vibration not supported
-        }
+        try { if (navigator.vibrate) navigator.vibrate([100, 50, 100]); } catch (e) { }
     }
 
     // ─── Helpers ───────────────────────────────────────────────────────────
     function relativeTime(isoStr) {
         if (!isoStr) return '';
-        const date = new Date(isoStr);
-        const now = new Date();
-        const diffMs = now - date;
-        const diffSec = Math.floor(diffMs / 1000);
-        const diffMin = Math.floor(diffSec / 60);
-        const diffHr = Math.floor(diffMin / 60);
-        const diffDay = Math.floor(diffHr / 24);
+        const diff = Date.now() - new Date(isoStr).getTime();
+        const sec = Math.floor(diff / 1000);
+        const min = Math.floor(sec / 60);
+        const hr = Math.floor(min / 60);
+        const day = Math.floor(hr / 24);
 
-        if (diffSec < 60) return 'Just now';
-        if (diffMin < 60) return diffMin + (diffMin === 1 ? ' min ago' : ' mins ago');
-        if (diffHr < 24) return diffHr + (diffHr === 1 ? ' hour ago' : ' hours ago');
-        if (diffDay < 7) return diffDay + (diffDay === 1 ? ' day ago' : ' days ago');
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        if (sec < 60) return 'Just now';
+        if (min < 60) return min + (min === 1 ? ' min ago' : ' mins ago');
+        if (hr < 24) return hr + (hr === 1 ? ' hour ago' : ' hours ago');
+        if (day < 7) return day + (day === 1 ? ' day ago' : ' days ago');
+        return new Date(isoStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
 
     function escapeHTML(str) {
         if (!str) return '';
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
+    function escapeAttr(str) {
+        return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
     function getCSRFToken() {
-        const cookie = document.cookie.split(';')
-            .find(c => c.trim().startsWith('csrftoken='));
-        return cookie ? cookie.split('=')[1] : '';
+        const c = document.cookie.split(';').find(s => s.trim().startsWith('csrftoken='));
+        return c ? c.split('=')[1].trim() : '';
     }
 
     function getLoadingHTML() {
-        let html = '<div class="notif-loading">';
+        let h = '<div class="notif-loading">';
         for (let i = 0; i < 3; i++) {
-            html += `
-                <div class="notif-skeleton">
+            h += `<div class="notif-skeleton">
                     <div class="notif-skeleton-icon"></div>
                     <div class="notif-skeleton-content">
                         <div class="notif-skeleton-line"></div>
                         <div class="notif-skeleton-line short"></div>
                         <div class="notif-skeleton-line tiny"></div>
                     </div>
-                </div>
-            `;
+                  </div>`;
         }
-        html += '</div>';
-        return html;
+        return h + '</div>';
     }
 
     function getEmptyHTML(text) {
-        return `
-            <div class="notif-empty">
-                <div class="notif-empty-icon">🎉</div>
-                <div class="notif-empty-text">${text || 'No notifications yet'}</div>
-                <div class="notif-empty-sub">You're all caught up!</div>
-            </div>
-        `;
+        return `<div class="notif-empty">
+                    <div class="notif-empty-icon">🎉</div>
+                    <div class="notif-empty-text">${escapeHTML(text) || 'No notifications yet'}</div>
+                    <div class="notif-empty-sub">You're all caught up!</div>
+                </div>`;
     }
 
-    // ─── Public: Click Handler ─────────────────────────────────────────────
+    // ─── Public API ────────────────────────────────────────────────────────
     function handleClick(el) {
         const notifId = el.dataset.id;
         const url = el.dataset.url;
         let groupIds = [];
-        try {
-            groupIds = JSON.parse(el.dataset.groupIds || '[]');
-        } catch (e) { /* ignore */ }
+        try { groupIds = JSON.parse(el.dataset.groupIds || '[]'); } catch (e) { }
 
-        // Mark as read
         if (el.classList.contains('unread')) {
             markAsRead(notifId, groupIds);
         }
-
-        // Navigate if URL provided
-        if (url) {
-            window.location.href = url;
-        }
+        if (url) window.location.href = url;
     }
 
-    // ─── Expose Public API ─────────────────────────────────────────────────
     window.NotifClient = {
         handleClick: handleClick,
         refresh: fetchUnreadCount,
