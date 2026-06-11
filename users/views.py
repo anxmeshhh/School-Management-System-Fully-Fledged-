@@ -10093,6 +10093,11 @@ def parent_student_leave(request):
                       form_data["half_day_type"] if form_data["leave_duration"] == "half" else None,
                       "Pending"])
                 connection.commit()
+            
+            # ── Notification: Parent Leave Request ──
+            notify_all_admins('leave', 'New Leave Request', f'Leave request from parent for {form_data["student_name"]} ({form_data["class_number"]}-{form_data["section"]}) from {form_data["leave_start_date"]} to {form_data["leave_end_date"]}', '/accept-portal/', 'parent', user_id)
+            notify_class_teacher(form_data["class_number"], form_data["section"], 'leave', 'New Leave Request', f'Leave request from parent for {form_data["student_name"]} from {form_data["leave_start_date"]} to {form_data["leave_end_date"]}', '/teacher_accept_portal/', 'parent', user_id)
+
             messages.success(request, "Leave request submitted successfully.")
         except Exception as e:
             connection.rollback()
