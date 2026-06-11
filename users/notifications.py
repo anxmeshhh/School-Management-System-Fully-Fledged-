@@ -58,12 +58,23 @@ def trigger_web_push(recipient_type, recipient_id, title, message, action_url):
                 }
             }
             try:
-                webpush(
-                    subscription_info=subscription_info,
-                    data=payload,
-                    vapid_private_key=VAPID_PRIVATE_KEY,
-                    vapid_claims={"sub": "mailto:admin@manavargalsms.com"}
-                )
+                import tempfile
+                import os
+                
+                with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.pem') as temp_key:
+                    temp_key.write(VAPID_PRIVATE_KEY)
+                    temp_key_path = temp_key.name
+                    
+                try:
+                    webpush(
+                        subscription_info=subscription_info,
+                        data=payload,
+                        vapid_private_key=temp_key_path,
+                        vapid_claims={"sub": "mailto:admin@manavargalsms.com"}
+                    )
+                finally:
+                    if os.path.exists(temp_key_path):
+                        os.remove(temp_key_path)
             except WebPushException as ex:
                 if ex.response and ex.response.status_code in [404, 410]:
                     with connection.cursor() as cursor:
