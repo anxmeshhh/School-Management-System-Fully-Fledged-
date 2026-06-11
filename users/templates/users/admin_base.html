@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,19 +20,24 @@
             font-weight: 400;
         }
 
-        h1, h2, h3, .sidebar-header, .header-text, .username-box {
+        h1,
+        h2,
+        h3,
+        .sidebar-header,
+        .header-text,
+        .username-box {
             font-family: 'Montserrat', sans-serif;
         }
 
         :root {
             --primary-color: #00a676;
             --primary-hover: #00b88d;
-            --sidebar-bg: #f0f9f4; /* Slight green tint for sidebar to align with theme */
-            --sidebar-border: #a8d5c2; /* Darker green border for sidebar */
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #a8d5c2;
             --white: #ffffff;
             --light-bg: #f8f9fa;
-            --border-color: #ced4da; /* Darker gray border */
-            --darker-border: #495057; /* Darker border color for header and username */
+            --border-color: #ced4da;
+            --darker-border: #495057;
             --text-color: #495057;
             --text-light: #868e96;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -39,8 +45,8 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --border-radius: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --dull-highlighter: #d4edda; /* Slightly darker dull green highlighter for sidebar hover */
-            --username-bg: #e6f4ea; /* Different subtle green for username box */
+            --dull-highlighter: #d4edda;
+            --username-bg: #e6f4ea;
         }
 
         html {
@@ -70,7 +76,7 @@
         .sidebar {
             width: 280px;
             height: 100vh;
-            background: var(--sidebar-bg); /* Updated to subtle theme-aligned green tint */
+            background: var(--sidebar-bg);
             color: var(--text-color);
             overflow-y: auto;
             scroll-behavior: smooth;
@@ -80,12 +86,12 @@
             left: 0;
             z-index: 20;
             transition: var(--transition);
-            border-right: 2px solid var(--sidebar-border); /* Increased border thickness */
+            border-right: 2px solid var(--sidebar-border);
         }
 
         .sidebar-header {
             padding: 2rem 1.5rem;
-            background: var(--white); /* Keep header white for contrast, but could tint if needed */
+            background: var(--white);
             text-align: center;
             font-size: 1.25rem;
             font-weight: 600;
@@ -96,13 +102,13 @@
             flex-direction: column;
             align-items: center;
             gap: 1rem;
-            border-bottom: 2px solid var(--sidebar-border); /* Increased border thickness */
+            border-bottom: 2px solid var(--sidebar-border);
         }
 
         .logo-container {
             width: 100px;
             height: 80px;
-            background: var(--white); /* Slight adjustment for contrast */
+            background: var(--white);
             border-radius: var(--border-radius);
             display: flex;
             align-items: center;
@@ -110,7 +116,7 @@
             overflow: hidden;
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
-            border: 2px solid var(--sidebar-border); /* Increased border thickness */
+            border: 2px solid var(--sidebar-border);
         }
 
         .logo-container img {
@@ -193,7 +199,7 @@
             background: var(--white);
             border-radius: var(--border-radius);
             position: relative;
-            border: 2px solid var(--darker-border); /* Updated to even darker border */
+            border: 2px solid var(--darker-border);
             box-shadow: var(--shadow-sm);
         }
 
@@ -209,21 +215,26 @@
             gap: 1.5rem;
         }
 
+        /* FIX 3: wrapper gives position:relative for the absolute panel */
+        .notif-panel-wrapper {
+            position: relative;
+        }
+
         .header-text {
             color: var(--text-color);
-            font-size: 1.2rem; /* Increased font size */
+            font-size: 1.2rem;
             font-weight: 500;
         }
 
         .username-box {
-            background: var(--username-bg); /* Updated to different subtle green background */
-            color: var(--primary-color); /* Bright color for username text */
+            background: var(--username-bg);
+            color: var(--primary-color);
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.875rem;
             font-weight: 500;
             box-shadow: var(--shadow-sm);
-            border: 1px solid var(--darker-border); /* Updated to darker border */
+            border: 1px solid var(--darker-border);
             min-width: 100px;
             text-align: center;
             line-height: 1.4;
@@ -245,7 +256,7 @@
             transition: var(--transition);
             pointer-events: none;
             z-index: 10;
-            border: 2px solid var(--darker-border); /* Updated to darker border */
+            border: 2px solid var(--darker-border);
             margin-top: 0.5rem;
         }
 
@@ -325,7 +336,7 @@
             max-width: 800px;
             margin: 0 auto;
             box-shadow: var(--shadow-sm);
-            border: 2px solid var(--border-color); /* Increased border thickness */
+            border: 2px solid var(--border-color);
             position: relative;
             overflow: hidden;
         }
@@ -382,9 +393,17 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .menu-toggle {
@@ -409,6 +428,22 @@
             color: var(--white);
         }
 
+        /* FIX 3: sidebar overlay for mobile tap-to-close */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 15;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
         .ripple {
             position: absolute;
             border-radius: 50%;
@@ -419,7 +454,10 @@
         }
 
         @keyframes ripple {
-            to { transform: scale(4); opacity: 0; }
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
 
         @media (max-width: 1024px) {
@@ -477,7 +515,7 @@
             }
 
             .header-text {
-                font-size: 1rem; /* Increased font size for mobile */
+                font-size: 1rem;
             }
 
             .logo-container {
@@ -511,7 +549,7 @@
                 top: 0;
                 left: 0;
                 transform: translateX(-100%);
-                background: var(--sidebar-bg); /* Maintain theme tint on mobile */
+                background: var(--sidebar-bg);
             }
 
             .sidebar.active {
@@ -583,19 +621,20 @@
             .sidebar-header {
                 font-size: 1.125rem;
             }
-
-            .sidebar-nav a {
-                font-size: 0.95rem;
-            }
         }
 
         @media (hover: none) {
-            .card-container:hover, .sidebar:hover, .header:hover {
+
+            .card-container:hover,
+            .sidebar:hover,
+            .header:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
 
-            .bell-button:hover, .profile-button:hover, .logo-container:hover {
+            .bell-button:hover,
+            .profile-button:hover,
+            .logo-container:hover {
                 transform: none;
                 background: none;
             }
@@ -618,10 +657,15 @@
     </style>
     <link rel="stylesheet" href="{% static 'users/css/notifications.css' %}">
 </head>
-<body data-user-type="{{ notification_user_type|default:'' }}" data-user-id="{{ notification_user_id|default:'' }}">
+<!-- FIX 1: hardcode user-type, pass notification_user_id from view -->
+
+<body data-user-type="admin" data-user-id="{{ notification_user_id|default:'' }}">
     <div class="container">
         <!-- Mobile Menu Toggle -->
         <button class="menu-toggle" id="menuToggle">☰</button>
+
+        <!-- FIX 3: sidebar overlay for mobile tap-to-close -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
@@ -632,27 +676,33 @@
                 Manavargal SMS
             </div>
             <nav class="sidebar-nav">
-                <a href="{% url 'admin_master' %}" class="{% if request.resolver_match.url_name == 'admin_master' %}active{% endif %}">
+                <a href="{% url 'admin_master' %}"
+                    class="{% if request.resolver_match.url_name == 'admin_master' %}active{% endif %}">
                     <img src="https://img.icons8.com/fluency/24/home.png" alt="Master Data Icon">
                     Master Data
                 </a>
-                <a href="{% url 'admin_accept_portal' %}" class="{% if request.resolver_match.url_name == 'admin_accept_portal' %}active{% endif %}">
+                <a href="{% url 'admin_accept_portal' %}"
+                    class="{% if request.resolver_match.url_name == 'admin_accept_portal' %}active{% endif %}">
                     <img src="https://img.icons8.com/color/24/000000/calendar--v1.png" alt="Attendance and Leave Icon">
                     Attendance and Leave
                 </a>
-                <a href="{% url 'admin_attendance_portal' %}" class="{% if request.resolver_match.url_name == 'admin_attendance_portal' %}active{% endif %}">
+                <a href="{% url 'admin_attendance_portal' %}"
+                    class="{% if request.resolver_match.url_name == 'admin_attendance_portal' %}active{% endif %}">
                     <img src="https://img.icons8.com/color/48/todo-list.png" alt="Attendance Update Icon">
                     Attendance Update
                 </a>
-                <a href="{% url 'admin_circular_upload' %}" class="{% if request.resolver_match.url_name == 'admin_circular_upload' %}active{% endif %}">
+                <a href="{% url 'admin_circular_upload' %}"
+                    class="{% if request.resolver_match.url_name == 'admin_circular_upload' %}active{% endif %}">
                     <img src="https://img.icons8.com/color/24/000000/classroom.png" alt="Circulars Icon">
                     Circulars
                 </a>
-                <a href="{% url 'admin_study_materials_upload' %}" class="{% if request.resolver_match.url_name == 'admin_study_materials_upload' %}active{% endif %}">
+                <a href="{% url 'admin_study_materials_upload' %}"
+                    class="{% if request.resolver_match.url_name == 'admin_study_materials_upload' %}active{% endif %}">
                     <img src="https://img.icons8.com/color/24/000000/graduation-cap.png" alt="Student Materials Icon">
                     Student Materials
                 </a>
-                <a href="{% url 'admin_homework_panel' %}" class="{% if request.resolver_match.url_name == 'admin_homework_panel' %}active{% endif %}">
+                <a href="{% url 'admin_homework_panel' %}"
+                    class="{% if request.resolver_match.url_name == 'admin_homework_panel' %}active{% endif %}">
                     <img src="https://img.icons8.com/color/24/000000/homework.png" alt="Homework Icon">
                     Homework
                 </a>
@@ -667,12 +717,15 @@
                     <span class="header-text">Manavargal School Management System, Admin Dashboard v1.0</span>
                 </div>
                 <div class="header-right">
-                    <button class="bell-button" id="notificationBell">🔔</button>
-                    <div id="notificationPanel" class="notification-panel">
-                        <h3>Notifications</h3>
-                        <ul>
-                            <li>Loading notifications...</li>
-                        </ul>
+                    <!-- FIX 3: wrapper so panel positions relative to bell, not header -->
+                    <div class="notif-panel-wrapper">
+                        <button class="bell-button" id="notificationBell">🔔</button>
+                        <div id="notificationPanel" class="notification-panel">
+                            <h3>Notifications</h3>
+                            <ul>
+                                <li>Loading notifications...</li>
+                            </ul>
+                        </div>
                     </div>
                     <span class="header-text">Welcome</span>
                     <span class="username-box">{{ admin_name|default:"Admin" }}</span>
@@ -694,42 +747,29 @@
                 }, index * 300);
             });
 
-            const bell = document.getElementById('notificationBell');
-            const panel = document.getElementById('notificationPanel');
-
-            if (bell && panel) {
-                bell.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    panel.classList.toggle('active');
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!bell.contains(e.target) && !panel.contains(e.target)) {
-                        panel.classList.remove('active');
-                    }
-                });
-            }
+            // FIX 2: bell handler removed — notifications.js owns it
 
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
 
             if (menuToggle && sidebar) {
                 menuToggle.addEventListener('click', (e) => {
                     e.stopPropagation();
                     sidebar.classList.toggle('active');
+                    sidebarOverlay.classList.toggle('active');
                 });
 
-                document.addEventListener('click', (e) => {
-                    if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                        sidebar.classList.remove('active');
-                    }
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
                 });
             }
 
             // Ripple effect for buttons
             const buttons = document.querySelectorAll('button');
             buttons.forEach((button) => {
-                button.addEventListener('click', function(e) {
+                button.addEventListener('click', function (e) {
                     const rect = this.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
@@ -749,20 +789,17 @@
             navItems.forEach((item) => {
                 item.addEventListener('mouseenter', () => {
                     const icon = item.querySelector('img');
-                    if (icon) {
-                        icon.style.transform = 'scale(1.1) rotate(5deg)';
-                    }
+                    if (icon) icon.style.transform = 'scale(1.1) rotate(5deg)';
                 });
 
                 item.addEventListener('mouseleave', () => {
                     const icon = item.querySelector('img');
-                    if (icon) {
-                        icon.style.transform = 'none';
-                    }
+                    if (icon) icon.style.transform = 'none';
                 });
             });
         });
     </script>
     <script src="{% static 'users/js/notifications.js' %}"></script>
 </body>
+
 </html>
