@@ -240,7 +240,7 @@ urlpatterns = [
     path('api/notifications/count/', views.api_notification_count, name='api_notification_count'),
     path('api/notifications/read/<int:notification_id>/', views.api_mark_read, name='api_mark_read'),
     path('api/notifications/read-all/', views.api_mark_all_read, name='api_mark_all_read'),
-
+    path('api/notifications/subscribe/', views.api_push_subscribe, name='api_push_subscribe'),
 ]
 
 if settings.DEBUG:

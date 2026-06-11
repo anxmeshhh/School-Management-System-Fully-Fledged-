@@ -14,6 +14,67 @@ import os
 from django.conf import settings
 
 
+import json
+try:
+    from pywebpush import webpush, WebPushException
+    PYWEBPUSH_AVAILABLE = True
+except ImportError:
+    PYWEBPUSH_AVAILABLE = False
+    print("pywebpush is not installed. Mobile push notifications are disabled.")
+
+VAPID_PRIVATE_KEY = """-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgCeB/jtwYZpNFG8VU
+1r1AAXNlGOF5h9S9lrfJsEthp+KhRANCAASzapswE75eBiab9ZIQJvFM9RaFwtdx
++/oBLg+F7WOSaakCKBny+IO/xpuTHNpHozYMuuy08lkES6Mx4aFoEO3y
+-----END PRIVATE KEY-----"""
+
+def trigger_web_push(recipient_type, recipient_id, title, message, action_url):
+    if not PYWEBPUSH_AVAILABLE:
+        return
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('''
+                SELECT endpoint, p256dh, auth FROM push_subscriptions
+                WHERE user_type = %s AND user_id = %s
+            ''', [recipient_type, recipient_id])
+            subscriptions = cursor.fetchall()
+            
+        if not subscriptions:
+            return
+            
+        payload = json.dumps({
+            "title": title,
+            "message": message,
+            "action_url": action_url
+        })
+        
+        for sub in subscriptions:
+            endpoint, p256dh, auth = sub
+            subscription_info = {
+                "endpoint": endpoint,
+                "keys": {
+                    "p256dh": p256dh,
+                    "auth": auth
+                }
+            }
+            try:
+                webpush(
+                    subscription_info=subscription_info,
+                    data=payload,
+                    vapid_private_key=VAPID_PRIVATE_KEY,
+                    vapid_claims={"sub": "mailto:admin@manavargalsms.com"}
+                )
+            except WebPushException as ex:
+                if ex.response and ex.response.status_code in [404, 410]:
+                    with connection.cursor() as cursor:
+                        cursor.execute('DELETE FROM push_subscriptions WHERE endpoint = %s', [endpoint])
+                        connection.commit()
+                else:
+                    print(f"Web Push Error: {repr(ex)}")
+    except Exception as e:
+        print(f"[Push Error] trigger_web_push: {e}")
+
+
 # ─── Core CRUD Functions ──────────────────────────────────────────────────────
 
 def create_notification(recipient_type, recipient_id, category, title, message,
@@ -39,6 +100,10 @@ def create_notification(recipient_type, recipient_id, category, title, message,
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """, [recipient_type, recipient_id, category, title, message,
                   action_url, sender_type, sender_id])
+            connection.commit()
+            
+            trigger_web_push(recipient_type, recipient_id, title, message, action_url)
+            return True
     except Exception as e:
         print(f"[Notification Error] create_notification: {e}")
 
@@ -74,6 +139,10 @@ def create_bulk_notifications(notifications_list):
 
         with connection.cursor() as cursor:
             cursor.execute(query, params)
+            connection.commit()
+            
+        for n in notifications_list:
+            trigger_web_push(n['recipient_type'], n['recipient_id'], n['title'], n['message'], n.get('action_url'))
     except Exception as e:
         print(f"[Notification Error] create_bulk_notifications: {e}")
 

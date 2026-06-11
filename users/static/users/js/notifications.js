@@ -58,14 +58,31 @@
         setupPermissionTriggers();
     }
 
+    const VAPID_PUBLIC_KEY = "BLNqmzATvl4GJpv1khAm8Uz1FoXC13H7-gEuD4XtY5JpqQIoGfL4g7_Gm5Mc2kejNgy67LTyWQRLozHhoWgQ7fI";
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+        return outputArray;
+    }
+
     // ─── System Notification Permissions & Popups ──────────────────────────
     function setupPermissionTriggers() {
         const requestPermissionOnce = () => {
             if ("Notification" in window && Notification.permission === 'default') {
                 Notification.requestPermission().then(permission => {
                     console.log('[Notif] System notification permission:', permission);
+                    if (permission === 'granted') {
+                        subscribeToPush();
+                    }
                 });
+            } else if ("Notification" in window && Notification.permission === 'granted') {
+                subscribeToPush();
             }
+            
             // Preload audio on first click to satisfy browser auto-play policies
             if (!window.notifAudioEl) {
                 window.notifAudioEl = new Audio('/static/users/audio/notification.wav');
@@ -79,10 +96,52 @@
         document.addEventListener('touchstart', requestPermissionOnce);
     }
 
+    function subscribeToPush() {
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            navigator.serviceWorker.register('/sw.js').then(function(swReg) {
+                swReg.pushManager.getSubscription().then(function(subscription) {
+                    if (subscription) {
+                        sendSubscriptionToServer(subscription);
+                    } else {
+                        swReg.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                        }).then(function(newSubscription) {
+                            sendSubscriptionToServer(newSubscription);
+                        }).catch(function(err) {
+                            console.log('[Notif] Failed to subscribe to web push: ', err);
+                        });
+                    }
+                });
+            }).catch(function(error) {
+                console.error('[Notif] Service Worker Error', error);
+            });
+        }
+    }
+
+    function sendSubscriptionToServer(subscription) {
+        fetch('/api/notifications/subscribe/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({
+                type: userType,
+                id: userId,
+                subscription: subscription
+            })
+        }).catch(err => console.log('[Notif] Subscription sync error:', err));
+    }
+
     function requestSystemNotificationPermission() {
         if (!("Notification" in window)) return;
         if (Notification.permission === 'default') {
-            Notification.requestPermission();
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') subscribeToPush();
+            });
+        } else if (Notification.permission === 'granted') {
+            subscribeToPush();
         }
     }
 
@@ -223,11 +282,17 @@
                         // New notifications arrived
                         playNotificationSound();
                         triggerVibration();
-                        if (!isPanelOpen) {
+                        
+                        const hasSystemNotif = ("Notification" in window && Notification.permission === "granted");
+                        
+                        if (!isPanelOpen && !hasSystemNotif) {
                             showNewNotifToast(diff);
                         }
+                        
                         // Trigger native system notification
-                        fetchAndTriggerSystemNotifications(diff);
+                        if (hasSystemNotif) {
+                            fetchAndTriggerSystemNotifications(diff);
+                        }
                     }
                 }
                 lastUnreadCount = newCount;

@@ -12397,3 +12397,49 @@ def api_mark_all_read(request):
 
     count = mark_all_as_read(user_type, user_id)
     return JsonResponse({'success': True, 'marked': count})
+
+@csrf_exempt
+def api_push_subscribe(request):
+    """POST /api/notifications/subscribe/ — Save push subscription."""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        # Use fallback from data if _get_notif_user fails
+        user_type, user_id = _get_notif_user(request)
+        if not user_type or not user_id:
+            user_type = data.get('type')
+            user_id = data.get('id')
+            
+        if not user_type or not user_id:
+            return JsonResponse({'error': 'Unauthorized'}, status=401)
+            
+        subscription = data.get('subscription')
+        if not subscription:
+            return JsonResponse({'error': 'Missing subscription'}, status=400)
+            
+        endpoint = subscription.get('endpoint')
+        p256dh = subscription.get('keys', {}).get('p256dh')
+        auth = subscription.get('keys', {}).get('auth')
+        
+        if not endpoint or not p256dh or not auth:
+            return JsonResponse({'error': 'Invalid subscription format'}, status=400)
+            
+        with connection.cursor() as cursor:
+            cursor.execute('''
+                SELECT id FROM push_subscriptions
+                WHERE user_type = %s AND user_id = %s AND auth = %s
+            ''', [user_type, user_id, auth])
+            
+            if not cursor.fetchone():
+                cursor.execute('''
+                    INSERT INTO push_subscriptions (user_type, user_id, endpoint, p256dh, auth)
+                    VALUES (%s, %s, %s, %s, %s)
+                ''', [user_type, user_id, endpoint, p256dh, auth])
+                connection.commit()
+                
+        return JsonResponse({'success': True})
+    except Exception as e:
+        print(f"[Push Error] api_push_subscribe: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
