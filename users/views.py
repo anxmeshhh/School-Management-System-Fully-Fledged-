@@ -1553,7 +1553,7 @@ def teacher_circular_upload(request):
 
         # ── Notification: Teacher circular uploaded ──
         notify_class_students(class_name, section, 'circular', 'New Circular', f'New circular from teacher: {title}', '/student_circular/')
-        notify_class_parents(class_name, section, 'circular', 'New Circular', f'New circular from teacher: {title}', '/parent_student_circular/')
+        notify_class_parents(class_name, section, 'circular', 'New Circular', f'New circular from teacher: {title}', '/parent-student-circular/')
 
         return redirect('teacher_circular_upload')
 
@@ -2253,7 +2253,7 @@ def admin_study_materials_upload(request):
                     # ── Notification: Study material for all sections ──
                     for sec in sections_for_class:
                         notify_class_students(selected_class, sec, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{sec}', '/study_materials/')
-                        notify_class_parents(selected_class, sec, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{sec}', '/parent_study_materials/')
+                        notify_class_parents(selected_class, sec, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{sec}', '/parent-study-materials/')
 
                 else:
                     cursor.execute(
@@ -2267,7 +2267,7 @@ def admin_study_materials_upload(request):
 
                     # ── Notification: Study material for specific section ──
                     notify_class_students(selected_class, selected_section, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{selected_section}', '/study_materials/')
-                    notify_class_parents(selected_class, selected_section, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{selected_section}', '/parent_study_materials/')
+                    notify_class_parents(selected_class, selected_section, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{selected_section}', '/parent-study-materials/')
         except Exception as e:
             messages.error(request, f"Error saving to database: {str(e)}")
             if os.path.exists(file_path):
@@ -2878,7 +2878,7 @@ def teacher_homework_panel(request):
         # ── Notification: Teacher assigned homework ──
         if target == 'specific' and class_name and section:
             notify_class_students(class_name, section, 'homework', 'New Homework', f'New homework assigned: {title}' + (f' (Due: {due_date})' if due_date else ''), '/homework/')
-            notify_class_parents(class_name, section, 'homework', 'New Homework', f'New homework assigned: {title}' + (f' (Due: {due_date})' if due_date else ''), '/parent_homework/')
+            notify_class_parents(class_name, section, 'homework', 'New Homework', f'New homework assigned: {title}' + (f' (Due: {due_date})' if due_date else ''), '/parent-homework/')
         else:
             try:
                 with connection.cursor() as c:
@@ -5666,7 +5666,7 @@ def add_teacher(request):
 
         messages.success(request, f'Teacher "{full_name}" added successfully!')
         # ── Notification: Teacher added ──
-        notify_all_admins('user', 'New Teacher Added', f'New teacher added: {full_name}', '/manage_teachers/')
+        notify_all_admins('user', 'New Teacher Added', f'New teacher added: {full_name}', '/teachers/')
         
     except IntegrityError as e:
         messages.error(request, 'Database constraint violated (e.g., duplicate entry).')
@@ -5871,7 +5871,7 @@ def delete_teacher(request, teacher_id):
 
         messages.success(request, 'Teacher and all associated records deleted successfully.')
         # ── Notification: Teacher deleted ──
-        notify_all_admins('user', 'Teacher Removed', 'A teacher and all associated records have been deleted.', '/manage_teachers/')
+        notify_all_admins('user', 'Teacher Removed', 'A teacher and all associated records have been deleted.', '/teachers/')
     except Error as e:
         messages.error(request, f'Error deleting teacher: {str(e)}')
     return redirect('manage_teachers')
@@ -6227,7 +6227,7 @@ def teacher_signup(request):
         messages.success(request, 'Registration successful! Please login.')
 
         # ── Notification: New teacher registered ──
-        notify_all_admins('auth', 'New Teacher Registered', f'New teacher registered: {name} (ID: {teacher_id})', '/admin_master/')
+        notify_all_admins('auth', 'New Teacher Registered', f'New teacher registered: {name} (ID: {teacher_id})', '/master-data/')
 
         return redirect('teacher_login')
 
@@ -10830,9 +10830,9 @@ def save_parent_signature(request):
                     student_info = cursor.fetchone()
                     if student_info:
                         student_name, student_class, student_section = student_info
-                        notify_all_admins('marks', 'Parent Signature Submitted', f'Parent signed progress card for {student_name} ({student_class}-{student_section})', '/admin_marks_portal/')
+                        notify_all_admins('marks', 'Parent Signature Submitted', f'Parent signed progress card for {student_name} ({student_class}-{student_section})', '/progress_card/')
                         if student_class and student_section:
-                            notify_class_teacher(student_class, student_section, 'marks', 'Parent Signature Submitted', f'Parent signed progress card for {student_name}', '/teacher_marks_panel/')
+                            notify_class_teacher(student_class, student_section, 'marks', 'Parent Signature Submitted', f'Parent signed progress card for {student_name}', '/teacher_progress_card/')
                 except Exception:
                     pass
                 
