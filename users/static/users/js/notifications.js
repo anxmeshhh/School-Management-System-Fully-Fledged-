@@ -12,6 +12,7 @@
     const POLL_INTERVAL = 30000;
     const TOAST_DURATION = 5000;
     const MAX_TOASTS = 3;
+    const MAX_SEEN_IDS = 500; // FIX: cap lastNotifIds to prevent memory leak
 
     // ─── Category Icons ────────────────────────────────────────────────────
     const CATEGORY_ICONS = {
@@ -34,11 +35,12 @@
     // ─── State ─────────────────────────────────────────────────────────────
     let userType = null;
     let userId = null;
-    let lastUnreadCount = -1;   // FIX: -1 so first poll sets baseline silently
+    let lastUnreadCount = -1;  // -1 so first poll sets baseline silently
     let isPolling = false;
     let pollTimer = null;
     let isPanelOpen = false;
-    let lastNotifIds = new Set(); // FIX: track seen IDs to detect truly new ones
+    let lastNotifIds = new Set();
+    let uiInitialised = false; // FIX: guard against double init
 
     const VAPID_PUBLIC_KEY = "BLNqmzATvl4GJpv1khAm8Uz1FoXC13H7-gEuD4XtY5JpqQIoGfL4g7_Gm5Mc2kejNgy67LTyWQRLozHhoWgQ7fI";
 
@@ -59,11 +61,8 @@
         startPolling();
         setupPermissionTriggers();
 
-        // FIX: resume polling immediately when tab becomes visible again
         document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                fetchUnreadCount();
-            }
+            if (!document.hidden) fetchUnreadCount();
         });
     }
 
@@ -80,7 +79,6 @@
     // ─── Permissions & Push ────────────────────────────────────────────────
     function setupPermissionTriggers() {
         const requestOnce = () => {
-            // Preload audio on first user gesture (satisfies autoplay policy)
             if (!window.notifAudioEl) {
                 window.notifAudioEl = new Audio('/static/users/audio/notification.wav');
                 window.notifAudioEl.volume = 0.8;
@@ -107,12 +105,9 @@
     function subscribeToPush() {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
 
-        // FIX: wait for SW to be ready before subscribing
         navigator.serviceWorker.ready.then(swReg => {
             swReg.pushManager.getSubscription().then(subscription => {
                 if (subscription) {
-                    // FIX: only send to server if it's a fresh subscription
-                    // by storing a flag in sessionStorage
                     const key = 'push_synced_' + userId;
                     if (!sessionStorage.getItem(key)) {
                         sendSubscriptionToServer(subscription);
@@ -125,14 +120,10 @@
                     }).then(newSub => {
                         sendSubscriptionToServer(newSub);
                         sessionStorage.setItem('push_synced_' + userId, '1');
-                    }).catch(err => {
-                        console.warn('[Notif] Push subscribe failed:', err);
-                    });
+                    }).catch(err => console.warn('[Notif] Push subscribe failed:', err));
                 }
             });
-        }).catch(err => {
-            console.warn('[Notif] SW not ready:', err);
-        });
+        }).catch(err => console.warn('[Notif] SW not ready:', err));
     }
 
     function sendSubscriptionToServer(subscription) {
@@ -142,11 +133,7 @@
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCSRFToken()
             },
-            body: JSON.stringify({
-                type: userType,
-                id: userId,
-                subscription: subscription
-            })
+            body: JSON.stringify({ type: userType, id: userId, subscription })
         }).catch(err => console.warn('[Notif] Subscription sync error:', err));
     }
 
@@ -175,6 +162,10 @@
 
     // ─── UI Setup ──────────────────────────────────────────────────────────
     function setupUI() {
+        // FIX: guard against running twice
+        if (uiInitialised) return;
+        uiInitialised = true;
+
         const bell = document.getElementById('notificationBell');
         const panel = document.getElementById('notificationPanel');
         if (!bell || !panel) return;
@@ -247,17 +238,21 @@
             .then(data => {
                 const newCount = data.count || 0;
 
-                // FIX: first poll just sets the baseline, no alerts
+                // First poll: set baseline silently, no alerts
                 if (lastUnreadCount === -1) {
                     lastUnreadCount = newCount;
                     updateBadge(newCount);
                     return;
                 }
 
-                updateBadge(newCount);
+                // FIX: capture previous count BEFORE updating state,
+                // so updateBadge pulse condition is evaluated correctly
+                const prevCount = lastUnreadCount;
+                lastUnreadCount = newCount;
+                updateBadge(newCount, prevCount);
 
-                if (newCount > lastUnreadCount) {
-                    const diff = newCount - lastUnreadCount;
+                if (newCount > prevCount) {
+                    const diff = newCount - prevCount;
                     playNotificationSound();
                     triggerVibration();
 
@@ -265,36 +260,33 @@
                         Notification.permission === 'granted');
 
                     if (hasPermission) {
-                        // FIX: pass newNotifs directly from count response if available,
-                        // otherwise do ONE fetch to get them (not two)
                         fetchNewNotificationsAndAlert(diff);
                     } else if (!isPanelOpen) {
                         showNewNotifToast(diff);
                     }
                 }
-
-                lastUnreadCount = newCount;
             })
             .catch(err => console.warn('[Notif] Count fetch error:', err));
     }
 
-    // FIX: single fetch for both toast data and system notification
     function fetchNewNotificationsAndAlert(count) {
         fetch(`/api/notifications/?type=${userType}&id=${userId}`)
             .then(r => r.json())
             .then(data => {
                 const notifications = data.notifications || [];
 
-                // FIX: find genuinely new ones by ID, not just unread status
                 const newNotifs = notifications
                     .filter(n => !n.is_read && !lastNotifIds.has(String(n.id)))
                     .slice(0, count);
 
-                // Update seen IDs
+                // FIX: add new IDs and trim set if it exceeds cap
                 notifications.forEach(n => lastNotifIds.add(String(n.id)));
+                if (lastNotifIds.size > MAX_SEEN_IDS) {
+                    const trimmed = [...lastNotifIds].slice(-MAX_SEEN_IDS);
+                    lastNotifIds = new Set(trimmed);
+                }
 
                 if (newNotifs.length === 0) {
-                    // Fallback: just show generic toast
                     if (!isPanelOpen) showNewNotifToast(count);
                     return;
                 }
@@ -304,10 +296,7 @@
                     triggerSystemNotification(`${icon} ${n.title}`, n.message, n.action_url);
                 });
 
-                if (!isPanelOpen) {
-                    showRichToast(newNotifs[0], newNotifs.length);
-                }
-
+                if (!isPanelOpen) showRichToast(newNotifs[0], newNotifs.length);
                 if (isPanelOpen) fetchNotifications();
             })
             .catch(err => console.warn('[Notif] New notif fetch error:', err));
@@ -326,29 +315,30 @@
             })
             .then(data => {
                 const notifications = data.notifications || [];
-                // Update seen IDs cache
                 notifications.forEach(n => lastNotifIds.add(String(n.id)));
+                if (lastNotifIds.size > MAX_SEEN_IDS) {
+                    const trimmed = [...lastNotifIds].slice(-MAX_SEEN_IDS);
+                    lastNotifIds = new Set(trimmed);
+                }
                 renderNotifications(notifications);
             })
             .catch(err => {
                 console.warn('[Notif] Fetch error:', err);
+                const body = document.getElementById('notifPanelBody');
                 if (body) body.innerHTML = getEmptyHTML('Error loading notifications');
             });
     }
 
     // ─── Mark Read ─────────────────────────────────────────────────────────
     function markAsRead(notifId, groupIds) {
-        const body = groupIds && groupIds.length > 1
-            ? JSON.stringify({ group_ids: groupIds })
-            : null;
-
-        const headers = { 'X-CSRFToken': getCSRFToken() };
-        if (body) headers['Content-Type'] = 'application/json';
-
+        const hasGroup = groupIds && groupIds.length > 1;
         fetch(`/api/notifications/read/${notifId}/?type=${userType}&id=${userId}`, {
             method: 'POST',
-            headers: headers,
-            body: body || undefined,
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                ...(hasGroup && { 'Content-Type': 'application/json' })
+            },
+            body: hasGroup ? JSON.stringify({ group_ids: groupIds }) : undefined,
         })
             .then(r => {
                 if (!r.ok) throw new Error('mark read failed');
@@ -365,8 +355,9 @@
         })
             .then(r => {
                 if (!r.ok) throw new Error('mark all read failed');
+                const prev = lastUnreadCount;
                 lastUnreadCount = 0;
-                updateBadge(0);
+                updateBadge(0, prev);
                 if (isPanelOpen) fetchNotifications();
             })
             .catch(err => console.warn('[Notif] Mark all read error:', err));
@@ -412,7 +403,8 @@
         body.innerHTML = html;
     }
 
-    function updateBadge(count) {
+    // FIX: accepts prevCount so pulse condition is always evaluated on correct values
+    function updateBadge(count, prevCount) {
         const badge = document.getElementById('notifBadge');
         if (!badge) return;
 
@@ -420,7 +412,7 @@
             badge.textContent = count > 99 ? '99+' : count;
             badge.classList.add('visible');
 
-            if (count > lastUnreadCount && lastUnreadCount >= 0) {
+            if (prevCount !== undefined && count > prevCount) {
                 badge.classList.remove('pulse-badge');
                 void badge.offsetWidth;
                 badge.classList.add('pulse-badge');
@@ -438,19 +430,13 @@
     }
 
     // ─── Toasts ────────────────────────────────────────────────────────────
-    // Rich toast with actual notification title (when we have the data)
     function showRichToast(notif, totalCount) {
         const icon = CATEGORY_ICONS[notif.category] || '🔔';
-        const title = totalCount > 1
-            ? `${totalCount} new notifications`
-            : `${icon} ${notif.title}`;
-        const message = totalCount > 1
-            ? `Latest: ${notif.title}`
-            : notif.message;
+        const title = totalCount > 1 ? `${totalCount} new notifications` : `${icon} ${notif.title}`;
+        const message = totalCount > 1 ? `Latest: ${notif.title}` : notif.message;
         _showToast(title, message);
     }
 
-    // Generic toast when we only have a count
     function showNewNotifToast(count) {
         _showToast(
             count === 1 ? 'New notification' : `${count} new notifications`,
@@ -576,14 +562,12 @@
         let groupIds = [];
         try { groupIds = JSON.parse(el.dataset.groupIds || '[]'); } catch (e) { }
 
-        if (el.classList.contains('unread')) {
-            markAsRead(notifId, groupIds);
-        }
+        if (el.classList.contains('unread')) markAsRead(notifId, groupIds);
         if (url) window.location.href = url;
     }
 
     window.NotifClient = {
-        handleClick: handleClick,
+        handleClick,
         refresh: fetchUnreadCount,
     };
 
