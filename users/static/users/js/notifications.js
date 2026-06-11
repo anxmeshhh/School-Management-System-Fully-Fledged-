@@ -56,6 +56,9 @@
         fetchUnreadCount();
         startPolling();
         setupPermissionTriggers();
+        if ("Notification" in window && Notification.permission === 'granted') {
+            subscribeToPush();
+        }
     }
 
     const VAPID_PUBLIC_KEY = "BLNqmzATvl4GJpv1khAm8Uz1FoXC13H7-gEuD4XtY5JpqQIoGfL4g7_Gm5Mc2kejNgy67LTyWQRLozHhoWgQ7fI";
