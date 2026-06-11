@@ -350,6 +350,7 @@ def mark_as_read(notification_id, recipient_type, recipient_id):
                 UPDATE notifications SET is_read = 1
                 WHERE id = %s AND recipient_type = %s AND recipient_id = %s
             """, [notification_id, recipient_type, recipient_id])
+            connection.commit()
             return cursor.rowcount > 0
     except Exception as e:
         print(f"[Notification Error] mark_as_read: {e}")
@@ -367,6 +368,7 @@ def mark_group_as_read(notification_ids, recipient_type, recipient_id):
                 UPDATE notifications SET is_read = 1
                 WHERE id IN ({placeholders}) AND recipient_type = %s AND recipient_id = %s
             """, notification_ids + [recipient_type, recipient_id])
+            connection.commit()
             return cursor.rowcount > 0
     except Exception as e:
         print(f"[Notification Error] mark_group_as_read: {e}")
@@ -381,6 +383,7 @@ def mark_all_as_read(recipient_type, recipient_id):
                 UPDATE notifications SET is_read = 1
                 WHERE recipient_type = %s AND recipient_id = %s AND is_read = 0
             """, [recipient_type, recipient_id])
+            connection.commit()
             return cursor.rowcount
     except Exception as e:
         print(f"[Notification Error] mark_all_as_read: {e}")

@@ -255,7 +255,7 @@
     function markAsRead(notifId, groupIds) {
         if (groupIds && groupIds.length > 1) {
             // Mark group as read - send all IDs
-            fetch('/api/notifications/read/' + notifId + '/', {
+            fetch(`/api/notifications/read/${notifId}/?type=${userType}&id=${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -267,7 +267,7 @@
                 if (isPanelOpen) fetchNotifications();
             });
         } else {
-            fetch('/api/notifications/read/' + notifId + '/', {
+            fetch(`/api/notifications/read/${notifId}/?type=${userType}&id=${userId}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': getCSRFToken(),
@@ -280,7 +280,7 @@
     }
 
     function markAllRead() {
-        fetch('/api/notifications/read-all/', {
+        fetch(`/api/notifications/read-all/?type=${userType}&id=${userId}`, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': getCSRFToken(),
