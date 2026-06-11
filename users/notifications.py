@@ -11,10 +11,12 @@ Usage:
 from django.db import connection
 from datetime import datetime, timedelta, date
 import os
+import json
+import tempfile
+import threading
+
 from django.conf import settings
 
-
-import json
 try:
     from pywebpush import webpush, WebPushException
     PYWEBPUSH_AVAILABLE = True
@@ -22,68 +24,162 @@ except ImportError:
     PYWEBPUSH_AVAILABLE = False
     print("pywebpush is not installed. Mobile push notifications are disabled.")
 
+
 VAPID_PRIVATE_KEY = """-----BEGIN PRIVATE KEY-----
 MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgCeB/jtwYZpNFG8VU
 1r1AAXNlGOF5h9S9lrfJsEthp+KhRANCAASzapswE75eBiab9ZIQJvFM9RaFwtdx
 +/oBLg+F7WOSaakCKBny+IO/xpuTHNpHozYMuuy08lkES6Mx4aFoEO3y
 -----END PRIVATE KEY-----"""
 
+# ─── Write VAPID key to disk ONCE at startup, not on every push ──────────────
+_VAPID_KEY_PATH = None
+_VAPID_KEY_LOCK = threading.Lock()
+
+def _get_vapid_key_path():
+    global _VAPID_KEY_PATH
+    if _VAPID_KEY_PATH and os.path.exists(_VAPID_KEY_PATH):
+        return _VAPID_KEY_PATH
+    with _VAPID_KEY_LOCK:
+        if _VAPID_KEY_PATH and os.path.exists(_VAPID_KEY_PATH):
+            return _VAPID_KEY_PATH
+        tmp = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.pem')
+        tmp.write(VAPID_PRIVATE_KEY)
+        tmp.close()
+        _VAPID_KEY_PATH = tmp.name
+    return _VAPID_KEY_PATH
+
+
+def _send_single_push(endpoint, p256dh, auth, payload):
+    """Send one web push. Cleans up expired subscriptions automatically."""
+    subscription_info = {
+        "endpoint": endpoint,
+        "keys": {"p256dh": p256dh, "auth": auth}
+    }
+    try:
+        webpush(
+            subscription_info=subscription_info,
+            data=payload,
+            vapid_private_key=_get_vapid_key_path(),
+            vapid_claims={"sub": "mailto:admin@manavargalsms.com"}
+        )
+    except WebPushException as ex:
+        if ex.response and ex.response.status_code in [404, 410]:
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        'DELETE FROM push_subscriptions WHERE endpoint = %s', [endpoint]
+                    )
+                    connection.commit()
+            except Exception:
+                pass
+        else:
+            print(f"[Web Push Error] {repr(ex)}")
+    except Exception as e:
+        print(f"[Web Push Error] _send_single_push: {e}")
+
+
 def trigger_web_push(recipient_type, recipient_id, title, message, action_url):
+    """Fire push notifications to all devices of a user. Runs in background thread."""
     if not PYWEBPUSH_AVAILABLE:
         return
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute('''
-                SELECT endpoint, p256dh, auth FROM push_subscriptions
-                WHERE user_type = %s AND user_id = %s
-            ''', [recipient_type, recipient_id])
-            subscriptions = cursor.fetchall()
-            
-        if not subscriptions:
-            return
-            
-        payload = json.dumps({
-            "title": title,
-            "message": message,
-            "action_url": action_url
-        })
-        
-        for sub in subscriptions:
-            endpoint, p256dh, auth = sub
-            subscription_info = {
-                "endpoint": endpoint,
-                "keys": {
-                    "p256dh": p256dh,
-                    "auth": auth
-                }
-            }
-            try:
-                import tempfile
-                import os
-                
-                with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.pem') as temp_key:
-                    temp_key.write(VAPID_PRIVATE_KEY)
-                    temp_key_path = temp_key.name
-                    
+
+    def _push():
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    'SELECT endpoint, p256dh, auth FROM push_subscriptions '
+                    'WHERE user_type = %s AND user_id = %s',
+                    [recipient_type, recipient_id]
+                )
+                subscriptions = cursor.fetchall()
+
+            if not subscriptions:
+                return
+
+            payload = json.dumps({
+                "title": title,
+                "message": message,
+                "action_url": action_url
+            })
+
+            # Fire all subscriptions for this user in parallel
+            threads = []
+            for endpoint, p256dh, auth in subscriptions:
+                t = threading.Thread(
+                    target=_send_single_push,
+                    args=(endpoint, p256dh, auth, payload),
+                    daemon=True
+                )
+                t.start()
+                threads.append(t)
+            for t in threads:
+                t.join(timeout=10)
+
+        except Exception as e:
+            print(f"[Push Error] trigger_web_push: {e}")
+
+    threading.Thread(target=_push, daemon=True).start()
+
+
+def trigger_bulk_web_push(notifications_list):
+    """
+    Fire push notifications for a batch of notifications.
+    Each unique (recipient_type, recipient_id) gets one lookup and parallel sends.
+    Runs entirely in a background thread so it never blocks the response.
+    """
+    if not PYWEBPUSH_AVAILABLE or not notifications_list:
+        return
+
+    def _bulk_push():
+        try:
+            # Group by recipient to avoid redundant DB lookups
+            from collections import defaultdict
+            recipients = defaultdict(list)
+            for n in notifications_list:
+                key = (n['recipient_type'], n['recipient_id'])
+                recipients[key].append(n)
+
+            threads = []
+            for (rtype, rid), notifs in recipients.items():
                 try:
-                    webpush(
-                        subscription_info=subscription_info,
-                        data=payload,
-                        vapid_private_key=temp_key_path,
-                        vapid_claims={"sub": "mailto:admin@manavargalsms.com"}
-                    )
-                finally:
-                    if os.path.exists(temp_key_path):
-                        os.remove(temp_key_path)
-            except WebPushException as ex:
-                if ex.response and ex.response.status_code in [404, 410]:
                     with connection.cursor() as cursor:
-                        cursor.execute('DELETE FROM push_subscriptions WHERE endpoint = %s', [endpoint])
-                        connection.commit()
-                else:
-                    print(f"Web Push Error: {repr(ex)}")
-    except Exception as e:
-        print(f"[Push Error] trigger_web_push: {e}")
+                        cursor.execute(
+                            'SELECT endpoint, p256dh, auth FROM push_subscriptions '
+                            'WHERE user_type = %s AND user_id = %s',
+                            [rtype, rid]
+                        )
+                        subscriptions = cursor.fetchall()
+                except Exception as e:
+                    print(f"[Push Error] subscription lookup: {e}")
+                    continue
+
+                if not subscriptions:
+                    continue
+
+                # Use the last notification for this recipient (most recent)
+                n = notifs[-1]
+                payload = json.dumps({
+                    "title": n['title'],
+                    "message": n['message'],
+                    "action_url": n.get('action_url')
+                })
+
+                for endpoint, p256dh, auth in subscriptions:
+                    t = threading.Thread(
+                        target=_send_single_push,
+                        args=(endpoint, p256dh, auth, payload),
+                        daemon=True
+                    )
+                    t.start()
+                    threads.append(t)
+
+            for t in threads:
+                t.join(timeout=10)
+
+        except Exception as e:
+            print(f"[Push Error] trigger_bulk_web_push: {e}")
+
+    threading.Thread(target=_bulk_push, daemon=True).start()
 
 
 # ─── Core CRUD Functions ──────────────────────────────────────────────────────
@@ -92,7 +188,7 @@ def create_notification(recipient_type, recipient_id, category, title, message,
                         action_url=None, sender_type='system', sender_id=None):
     """
     Create a single notification for a specific recipient.
-    
+
     Args:
         recipient_type: 'admin' | 'teacher' | 'student' | 'parent'
         recipient_id: The ID of the recipient in their respective table
@@ -106,25 +202,27 @@ def create_notification(recipient_type, recipient_id, category, title, message,
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                INSERT INTO notifications 
+                INSERT INTO notifications
                 (recipient_type, recipient_id, category, title, message, action_url, sender_type, sender_id)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """, [recipient_type, recipient_id, category, title, message,
                   action_url, sender_type, sender_id])
             connection.commit()
-            
-            trigger_web_push(recipient_type, recipient_id, title, message, action_url)
-            return True
+
+        trigger_web_push(recipient_type, recipient_id, title, message, action_url)
+        return True
     except Exception as e:
         print(f"[Notification Error] create_notification: {e}")
+        return False
 
 
 def create_bulk_notifications(notifications_list):
     """
-    Create multiple notifications in a single batch insert.
-    
+    Create multiple notifications in a single batch insert, then fire all pushes
+    in parallel background threads.
+
     Args:
-        notifications_list: List of dicts, each with keys:
+        notifications_list: List of dicts with keys:
             recipient_type, recipient_id, category, title, message,
             action_url (optional), sender_type (optional), sender_id (optional)
     """
@@ -143,7 +241,7 @@ def create_bulk_notifications(notifications_list):
             ])
 
         query = """
-            INSERT INTO notifications 
+            INSERT INTO notifications
             (recipient_type, recipient_id, category, title, message, action_url, sender_type, sender_id)
             VALUES {}
         """.format(', '.join(values))
@@ -151,9 +249,10 @@ def create_bulk_notifications(notifications_list):
         with connection.cursor() as cursor:
             cursor.execute(query, params)
             connection.commit()
-            
-        for n in notifications_list:
-            trigger_web_push(n['recipient_type'], n['recipient_id'], n['title'], n['message'], n.get('action_url'))
+
+        # Fire all pushes in parallel background threads
+        trigger_bulk_web_push(notifications_list)
+
     except Exception as e:
         print(f"[Notification Error] create_bulk_notifications: {e}")
 
@@ -240,8 +339,10 @@ def notify_class_parents(class_name, section, category, title, message,
     """Send a notification to parents of all students in a specific class/section."""
     try:
         with connection.cursor() as cursor:
-            # Find student user_ids in this class to notify their parents (parent session ID matches student user_id)
-            cursor.execute("SELECT user_id FROM student_page1 WHERE class = %s AND section = %s", [class_name, section])
+            cursor.execute(
+                "SELECT user_id FROM student_page1 WHERE class = %s AND section = %s",
+                [class_name, section]
+            )
             parent_ids = [row[0] for row in cursor.fetchall() if row[0]]
 
         notifications = [{
@@ -262,13 +363,29 @@ def notify_class_parents(class_name, section, category, title, message,
 
 def notify_student_and_parents(student_id, category, title, message,
                                action_url=None, sender_type='system', sender_id=None):
-    """Send notification to a specific student and their parents."""
-    # Notify the student
-    create_notification('student', student_id, category, title, message,
-                        action_url, sender_type, sender_id)
-    # Notify the parent (parent session ID is the student_id)
-    create_notification('parent', student_id, category, title, message,
-                        action_url, sender_type, sender_id)
+    """Send notification to a specific student and their parent."""
+    create_bulk_notifications([
+        {
+            'recipient_type': 'student',
+            'recipient_id': student_id,
+            'category': category,
+            'title': title,
+            'message': message,
+            'action_url': action_url,
+            'sender_type': sender_type,
+            'sender_id': sender_id,
+        },
+        {
+            'recipient_type': 'parent',
+            'recipient_id': student_id,
+            'category': category,
+            'title': title,
+            'message': message,
+            'action_url': action_url,
+            'sender_type': sender_type,
+            'sender_id': sender_id,
+        }
+    ])
 
 
 def notify_class_teacher(class_name, section, category, title, message,
@@ -296,7 +413,7 @@ def get_unread_count(recipient_type, recipient_id):
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT COUNT(*) FROM notifications 
+                SELECT COUNT(*) FROM notifications
                 WHERE recipient_type = %s AND recipient_id = %s AND is_read = 0
             """, [recipient_type, recipient_id])
             result = cursor.fetchone()
@@ -315,7 +432,7 @@ def get_notifications(recipient_type, recipient_id, limit=20, offset=0):
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT id, category, title, message, action_url, is_read, created_at
-                FROM notifications 
+                FROM notifications
                 WHERE recipient_type = %s AND recipient_id = %s
                 ORDER BY created_at DESC
                 LIMIT %s OFFSET %s
@@ -341,20 +458,17 @@ def get_notifications(recipient_type, recipient_id, limit=20, offset=0):
 def get_grouped_notifications(recipient_type, recipient_id, limit=20):
     """
     Fetch notifications with grouping of similar unread notifications.
-    Groups notifications by (category, title) if there are multiple unread ones
-    within the last 24 hours, collapsing them into a single grouped notification.
-    
+    Groups by (category, title) if multiple unread exist within the last 24 hours.
     Returns list of dicts, some with 'group_count' > 1 for grouped items.
     """
     try:
         with connection.cursor() as cursor:
-            # First get grouped unread notifications from last 24 hours
             cursor.execute("""
                 SELECT category, title, COUNT(*) as cnt,
                        MAX(id) as latest_id, MAX(created_at) as latest_time,
                        GROUP_CONCAT(id ORDER BY id DESC) as all_ids,
                        MIN(action_url) as action_url
-                FROM notifications 
+                FROM notifications
                 WHERE recipient_type = %s AND recipient_id = %s AND is_read = 0
                   AND created_at >= NOW() - INTERVAL 24 HOUR
                 GROUP BY category, title
@@ -380,10 +494,9 @@ def get_grouped_notifications(recipient_type, recipient_id, limit=20):
                     'group_ids': ids,
                 }
 
-            # Now get all notifications (including ungrouped ones)
             cursor.execute("""
                 SELECT id, category, title, message, action_url, is_read, created_at
-                FROM notifications 
+                FROM notifications
                 WHERE recipient_type = %s AND recipient_id = %s
                 ORDER BY created_at DESC
                 LIMIT %s
@@ -399,7 +512,6 @@ def get_grouped_notifications(recipient_type, recipient_id, limit=20):
                     if key not in seen_groups and key in grouped:
                         seen_groups.add(key)
                         results.append(grouped[key])
-                    # Skip individual items that are part of a group
                     continue
 
                 results.append({
@@ -413,9 +525,8 @@ def get_grouped_notifications(recipient_type, recipient_id, limit=20):
                     'group_count': 1,
                 })
 
-            # Sort by created_at descending
-            results.sort(key=lambda x: x.get('created_at', ''), reverse=True)
-            return results[:limit]
+        results.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+        return results[:limit]
 
     except Exception as e:
         print(f"[Notification Error] get_grouped_notifications: {e}")
@@ -475,9 +586,10 @@ def cleanup_old_notifications(days=30):
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                DELETE FROM notifications 
+                DELETE FROM notifications
                 WHERE created_at < NOW() - INTERVAL %s DAY
             """, [days])
+            connection.commit()
             return cursor.rowcount
     except Exception as e:
         print(f"[Notification Error] cleanup_old_notifications: {e}")
@@ -486,159 +598,181 @@ def cleanup_old_notifications(days=30):
 
 # ─── Convenience Aliases ──────────────────────────────────────────────────────
 
-# Shorthand alias
 notify = create_notification
 
 
 def generate_dynamic_reminders(user_type, user_id):
     """
     Dynamically generates reminder notifications for upcoming/pending tasks.
-    Runs on notifications fetch to keep the alerts real-time without background cron tasks.
+    Runs on notifications fetch to keep alerts real-time without background cron tasks.
     """
     try:
         with connection.cursor() as cursor:
-            # 1. Reminders for Students & Parents
+
+            # ── Students & Parents ────────────────────────────────────────────
             if user_type in ('student', 'parent'):
-                # Resolve the student's user_id
-                student_user_id = user_id
-                if user_type == 'parent':
-                    # Parent user_id is the same as student's user_id in this schema
-                    student_user_id = user_id
+                student_user_id = user_id  # parent user_id == student user_id
 
-                # Fetch class and section
-                cursor.execute("SELECT class, section FROM student_page1 WHERE user_id = %s", [student_user_id])
+                cursor.execute(
+                    "SELECT class, section FROM student_page1 WHERE user_id = %s",
+                    [student_user_id]
+                )
                 stud_info = cursor.fetchone()
-                if stud_info:
-                    class_name, section = stud_info
-                    class_id = f"{class_name}{section}" if class_name and section else class_name
+                if not stud_info:
+                    return
 
-                    # --- A. Upcoming Exam Reminders (Next 3 Days) ---
-                    if class_id:
-                        today_str = date.today().strftime('%Y-%m-%d')
-                        three_days_later_str = (date.today() + timedelta(days=3)).strftime('%Y-%m-%d')
+                class_name, section = stud_info
+                class_id = f"{class_name}{section}" if class_name and section else class_name
+
+                # A. Upcoming Exam Reminders (Next 3 Days)
+                if class_id:
+                    today_str = date.today().strftime('%Y-%m-%d')
+                    three_days_later_str = (date.today() + timedelta(days=3)).strftime('%Y-%m-%d')
+                    cursor.execute("""
+                        SELECT id, subject, exam_date, start_time
+                        FROM exams
+                        WHERE class_id = %s AND exam_date BETWEEN %s AND %s
+                    """, [class_id, today_str, three_days_later_str])
+                    exams = cursor.fetchall()
+
+                    for exam in exams:
+                        exam_db_id, subject, exam_date, start_time = exam
+                        title = f"Upcoming Exam: {subject}"
                         cursor.execute("""
-                            SELECT id, subject, exam_date, start_time 
-                            FROM exams 
-                            WHERE class_id = %s AND exam_date BETWEEN %s AND %s
-                        """, [class_id, today_str, three_days_later_str])
-                        exams = cursor.fetchall()
-                        for exam in exams:
-                            exam_db_id, subject, exam_date, start_time = exam
-                            title = f"Upcoming Exam: {subject}"
-                            # Check if already notified in last 24 hours
+                            SELECT COUNT(*) FROM notifications
+                            WHERE recipient_type = %s AND recipient_id = %s
+                            AND category = 'exam' AND title = %s
+                            AND created_at >= NOW() - INTERVAL 1 DAY
+                        """, [user_type, user_id, title])
+                        if cursor.fetchone()[0] == 0:
                             cursor.execute("""
-                                SELECT COUNT(*) FROM notifications 
-                                WHERE recipient_type = %s AND recipient_id = %s 
-                                AND category = 'exam' AND title = %s 
+                                INSERT INTO notifications
+                                (recipient_type, recipient_id, category, title, message, action_url)
+                                VALUES (%s, %s, 'exam', %s, %s, %s)
+                            """, [
+                                user_type, user_id, title,
+                                f"Reminder: Your exam for {subject} is scheduled on {exam_date} at {start_time}.",
+                                '/student_timetable/'
+                            ])
+                            # FIX: commit each insert immediately
+                            connection.commit()
+
+                # B. Upcoming Homework Due (Next 2 Days)
+                homework_dir = os.path.join(settings.MEDIA_ROOT, 'teacher_homework')
+                if os.path.exists(homework_dir):
+                    for filename in os.listdir(homework_dir):
+                        if not (filename.endswith('.txt') and not filename.endswith('_submission.txt')):
+                            continue
+                        txt_path = os.path.join(homework_dir, filename)
+                        try:
+                            with open(txt_path, 'r', encoding='utf-8') as f:
+                                lines = [line.strip() for line in f.readlines()]
+                            if len(lines) < 6:
+                                continue
+
+                            hw_title   = lines[0]
+                            hw_subject = lines[2]
+                            hw_due_date = lines[3]
+                            hw_target  = lines[4]
+
+                            target_match = False
+                            if hw_target == 'all':
+                                target_match = True
+                            elif hw_target == 'specific' and len(lines) >= 8:
+                                if lines[6] == class_name and lines[7] == section:
+                                    target_match = True
+
+                            if not target_match or not hw_due_date:
+                                continue
+
+                            try:
+                                due_dt = datetime.strptime(hw_due_date, '%Y-%m-%d').date()
+                            except ValueError:
+                                continue
+
+                            if not (date.today() <= due_dt <= date.today() + timedelta(days=2)):
+                                continue
+
+                            cursor.execute("""
+                                SELECT COUNT(*) FROM homework
+                                WHERE user_id = %s AND title = %s
+                            """, [student_user_id, hw_title])
+                            if cursor.fetchone()[0] != 0:
+                                continue  # Already submitted
+
+                            title = f"Homework Pending: {hw_title}"
+                            cursor.execute("""
+                                SELECT COUNT(*) FROM notifications
+                                WHERE recipient_type = %s AND recipient_id = %s
+                                AND category = 'homework' AND title = %s
                                 AND created_at >= NOW() - INTERVAL 1 DAY
                             """, [user_type, user_id, title])
                             if cursor.fetchone()[0] == 0:
-                                # Insert notification
                                 cursor.execute("""
-                                    INSERT INTO notifications (recipient_type, recipient_id, category, title, message, action_url)
-                                    VALUES (%s, %s, 'exam', %s, %s, %s)
-                                """, [user_type, user_id, title, f"Reminder: Your exam for {subject} is scheduled on {exam_date} at {start_time}.", '/student_timetable/'])
+                                    INSERT INTO notifications
+                                    (recipient_type, recipient_id, category, title, message, action_url)
+                                    VALUES (%s, %s, 'homework', %s, %s, %s)
+                                """, [
+                                    user_type, user_id, title,
+                                    f"Reminder: Homework '{hw_title}' for {hw_subject} is due on {hw_due_date}.",
+                                    '/homework/'
+                                ])
+                                # FIX: commit each insert immediately
+                                connection.commit()
+                        except Exception:
+                            pass
 
-                    # --- B. Upcoming Homework Due (Next 2 Days) ---
-                    # Scan media directory 'media/teacher_homework/' for metadata files
-                    homework_dir = os.path.join(settings.MEDIA_ROOT, 'teacher_homework')
-                    if os.path.exists(homework_dir):
-                        for filename in os.listdir(homework_dir):
-                            if filename.endswith('.txt') and not filename.endswith('_submission.txt'):
-                                txt_path = os.path.join(homework_dir, filename)
-                                try:
-                                    with open(txt_path, 'r', encoding='utf-8') as f:
-                                        lines = [line.strip() for line in f.readlines()]
-                                    if len(lines) >= 6:
-                                        hw_title = lines[0]
-                                        hw_desc = lines[1]
-                                        hw_subject = lines[2]
-                                        hw_due_date = lines[3]
-                                        hw_target = lines[4]
-                                        
-                                        # Check if targeting student's class
-                                        target_match = False
-                                        if hw_target == 'all':
-                                            target_match = True
-                                        elif hw_target == 'specific' and len(lines) >= 8:
-                                            hw_class = lines[6]
-                                            hw_section = lines[7] if len(lines) >= 8 else ''
-                                            if hw_class == class_name and hw_section == section:
-                                                target_match = True
-
-                                        if target_match and hw_due_date:
-                                            try:
-                                                due_dt = datetime.strptime(hw_due_date, '%Y-%m-%d').date()
-                                            except ValueError:
-                                                due_dt = None
-                                            
-                                            if due_dt and (date.today() <= due_dt <= date.today() + timedelta(days=2)):
-                                                # Check if the student has submitted this homework in student homework table
-                                                cursor.execute("""
-                                                    SELECT COUNT(*) FROM homework 
-                                                    WHERE user_id = %s AND title = %s
-                                                """, [student_user_id, hw_title])
-                                                if cursor.fetchone()[0] == 0:
-                                                    # Not submitted yet! Remind them.
-                                                    title = f"Homework Pending: {hw_title}"
-                                                    # Check if already notified in last 24 hours
-                                                    cursor.execute("""
-                                                        SELECT COUNT(*) FROM notifications 
-                                                        WHERE recipient_type = %s AND recipient_id = %s 
-                                                        AND category = 'homework' AND title = %s 
-                                                        AND created_at >= NOW() - INTERVAL 1 DAY
-                                                    """, [user_type, user_id, title])
-                                                    if cursor.fetchone()[0] == 0:
-                                                        cursor.execute("""
-                                                            INSERT INTO notifications (recipient_type, recipient_id, category, title, message, action_url)
-                                                            VALUES (%s, %s, 'homework', %s, %s, %s)
-                                                        """, [user_type, user_id, title, f"Reminder: Homework '{hw_title}' for {hw_subject} is due on {hw_due_date}.", '/homework/'])
-                                except Exception:
-                                    pass
-
-            # 2. Reminders for Teachers
+            # ── Teachers ──────────────────────────────────────────────────────
             elif user_type == 'teacher':
-                # --- A. Pending Leave Request Approvals ---
-                cursor.execute("""
-                    SELECT COUNT(*) FROM student_leave_requests 
-                    WHERE status = 'Pending'
-                """)
+                cursor.execute(
+                    "SELECT COUNT(*) FROM student_leave_requests WHERE status = 'Pending'"
+                )
                 pending_count = cursor.fetchone()[0]
                 if pending_count > 0:
                     title = "Pending Leave Requests"
                     cursor.execute("""
-                        SELECT COUNT(*) FROM notifications 
-                        WHERE recipient_type = 'teacher' AND recipient_id = %s 
-                        AND category = 'leave' AND title = %s 
+                        SELECT COUNT(*) FROM notifications
+                        WHERE recipient_type = 'teacher' AND recipient_id = %s
+                        AND category = 'leave' AND title = %s
                         AND created_at >= NOW() - INTERVAL 1 DAY
                     """, [user_id, title])
                     if cursor.fetchone()[0] == 0:
                         cursor.execute("""
-                            INSERT INTO notifications (recipient_type, recipient_id, category, title, message, action_url)
+                            INSERT INTO notifications
+                            (recipient_type, recipient_id, category, title, message, action_url)
                             VALUES ('teacher', %s, 'leave', %s, %s, '/teacher_accept_portal/')
-                        """, [user_id, title, f"You have {pending_count} pending student leave request(s) awaiting approval.", '/teacher_accept_portal/'])
+                        """, [
+                            user_id, title,
+                            f"You have {pending_count} pending student leave request(s) awaiting approval."
+                        ])
+                        # FIX: commit immediately
+                        connection.commit()
 
-            # 3. Reminders for Admins
+            # ── Admins ────────────────────────────────────────────────────────
             elif user_type == 'admin':
-                # --- A. Pending Leave Request Approvals ---
-                cursor.execute("""
-                    SELECT COUNT(*) FROM student_leave_requests 
-                    WHERE status = 'Pending'
-                """)
+                cursor.execute(
+                    "SELECT COUNT(*) FROM student_leave_requests WHERE status = 'Pending'"
+                )
                 pending_count = cursor.fetchone()[0]
                 if pending_count > 0:
                     title = "Pending Leave Requests"
                     cursor.execute("""
-                        SELECT COUNT(*) FROM notifications 
-                        WHERE recipient_type = 'admin' AND recipient_id = %s 
-                        AND category = 'leave' AND title = %s 
+                        SELECT COUNT(*) FROM notifications
+                        WHERE recipient_type = 'admin' AND recipient_id = %s
+                        AND category = 'leave' AND title = %s
                         AND created_at >= NOW() - INTERVAL 1 DAY
                     """, [user_id, title])
                     if cursor.fetchone()[0] == 0:
                         cursor.execute("""
-                            INSERT INTO notifications (recipient_type, recipient_id, category, title, message, action_url)
+                            INSERT INTO notifications
+                            (recipient_type, recipient_id, category, title, message, action_url)
                             VALUES ('admin', %s, 'leave', %s, %s, '/admin_accept_portal/')
-                        """, [user_id, title, f"There are {pending_count} pending student leave request(s) awaiting approval.", '/admin_accept_portal/'])
+                        """, [
+                            user_id, title,
+                            f"There are {pending_count} pending student leave request(s) awaiting approval."
+                        ])
+                        # FIX: commit immediately
+                        connection.commit()
+
     except Exception as e:
         print(f"[Dynamic Notifications Error]: {e}")
-
