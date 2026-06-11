@@ -10,9 +10,10 @@
 
     // ─── Config ────────────────────────────────────────────────────────────
     const POLL_INTERVAL = 30000;
+    const POLL_MAX = 300000; // 5 min cap for backoff
     const TOAST_DURATION = 5000;
     const MAX_TOASTS = 3;
-    const MAX_SEEN_IDS = 500; // FIX: cap lastNotifIds to prevent memory leak
+    const MAX_SEEN_IDS = 500;
 
     // ─── Category Icons ────────────────────────────────────────────────────
     const CATEGORY_ICONS = {
@@ -35,12 +36,17 @@
     // ─── State ─────────────────────────────────────────────────────────────
     let userType = null;
     let userId = null;
-    let lastUnreadCount = -1;  // -1 so first poll sets baseline silently
+    let lastUnreadCount = -1;
     let isPolling = false;
     let pollTimer = null;
+    let currentInterval = POLL_INTERVAL;
+    let errorStreak = 0;
     let isPanelOpen = false;
     let lastNotifIds = new Set();
-    let uiInitialised = false; // FIX: guard against double init
+    let uiInitialised = false;
+
+    // Stored so destroy() can remove them
+    const _listeners = [];
 
     const VAPID_PUBLIC_KEY = "BLNqmzATvl4GJpv1khAm8Uz1FoXC13H7-gEuD4XtY5JpqQIoGfL4g7_Gm5Mc2kejNgy67LTyWQRLozHhoWgQ7fI";
 
@@ -61,9 +67,11 @@
         startPolling();
         setupPermissionTriggers();
 
-        document.addEventListener('visibilitychange', () => {
+        const onVisibility = () => {
             if (!document.hidden) fetchUnreadCount();
-        });
+        };
+        document.addEventListener('visibilitychange', onVisibility);
+        _listeners.push({ el: document, type: 'visibilitychange', fn: onVisibility });
     }
 
     // ─── VAPID Helper ──────────────────────────────────────────────────────
@@ -162,7 +170,6 @@
 
     // ─── UI Setup ──────────────────────────────────────────────────────────
     function setupUI() {
-        // FIX: guard against running twice
         if (uiInitialised) return;
         uiInitialised = true;
 
@@ -193,19 +200,23 @@
         panel.classList.remove('notification-panel');
         panel.classList.add('notif-panel');
 
-        bell.addEventListener('click', e => {
+        const onBellClick = e => {
             e.stopPropagation();
             isPanelOpen = !isPanelOpen;
             panel.classList.toggle('active', isPanelOpen);
             if (isPanelOpen) fetchNotifications();
-        });
+        };
+        bell.addEventListener('click', onBellClick);
+        _listeners.push({ el: bell, type: 'click', fn: onBellClick });
 
-        document.addEventListener('click', e => {
+        const onDocClick = e => {
             if (!wrapper.contains(e.target) && !panel.contains(e.target)) {
                 panel.classList.remove('active');
                 isPanelOpen = false;
             }
-        });
+        };
+        document.addEventListener('click', onDocClick);
+        _listeners.push({ el: document, type: 'click', fn: onDocClick });
 
         document.getElementById('notifMarkAllBtn').addEventListener('click', e => {
             e.stopPropagation();
@@ -225,28 +236,53 @@
     function startPolling() {
         if (isPolling) return;
         isPolling = true;
-        pollTimer = setInterval(fetchUnreadCount, POLL_INTERVAL);
+        scheduleNextPoll(currentInterval);
+    }
+
+    function scheduleNextPoll(delay) {
+        clearTimeout(pollTimer);
+        pollTimer = setTimeout(() => {
+            fetchUnreadCount();
+            scheduleNextPoll(currentInterval);
+        }, delay);
+    }
+
+    function onFetchSuccess() {
+        if (errorStreak > 0) {
+            errorStreak = 0;
+            currentInterval = POLL_INTERVAL;
+            // Reset to normal interval immediately
+            scheduleNextPoll(currentInterval);
+        }
+    }
+
+    function onFetchError() {
+        errorStreak++;
+        currentInterval = Math.min(currentInterval * 2, POLL_MAX);
+        scheduleNextPoll(currentInterval);
     }
 
     // ─── Core Fetch: Unread Count ──────────────────────────────────────────
     function fetchUnreadCount() {
+        // Skip if tab is not visible
+        if (document.hidden) return;
+
         fetch(`/api/notifications/count/?type=${userType}&id=${userId}`)
             .then(r => {
                 if (!r.ok) throw new Error('count fetch failed');
                 return r.json();
             })
             .then(data => {
+                onFetchSuccess();
                 const newCount = data.count || 0;
 
-                // First poll: set baseline silently, no alerts
+                // First poll: set baseline silently
                 if (lastUnreadCount === -1) {
                     lastUnreadCount = newCount;
                     updateBadge(newCount);
                     return;
                 }
 
-                // FIX: capture previous count BEFORE updating state,
-                // so updateBadge pulse condition is evaluated correctly
                 const prevCount = lastUnreadCount;
                 lastUnreadCount = newCount;
                 updateBadge(newCount, prevCount);
@@ -266,7 +302,10 @@
                     }
                 }
             })
-            .catch(err => console.warn('[Notif] Count fetch error:', err));
+            .catch(err => {
+                console.warn('[Notif] Count fetch error:', err);
+                onFetchError();
+            });
     }
 
     function fetchNewNotificationsAndAlert(count) {
@@ -279,12 +318,7 @@
                     .filter(n => !n.is_read && !lastNotifIds.has(String(n.id)))
                     .slice(0, count);
 
-                // FIX: add new IDs and trim set if it exceeds cap
-                notifications.forEach(n => lastNotifIds.add(String(n.id)));
-                if (lastNotifIds.size > MAX_SEEN_IDS) {
-                    const trimmed = [...lastNotifIds].slice(-MAX_SEEN_IDS);
-                    lastNotifIds = new Set(trimmed);
-                }
+                addToSeenIds(notifications.map(n => String(n.id)));
 
                 if (newNotifs.length === 0) {
                     if (!isPanelOpen) showNewNotifToast(count);
@@ -315,18 +349,22 @@
             })
             .then(data => {
                 const notifications = data.notifications || [];
-                notifications.forEach(n => lastNotifIds.add(String(n.id)));
-                if (lastNotifIds.size > MAX_SEEN_IDS) {
-                    const trimmed = [...lastNotifIds].slice(-MAX_SEEN_IDS);
-                    lastNotifIds = new Set(trimmed);
-                }
+                addToSeenIds(notifications.map(n => String(n.id)));
                 renderNotifications(notifications);
             })
             .catch(err => {
                 console.warn('[Notif] Fetch error:', err);
-                const body = document.getElementById('notifPanelBody');
-                if (body) body.innerHTML = getEmptyHTML('Error loading notifications');
+                const b = document.getElementById('notifPanelBody');
+                if (b) b.innerHTML = getEmptyHTML('Error loading notifications');
             });
+    }
+
+    // ─── Seen IDs helper ──────────────────────────────────────────────────
+    function addToSeenIds(ids) {
+        ids.forEach(id => lastNotifIds.add(id));
+        if (lastNotifIds.size > MAX_SEEN_IDS) {
+            lastNotifIds = new Set([...lastNotifIds].slice(-MAX_SEEN_IDS));
+        }
     }
 
     // ─── Mark Read ─────────────────────────────────────────────────────────
@@ -403,7 +441,6 @@
         body.innerHTML = html;
     }
 
-    // FIX: accepts prevCount so pulse condition is always evaluated on correct values
     function updateBadge(count, prevCount) {
         const badge = document.getElementById('notifBadge');
         if (!badge) return;
@@ -503,7 +540,8 @@
     // ─── Helpers ───────────────────────────────────────────────────────────
     function relativeTime(isoStr) {
         if (!isoStr) return '';
-        const diff = Date.now() - new Date(isoStr).getTime();
+        // Clamp to 0 — server clock drift can produce negative diff
+        const diff = Math.max(0, Date.now() - new Date(isoStr).getTime());
         const sec = Math.floor(diff / 1000);
         const min = Math.floor(sec / 60);
         const hr = Math.floor(min / 60);
@@ -527,9 +565,10 @@
         return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    // Regex-based — safe against base64 = chars in the token value
     function getCSRFToken() {
-        const c = document.cookie.split(';').find(s => s.trim().startsWith('csrftoken='));
-        return c ? c.split('=')[1].trim() : '';
+        const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]*)/);
+        return match ? decodeURIComponent(match[1]) : '';
     }
 
     function getLoadingHTML() {
@@ -566,9 +605,18 @@
         if (url) window.location.href = url;
     }
 
+    // Clears poll timer and all tracked listeners — call on SPA page teardown
+    function destroy() {
+        clearTimeout(pollTimer);
+        isPolling = false;
+        _listeners.forEach(({ el, type, fn }) => el.removeEventListener(type, fn));
+        _listeners.length = 0;
+    }
+
     window.NotifClient = {
         handleClick,
         refresh: fetchUnreadCount,
+        destroy,
     };
 
     // ─── Boot ──────────────────────────────────────────────────────────────
