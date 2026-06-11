@@ -1311,7 +1311,7 @@ def admin_circular_upload(request):
                         c.execute("SELECT user_id FROM student_page1")
                         for row in c.fetchall():
                             notify('student', row[0], 'circular', 'New Circular', f'New circular: {title}', '/student_circular/')
-                        c.execute("SELECT id FROM parents")
+                        c.execute("SELECT user_id FROM student_page1")
                         for row in c.fetchall():
                             notify('parent', row[0], 'circular', 'New Circular', f'New circular: {title}', '/parent-student-circular/')
                 except Exception:

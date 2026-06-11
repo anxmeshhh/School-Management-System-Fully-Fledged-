@@ -160,11 +160,9 @@ def notify_class_parents(class_name, section, category, title, message,
     """Send a notification to parents of all students in a specific class/section."""
     try:
         with connection.cursor() as cursor:
-            # Find parents linked to students in this class via parent-student linkage
-            # Parents are linked via parent_id in the session or by matching username/email
-            # Since the system uses session-based auth, we notify all parents
-            cursor.execute("SELECT id FROM parents")
-            parent_ids = [row[0] for row in cursor.fetchall()]
+            # Find student user_ids in this class to notify their parents (parent session ID matches student user_id)
+            cursor.execute("SELECT user_id FROM student_page1 WHERE class = %s AND section = %s", [class_name, section])
+            parent_ids = [row[0] for row in cursor.fetchall() if row[0]]
 
         notifications = [{
             'recipient_type': 'parent',
@@ -188,26 +186,9 @@ def notify_student_and_parents(student_id, category, title, message,
     # Notify the student
     create_notification('student', student_id, category, title, message,
                         action_url, sender_type, sender_id)
-    # Notify all parents (since parent-student link is session-based)
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT id FROM parents")
-            parent_ids = [row[0] for row in cursor.fetchall()]
-
-        notifications = [{
-            'recipient_type': 'parent',
-            'recipient_id': pid,
-            'category': category,
-            'title': title,
-            'message': message,
-            'action_url': action_url,
-            'sender_type': sender_type,
-            'sender_id': sender_id,
-        } for pid in parent_ids]
-
-        create_bulk_notifications(notifications)
-    except Exception as e:
-        print(f"[Notification Error] notify_student_and_parents: {e}")
+    # Notify the parent (parent session ID is the student_id)
+    create_notification('parent', student_id, category, title, message,
+                        action_url, sender_type, sender_id)
 
 
 def notify_class_teacher(class_name, section, category, title, message,
