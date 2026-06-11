@@ -163,3 +163,6 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 
+VAPID_PUBLIC_KEY = "BLNqmzATvl4GJpv1khAm8Uz1FoXC13H7-gEuD4XtY5JpqQIoGfL4g7_Gm5Mc2kejNgy67LTyWQRLozHhoWgQ7fI"
+VAPID_PRIVATE_KEY = "CeB/jtwYZpNFG8VU1r1AAXNlGOF5h9S9lrfJsEthp-K"  # raw base64 uncompressed
+VAPID_ADMIN_EMAIL = "mailto:admin@manavargalsms.com"
