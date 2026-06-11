@@ -12296,9 +12296,14 @@ def serve_student_pdf(request, filename):
         content_type="application/pdf"
     )
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# NOTIFICATION API VIEWS
-# ═══════════════════════════════════════════════════════════════════════════════
+
+
+import json
+import time
+
+from django.db import connection, transaction
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from users.notifications import (
     get_grouped_notifications, get_unread_count,
@@ -12306,7 +12311,10 @@ from users.notifications import (
     generate_dynamic_reminders
 )
 
-# How often (seconds) dynamic reminders are generated per user per session
+# ═══════════════════════════════════════════════════════════════════════════════
+# NOTIFICATION API VIEWS
+# ═══════════════════════════════════════════════════════════════════════════════
+
 REMINDER_INTERVAL = 300  # 5 minutes
 
 
@@ -12327,26 +12335,19 @@ def _get_notif_user(request):
 
     if user_type and user_id:
         try:
-            user_id = int(user_id)
+            return user_type, int(user_id)
         except (ValueError, TypeError):
-            return None, None
+            pass
 
-    return user_type, user_id
+    return None, None
 
 
 def _maybe_generate_reminders(request, user_type, user_id):
-    """
-    FIX: Only run generate_dynamic_reminders at most once every
-    REMINDER_INTERVAL seconds per user, tracked in their session.
-    Previously it ran on every count poll (every 30s) which caused
-    a flood of DB queries for large numbers of concurrent users.
-    """
-    import time
+    """Throttle generate_dynamic_reminders to once per REMINDER_INTERVAL per user."""
     session_key = f'last_reminder_{user_type}_{user_id}'
     now = time.time()
-    last_run = request.session.get(session_key, 0)
 
-    if now - last_run >= REMINDER_INTERVAL:
+    if now - request.session.get(session_key, 0) >= REMINDER_INTERVAL:
         generate_dynamic_reminders(user_type, user_id)
         request.session[session_key] = now
 
@@ -12360,7 +12361,7 @@ def api_get_notifications(request):
 
     _maybe_generate_reminders(request, user_type, user_id)
 
-    limit = max(1, min(int(request.GET.get('limit', 20)), 100))  # clamp 1–100
+    limit = max(1, min(int(request.GET.get('limit', 20)), 100))
     notifications = get_grouped_notifications(user_type, user_id, limit)
     return JsonResponse({'notifications': notifications})
 
@@ -12372,7 +12373,6 @@ def api_notification_count(request):
     if not user_type or not user_id:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
-    # FIX: reminders throttled — not on every 30s poll
     _maybe_generate_reminders(request, user_type, user_id)
 
     count = get_unread_count(user_type, user_id)
@@ -12392,9 +12392,8 @@ def api_mark_read(request, notification_id):
     group_ids = []
     if request.body:
         try:
-            data = json.loads(request.body)
-            group_ids = data.get('group_ids', [])
-        except (json.JSONDecodeError, Exception):
+            group_ids = json.loads(request.body).get('group_ids', [])
+        except (json.JSONDecodeError, AttributeError):
             pass
 
     if group_ids and len(group_ids) > 1:
@@ -12427,19 +12426,21 @@ def api_push_subscribe(request):
 
     try:
         data = json.loads(request.body)
+    except (json.JSONDecodeError, Exception):
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
+    try:
         user_type, user_id = _get_notif_user(request)
+
         if not user_type or not user_id:
             user_type = data.get('type')
-            user_id   = data.get('id')
-
-        if not user_type or not user_id:
-            return JsonResponse({'error': 'Unauthorized'}, status=401)
-
-        try:
-            user_id = int(user_id)
-        except (ValueError, TypeError):
-            return JsonResponse({'error': 'Invalid user id'}, status=400)
+            raw_id    = data.get('id')
+            if not user_type or not raw_id:
+                return JsonResponse({'error': 'Unauthorized'}, status=401)
+            try:
+                user_id = int(raw_id)
+            except (ValueError, TypeError):
+                return JsonResponse({'error': 'Invalid user id'}, status=400)
 
         subscription = data.get('subscription')
         if not subscription:
@@ -12452,31 +12453,29 @@ def api_push_subscribe(request):
         if not endpoint or not p256dh or not auth:
             return JsonResponse({'error': 'Invalid subscription format'}, status=400)
 
-        with connection.cursor() as cursor:
-            cursor.execute(
-                'SELECT id FROM push_subscriptions WHERE endpoint = %s',
-                [endpoint]
-            )
-            existing = cursor.fetchone()
+        with transaction.atomic():
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    'SELECT id FROM push_subscriptions WHERE endpoint = %s',
+                    [endpoint]
+                )
+                existing = cursor.fetchone()
 
-            if existing:
-                cursor.execute('''
-                    UPDATE push_subscriptions
-                    SET user_type = %s, user_id = %s, p256dh = %s, auth = %s
-                    WHERE endpoint = %s
-                ''', [user_type, user_id, p256dh, auth, endpoint])
-            else:
-                # Remove any stale rows for this user+auth combo
-                cursor.execute('''
-                    DELETE FROM push_subscriptions
-                    WHERE user_type = %s AND user_id = %s AND auth = %s
-                ''', [user_type, user_id, auth])
-                cursor.execute('''
-                    INSERT INTO push_subscriptions (user_type, user_id, endpoint, p256dh, auth)
-                    VALUES (%s, %s, %s, %s, %s)
-                ''', [user_type, user_id, endpoint, p256dh, auth])
-
-            connection.commit()
+                if existing:
+                    cursor.execute('''
+                        UPDATE push_subscriptions
+                        SET user_type = %s, user_id = %s, p256dh = %s, auth = %s
+                        WHERE endpoint = %s
+                    ''', [user_type, user_id, p256dh, auth, endpoint])
+                else:
+                    cursor.execute('''
+                        DELETE FROM push_subscriptions
+                        WHERE user_type = %s AND user_id = %s AND auth = %s
+                    ''', [user_type, user_id, auth])
+                    cursor.execute('''
+                        INSERT INTO push_subscriptions (user_type, user_id, endpoint, p256dh, auth)
+                        VALUES (%s, %s, %s, %s, %s)
+                    ''', [user_type, user_id, endpoint, p256dh, auth])
 
         return JsonResponse({'success': True})
 
