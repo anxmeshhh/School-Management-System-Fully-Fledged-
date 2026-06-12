@@ -241,6 +241,9 @@ urlpatterns = [
     path('api/notifications/read/<int:notification_id>/', views.api_mark_read, name='api_mark_read'),
     path('api/notifications/read-all/', views.api_mark_all_read, name='api_mark_all_read'),
     path('api/notifications/subscribe/', views.api_push_subscribe, name='api_push_subscribe'),
+    path('parent/register/', views.parent_register, name='parent_register'),
+path('parent/register/submit/', views.parent_register_submit, name='parent_register_submit'),
+path('admin/parent-registrations/', views.admin_parent_registrations, name='admin_parent_registrations'),
 ]
 
 if settings.DEBUG:

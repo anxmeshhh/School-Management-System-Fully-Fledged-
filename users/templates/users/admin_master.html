@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,10 +23,13 @@
             background: var(--white);
             min-height: 100vh;
             color: var(--text-color);
-            overflow: hidden; /* Kept — prevents background scroll */
+            overflow: hidden;
+            /* Kept — prevents background scroll */
         }
 
-        h1, h2, h3 {
+        h1,
+        h2,
+        h3 {
             font-family: 'Montserrat', sans-serif;
         }
 
@@ -310,13 +314,24 @@
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .sidebar { width: 250px; }
-            .page-wrapper { margin-left: 250px; }
-            .logo-container { width: 80px; height: 64px; }
+            .sidebar {
+                width: 250px;
+            }
+
+            .page-wrapper {
+                margin-left: 250px;
+            }
+
+            .logo-container {
+                width: 80px;
+                height: 64px;
+            }
         }
 
         @media (max-width: 768px) {
-            .menu-toggle { display: flex; }
+            .menu-toggle {
+                display: flex;
+            }
 
             .sidebar {
                 transform: translateX(-100%);
@@ -326,51 +341,134 @@
                 transform: translateX(0);
             }
 
-            .sidebar-overlay { display: block; }
+            .sidebar-overlay {
+                display: block;
+            }
 
             .page-wrapper {
                 margin-left: 0;
             }
 
-            .container { padding: 1.5rem 15px; }
-            .header h1 { font-size: 1.5rem; }
-            .main-content { padding: 1.5rem; }
-            .section { padding: 1.2rem; }
-            h2 { font-size: 1.3rem; }
-            .cards-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
-            .card { padding: 1.2rem; min-height: 100px; }
-            .card img { width: 60px; height: 60px; }
-            .card span { font-size: 1rem; }
+            .container {
+                padding: 1.5rem 15px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .section {
+                padding: 1.2rem;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .card {
+                padding: 1.2rem;
+                min-height: 100px;
+            }
+
+            .card img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .card span {
+                font-size: 1rem;
+            }
         }
 
         @media (max-width: 480px) {
-            .sidebar { width: 100%; max-width: 320px; }
-            .container { padding: 1rem; }
-            .header { padding: 1rem; }
-            .header h1 { font-size: 1.25rem; }
-            .main-content { padding: 1rem; border-radius: 8px; }
-            .section { padding: 1rem; }
-            h2 { font-size: 1.15rem; }
-            .cards-grid { grid-template-columns: 1fr; }
-            .card { padding: 1rem; }
-            .card img { width: 50px; height: 50px; }
-            .card span { font-size: 0.9rem; }
-            .menu-toggle { width: 45px; height: 45px; font-size: 1.25rem; }
+            .sidebar {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+                border-radius: 8px;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.15rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .card img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .card span {
+                font-size: 0.9rem;
+            }
+
+            .menu-toggle {
+                width: 45px;
+                height: 45px;
+                font-size: 1.25rem;
+            }
         }
 
         @media (hover: none) {
-            .section:hover, .card:hover, .logo-container:hover, .sidebar-nav a:hover, .menu-toggle:hover {
+
+            .section:hover,
+            .card:hover,
+            .logo-container:hover,
+            .sidebar-nav a:hover,
+            .menu-toggle:hover {
                 transform: none;
                 box-shadow: var(--shadow-sm);
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            * { transition: none !important; animation: none !important; }
-            html { scroll-behavior: auto; }
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
         }
     </style>
 </head>
+
 <body>
     <!-- Mobile Menu Toggle Button -->
     <button class="menu-toggle" id="menuToggle">
@@ -462,7 +560,8 @@
                             <span>Add New Student</span>
                         </a>
                         <a href="{% url 'manage_users' %}" class="card">
-                            <img src="https://img.icons8.com/color/70/000000/user-group-man-woman.png" alt="Manage Users">
+                            <img src="https://img.icons8.com/color/70/000000/user-group-man-woman.png"
+                                alt="Manage Users">
                             <span>Manage Users</span>
                         </a>
                         <a href="{% url 'qr_scan' %}" class="card">
@@ -470,12 +569,17 @@
                             <span>QR CODEit</span>
                         </a>
                         <a href="{% url 'bulk_id_card' %}" class="card">
-                            <img src="https://img.icons8.com/color/70/000000/id-verified.png" alt="Bulk ID Card Generation">
+                            <img src="https://img.icons8.com/color/70/000000/id-verified.png"
+                                alt="Bulk ID Card Generation">
                             <span>Bulk ID Card Generation</span>
                         </a>
                         <a href="{% url 'bulk_upload' %}" class="card">
                             <img src="https://img.icons8.com/color/70/000000/upload.png" alt="Bulk Upload Icon">
                             <span>Bulk Student Upload</span>
+                        </a>
+                        <a href="{% url 'admin_parent_registrations' %}">
+                            <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="Parent Registrations">
+                            <span>Parent Registrations</span>
                         </a>
                     </div>
                 </section>
@@ -484,7 +588,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -501,7 +605,7 @@
             }
 
             if (menuToggle) {
-                menuToggle.addEventListener('click', function(e) {
+                menuToggle.addEventListener('click', function (e) {
                     e.stopPropagation();
                     sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
                 });
@@ -512,14 +616,14 @@
             }
 
             navLinks.forEach(link => {
-                link.addEventListener('click', function() {
+                link.addEventListener('click', function () {
                     if (window.innerWidth <= 768) {
                         closeSidebar();
                     }
                 });
             });
 
-            window.addEventListener('resize', function() {
+            window.addEventListener('resize', function () {
                 if (window.innerWidth > 768) {
                     closeSidebar();
                 }
@@ -528,11 +632,11 @@
             // Hover only on desktop
             if (window.innerWidth > 768) {
                 navLinks.forEach(item => {
-                    item.addEventListener('mouseenter', function() {
+                    item.addEventListener('mouseenter', function () {
                         const icon = this.querySelector('img');
                         if (icon) icon.style.transform = 'scale(1.1) rotate(5deg)';
                     });
-                    item.addEventListener('mouseleave', function() {
+                    item.addEventListener('mouseleave', function () {
                         const icon = this.querySelector('img');
                         if (icon) icon.style.transform = 'none';
                     });
@@ -541,4 +645,5 @@
         });
     </script>
 </body>
+
 </html>

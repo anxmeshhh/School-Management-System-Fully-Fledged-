@@ -12564,3 +12564,85 @@ def api_push_subscribe(request):
     except Exception as e:
         print(f"[Push Error] api_push_subscribe: {e}")
         return JsonResponse({'error': str(e)}, status=500)
+
+
+
+def parent_register(request):
+    return render(request, 'users/parent_register.html')
+
+
+def parent_register_submit(request):
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request.'})
+
+    parent_name  = request.POST.get('parent_name', '').strip()
+    child_name   = request.POST.get('child_name', '').strip()
+    admission_no = request.POST.get('admission_no', '').strip()
+    mobile       = request.POST.get('mobile', '').strip()
+    email        = request.POST.get('email', '').strip()
+    class_name   = request.POST.get('class_name', '').strip()
+    section      = request.POST.get('section', '').strip()
+    address      = request.POST.get('address', '').strip()
+
+    if not all([parent_name, child_name, admission_no, mobile]):
+        return JsonResponse({'status': 'error', 'message': 'Please fill all required fields.'})
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS parent_registrations (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    parent_name VARCHAR(200) NOT NULL,
+                    child_name  VARCHAR(200) NOT NULL,
+                    admission_no VARCHAR(50) NOT NULL,
+                    mobile      VARCHAR(20)  NOT NULL,
+                    email       VARCHAR(200),
+                    class_name  VARCHAR(20),
+                    section     VARCHAR(10),
+                    address     TEXT,
+                    status      VARCHAR(20) DEFAULT 'pending',
+                    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            cursor.execute("""
+                INSERT INTO parent_registrations
+                (parent_name, child_name, admission_no, mobile, email, class_name, section, address)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, [parent_name, child_name, admission_no, mobile,
+                  email, class_name, section, address])
+            connection.commit()
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+def admin_parent_registrations(request):
+    if not request.session.get('admin_id'):   # same guard you use everywhere
+        return redirect('admin_login')
+
+    registrations = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS parent_registrations (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    parent_name VARCHAR(200),
+                    child_name  VARCHAR(200),
+                    admission_no VARCHAR(50),
+                    mobile      VARCHAR(20),
+                    email       VARCHAR(200),
+                    class_name  VARCHAR(20),
+                    section     VARCHAR(10),
+                    address     TEXT,
+                    status      VARCHAR(20) DEFAULT 'pending',
+                    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            cursor.execute("SELECT * FROM parent_registrations ORDER BY created_at DESC")
+            cols = [col[0] for col in cursor.description]
+            registrations = [dict(zip(cols, row)) for row in cursor.fetchall()]
+    except Exception as e:
+        print(f"[Admin Registrations Error] {e}")
+
+    return render(request, 'users/admin_parent_registrations.html',
+                  {'registrations': registrations})
