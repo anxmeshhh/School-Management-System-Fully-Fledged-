@@ -8,7 +8,8 @@ Usage:
     from users.notifications import notify, notify_all_admins, notify_class_students, ...
 """
 
-from django.db import connection
+from django.db import connection, close_old_connections
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, date
 import os
 import json
@@ -34,6 +35,9 @@ MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgCeB/jtwYZpNFG8VU
 # ─── Write VAPID key to disk ONCE at startup, not on every push ──────────────
 _VAPID_KEY_PATH = None
 _VAPID_KEY_LOCK = threading.Lock()
+
+# Global thread pool for handling push notifications without blocking
+PUSH_EXECUTOR = ThreadPoolExecutor(max_workers=20)
 
 def _get_vapid_key_path():
     global _VAPID_KEY_PATH
@@ -65,6 +69,7 @@ def _send_single_push(endpoint, p256dh, auth, payload):
     except WebPushException as ex:
         if ex.response and ex.response.status_code in [404, 410]:
             try:
+                close_old_connections()
                 with connection.cursor() as cursor:
                     cursor.execute(
                         'DELETE FROM push_subscriptions WHERE endpoint = %s', [endpoint]
@@ -72,6 +77,8 @@ def _send_single_push(endpoint, p256dh, auth, payload):
                     connection.commit()
             except Exception:
                 pass
+            finally:
+                close_old_connections()
         else:
             print(f"[Web Push Error] {repr(ex)}")
     except Exception as e:
@@ -79,12 +86,13 @@ def _send_single_push(endpoint, p256dh, auth, payload):
 
 
 def trigger_web_push(recipient_type, recipient_id, title, message, action_url):
-    """Fire push notifications to all devices of a user. Runs in background thread."""
+    """Fire push notifications to all devices of a user. Runs in background thread pool."""
     if not PYWEBPUSH_AVAILABLE:
         return
 
     def _push():
         try:
+            close_old_connections()
             with connection.cursor() as cursor:
                 cursor.execute(
                     'SELECT endpoint, p256dh, auth FROM push_subscriptions '
@@ -102,84 +110,70 @@ def trigger_web_push(recipient_type, recipient_id, title, message, action_url):
                 "action_url": action_url
             })
 
-            # Fire all subscriptions for this user in parallel
-            threads = []
+            # Submit to pool instead of spawning and joining threads
             for endpoint, p256dh, auth in subscriptions:
-                t = threading.Thread(
-                    target=_send_single_push,
-                    args=(endpoint, p256dh, auth, payload),
-                    daemon=True
-                )
-                t.start()
-                threads.append(t)
-            for t in threads:
-                t.join(timeout=10)
+                PUSH_EXECUTOR.submit(_send_single_push, endpoint, p256dh, auth, payload)
 
         except Exception as e:
             print(f"[Push Error] trigger_web_push: {e}")
+        finally:
+            close_old_connections()
 
-    threading.Thread(target=_push, daemon=True).start()
+    PUSH_EXECUTOR.submit(_push)
 
 
 def trigger_bulk_web_push(notifications_list):
     """
     Fire push notifications for a batch of notifications.
-    Each unique (recipient_type, recipient_id) gets one lookup and parallel sends.
-    Runs entirely in a background thread so it never blocks the response.
+    Uses batched DB queries to avoid N+1 and a thread pool for fast sends.
     """
     if not PYWEBPUSH_AVAILABLE or not notifications_list:
         return
 
     def _bulk_push():
         try:
-            # Group by recipient to avoid redundant DB lookups
+            close_old_connections()
             from collections import defaultdict
-            recipients = defaultdict(list)
+            
+            # Map (user_type, user_id) -> payload
+            payload_map = {}
             for n in notifications_list:
                 key = (n['recipient_type'], n['recipient_id'])
-                recipients[key].append(n)
-
-            threads = []
-            for (rtype, rid), notifs in recipients.items():
-                try:
-                    with connection.cursor() as cursor:
-                        cursor.execute(
-                            'SELECT endpoint, p256dh, auth FROM push_subscriptions '
-                            'WHERE user_type = %s AND user_id = %s',
-                            [rtype, rid]
-                        )
-                        subscriptions = cursor.fetchall()
-                except Exception as e:
-                    print(f"[Push Error] subscription lookup: {e}")
-                    continue
-
-                if not subscriptions:
-                    continue
-
                 # Use the last notification for this recipient (most recent)
-                n = notifs[-1]
-                payload = json.dumps({
+                payload_map[key] = json.dumps({
                     "title": n['title'],
                     "message": n['message'],
                     "action_url": n.get('action_url')
                 })
+            
+            # Group keys by user_type so we can batch query per user_type
+            type_to_ids = defaultdict(list)
+            for rtype, rid in payload_map.keys():
+                type_to_ids[rtype].append(rid)
 
-                for endpoint, p256dh, auth in subscriptions:
-                    t = threading.Thread(
-                        target=_send_single_push,
-                        args=(endpoint, p256dh, auth, payload),
-                        daemon=True
-                    )
-                    t.start()
-                    threads.append(t)
-
-            for t in threads:
-                t.join(timeout=10)
+            with connection.cursor() as cursor:
+                for rtype, rids in type_to_ids.items():
+                    if not rids: continue
+                    # Max out at 500 per query just to be safe with DB limits
+                    chunk_size = 500
+                    for i in range(0, len(rids), chunk_size):
+                        chunk_rids = rids[i:i + chunk_size]
+                        placeholders = ','.join(['%s'] * len(chunk_rids))
+                        query = f"SELECT user_id, endpoint, p256dh, auth FROM push_subscriptions WHERE user_type = %s AND user_id IN ({placeholders})"
+                        cursor.execute(query, [rtype] + chunk_rids)
+                        
+                        for row in cursor.fetchall():
+                            user_id, endpoint, p256dh, auth = row
+                            payload = payload_map.get((rtype, user_id))
+                            if payload:
+                                PUSH_EXECUTOR.submit(_send_single_push, endpoint, p256dh, auth, payload)
 
         except Exception as e:
             print(f"[Push Error] trigger_bulk_web_push: {e}")
+        finally:
+            close_old_connections()
 
-    threading.Thread(target=_bulk_push, daemon=True).start()
+    PUSH_EXECUTOR.submit(_bulk_push)
 
 
 # ─── Core CRUD Functions ──────────────────────────────────────────────────────

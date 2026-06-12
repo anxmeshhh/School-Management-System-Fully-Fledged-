@@ -12297,12 +12297,11 @@ def serve_student_pdf(request, filename):
     )
 
 
-
 import json
 import time
 
 from django.db import connection, transaction
-from django.http import JsonResponse
+from django.http import JsonResponse, StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from users.notifications import (
@@ -12319,7 +12318,7 @@ REMINDER_INTERVAL = 300  # 5 minutes
 
 
 def _get_notif_user(request):
-    """Extract user type and ID from query params or session."""
+    """Extract user type and ID from query params, POST body, or session."""
     user_type = request.GET.get('type') or request.POST.get('type')
     user_id   = request.GET.get('id')   or request.POST.get('id')
 
@@ -12346,11 +12345,76 @@ def _maybe_generate_reminders(request, user_type, user_id):
     """Throttle generate_dynamic_reminders to once per REMINDER_INTERVAL per user."""
     session_key = f'last_reminder_{user_type}_{user_id}'
     now = time.time()
-
     if now - request.session.get(session_key, 0) >= REMINDER_INTERVAL:
         generate_dynamic_reminders(user_type, user_id)
         request.session[session_key] = now
 
+
+# ─── SSE: Real-Time Notification Stream ──────────────────────────────────────
+# Replaces polling entirely when the tab is open.
+# The client connects once; the server pushes count updates instantly.
+# Reconnects automatically on drop (EventSource is self-healing).
+
+def api_notification_stream(request):
+    """
+    GET /api/notifications/stream/?type=<>&id=<>
+    Server-Sent Events endpoint — pushes count updates to the tab in real time.
+    Falls back gracefully: if the client disconnects, Django drops the generator.
+    Keep-alive ping every 25s prevents proxy/load-balancer timeout disconnects.
+    """
+    user_type, user_id = _get_notif_user(request)
+    if not user_type or not user_id:
+        # Return a valid SSE stream that immediately sends an error event
+        def _auth_error():
+            yield "event: error\ndata: unauthorized\n\n"
+        return StreamingHttpResponse(
+            _auth_error(),
+            content_type='text/event-stream'
+        )
+
+    def _event_stream():
+        last_count = -1
+        last_ping  = time.time()
+        POLL_DB_EVERY = 3   # seconds between DB checks inside SSE
+        KEEPALIVE    = 25   # seconds between keep-alive pings
+
+        while True:
+            try:
+                now = time.time()
+
+                # Keep-alive ping — prevents nginx/proxy from closing idle connection
+                if now - last_ping >= KEEPALIVE:
+                    yield ": ping\n\n"
+                    last_ping = now
+
+                count = get_unread_count(user_type, user_id)
+
+                if count != last_count:
+                    last_count = count
+                    payload = json.dumps({'count': count})
+                    yield f"event: count\ndata: {payload}\n\n"
+
+                time.sleep(POLL_DB_EVERY)
+
+            except GeneratorExit:
+                # Client disconnected cleanly — stop the generator
+                break
+            except Exception:
+                # DB hiccup — wait and retry rather than crashing the stream
+                time.sleep(10)
+
+    response = StreamingHttpResponse(
+        _event_stream(),
+        content_type='text/event-stream'
+    )
+    # These headers are required for SSE to work through proxies
+    response['Cache-Control']               = 'no-cache'
+    response['X-Accel-Buffering']           = 'no'   # disables nginx buffering
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
+# ─── Notifications List ───────────────────────────────────────────────────────
 
 @csrf_exempt
 def api_get_notifications(request):
@@ -12366,9 +12430,15 @@ def api_get_notifications(request):
     return JsonResponse({'notifications': notifications})
 
 
+# ─── Count (kept for SW background sync fallback) ────────────────────────────
+
 @csrf_exempt
 def api_notification_count(request):
-    """GET /api/notifications/count/ — Get unread notification count."""
+    """
+    GET /api/notifications/count/
+    Used by the SW background sync and as SSE fallback.
+    The JS client prefers SSE; this is the safety net.
+    """
     user_type, user_id = _get_notif_user(request)
     if not user_type or not user_id:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
@@ -12378,6 +12448,8 @@ def api_notification_count(request):
     count = get_unread_count(user_type, user_id)
     return JsonResponse({'count': count})
 
+
+# ─── Mark Read ────────────────────────────────────────────────────────────────
 
 @csrf_exempt
 def api_mark_read(request, notification_id):
@@ -12418,9 +12490,16 @@ def api_mark_all_read(request):
     return JsonResponse({'success': True, 'marked': count})
 
 
+# ─── Push Subscribe ───────────────────────────────────────────────────────────
+
 @csrf_exempt
 def api_push_subscribe(request):
-    """POST /api/notifications/subscribe/ — Save or update push subscription."""
+    """
+    POST /api/notifications/subscribe/
+    Save or rotate push subscription.
+    Handles the SW pushsubscriptionchange case where user context
+    comes from the request body rather than session.
+    """
     if request.method != 'POST':
         return JsonResponse({'error': 'POST required'}, status=405)
 
@@ -12432,6 +12511,7 @@ def api_push_subscribe(request):
     try:
         user_type, user_id = _get_notif_user(request)
 
+        # SW-initiated renewal won't have a session — fall back to body params
         if not user_type or not user_id:
             user_type = data.get('type')
             raw_id    = data.get('id')
@@ -12462,12 +12542,14 @@ def api_push_subscribe(request):
                 existing = cursor.fetchone()
 
                 if existing:
+                    # Rotate keys on existing endpoint (pushsubscriptionchange)
                     cursor.execute('''
                         UPDATE push_subscriptions
                         SET user_type = %s, user_id = %s, p256dh = %s, auth = %s
                         WHERE endpoint = %s
                     ''', [user_type, user_id, p256dh, auth, endpoint])
                 else:
+                    # Clean up stale subscriptions for this user+auth before inserting
                     cursor.execute('''
                         DELETE FROM push_subscriptions
                         WHERE user_type = %s AND user_id = %s AND auth = %s

@@ -1,7 +1,8 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * NOTIFICATION CLIENT — School Management System
- * Handles: Polling, Badge, Dropdown, Toasts, Sound, Vibration, Grouping
+ * Handles: SSE (real-time), Polling (fallback), Badge, Dropdown,
+ *          Toasts, Sound, Vibration, Grouping, SW Messaging
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -9,8 +10,8 @@
     'use strict';
 
     // ─── Config ────────────────────────────────────────────────────────────
-    const POLL_INTERVAL = 30000;
-    const POLL_MAX = 300000; // 5 min cap for backoff
+    const POLL_INTERVAL = 30000;   // fallback poll: 30s
+    const POLL_MAX = 300000;  // backoff cap: 5min
     const TOAST_DURATION = 5000;
     const MAX_TOASTS = 3;
     const MAX_SEEN_IDS = 500;
@@ -45,6 +46,10 @@
     let lastNotifIds = new Set();
     let uiInitialised = false;
 
+    // SSE
+    let _sseSource = null;
+    let _sseFailed = false;
+
     // Stored so destroy() can remove them
     const _listeners = [];
 
@@ -63,12 +68,16 @@
 
         setupUI();
         setupToastContainer();
+        setupSWMessaging();
         fetchUnreadCount();
         startPolling();
         setupPermissionTriggers();
 
         const onVisibility = () => {
-            if (!document.hidden) fetchUnreadCount();
+            if (!document.hidden) {
+                // If SSE is alive, just do a quick count check; otherwise rely on poll
+                fetchUnreadCount();
+            }
         };
         document.addEventListener('visibilitychange', onVisibility);
         _listeners.push({ el: document, type: 'visibilitychange', fn: onVisibility });
@@ -82,6 +91,54 @@
         const output = new Uint8Array(rawData.length);
         for (let i = 0; i < rawData.length; ++i) output[i] = rawData.charCodeAt(i);
         return output;
+    }
+
+    // ─── Service Worker Messaging ──────────────────────────────────────────
+    function setupSWMessaging() {
+        if (!('serviceWorker' in navigator)) return;
+
+        navigator.serviceWorker.addEventListener('message', function (event) {
+            const msg = event.data;
+            if (!msg) return;
+
+            switch (msg.type) {
+
+                // Push arrived while tab is open — refresh immediately, skip poll delay
+                case 'PUSH_RECEIVED':
+                    fetchUnreadCount();
+                    if (isPanelOpen) fetchNotifications();
+                    break;
+
+                // User clicked notification action — mark read in UI instantly
+                case 'MARK_READ':
+                    if (msg.notifId) {
+                        const el = document.querySelector(`[data-id="${msg.notifId}"]`);
+                        if (el) el.classList.remove('unread');
+                        if (lastUnreadCount > 0) {
+                            lastUnreadCount--;
+                            updateBadge(lastUnreadCount);
+                        }
+                    }
+                    break;
+
+                // User dismissed OS notification — sync count
+                case 'NOTIF_DISMISSED':
+                    fetchUnreadCount();
+                    break;
+
+                // Browser rotated push credentials — resubscribe
+                case 'RESUBSCRIBE':
+                    subscribeToPush();
+                    break;
+
+                // SW asking for CSRF token for subscription renewal
+                case 'GET_CSRF':
+                    if (event.ports && event.ports[0]) {
+                        event.ports[0].postMessage({ csrfToken: getCSRFToken() });
+                    }
+                    break;
+            }
+        });
     }
 
     // ─── Permissions & Push ────────────────────────────────────────────────
@@ -232,18 +289,65 @@
         document.body.appendChild(c);
     }
 
-    // ─── Polling ───────────────────────────────────────────────────────────
+    // ─── SSE — Real-Time Stream ────────────────────────────────────────────
+    // Primary update channel when tab is open.
+    // Falls back to polling automatically if SSE is unsupported or keeps closing.
+
+    function _startSSE() {
+        if (_sseSource) {
+            _sseSource.close();
+            _sseSource = null;
+        }
+
+        _sseSource = new EventSource(
+            `/api/notifications/stream/?type=${userType}&id=${userId}`
+        );
+
+        _sseSource.addEventListener('count', function (e) {
+            onFetchSuccess();
+
+            let newCount;
+            try { newCount = JSON.parse(e.data).count; }
+            catch (_) { return; }
+
+            _handleCountUpdate(newCount);
+        });
+
+        _sseSource.addEventListener('error', function () {
+            // CONNECTING = EventSource is auto-retrying — let it
+            // CLOSED     = server closed the stream — fall back to polling
+            if (_sseSource && _sseSource.readyState === EventSource.CLOSED) {
+                _sseSource = null;
+                if (!_sseFailed) {
+                    _sseFailed = true;
+                    console.warn('[Notif] SSE closed, switching to polling fallback');
+                    scheduleNextPoll(currentInterval);
+                }
+            }
+            onFetchError();
+        });
+    }
+
+    // ─── Polling — Fallback ────────────────────────────────────────────────
     function startPolling() {
         if (isPolling) return;
         isPolling = true;
-        scheduleNextPoll(currentInterval);
+
+        if (typeof EventSource !== 'undefined') {
+            _startSSE();
+            // Still keep a slow safety-net poll (every 5min) in case SSE misses an event
+            scheduleNextPoll(POLL_MAX);
+        } else {
+            _sseFailed = true;
+            scheduleNextPoll(currentInterval);
+        }
     }
 
     function scheduleNextPoll(delay) {
         clearTimeout(pollTimer);
         pollTimer = setTimeout(() => {
             fetchUnreadCount();
-            scheduleNextPoll(currentInterval);
+            scheduleNextPoll(_sseFailed ? currentInterval : POLL_MAX);
         }, delay);
     }
 
@@ -251,20 +355,47 @@
         if (errorStreak > 0) {
             errorStreak = 0;
             currentInterval = POLL_INTERVAL;
-            // Reset to normal interval immediately
-            scheduleNextPoll(currentInterval);
+            if (_sseFailed) scheduleNextPoll(currentInterval);
         }
     }
 
     function onFetchError() {
         errorStreak++;
         currentInterval = Math.min(currentInterval * 2, POLL_MAX);
-        scheduleNextPoll(currentInterval);
+        if (_sseFailed) scheduleNextPoll(currentInterval);
     }
 
-    // ─── Core Fetch: Unread Count ──────────────────────────────────────────
+    // ─── Shared count-update logic (used by both SSE and poll) ────────────
+    function _handleCountUpdate(newCount) {
+        // First update — set baseline silently
+        if (lastUnreadCount === -1) {
+            lastUnreadCount = newCount;
+            updateBadge(newCount);
+            return;
+        }
+
+        const prevCount = lastUnreadCount;
+        lastUnreadCount = newCount;
+        updateBadge(newCount, prevCount);
+
+        if (newCount > prevCount) {
+            const diff = newCount - prevCount;
+            playNotificationSound();
+            triggerVibration();
+
+            const hasPermission = ("Notification" in window &&
+                Notification.permission === 'granted');
+
+            if (hasPermission) {
+                fetchNewNotificationsAndAlert(diff);
+            } else if (!isPanelOpen) {
+                showNewNotifToast(diff);
+            }
+        }
+    }
+
+    // ─── Core Fetch: Unread Count (poll path) ─────────────────────────────
     function fetchUnreadCount() {
-        // Skip if tab is not visible
         if (document.hidden) return;
 
         fetch(`/api/notifications/count/?type=${userType}&id=${userId}`)
@@ -274,33 +405,7 @@
             })
             .then(data => {
                 onFetchSuccess();
-                const newCount = data.count || 0;
-
-                // First poll: set baseline silently
-                if (lastUnreadCount === -1) {
-                    lastUnreadCount = newCount;
-                    updateBadge(newCount);
-                    return;
-                }
-
-                const prevCount = lastUnreadCount;
-                lastUnreadCount = newCount;
-                updateBadge(newCount, prevCount);
-
-                if (newCount > prevCount) {
-                    const diff = newCount - prevCount;
-                    playNotificationSound();
-                    triggerVibration();
-
-                    const hasPermission = ("Notification" in window &&
-                        Notification.permission === 'granted');
-
-                    if (hasPermission) {
-                        fetchNewNotificationsAndAlert(diff);
-                    } else if (!isPanelOpen) {
-                        showNewNotifToast(diff);
-                    }
-                }
+                _handleCountUpdate(data.count || 0);
             })
             .catch(err => {
                 console.warn('[Notif] Count fetch error:', err);
@@ -359,7 +464,7 @@
             });
     }
 
-    // ─── Seen IDs helper ──────────────────────────────────────────────────
+    // ─── Seen IDs ──────────────────────────────────────────────────────────
     function addToSeenIds(ids) {
         ids.forEach(id => lastNotifIds.add(id));
         if (lastNotifIds.size > MAX_SEEN_IDS) {
@@ -451,7 +556,7 @@
 
             if (prevCount !== undefined && count > prevCount) {
                 badge.classList.remove('pulse-badge');
-                void badge.offsetWidth;
+                void badge.offsetWidth; // force reflow to restart animation
                 badge.classList.add('pulse-badge');
 
                 const bell = document.getElementById('notificationBell');
@@ -540,7 +645,6 @@
     // ─── Helpers ───────────────────────────────────────────────────────────
     function relativeTime(isoStr) {
         if (!isoStr) return '';
-        // Clamp to 0 — server clock drift can produce negative diff
         const diff = Math.max(0, Date.now() - new Date(isoStr).getTime());
         const sec = Math.floor(diff / 1000);
         const min = Math.floor(sec / 60);
@@ -565,7 +669,6 @@
         return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
-    // Regex-based — safe against base64 = chars in the token value
     function getCSRFToken() {
         const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]*)/);
         return match ? decodeURIComponent(match[1]) : '';
@@ -605,10 +708,15 @@
         if (url) window.location.href = url;
     }
 
-    // Clears poll timer and all tracked listeners — call on SPA page teardown
     function destroy() {
         clearTimeout(pollTimer);
         isPolling = false;
+
+        if (_sseSource) {
+            _sseSource.close();
+            _sseSource = null;
+        }
+
         _listeners.forEach(({ el, type, fn }) => el.removeEventListener(type, fn));
         _listeners.length = 0;
     }
