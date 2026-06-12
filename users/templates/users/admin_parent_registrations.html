@@ -1,0 +1,432 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Registration Requests - Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #00a676;
+            --sidebar-bg: #f0f9f4;
+            --sidebar-border: #a8d5c2;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #adb5bd;
+            --text-color: #495057;
+            --text-light: #868e96;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --border-radius: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --dull-highlighter: #d4edda;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        /* Sidebar — same as your admin pages */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            border-right: 2px solid var(--sidebar-border);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            background: var(--white);
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid var(--sidebar-border);
+        }
+
+        .logo-container {
+            width: 100px;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid var(--sidebar-border);
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            transition: var(--transition);
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: var(--dull-highlighter);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav a img {
+            margin-right: 1rem;
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Page wrapper */
+        .page-wrapper {
+            margin-left: 280px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+
+        .header {
+            background: var(--white);
+            padding: 1.5rem;
+            border: 2px solid #495057;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 150px;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-card .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-card .stat-label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        /* Search bar */
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--primary-color);
+        }
+
+        /* Table */
+        .table-wrapper {
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #00a676, #008c44);
+            color: #fff;
+        }
+
+        thead th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #f0f9f4;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody td {
+            padding: 13px 16px;
+            font-size: 13px;
+            color: var(--text-color);
+            vertical-align: top;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .page-wrapper {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            thead th,
+            tbody td {
+                padding: 10px 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'admin_dashboard' %}" style="text-decoration:none;color:inherit;">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="Logo">
+                </div>
+            </a>
+            <span>Manavargal SMS</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'admin_master' %}">
+                <img src="https://img.icons8.com/fluency/24/home.png" alt="">
+                <span>Master Data</span>
+            </a>
+            <a href="{% url 'admin_parent_registrations' %}" class="active">
+                <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="">
+                <span>Parent Registrations</span>
+            </a>
+            <!-- Add other sidebar links as needed -->
+        </nav>
+    </aside>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <header class="header">
+                <h1><i class="fas fa-users"></i> Parent Registration Requests</h1>
+            </header>
+
+            <!-- Stats -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-number">{{ registrations|length }}</div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingCount">—</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedCount">—</div>
+                    <div class="stat-label">Approved</div>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="🔍  Search by name, admission no, mobile..."
+                    oninput="filterTable()">
+            </div>
+
+            <!-- Table -->
+            <div class="table-wrapper">
+                {% if registrations %}
+                <table id="regTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Parent Name</th>
+                            <th>Child Name</th>
+                            <th>Admission No</th>
+                            <th>Mobile</th>
+                            <th>Email</th>
+                            <th>Class / Section</th>
+                            <th>Address</th>
+                            <th>Status</th>
+                            <th>Submitted On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in registrations %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ r.parent_name }}</td>
+                            <td>{{ r.child_name }}</td>
+                            <td><strong>{{ r.admission_no }}</strong></td>
+                            <td>{{ r.mobile }}</td>
+                            <td>{{ r.email|default:"—" }}</td>
+                            <td>{{ r.class_name|default:"—" }} {% if r.section %}- {{ r.section }}{% endif %}</td>
+                            <td>{{ r.address|default:"—"|truncatechars:40 }}</td>
+                            <td>
+                                <span class="badge badge-{{ r.status }}">{{ r.status|title }}</span>
+                            </td>
+                            <td>{{ r.created_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>No parent registration requests yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Count badges
+        document.addEventListener('DOMContentLoaded', function () {
+            const rows = document.querySelectorAll('#regTable tbody tr');
+            let pending = 0, approved = 0;
+            rows.forEach(r => {
+                const badge = r.querySelector('.badge');
+                if (badge) {
+                    if (badge.classList.contains('badge-pending')) pending++;
+                    if (badge.classList.contains('badge-approved')) approved++;
+                }
+            });
+            const pc = document.getElementById('pendingCount');
+            const ac = document.getElementById('approvedCount');
+            if (pc) pc.textContent = pending;
+            if (ac) ac.textContent = approved;
+        });
+
+        function filterTable() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#regTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+
+</html>
