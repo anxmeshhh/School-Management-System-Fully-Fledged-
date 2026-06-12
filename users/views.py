@@ -7172,7 +7172,6 @@ def parent_dashboard(request):
         messages.error(request, 'Please log in to access the dashboard.')
         return redirect('parent_login')
 
-    # Fetch username from users table
     admin_name = "Guest"
     with connection.cursor() as cursor:
         cursor.execute("SELECT username FROM users WHERE id = %s", [request.session['user_id']])
@@ -7180,7 +7179,10 @@ def parent_dashboard(request):
         if result:
             admin_name = result[0]
 
-    return render(request, 'users/parent_dashboard.html', {'admin_name': admin_name})
+    return render(request, 'users/parent_dashboard.html', {
+        'admin_name': admin_name,
+        'notification_user_id': request.session['user_id'],  # ← add this
+    })
 
 
 

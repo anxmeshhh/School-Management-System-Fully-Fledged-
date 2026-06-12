@@ -28,14 +28,11 @@
             font-family: 'Montserrat', sans-serif;
         }
 
-        /* CSS Variables - Green and White Theme */
+        /* CSS Variables */
         :root {
             --primary-green: #00a651;
-            /* Bright green */
             --secondary-green: #008c44;
-            /* Darker green */
             --light-green: #e8f5e8;
-            /* Light green */
             --white: #ffffff;
             --border-color: #d4edda;
             --text-dark: #2c3e50;
@@ -61,14 +58,12 @@
             --radius-full: 50%;
         }
 
-        /* Smooth Scrolling */
         html {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
         }
 
-        /* Body Styling - Light Green/White */
         body {
             background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
             min-height: 100vh;
@@ -93,7 +88,7 @@
             animation: subtleGlow 8s ease-in-out infinite alternate;
         }
 
-        /* Main Container - Split Layout */
+        /* Main Container */
         .main-container {
             display: flex;
             width: 100%;
@@ -111,7 +106,7 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 25px rgba(0, 166, 81, 0.25);
         }
 
-        /* Left Panel - Green Side with Logo and Content */
+        /* Left Panel */
         .left-panel {
             flex: 1;
             background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
@@ -123,9 +118,11 @@
             padding: var(--space-lg);
             color: var(--white);
             animation: slideInLeft 1s ease-out;
-            overflow: hidden;
+            /* FIXED: visible so badge isn't clipped */
+            overflow: visible;
         }
 
+        /* Pattern overlay — clipped to panel bounds via clip-path, not overflow */
         .left-panel::before {
             content: '';
             position: absolute;
@@ -136,12 +133,23 @@
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><path d="M0 0h60v60H0z" fill="rgba(255,255,255,0.06)"/><circle cx="30" cy="30" r="3" fill="rgba(255,255,255,0.2)"/></svg>') repeat;
             opacity: 0.3;
             animation: gentleWave 15s linear infinite;
+            /* Keep pattern inside panel */
+            clip-path: inset(0);
+            pointer-events: none;
+        }
+
+        /* ── Logo Wrapper + Register Badge ── */
+        .logo-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: var(--space-md);
+            /* Ensure badge is not clipped */
+            z-index: 2;
         }
 
         .project-logo {
             width: 120px;
             height: 120px;
-            margin-bottom: var(--space-md);
             border-radius: var(--radius-full);
             overflow: hidden;
             border: none;
@@ -191,6 +199,57 @@
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
+        /* Register badge — small circle on top-right corner of logo */
+        .register-badge {
+            position: absolute;
+            top: -20px;
+            /* move up — increase negative value to go higher */
+            right: -50px;
+            /* move right — increase negative value to go further right */
+            width: 70px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: #ffffff;
+            border: 2.5px solid rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            z-index: 10;
+            padding: 8px;
+        }
+
+        .register-badge:hover {
+            transform: scale(1.12);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .register-badge svg {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .register-badge-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 8px;
+            font-weight: 700;
+            color: #00a651;
+            letter-spacing: 0.2px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .register-badge::after {
+            display: none;
+        }
+
+        /* Project title & motto */
         .project-title {
             font-size: var(--font-xxl);
             font-weight: 600;
@@ -216,7 +275,6 @@
             letter-spacing: 0.5px;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2), 0 0 8px rgba(255, 255, 255, 0.4);
             font-family: 'Noto Sans Tamil', 'Poppins', sans-serif;
-            position: relative;
             margin-top: var(--space-sm);
         }
 
@@ -248,7 +306,7 @@
             border-radius: 1px;
         }
 
-        /* Right Panel - White Form Side */
+        /* Right Panel */
         .right-panel {
             flex: 1.2;
             background: var(--white);
@@ -268,6 +326,7 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent 0%, rgba(0, 166, 81, 0.01) 100%);
+            pointer-events: none;
         }
 
         .form-title {
@@ -281,7 +340,6 @@
             animation: fadeInUp 1.2s ease-out;
         }
 
-        /* Form Styling */
         .login-form {
             display: flex;
             flex-direction: column;
@@ -322,7 +380,6 @@
             transform: translateY(-1px);
         }
 
-        /* Remember Me Checkbox */
         .remember-me {
             display: flex;
             align-items: center;
@@ -346,7 +403,6 @@
             margin: 0;
         }
 
-        /* Toggle Password Icon */
         .toggle-password {
             position: absolute;
             right: var(--space-md);
@@ -364,7 +420,6 @@
             transform: translateY(-50%) scale(1.05);
         }
 
-        /* Button Styling - Green Login Button */
         .login-btn {
             width: 100%;
             padding: var(--space-md) var(--space-lg);
@@ -405,7 +460,7 @@
             left: 100%;
         }
 
-        /* Notification Box Styling */
+        /* Notification boxes */
         .notification-box {
             position: fixed;
             top: var(--space-md);
@@ -443,7 +498,7 @@
             border-left: 4px solid var(--error-color);
         }
 
-        /* Animations */
+        /* ── Animations ── */
         @keyframes slideInLeft {
             0% {
                 transform: translateX(-40px);
@@ -530,7 +585,7 @@
             }
         }
 
-        /* Responsive Design */
+        /* ── Responsive ── */
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
@@ -633,35 +688,17 @@
                 height: 16px;
             }
 
-
-            .register-link {
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                margin-top: 18px;
-                padding: 10px 22px;
-                background: rgba(255, 255, 255, 0.18);
-                color: #ffffff;
-                border: 2px solid rgba(255, 255, 255, 0.7);
-                border-radius: 50px;
-                font-size: 15px;
-                font-weight: 600;
-                text-decoration: none;
-                letter-spacing: 0.4px;
-                z-index: 1;
-                position: relative;
-                transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            /* Scale badge down on small screens */
+            .register-badge {
+                width: 30px;
+                height: 30px;
+                top: -5px;
+                right: -5px;
             }
 
-            .register-link:hover {
-                background: rgba(255, 255, 255, 0.32);
-                transform: translateY(-2px);
-                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
-            }
-
-            .register-icon {
-                font-size: 17px;
+            .register-badge svg {
+                width: 14px;
+                height: 14px;
             }
         }
 
@@ -677,19 +714,29 @@
 <body>
     <div class="main-container">
         <!-- Left Panel - Green Side with Logo and Project Info -->
-        <!-- REPLACE the entire .left-panel div with this -->
         <div class="left-panel">
-            <div class="project-logo">
-                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MANAVARGAL Logo">
+            <!-- Logo with register badge on corner -->
+            <div class="logo-wrapper">
+                <div class="project-logo">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MANAVARGAL Logo">
+                </div>
+                <a href="{% url 'parent_register' %}" class="register-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#00a651" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <line x1="19" y1="8" x2="19" y2="14" />
+                        <line x1="16" y1="11" x2="22" y2="11" />
+                    </svg>
+                    <span class="register-badge-text">New Parent<br>Register</span>
+                </a>
             </div>
+
             <h1 class="project-title">MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
             <p class="project-motto">
                 <span class="english">INFORMATION AT EASE</span>
                 <span class="tamil">| தகவல் உங்கள் கையில்</span>
             </p>
-            <a href="{% url 'parent_register' %}" class="register-link">
-                <span class="register-icon">📋</span> New Parent Register
-            </a>
         </div>
 
         <!-- Right Panel - Login Form Side -->
