@@ -211,13 +211,6 @@
             position: relative;
         }
 
-        .cocomelon-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
         .cocomelon-logo {
             width: 120px;
             height: 80px;
@@ -241,24 +234,29 @@
             object-fit: contain;
         }
 
-        .register-link {
-            font-family: 'Poppins', sans-serif;
-            font-size: 11px;
-            font-weight: 600;
+        .register-panel-btn {
+            width: 100%;
+            padding: var(--space-md) var(--space-lg);
+            background: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
             color: var(--primary-green);
-            background: #ffffff;
-            padding: 5px 12px;
-            border-radius: 12px;
-            text-decoration: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s, box-shadow 0.2s, color 0.2s;
+            font-size: var(--font-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: inline-block;
             text-align: center;
-            white-space: nowrap;
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 0.3px;
+            margin-bottom: var(--space-md);
         }
 
-        .register-link:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        .register-panel-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
             color: var(--secondary-green);
         }
 
@@ -645,9 +643,9 @@
                 height: 60px;
             }
 
-            .register-link {
-                font-size: 9px;
-                padding: 4px 10px;
+            .register-panel-btn {
+                padding: var(--space-sm) var(--space-md);
+                font-size: var(--font-md);
             }
 
             body {
@@ -726,18 +724,18 @@
     <div class="main-container">
         <!-- Left Panel - Green Side with Logo and Project Info -->
         <div class="left-panel">
-            <!-- Dual Logos with Registration Link -->
+            <!-- Dual Logos -->
             <div class="logos-container">
                 <div class="project-logo">
                     <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MANAVARGAL Logo">
                 </div>
-                <div class="cocomelon-wrapper">
-                    <div class="cocomelon-logo">
-                        <img src="{% static 'users/images/cocomelon.jpeg' %}" alt="Cocomelon Logo">
-                    </div>
-                    <a href="{% url 'parent_register' %}" class="register-link">New Registration</a>
+                <div class="cocomelon-logo">
+                    <img src="{% static 'users/images/cocomelon.jpeg' %}" alt="Cocomelon Logo">
                 </div>
             </div>
+            
+            <!-- Registration Button -->
+            <a href="{% url 'parent_register' %}" class="register-panel-btn">New Parent Registration</a>
 
             <h1 class="project-title">MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
             <p class="project-motto">
