@@ -1,15 +1,17 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MANAVARGAL SCHOOL MANAGEMENT SYSTEM - Teacher Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap"
+        rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap');
 
-        /* Reset and Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -20,15 +22,15 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        h1, h2 {
+        h1,
+        h2 {
             font-family: 'Montserrat', sans-serif;
         }
 
-        /* CSS Variables - Green and White Theme */
         :root {
-            --primary-green: #00a651; /* Bright green */
-            --secondary-green: #008c44; /* Darker green */
-            --light-green: #e8f5e8; /* Light green */
+            --primary-green: #00a651;
+            --secondary-green: #008c44;
+            --light-green: #e8f5e8;
             --white: #ffffff;
             --border-color: #d4edda;
             --text-dark: #2c3e50;
@@ -54,14 +56,12 @@
             --radius-full: 50%;
         }
 
-        /* Smooth Scrolling */
         html {
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
         }
 
-        /* Body Styling - Light Green/White */
         body {
             background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
             min-height: 100vh;
@@ -80,18 +80,18 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 20% 80%, rgba(0, 166, 81, 0.04) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(0, 166, 81, 0.02) 0%, transparent 50%);
+            background:
+                radial-gradient(circle at 20% 80%, rgba(0, 166, 81, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 166, 81, 0.02) 0%, transparent 50%);
             z-index: -1;
             animation: subtleGlow 8s ease-in-out infinite alternate;
         }
 
-        /* Main Container - Split Layout */
+        /* ── Main Container ── */
         .main-container {
             display: flex;
             width: 100%;
-            max-width: 800px;
-            height: 450px;
+            max-width: 860px;
             border-radius: var(--radius-lg);
             overflow: hidden;
             box-shadow: var(--shadow-md), var(--shadow-glow);
@@ -104,7 +104,7 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 25px rgba(0, 166, 81, 0.25);
         }
 
-        /* Left Panel - Green Side with Logo and Content */
+        /* ── Left Panel ── */
         .left-panel {
             flex: 1;
             background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
@@ -113,10 +113,9 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: var(--space-lg);
+            padding: var(--space-lg) var(--space-md);
             color: var(--white);
             animation: slideInLeft 1s ease-out;
-            /* FIXED: visible so badge isn't clipped */
             overflow: visible;
         }
 
@@ -130,161 +129,119 @@
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><path d="M0 0h60v60H0z" fill="rgba(255,255,255,0.06)"/><circle cx="30" cy="30" r="3" fill="rgba(255,255,255,0.2)"/></svg>') repeat;
             opacity: 0.3;
             animation: gentleWave 15s linear infinite;
-            /* Keep pattern inside panel */
             clip-path: inset(0);
             pointer-events: none;
         }
 
-        .project-logo {
-            width: 120px;
-            height: 120px;
-            margin-bottom: var(--space-md);
-            border-radius: var(--radius-full);
-            overflow: hidden;
-            border: none;
-            box-shadow: 
-                inset 0 4px 8px rgba(0, 0, 0, 0.15), 
-                inset 0 -4px 8px rgba(0, 0, 0, 0.1),
-                0 4px 12px rgba(0, 0, 0, 0.2),
-                0 0 0 1px rgba(255, 255, 255, 0.1);
-            z-index: 1;
-            position: relative;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            animation: logoSubmerge 4s ease-in-out infinite alternate;
-            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
-        }
-
-        .project-logo::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            border-radius: var(--radius-full);
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .project-logo:hover {
-            transform: scale(1.02);
-            box-shadow: 
-                inset 0 3px 6px rgba(0, 0, 0, 0.2), 
-                inset 0 -3px 6px rgba(0, 0, 0, 0.15),
-                0 6px 18px rgba(0, 0, 0, 0.25),
-                0 0 0 1px rgba(255, 255, 255, 0.15);
-        }
-
-        .project-logo:hover::before {
-            opacity: 1;
-        }
-
-        .project-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-        }
-
-        /* ── Dual Logos Container ── */
+        /* ── Logos Container: side by side, equal size ── */
         .logos-container {
             display: flex;
             flex-direction: row;
             align-items: center;
             justify-content: center;
-            gap: 24px;
+            gap: 20px;
             margin-bottom: var(--space-md);
             z-index: 2;
             position: relative;
         }
 
-        .cocomelon-logo {
-            width: 120px;
-            height: 120px;
-            border-radius: 8px;
+        /* Both logos share identical dimensions */
+        .logo-circle,
+        .logo-square {
+            width: 110px;
+            height: 110px;
+            flex-shrink: 0;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            background: white;
-            padding: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            animation: logoSubmerge 4s ease-in-out infinite alternate;
             transition: transform 0.4s ease, box-shadow 0.4s ease;
-            animation: logoSubmerge 4s ease-in-out infinite alternate 1s;
         }
 
-        .cocomelon-logo:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+        .logo-circle:hover,
+        .logo-square:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
         }
 
-        .cocomelon-logo img {
+        /* School logo — circular */
+        .logo-circle {
+            border-radius: var(--radius-full);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
+        }
+
+        /* Cocomelon logo — rounded square with white bg */
+        .logo-square {
+            border-radius: var(--radius-md);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            background: var(--white);
+            padding: 6px;
+            animation-delay: 0.8s;
+        }
+
+        .logo-circle img,
+        .logo-square img {
             width: 100%;
             height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .logo-square img {
             object-fit: contain;
         }
 
+        /* Project title & motto */
         .project-title {
             font-size: var(--font-xxl);
-            font-weight: 600;
+            font-weight: 700;
             text-align: center;
             margin-bottom: var(--space-sm);
             z-index: 1;
             position: relative;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
             letter-spacing: 0.5px;
-            line-height: 1.2;
+            line-height: 1.25;
             animation: titlePulse 3s ease-in-out infinite alternate;
+            word-break: break-word;
+            padding: 0 var(--space-xs);
         }
 
         .project-motto {
-            font-size: var(--font-lg);
+            font-size: var(--font-sm);
             text-align: center;
-            opacity: 0.9;
             z-index: 1;
             position: relative;
-            line-height: 1.4;
-            font-weight: 400;
-            font-style: italic;
-            letter-spacing: 0.5px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2), 0 0 8px rgba(255,255,255,0.4);
+            line-height: 1.5;
             font-family: 'Noto Sans Tamil', 'Poppins', sans-serif;
-            position: relative;
-            margin-top: var(--space-sm);
+            margin-top: var(--space-xs);
+            padding: 0 var(--space-xs);
         }
 
         .project-motto .english {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--white);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             display: block;
-            margin-bottom: var(--space-xs);
+            margin-bottom: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: var(--font-sm);
         }
 
         .project-motto .tamil {
             font-weight: 500;
-            color: rgba(255,255,255,0.95);
-            font-size: var(--font-md);
+            color: rgba(255, 255, 255, 0.92);
+            font-size: var(--font-xs);
             display: block;
+            letter-spacing: 0.3px;
         }
 
-        .project-motto::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-            border-radius: 1px;
-        }
-
-        /* Right Panel - White Form Side */
+        /* ── Right Panel ── */
         .right-panel {
             flex: 1.2;
             background: var(--white);
-            padding: var(--space-lg);
+            padding: var(--space-xl) var(--space-lg);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -300,6 +257,7 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent 0%, rgba(0, 166, 81, 0.01) 100%);
+            pointer-events: none;
         }
 
         .form-title {
@@ -307,13 +265,11 @@
             margin-bottom: var(--space-lg);
             color: var(--primary-green);
             font-size: var(--font-xl);
-            font-weight: 500;
+            font-weight: 600;
             letter-spacing: 0.3px;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.05);
             animation: fadeInUp 1.2s ease-out;
         }
 
-        /* Form Styling */
         .login-form {
             display: flex;
             flex-direction: column;
@@ -329,7 +285,7 @@
         .form-group label {
             display: block;
             color: var(--secondary-green);
-            font-size: var(--font-sm);
+            font-size: var(--font-xs);
             font-weight: 500;
             margin-bottom: var(--space-xs);
             letter-spacing: 0.1px;
@@ -337,10 +293,10 @@
 
         .form-group input {
             width: 100%;
-            padding: var(--space-md) var(--space-lg);
+            padding: 12px var(--space-md);
             border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
-            font-size: var(--font-md);
+            font-size: var(--font-sm);
             transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
             outline: none;
             background: var(--white);
@@ -354,90 +310,127 @@
             transform: translateY(-1px);
         }
 
-        /* Remember Me Checkbox */
+        /* Hide number input spinners */
+        .form-group input[type="number"]::-webkit-inner-spin-button,
+        .form-group input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .form-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
         .remember-me {
             display: flex;
             align-items: center;
             gap: var(--space-xs);
-            margin-bottom: var(--space-sm);
-            margin-top: 4px;
+            margin-bottom: var(--space-md);
+            margin-top: -4px;
         }
 
         .remember-me input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             cursor: pointer;
             accent-color: var(--primary-green);
+            flex-shrink: 0;
         }
 
         .remember-me label {
             color: var(--text-dark);
-            font-size: var(--font-sm);
+            font-size: var(--font-xs);
             cursor: pointer;
             user-select: none;
             margin: 0;
         }
 
-        /* Toggle Password Icon */
         .toggle-password {
             position: absolute;
             right: var(--space-md);
-            top: 70%;
+            top: 68%;
             transform: translateY(-50%);
             cursor: pointer;
             width: 20px;
             height: 20px;
             fill: var(--text-light);
-            transition: fill 0.3s ease, transform 0.3s ease;
+            transition: fill 0.3s ease;
         }
 
         .toggle-password:hover {
             fill: var(--primary-green);
-            transform: translateY(-50%) scale(1.05);
         }
 
-        /* Button Styling - Green Login Button */
-        .login-btn {
+        /* ── Shared button base ── */
+        .btn-green {
+            display: block;
             width: 100%;
-            padding: var(--space-md) var(--space-lg);
-            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
-            border: none;
+            padding: 13px var(--space-lg);
             border-radius: var(--radius-md);
-            color: var(--white);
-            font-size: var(--font-lg);
-            font-weight: 500;
+            font-size: var(--font-sm);
+            font-weight: 600;
             cursor: pointer;
-            margin-top: var(--space-md);
-            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            text-decoration: none;
             font-family: 'Montserrat', sans-serif;
-            letter-spacing: 0.3px;
-            box-shadow: 0 4px 15px rgba(0, 166, 81, 0.25);
+            letter-spacing: 0.5px;
             position: relative;
             overflow: hidden;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+            line-height: 1.4;
+            margin-bottom: var(--space-xs);
         }
 
-        .login-btn::before {
+        .btn-green::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
             transition: left 0.5s ease;
         }
 
-        .login-btn:hover {
-            background: linear-gradient(135deg, var(--secondary-green), var(--primary-green));
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 166, 81, 0.3);
-        }
-
-        .login-btn:hover::before {
+        .btn-green:hover::before {
             left: 100%;
         }
 
-        /* Notification Box Styling */
+        .btn-green:active {
+            transform: translateY(0) scale(0.99);
+        }
+
+        /* Solid green — primary (Log In) */
+        .btn-solid {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border: 2px solid transparent;
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(0, 166, 81, 0.25);
+        }
+
+        .btn-solid:hover {
+            background: linear-gradient(135deg, var(--secondary-green), var(--primary-green));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 166, 81, 0.3);
+            color: var(--white);
+        }
+
+        /* Outlined green — secondary (New Parent Registration) */
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-green);
+            color: var(--primary-green);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: var(--white);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 166, 81, 0.25);
+        }
+
+        /* ── Notifications ── */
         .notification-box {
             position: fixed;
             top: var(--space-md);
@@ -445,7 +438,7 @@
             z-index: 1000;
             padding: var(--space-sm) var(--space-md);
             border-radius: var(--radius-md);
-            font-size: var(--font-sm);
+            font-size: var(--font-xs);
             font-weight: 500;
             box-shadow: var(--shadow-md), var(--shadow-glow);
             opacity: 0.95;
@@ -453,8 +446,8 @@
             max-width: 90%;
             display: none;
             text-align: center;
-            border: 2px solid transparent;
             font-family: 'Poppins', sans-serif;
+            transform: translateX(100%);
         }
 
         .notification-box.show {
@@ -474,127 +467,170 @@
             border-left: 4px solid var(--error-color);
         }
 
-        /* Animations */
+        /* ── Animations ── */
         @keyframes slideInLeft {
-            0% { transform: translateX(-40px); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(-40px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         @keyframes slideInRight {
-            0% { transform: translateX(40px); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(40px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         @keyframes subtleGlow {
-            0% { opacity: 0.6; }
-            100% { opacity: 1; }
+            from {
+                opacity: 0.6;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes gentleWave {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(60px); }
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(60px);
+            }
         }
 
         @keyframes logoSubmerge {
-            0% { 
+            from {
                 transform: translateY(0px) scale(1);
-                box-shadow: 
-                    inset 0 4px 8px rgba(0, 0, 0, 0.15), 
-                    inset 0 -4px 8px rgba(0, 0, 0, 0.1),
-                    0 4px 12px rgba(0, 0, 0, 0.2),
-                    0 0 0 1px rgba(255, 255, 255, 0.1);
             }
-            100% { 
-                transform: translateY(-1px) scale(1.01);
-                box-shadow: 
-                    inset 0 3px 6px rgba(0, 0, 0, 0.18), 
-                    inset 0 -3px 6px rgba(0, 0, 0, 0.12),
-                    0 3px 10px rgba(0, 0, 0, 0.18),
-                    0 0 0 1px rgba(255, 255, 255, 0.12);
+
+            to {
+                transform: translateY(-2px) scale(1.02);
             }
         }
 
         @keyframes titlePulse {
-            0% { text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
-            100% { text-shadow: 1px 1px 10px rgba(255,255,255,0.3); }
+            from {
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            }
+
+            to {
+                text-shadow: 1px 1px 10px rgba(255, 255, 255, 0.35);
+            }
         }
 
         @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(15px); }
-            100% { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Responsive Design */
+        /* ── Responsive ── */
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
-                height: auto;
                 max-width: 100%;
-                padding: 15px;
             }
 
             .left-panel {
                 padding: var(--space-md);
-                min-height: 200px;
             }
 
             .right-panel {
-                padding: var(--space-md);
+                padding: var(--space-lg) var(--space-md);
+            }
+
+            .logo-circle,
+            .logo-square {
+                width: 80px;
+                height: 80px;
+            }
+
+            .logos-container {
+                gap: 14px;
             }
 
             .project-title {
                 font-size: 22px;
             }
 
-            .project-motto {
-                font-size: var(--font-md);
-            }
-
             .project-motto .english {
-                font-size: var(--font-md);
+                font-size: var(--font-xs);
             }
 
             .project-motto .tamil {
-                font-size: var(--font-sm);
+                font-size: 13px;
             }
 
             .form-title {
                 font-size: var(--font-lg);
             }
 
-            .logos-container {
-                gap: 15px;
-            }
-
-            .cocomelon-logo {
-                width: 80px;
-                height: 80px;
+            .form-group input {
+                font-size: 16px;
             }
 
             body {
                 padding: 15px;
             }
+
+            .notification-box {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: calc(100% - 20px);
+            }
         }
 
         @media (max-width: 480px) {
-            .left-panel, .right-panel {
+            body {
+                padding: 10px;
+            }
+
+            .left-panel,
+            .right-panel {
                 padding: var(--space-sm);
+            }
+
+            .logo-circle,
+            .logo-square {
+                width: 68px;
+                height: 68px;
+            }
+
+            .logos-container {
+                gap: 10px;
             }
 
             .project-title {
                 font-size: 18px;
             }
 
-            .project-motto {
-                font-size: var(--font-sm);
-            }
-
             .project-motto .english {
-                font-size: var(--font-sm);
+                font-size: 13px;
             }
 
             .project-motto .tamil {
-                font-size: var(--font-xs);
+                font-size: 12px;
             }
 
             .form-title {
@@ -602,94 +638,174 @@
             }
 
             .form-group input {
-                padding: var(--space-sm) var(--space-md);
-                font-size: var(--font-sm);
+                padding: 10px var(--space-sm);
+                font-size: 16px;
             }
 
-            .login-btn {
-                padding: var(--space-sm) var(--space-md);
-                font-size: var(--font-md);
+            .btn-green {
+                padding: 11px var(--space-sm);
+                font-size: var(--font-xs);
             }
 
-            .project-logo {
-                width: 80px;
-                height: 80px;
+            .remember-me input[type="checkbox"] {
+                width: 15px;
+                height: 15px;
             }
 
-            body {
-                padding: 10px;
+            .remember-me label {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 360px) {
+
+            .logo-circle,
+            .logo-square {
+                width: 58px;
+                height: 58px;
+            }
+
+            .project-title {
+                font-size: 16px;
+            }
+
+            .project-motto .english {
+                font-size: 12px;
+            }
+
+            .project-motto .tamil {
+                font-size: 11px;
+            }
+
+            .form-title {
+                font-size: 15px;
+            }
+
+            .btn-green {
+                padding: 9px 10px;
+                font-size: 13px;
+            }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .btn-green:active {
+                transform: scale(0.98);
+            }
+
+            .main-container:hover {
+                transform: none;
+                box-shadow: var(--shadow-md), var(--shadow-glow);
+            }
+
+            .logo-circle:hover,
+            .logo-square:hover {
+                transform: scale(1);
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            * {
+
+            *,
+            *::before,
+            *::after {
                 transition: none !important;
                 animation: none !important;
+            }
+
+            .main-container:hover {
+                transform: none;
+            }
+        }
+
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(20px, env(safe-area-inset-left));
+                padding-right: max(20px, env(safe-area-inset-right));
+                padding-top: max(20px, env(safe-area-inset-top));
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
+
+            .notification-box {
+                top: max(10px, env(safe-area-inset-top));
+                right: max(10px, env(safe-area-inset-right));
+                left: max(10px, env(safe-area-inset-left));
             }
         }
     </style>
 </head>
+
 <body>
     <div class="main-container">
-        <!-- Left Panel - Green Side with Logo and Project Info -->
+
+        <!-- Left Panel -->
         <div class="left-panel">
-            <!-- Dual Logos -->
             <div class="logos-container">
-                <div class="project-logo">
+                <!-- School logo (circular) -->
+                <div class="logo-circle">
                     <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MANAVARGAL Logo">
                 </div>
-                <div class="cocomelon-logo">
+                <!-- Cocomelon logo (rounded square) -->
+                <div class="logo-square">
                     <img src="{% static 'users/images/cocomelon.jpeg' %}" alt="Cocomelon Logo">
                 </div>
             </div>
+
             <h1 class="project-title">MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
             <p class="project-motto">
                 <span class="english">INFORMATION AT EASE</span>
-                <span class="tamil">| தகவல் உங்கள் கையில்</span>
+                <span class="tamil">தகவல் உங்கள் கையில்</span>
             </p>
         </div>
 
-        <!-- Right Panel - Login Form Side -->
+        <!-- Right Panel -->
         <div class="right-panel">
             <h2 class="form-title">Teacher Login</h2>
             <form id="loginForm" method="POST" data-url="{% url 'teacher_login' %}" class="login-form">
                 {% csrf_token %}
+
                 <div class="form-group">
                     <label for="teacher_id">Username (Teacher ID)</label>
-                    <input type="number" id="teacher_id" name="id" min="1" required oninput="restrictToNumbers(this)">
+                    <input type="number" id="teacher_id" name="id" min="1" required oninput="restrictToNumbers(this)"
+                        placeholder="Enter Teacher ID" autocomplete="username">
                 </div>
+
                 <div class="form-group">
                     <label for="password">Password (Registered Mobile Number)</label>
-                    <input type="password" id="password" name="password" maxlength="10" oninput="restrictToNumbers(this)" required>
-                    <svg class="toggle-password" onclick="togglePassword('password')" viewBox="0 0 24 24">
-                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                    <input type="password" id="password" name="password" maxlength="10"
+                        oninput="restrictToNumbers(this)" placeholder="Enter Password" required
+                        autocomplete="current-password">
+                    <svg class="toggle-password" onclick="togglePassword('password')" viewBox="0 0 24 24" role="button"
+                        aria-label="Toggle password visibility">
+                        <path
+                            d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
                     </svg>
                 </div>
+
                 <div class="remember-me">
                     <input type="checkbox" id="rememberMe" name="rememberMe">
                     <label for="rememberMe">Remember Me</label>
                 </div>
-                <button type="submit" class="login-btn">Log In</button>
-                <a href="{% url 'parent_register' %}" class="login-btn" style="box-sizing: border-box; margin-top: var(--space-md);">New Parent Registration</a>
+
+                <!-- Primary: Log In -->
+                <button type="submit" class="btn-green btn-solid">Log In</button>
+
+                <!-- Secondary: New Parent Registration -->
+                <a href="{% url 'parent_register' %}" class="btn-green btn-outline">New Parent Registration</a>
             </form>
         </div>
     </div>
 
-    <div id="successMessage" class="notification-box success">
-        ✅ Login Successful! Redirecting...
-    </div>
-    <div id="errorMessage" class="notification-box error">
-        ❌ Invalid credentials! Try again.
-    </div>
+    <div id="successMessage" class="notification-box success">✅ Login Successful! Redirecting...</div>
+    <div id="errorMessage" class="notification-box error">❌ Invalid credentials! Try again.</div>
 
     <script>
-        // Remember Me Functionality - Load saved credentials on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        // Restore remembered credentials on page load
+        document.addEventListener('DOMContentLoaded', function () {
             const savedTeacherId = localStorage.getItem('rememberedTeacherId');
             const savedPassword = localStorage.getItem('rememberedTeacherPassword');
-            const rememberMeChecked = localStorage.getItem('rememberTeacher') === 'true';
+            const rememberChecked = localStorage.getItem('rememberTeacher') === 'true';
 
-            if (rememberMeChecked && savedTeacherId && savedPassword) {
+            if (rememberChecked && savedTeacherId && savedPassword) {
                 document.getElementById('teacher_id').value = savedTeacherId;
                 document.getElementById('password').value = savedPassword;
                 document.getElementById('rememberMe').checked = true;
@@ -698,67 +814,84 @@
 
         function restrictToNumbers(input) {
             input.value = input.value.replace(/[^0-9]/g, '');
-            if (input.value.length > 10) {
-                input.value = input.value.slice(0, 10);
-            }
+            if (input.value.length > 10) input.value = input.value.slice(0, 10);
         }
 
         function togglePassword(fieldId) {
-            const passwordInput = document.getElementById(fieldId);
-            const toggleButton = passwordInput.nextElementSibling;
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleButton.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-4.01.68l2.02 2.02c.57-.23 1.18-.36 1.83-.36zm-6.36 1.47l2.43 2.43.02.02c-.54.38-1.03.86-1.39 1.42l-2.92-2.92C2.27 10.68 1.08 12.31.35 14.17c1.73 4.39 6 7.5 11 7.5 1.4 0 2.74-.25 4.01-.68l-2.02-2.02c-.57.23-1.18.36-1.83.36-2.76 0-5-2.24-5-5 0-.65.13-1.26.36-1.83l-2.43-2.43z"/>';
+            const input = document.getElementById(fieldId);
+            const toggle = input.nextElementSibling;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-4.01.68l2.02 2.02c.57-.23 1.18-.36 1.83-.36zm-6.36 1.47l2.43 2.43.02.02c-.54.38-1.03.86-1.39 1.42l-2.92-2.92C2.27 10.68 1.08 12.31.35 14.17c1.73 4.39 6 7.5 11 7.5 1.4 0 2.74-.25 4.01-.68l-2.02-2.02c-.57.23-1.18.36-1.83.36-2.76 0-5-2.24-5-5 0-.65.13-1.26.36-1.83l-2.43-2.43z"/>';
             } else {
-                passwordInput.type = 'password';
-                toggleButton.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
+                input.type = 'password';
+                toggle.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
             }
         }
 
-        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+        document.getElementById('loginForm').addEventListener('submit', async function (event) {
             event.preventDefault();
-            const teacherId = document.getElementById("teacher_id").value;
-            const password = document.getElementById("password").value;
-            const rememberMe = document.getElementById("rememberMe").checked;
-            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-            
-            // Save credentials if Remember Me is checked
+
+            const teacherId = document.getElementById('teacher_id').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const errorMsg = document.getElementById('errorMessage');
+            const successMsg = document.getElementById('successMessage');
+
+            if (!teacherId || !password) {
+                errorMsg.textContent = '❌ Teacher ID and password cannot be empty.';
+                errorMsg.style.display = 'block';
+                errorMsg.classList.add('show');
+                successMsg.style.display = 'none';
+                return;
+            }
+
             if (rememberMe) {
                 localStorage.setItem('rememberedTeacherId', teacherId);
                 localStorage.setItem('rememberedTeacherPassword', password);
                 localStorage.setItem('rememberTeacher', 'true');
             } else {
-                // Clear saved credentials if Remember Me is unchecked
                 localStorage.removeItem('rememberedTeacherId');
                 localStorage.removeItem('rememberedTeacherPassword');
                 localStorage.removeItem('rememberTeacher');
             }
 
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
             const formData = new URLSearchParams();
-            formData.append("id", teacherId);
-            formData.append("password", password);
-            const response = await fetch(this.dataset.url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "X-CSRFToken": csrfToken
-                },
-                body: formData
-            });
-            const result = await response.text();
-            if (result.trim() === "Success") {
-                const successMsg = document.getElementById("successMessage");
-                successMsg.style.display = "block";
-                successMsg.classList.add("show");
-                setTimeout(() => {
-                    window.location.href = "/teacher_dashboard/";
-                }, 2000);
-            } else {
-                const errorMsg = document.getElementById("errorMessage");
-                errorMsg.style.display = "block";
-                errorMsg.classList.add("show");
+            formData.append('id', teacherId);
+            formData.append('password', password);
+
+            try {
+                const response = await fetch(this.dataset.url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: formData
+                });
+
+                const result = await response.text();
+
+                if (result.trim() === 'Success') {
+                    successMsg.style.display = 'block';
+                    successMsg.classList.add('show');
+                    errorMsg.style.display = 'none';
+                    setTimeout(() => { window.location.href = '/teacher_dashboard/'; }, 2000);
+                } else {
+                    errorMsg.textContent = '❌ Invalid credentials! Try again.';
+                    errorMsg.style.display = 'block';
+                    errorMsg.classList.add('show');
+                    successMsg.style.display = 'none';
+                }
+            } catch (err) {
+                errorMsg.textContent = '❌ Network error. Please try again.';
+                errorMsg.style.display = 'block';
+                errorMsg.classList.add('show');
             }
         });
     </script>
 </body>
+
 </html>
