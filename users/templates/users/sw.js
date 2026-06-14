@@ -21,6 +21,15 @@ self.addEventListener('activate', function (event) {
     event.waitUntil(self.clients.claim());
 });
 
+// ─── Fetch ────────────────────────────────────────────────────────────────────
+// Required for PWA Installability (Add to Home Screen)
+self.addEventListener('fetch', function (event) {
+    // Pass-through strategy for now. Caching can be expanded later.
+    event.respondWith(fetch(event.request).catch(function() {
+        return caches.match(event.request);
+    }));
+});
+
 
 // ─── Push ─────────────────────────────────────────────────────────────────────
 
