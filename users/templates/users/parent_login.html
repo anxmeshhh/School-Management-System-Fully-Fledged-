@@ -623,9 +623,19 @@
                 font-size: var(--font-lg);
             }
 
+            .logo-wrapper {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+                margin-bottom: 12px;
+            }
+
             .project-logo {
-                width: 100px;
-                height: 100px;
+                width: 90px;
+                height: 90px;
+                margin-bottom: 0;
             }
 
             body {
@@ -688,22 +698,23 @@
                 height: 16px;
             }
 
-            /* Keep badge clearly visible on small screens */
+            /* Place badge side-by-side on small screens to prevent clipping */
             .register-badge {
-                width: 65px;
-                height: 65px;
-                top: -15px;
-                right: -25px;
+                position: relative;
+                top: 0;
+                right: 0;
+                width: 75px;
+                height: 75px;
                 padding: 6px;
             }
 
             .register-badge svg {
-                width: 18px;
-                height: 18px;
+                width: 20px;
+                height: 20px;
             }
 
             .register-badge-text {
-                font-size: 7px;
+                font-size: 8px;
             }
         }
 
