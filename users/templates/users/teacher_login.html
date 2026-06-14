@@ -184,6 +184,57 @@
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
 
+        /* ── Logo Wrapper + Register Badge ── */
+        .logo-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: var(--space-md);
+            z-index: 2;
+        }
+
+        .register-badge {
+            position: absolute;
+            top: -20px;
+            right: -50px;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: #ffffff;
+            border: 2.5px solid rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            z-index: 10;
+            padding: 8px;
+        }
+
+        .register-badge:hover {
+            transform: scale(1.12);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .register-badge svg {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .register-badge-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 8px;
+            font-weight: 700;
+            color: #00a651;
+            letter-spacing: 0.2px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
         .project-title {
             font-size: var(--font-xxl);
             font-weight: 600;
@@ -528,6 +579,24 @@
                 height: 100px;
             }
 
+            /* Keep badge clearly visible on small screens */
+            .register-badge {
+                width: 65px;
+                height: 65px;
+                top: -15px;
+                right: -25px;
+                padding: 6px;
+            }
+
+            .register-badge svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .register-badge-text {
+                font-size: 7px;
+            }
+
             body {
                 padding: 15px;
             }
@@ -590,8 +659,20 @@
     <div class="main-container">
         <!-- Left Panel - Green Side with Logo and Project Info -->
         <div class="left-panel">
-            <div class="project-logo">
-                <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MANAVARGAL Logo">
+            <div class="logo-wrapper">
+                <div class="project-logo">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="MANAVARGAL Logo">
+                </div>
+                <a href="{% url 'parent_register' %}" class="register-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#00a651" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <line x1="19" y1="8" x2="19" y2="14" />
+                        <line x1="16" y1="11" x2="22" y2="11" />
+                    </svg>
+                    <span class="register-badge-text">New Parent<br>Register</span>
+                </a>
             </div>
             <h1 class="project-title">MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
             <p class="project-motto">
