@@ -1,8 +1,8 @@
 {
-  "name": "MANAVARGAL SMS",
-  "short_name": "MANAVARGAL",
-  "description": "School Management System - Information At Ease",
-  "start_url": "/",
+  "name": "MANAVARGAL Teacher",
+  "short_name": "Teacher",
+  "description": "School Management System - Teacher Portal",
+  "start_url": "/teacher/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#00a651",
