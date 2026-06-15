@@ -549,12 +549,27 @@
                             <span>Please enter admission number</span>
                         </div>
                     </div>
-                    <div class="form-group required" data-field="class_section">
-                        <label>Class-Section (e.g., 2-A)</label>
-                        <input type="text" name="class_section" value="{{ class_section|default:'' }}" required>
+                    <div class="form-group required" data-field="class">
+                        <label>Class</label>
+                        <select name="class" id="id_class" required onchange="updateSections()">
+                            <option value="">Select Class</option>
+                            {% for c in classes %}
+                                <option value="{{ c }}" {% if class == c %}selected{% endif %}>{{ c }}</option>
+                            {% endfor %}
+                        </select>
                         <div class="field-error" style="display: none;">
                             <i class="fas fa-exclamation-circle"></i>
-                            <span>Please enter class-section</span>
+                            <span>Please select class</span>
+                        </div>
+                    </div>
+                    <div class="form-group required" id="section_group" data-field="section">
+                        <label>Section</label>
+                        <select name="section" id="id_section" required>
+                            <option value="">Select Section</option>
+                        </select>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please select section</span>
                         </div>
                     </div>
                     <div class="form-group required" data-field="roll_number">
@@ -921,16 +936,68 @@
             document.documentElement.scrollTop = 0;
         }
 
+        const classMap = {{ class_map_json|safe }};
+
+        function updateSections() {
+            const classSelect = document.getElementById('id_class');
+            const sectionSelect = document.getElementById('id_section');
+            const sectionGroup = document.getElementById('section_group');
+            const selectedClass = classSelect.value;
+            
+            sectionSelect.innerHTML = '<option value="">Select Section</option>';
+            
+            if (selectedClass && classMap[selectedClass] && classMap[selectedClass].length > 0) {
+                // Class has sections
+                sectionGroup.style.display = 'block';
+                sectionSelect.required = true;
+                
+                // Add an "All Sections / No Section" option
+                const allOption = document.createElement('option');
+                allOption.value = 'all';
+                allOption.textContent = 'All Sections / No Section';
+                sectionSelect.appendChild(allOption);
+
+                classMap[selectedClass].forEach(function(sec) {
+                    const option = document.createElement('option');
+                    option.value = sec;
+                    option.textContent = sec;
+                    sectionSelect.appendChild(option);
+                });
+            } else {
+                // Class has no sections
+                sectionGroup.style.display = 'none';
+                sectionSelect.required = false;
+                
+                // Set to 'all' transparently so the backend treats it properly
+                const hiddenOption = document.createElement('option');
+                hiddenOption.value = 'all';
+                hiddenOption.selected = true;
+                sectionSelect.appendChild(hiddenOption);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Restore form values
             {% for field, value in request.POST.items %}
                 {% if value %}
-                    const field = document.querySelector('[name="{{ field }}"]');
-                    if (field && field.tagName === 'SELECT') {
-                        field.value = '{{ value }}';
+                    const field_{{ field }} = document.querySelector('[name="{{ field }}"]');
+                    if (field_{{ field }} && field_{{ field }}.tagName === 'SELECT') {
+                        if ('{{ field }}' === 'class') {
+                            field_{{ field }}.value = '{{ value }}';
+                            updateSections(); // Populate sections based on restored class
+                        } else if ('{{ field }}' === 'section') {
+                            field_{{ field }}.value = '{{ value }}';
+                        } else {
+                            field_{{ field }}.value = '{{ value }}';
+                        }
                     }
                 {% endif %}
             {% endfor %}
+
+            // Initial call if class is already selected (e.g. from template context)
+            if (document.getElementById('id_class').value) {
+                updateSections();
+            }
 
             // Form validation
             const form = document.getElementById('studentForm');

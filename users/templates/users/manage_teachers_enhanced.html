@@ -1402,24 +1402,8 @@
                                 </div>
                                 <div class="form-group">
     <label><i class="fas fa-chalkboard-teacher" style="color: #10b981;"></i> Class Teacher Of</label>
-    <select name="class_teacher_of">
+    <select name="class_teacher_of" class="class-teacher-select">
         <option value="">Not Assigned</option>
-        <!-- Classes 1-9 -->
-        {% for i in "123456789" %}
-            {% for section in "ABC" %}
-                <option value="{{ i }}-{{ section }}">Class {{ i }}-{{ section }}</option>
-            {% endfor %}
-        {% endfor %}
-        <!-- Classes 10-12 -->
-        <option value="10-A">Class 10-A</option>
-        <option value="10-B">Class 10-B</option>
-        <option value="10-C">Class 10-C</option>
-        <option value="11-A">Class 11-A</option>
-        <option value="11-B">Class 11-B</option>
-        <option value="11-C">Class 11-C</option>
-        <option value="12-A">Class 12-A</option>
-        <option value="12-B">Class 12-B</option>
-        <option value="12-C">Class 12-C</option>
     </select>
 </div>
                             </div>
@@ -1979,14 +1963,29 @@
         // Generate class options for select dropdown
         function generateClassOptions(selectedClass) {
             let options = '';
-            for (let i = 1; i <= 12; i++) {
-                for (let section of ['A', 'B', 'C']) {
-                    const value = `${i}-${section}`;  // ✅ CORRECT FORMAT: "12-A"
-                    const displayValue = `Class ${i}-${section}`;  // For display only
+            let mapData = {};
+            try {
+                mapData = JSON.parse('{{ class_map_json|escapejs }}');
+            } catch (e) {
+                console.error('Failed to parse class_map_json', e);
+            }
+            
+            Object.keys(mapData).forEach(className => {
+                const sections = mapData[className];
+                if (sections && sections.length > 0) {
+                    sections.forEach(section => {
+                        const value = `${className}-${section}`;
+                        const displayValue = `Class ${className}-${section}`;
+                        const selected = value === selectedClass ? 'selected' : '';
+                        options += `<option value="${value}" ${selected}>${displayValue}</option>`;
+                    });
+                } else {
+                    const value = className;
+                    const displayValue = `Class ${className} (No Section)`;
                     const selected = value === selectedClass ? 'selected' : '';
                     options += `<option value="${value}" ${selected}>${displayValue}</option>`;
                 }
-            }
+            });
             return options;
         }
 

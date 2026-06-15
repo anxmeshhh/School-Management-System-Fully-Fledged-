@@ -889,16 +889,39 @@
     });
 
     window.loadSections = function() {
+        const classSelect = document.getElementById('filter_class');
         const sectionSelect = document.getElementById('filter_section');
+        const selectedClass = classSelect.value;
+        
         sectionSelect.innerHTML = '<option value="">Select Section</option>';
         
-        const sections = ['A', 'B', 'C'];
-        sections.forEach(sec => {
+        if (!selectedClass) return;
+        
+        let classMap = {};
+        try {
+            classMap = JSON.parse('{{ class_map_json|escapejs }}');
+        } catch (e) {
+            console.error('Failed to parse class_map_json', e);
+        }
+        
+        const availableSections = classMap[selectedClass] || [];
+        
+        if (availableSections.length > 0) {
+            availableSections.forEach(sec => {
+                const opt = document.createElement('option');
+                opt.value = sec;
+                opt.textContent = sec;
+                sectionSelect.appendChild(opt);
+            });
+        } else {
             const opt = document.createElement('option');
-            opt.value = sec;
-            opt.textContent = sec;
+            opt.value = 'all';
+            opt.textContent = 'All Sections / No Section';
             sectionSelect.appendChild(opt);
-        });
+            // Auto-select 'all' and load students
+            sectionSelect.value = 'all';
+            loadStudentFilter();
+        }
     };
 
     window.loadStudentFilter = function() {

@@ -1530,7 +1530,14 @@
                     }
                 } else {
                     if (subjects.length === 0) {
-                        marksInput.innerHTML = '<p>No subjects available for this class.</p>';
+                        marksInput.innerHTML = `
+                            <div style="text-align: center; padding: 2rem; background: var(--light-bg); border-radius: 8px; border: 1px dashed var(--border-color);">
+                                <p style="margin-bottom: 1rem; color: var(--text-color);"><i class="fas fa-exclamation-circle"></i> No subjects available for this class.</p>
+                                <button type="button" class="button button-green" onclick="document.getElementById('addSubject').click()">
+                                    <i class="fas fa-plus"></i> Add Subject Now
+                                </button>
+                            </div>
+                        `;
                     } else {
                         let marksHtml = '<div class="marks-entry-container"><h3><i class="fas fa-edit"></i> Enter Marks for All Subjects</h3>';
                         subjects.forEach(sub => {
