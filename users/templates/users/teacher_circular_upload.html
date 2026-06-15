@@ -770,8 +770,8 @@
                                         </span>
                                         Section:
                                     </label>
-                                    <select name="section" id="section" required>
-                                        <option value="">Select Section</option>
+                                    <select name="section" id="section">
+                                        <option value="all">All Sections / No Section</option>
                                         {% for sec in sections %}
                                         <option value="{{ sec }}">{{ sec|capfirst }}</option>
                                         {% endfor %}

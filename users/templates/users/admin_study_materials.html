@@ -707,9 +707,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="section"><i class="fas fa-th-large" style="color: #f39c12;"></i> Select Section:</label>
-                                <select id="section" name="section" required>
-                                    <option value="">Select Section</option>
-                                    <option value="all">All Sections</option>
+                                <select id="section" name="section">
+                                    <option value="all">All Sections / No Section</option>
                                     {% for section in sections %}
                                         <option value="{{ section }}">{{ section|capfirst }}</option>
                                     {% endfor %}
@@ -743,7 +742,7 @@
                             <div class="form-group">
                                 <label for="section_filter"><i class="fas fa-th-large" style="color: #f39c12;"></i> Filter by Section:</label>
                                 <select id="section_filter" name="section">
-                                    <option value="">All Sections</option>
+                                    <option value="all">All Sections / No Section</option>
                                     {% for section in sections %}
                                         <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section|capfirst }}</option>
                                     {% endfor %}

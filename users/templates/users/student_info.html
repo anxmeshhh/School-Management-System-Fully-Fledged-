@@ -638,7 +638,7 @@
                         <div class="form-group">
                             <label for="section"><i class="fas fa-th-large" style="color: #8b5cf6; margin-right: 8px;"></i> Section</label>
                             <select name="section" id="section">
-                                <option value="All">All Sections</option>
+                                <option value="All">All Sections / No Section</option>
                                 {% for section in section_options %}
                                     <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section }}</option>
                                 {% endfor %}
@@ -675,8 +675,9 @@
                             <div class="student-grid">
                                 {% for student in group.students %}
                                     <div class="student-card">
+                                        {% static 'users/images/greenlogo.png' as default_logo %}
                                         {% if student.image_path %}
-                                            <img src="/media/{{ student.image_path }}" alt="{{ student.name }}" onerror="this.src='{% static 'users/images/greenlogo.png' %}'">
+                                            <img src="/media/{{ student.image_path }}" alt="{{ student.name }}" onerror="this.src='{{ default_logo }}'">
                                         {% else %}
                                             <img src="{% static 'users/images/greenlogo.png' %}" alt="Default">
                                         {% endif %}

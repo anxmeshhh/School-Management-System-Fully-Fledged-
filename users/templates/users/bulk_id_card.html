@@ -458,26 +458,17 @@
                     </label>
                     <select id="class" name="class" required>
                         <option value="">Select Class</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
+                        {% for class in classes %}
+                            <option value="{{ class }}">{{ class }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="section">
                         <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i> Section:
                     </label>
-                    <select id="section" name="section" required>
-                        <option value="">Select Section</option>
+                    <select id="section" name="section">
+                        <option value="all">All Sections / No Section</option>
                         <option value="A">A</option>
                         <option value="B">B</option>
                         <option value="C">C</option>
@@ -499,9 +490,9 @@
             var sectionValue = document.getElementById("section").value;
             var errorMessage = document.querySelector(".error");
 
-            if (!classValue || !sectionValue) {
+            if (!classValue) {
                 event.preventDefault();
-                errorMessage.textContent = "Please select both class and section.";
+                errorMessage.textContent = "Please select a class.";
                 errorMessage.style.display = "flex";
             } else {
                 errorMessage.style.display = "none";

@@ -770,7 +770,7 @@
                                     Select Section:
                                 </label>
                                 <select id="section" name="section">
-                                    <option value="">Select Section</option>
+                                    <option value="all">All Sections / No Section</option>
                                     {% for section in sections %}
                                         <option value="{{ section }}">{{ section|capfirst }}</option>
                                     {% endfor %}
@@ -873,7 +873,7 @@
                                     Select Section:
                                 </label>
                                 <select id="filter_section" name="section">
-                                    <option value="">All Sections</option>
+                                    <option value="all">All Sections / No Section</option>
                                     {% for section in sections %}
                                         <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section|capfirst }}</option>
                                     {% endfor %}

@@ -99,9 +99,9 @@
                       <div class="select-wrapper">
                         <select id="class" name="class" required>
                           <option value="" disabled selected>Select Class</option>
-                          <option value="1" {% if student_data.2 == "1" %}selected{% endif %}>Class 1</option>
-                          <option value="2" {% if student_data.2 == "2" %}selected{% endif %}>Class 2</option>
-                          <option value="3" {% if student_data.2 == "3" %}selected{% endif %}>Class 3</option>
+                          {% for class in classes %}
+                              <option value="{{ class }}" {% if student_data.2 == class %}selected{% endif %}>{{ class }}</option>
+                          {% endfor %}
                         </select>
                       </div>
                     </div>
@@ -262,9 +262,9 @@
                     <div class="select-wrapper">
                       <select id="current-class" name="current_class" required>
                         <option value="" disabled selected>Select Class</option>
-                        <option value="1" {% if student_data.20 == "1" %}selected{% endif %}>Class 1</option>
-                        <option value="2" {% if student_data.20 == "2" %}selected{% endif %}>Class 2</option>
-                        <option value="3" {% if student_data.20 == "3" %}selected{% endif %}>Class 3</option>
+                        {% for class in classes %}
+                            <option value="{{ class }}" {% if student_data.20 == class %}selected{% endif %}>{{ class }}</option>
+                        {% endfor %}
                       </select>
                     </div>
                   </div>

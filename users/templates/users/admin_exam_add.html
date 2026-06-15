@@ -525,8 +525,8 @@
                                 <label for="section">
                                     <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i> Section:
                                 </label>
-                                <select id="section" name="section" required>
-                                    <option value="">Select Section</option>
+                                <select id="section" name="section">
+                                    <option value="all">All Sections / No Section</option>
                                     {% for sec in sections %}
                                         <option value="{{ sec }}">{{ sec|capfirst }}</option>
                                     {% endfor %}

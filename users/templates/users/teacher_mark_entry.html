@@ -1051,8 +1051,8 @@
                         </div>
                         <div>
                             <label for="sectionSelect"><i class="fas fa-th-large" style="color: #f39c12;"></i> Section</label>
-                            <select id="sectionSelect" required>
-                                <option value="">Select Section</option>
+                            <select id="sectionSelect">
+                                <option value="all">All Sections / No Section</option>
                                 {% for section in sections %}
                                     <option value="{{ section }}">{{ section }}</option>
                                 {% endfor %}
@@ -1115,8 +1115,8 @@
                         </div>
                         <div>
                             <label for="progressSectionSelect"><i class="fas fa-th-large" style="color: #f39c12;"></i> Section</label>
-                            <select id="progressSectionSelect" required>
-                                <option value="">Select Section</option>
+                            <select id="progressSectionSelect">
+                                <option value="all">All Sections / No Section</option>
                                 {% for section in sections %}
                                     <option value="{{ section }}">{{ section }}</option>
                                 {% endfor %}

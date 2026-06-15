@@ -511,11 +511,20 @@ def profile_view(request):
     except Exception as e:
         print(f"DEBUG: Error fetching student data: {e}")
 
+    classes = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT class FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class")
+            classes = [row[0] for row in cursor.fetchall()]
+    except Exception as e:
+        print(f"DEBUG: Error fetching classes: {e}")
+
     print(f"DEBUG: Rendering template with profile_picture: {profile_picture}")
     return render(request, "users/profile.html", {
         "student_data": student_data,
         "profile_picture": profile_picture,
-        "user_id": user_id
+        "user_id": user_id,
+        "classes": classes
     })
 
 
@@ -805,13 +814,19 @@ def bulk_id_card(request):
     if not request.session.get('admin_id'):
         return redirect('admin_login')
 
+    classes = []
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT DISTINCT class FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class")
+        classes = [row[0] for row in cursor.fetchall()]
+
     if request.method == 'POST':
         student_class = request.POST.get('class')
         section = request.POST.get('section')
+        section_val = None if section in ('', 'None', 'N/A') else section
 
         # Fetch students data including roll_number and DOB for age calculation
         with connection.cursor() as cursor:
-            cursor.execute("""
+            query = """
     SELECT
         sp1.id,
         sp1.user_id,
@@ -835,13 +850,20 @@ def bulk_id_card(request):
         student_page2 sp2 ON sp1.user_id = sp2.user_id
     LEFT JOIN
         student_page4 sp4 ON sp1.user_id = sp4.user_id
-    WHERE
-        sp1.class = %s AND sp1.section = %s
-""", [student_class, section])
+    """
+            params = [student_class]
+            
+            if section_val != 'all':
+                query += " WHERE sp1.class = %s AND sp1.section <=> %s"
+                params.append(section_val)
+            else:
+                query += " WHERE sp1.class = %s"
+
+            cursor.execute(query, params)
             students_data = cursor.fetchall()
 
         if not students_data:
-            return render(request, "users/bulk_id_card.html", {"error": "No students found for the selected class and section."})
+            return render(request, "users/bulk_id_card.html", {"error": "No students found for the selected class and section.", "classes": classes})
 
         # Create PDF buffer
         pdf_buffer = BytesIO()
@@ -1071,7 +1093,7 @@ def bulk_id_card(request):
         response['Content-Disposition'] = 'attachment; filename="bulk_id_cards_front_back.pdf"'
         return response
 
-    return render(request, "users/bulk_id_card.html")
+    return render(request, "users/bulk_id_card.html", {"classes": classes})
 
 
 from django.shortcuts import render, redirect
@@ -1703,8 +1725,12 @@ def student_leave(request):
 
     # Fetch leave requests for this student
     leave_requests = []
+    classes = []
     with connection.cursor() as cursor:
         try:
+            cursor.execute("SELECT DISTINCT class FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class")
+            classes = [row[0] for row in cursor.fetchall()]
+
             cursor.execute("""
                 SELECT id, student_name, reg_number, class_number, leave_reason, 
                 leave_start_date, leave_end_date, leave_duration, half_day_type, status
@@ -1716,7 +1742,8 @@ def student_leave(request):
             messages.error(request, f"Error fetching leave requests: {str(e)}")
 
     return render(request, "users/student_leave.html", {
-        "leave_requests": leave_requests
+        "leave_requests": leave_requests,
+        "classes": classes
     })
 
 def download_leave_pdf(request):
@@ -1926,12 +1953,21 @@ def admin_accept_portal(request):
     except Exception as e:
         print(f"Error calculating stats: {str(e)}")
     
+    classes = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT class FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class")
+            classes = [row[0] for row in cursor.fetchall()]
+    except Exception as e:
+        print(f"Error fetching classes: {str(e)}")
+
     context = {
         'pending_requests': pending_requests,
         'history_requests': history_requests,
         'pending_count': pending_count,
         'approved_count': approved_count,
         'rejected_count': rejected_count,
+        'classes': classes
     }
     
     return render(request, 'users/admin_accept_portal.html', context)
@@ -2115,12 +2151,21 @@ def teacher_accept_portal(request):
     except Exception as e:
         print(f"Error calculating stats: {str(e)}")
     
+    classes = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT class FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class")
+            classes = [row[0] for row in cursor.fetchall()]
+    except Exception as e:
+        print(f"Error fetching classes: {str(e)}")
+
     context = {
         'pending_requests': pending_requests,
         'history_requests': history_requests,
         'pending_count': pending_count,
         'approved_count': approved_count,
         'rejected_count': rejected_count,
+        'classes': classes
     }
     
     return render(request, 'users/teacher_accept_portal.html', context)
@@ -2639,6 +2684,10 @@ def admin_homework_panel(request):
             """
             params = []
             where_clause = ""
+            
+            if selected_section == 'all':
+                selected_section = ''
+                
             if selected_class and selected_section:
                 where_clause = "WHERE h.class = %s AND h.section = %s"
                 params = [selected_class, selected_section]
@@ -3013,6 +3062,9 @@ def teacher_homework_panel(request):
             """
             params = []
             where_clause = ""
+            
+            if selected_section == 'all':
+                selected_section = ''
             
             if selected_class and selected_section:
                 where_clause = "WHERE h.class = %s AND h.section = %s"
@@ -6676,25 +6728,37 @@ def admin_attendance_portal(request):
     selected_date = request.GET.get('date', today_date)
     
     with connection.cursor() as cursor:
-        cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE section IS NOT NULL AND section != '' ORDER BY class, section")
-        class_sections = [(row[0], row[1]) for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class, section")
+        class_sections = [(row[0], row[1] if row[1] else '') for row in cursor.fetchall()]
         classes = sorted(set(row[0] for row in class_sections)) or []
 
     selected_class = request.GET.get('class', '')
     selected_section = request.GET.get('section', '')
     students = []
     
-    if selected_class and selected_section:
+    if selected_class and 'section' in request.GET:
+        section_val = None if selected_section in ('', 'None', 'N/A') else selected_section
         with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT user_id, name, admission_number, class, section
-                FROM student_page1 
-                WHERE class = %s AND section = %s 
-                ORDER BY name, admission_number
-                """, 
-                [selected_class, selected_section]
-            )
+            if section_val == 'all':
+                cursor.execute(
+                    """
+                    SELECT user_id, name, admission_number, class, section
+                    FROM student_page1 
+                    WHERE class = %s 
+                    ORDER BY name, admission_number
+                    """, 
+                    [selected_class]
+                )
+            else:
+                cursor.execute(
+                    """
+                    SELECT user_id, name, admission_number, class, section
+                    FROM student_page1 
+                    WHERE class = %s AND section <=> %s 
+                    ORDER BY name, admission_number
+                    """, 
+                    [selected_class, section_val]
+                )
             students = [
                 {
                     'user_id': row[0],
@@ -6705,14 +6769,24 @@ def admin_attendance_portal(request):
                 } for row in cursor.fetchall()
             ]
             
-            cursor.execute(
-                """
-                SELECT student_id, status 
-                FROM admin_attendance 
-                WHERE class = %s AND section = %s AND date = %s
-                """, 
-                [selected_class, selected_section, selected_date]
-            )
+            if section_val == 'all':
+                cursor.execute(
+                    """
+                    SELECT student_id, status 
+                    FROM admin_attendance 
+                    WHERE class = %s AND date = %s
+                    """, 
+                    [selected_class, selected_date]
+                )
+            else:
+                cursor.execute(
+                    """
+                    SELECT student_id, status 
+                    FROM admin_attendance 
+                    WHERE class = %s AND section <=> %s AND date = %s
+                    """, 
+                    [selected_class, section_val, selected_date]
+                )
             attendance_records = {row[0]: row[1] for row in cursor.fetchall()}
             
             for student in students:
@@ -6744,14 +6818,23 @@ def attendance_get_students(request):
 
     try:
         with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT DISTINCT name 
-                FROM student_page1 
-                WHERE class = %s 
-                  AND section = %s 
-                  AND name IS NOT NULL
-                ORDER BY name ASC
-            """, [class_num, section])
+            if section == 'all':
+                cursor.execute("""
+                    SELECT DISTINCT name 
+                    FROM student_page1 
+                    WHERE class = %s 
+                      AND name IS NOT NULL
+                    ORDER BY name ASC
+                """, [class_num])
+            else:
+                cursor.execute("""
+                    SELECT DISTINCT name 
+                    FROM student_page1 
+                    WHERE class = %s 
+                      AND section <=> %s 
+                      AND name IS NOT NULL
+                    ORDER BY name ASC
+                """, [class_num, section])
             
             students = [row[0] for row in cursor.fetchall()]
         
@@ -8471,6 +8554,9 @@ def admin_timetable_filter(request):
     
     class_filter = request.GET.get('class', '')
     section_filter = request.GET.get('section', '')
+    # Normalize 'all' to empty for section-agnostic filtering
+    if section_filter == 'all':
+        section_filter = ''
     teacher_id = request.GET.get('teacher_id', '')
     day_filter = request.GET.get('day', '')
     week_filter = request.GET.get('week', '')
@@ -8537,7 +8623,10 @@ def admin_timetable_add(request):
     
     if request.method == 'POST':
         class_name = request.POST.get('class')
-        section = request.POST.get('section')
+        section = request.POST.get('section', '')
+        # Normalize 'all' to empty for sectionless classes
+        if section == 'all':
+            section = ''
         subject = request.POST.get('subject')
         teacher_id = request.POST.get('teacher_id')
         day_of_week = request.POST.get('day_of_week')
@@ -8631,7 +8720,10 @@ def admin_timetable_edit(request, id):
         
         if request.method == 'POST':
             class_name = request.POST.get('class')
-            section = request.POST.get('section')
+            section = request.POST.get('section', '')
+            # Normalize 'all' to empty for sectionless classes
+            if section == 'all':
+                section = ''
             class_id = f"{class_name}{section}" if section else class_name
             subject = request.POST.get('subject')
             teacher_id = request.POST.get('teacher_id')
@@ -9066,6 +9158,9 @@ def teacher_timetable_filter(request):
     teacher_id = request.session['teacher_id']
     class_filter = request.GET.get('class', '')
     section_filter = request.GET.get('section', '')
+    # Normalize 'all' to empty for section-agnostic filtering
+    if section_filter == 'all':
+        section_filter = ''
     day_filter = request.GET.get('day', '')
     week_filter = request.GET.get('week', '')
     
@@ -9146,7 +9241,10 @@ def teacher_timetable_add(request):
     
     if request.method == 'POST':
         class_name = request.POST.get('class')
-        section = request.POST.get('section')
+        section = request.POST.get('section', '')
+        # Normalize 'all' to empty for sectionless classes
+        if section == 'all':
+            section = ''
         subject = request.POST.get('subject')
         day_of_week = request.POST.get('day_of_week')
         start_time = request.POST.get('start_time')
@@ -10178,8 +10276,12 @@ def parent_student_leave(request):
 
     # Fetch leave requests for this parent student
     leave_requests = []
+    classes = []
     with connection.cursor() as cursor:
         try:
+            cursor.execute("SELECT DISTINCT class FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class")
+            classes = [row[0] for row in cursor.fetchall()]
+
             cursor.execute("""
                 SELECT id, student_name, reg_number, class_number, section, leave_reason, 
                 leave_start_date, leave_end_date, leave_duration, half_day_type, status
@@ -10192,7 +10294,8 @@ def parent_student_leave(request):
 
     return render(request, "users/parent_student_leave.html", {
         "leave_requests": leave_requests,
-        "student_data": student_data
+        "student_data": student_data,
+        "classes": classes
     })
 
 

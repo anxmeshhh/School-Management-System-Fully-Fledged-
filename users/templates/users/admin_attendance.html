@@ -809,8 +809,8 @@
                                 <label for="section">
                                     <i class="fas fa-chalkboard-teacher" style="color: #f59e0b; margin-right: 8px;"></i> Select Section
                                 </label>
-                                <select id="section" name="section" required onchange="loadStudents()">
-                                    <option value="">Select a Section</option>
+                                <select id="section" name="section" onchange="loadStudents()">
+                                    <option value="all">All Sections / No Section</option>
                                 </select>
                                 <div id="no-sections-message" class="no-sections" style="display: none;">No sections available for this class.</div>
                             </div>
@@ -984,7 +984,7 @@
             const selectedClass = classSelect.value;
 
             // Reset sections and students
-            sectionSelect.innerHTML = '<option value="">Select a Section</option>';
+            sectionSelect.innerHTML = '<option value="all">All Sections / No Section</option>';
             studentSelect.innerHTML = '<option value="">All Students</option>';
 
             if (!selectedClass) {
@@ -1036,7 +1036,7 @@
 
             studentSelect.innerHTML = '<option value="">All Students</option>';
 
-            if (!classVal || !sectionVal) {
+            if (!classVal) {
                 studentSelect.disabled = true;
                 filterTable();
                 return;

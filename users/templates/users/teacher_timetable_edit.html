@@ -526,7 +526,7 @@
                                 <i class="fas fa-th-large" style="color: #f59e0b;"></i> Section
                             </label>
                             <select id="section" name="section">
-                                <option value="">None</option>
+                                <option value="all">All Sections / No Section</option>
                                 {% for sec in sections %}
                                 <option value="{{ sec }}" {% if sec == timetable.section %}selected{% endif %}>{{ sec|capfirst }}</option>
                                 {% endfor %}

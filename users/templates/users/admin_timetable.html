@@ -1368,7 +1368,7 @@
                                         <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i> Select Section:
                                     </label>
                                     <select id="section" name="section">
-                                        <option value="">All Sections</option>
+                                        <option value="all">All Sections / No Section</option>
                                         {% for sec in sections %}
                                             <option value="{{ sec }}" {% if sec == selected_section %}selected{% endif %}>{{ sec|capfirst }}</option>
                                         {% endfor %}
