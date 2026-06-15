@@ -1285,8 +1285,8 @@ def admin_circular_upload(request):
 
         if title and image:
             # Validate class and section if specific
-            if target == 'specific' and (not class_name or not section):
-                messages.error(request, 'Please select both class and section for specific target.')
+            if target == 'specific' and (not class_name or section is None):
+                messages.error(request, 'Please select a class for specific target.')
                 return redirect('admin_circular_upload')
 
             # Normalize class and section
@@ -1408,15 +1408,25 @@ def admin_circular_upload(request):
 
     # Fetch classes and sections from student_page1
     with connection.cursor() as cursor:
-        cursor.execute("SELECT DISTINCT class FROM student_page1")
-        classes = [normalize_value(row[0]) for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-        sections = [normalize_value(row[0]) for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+        rows = cursor.fetchall()
+        class_map = {}
+        for c, s in rows:
+            c = normalize_value(c) if c else None
+            s = normalize_value(s) if s else ''
+            if not c: continue
+            if c not in class_map:
+                class_map[c] = []
+            if s and s not in class_map[c]:
+                class_map[c].append(s)
+
+        class_map_json = json.dumps(class_map)
+        classes = list(class_map.keys())
 
     return render(request, 'users/admin_circular_upload.html', {
         'circulars': circulars,
         'classes': classes,
-        'sections': sections,
+        'class_map_json': class_map_json,
         'date_filter': date_filter
     })
 
@@ -1627,17 +1637,29 @@ def teacher_circular_upload(request):
     # Sort by newest first
     circulars = sorted(circulars, key=lambda x: x['date'], reverse=True)
 
-    # Fetch classes and sections from student_page1
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT DISTINCT class FROM student_page1")
-        classes = [normalize_value(row[0]) for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-        sections = [normalize_value(row[0]) for row in cursor.fetchall()]
+    # Fetch classes and sections to build class_map_json
+    class_map_json = '{}'
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class, section")
+            class_sections = [(row[0], row[1] if row[1] else '') for row in cursor.fetchall()]
+            
+            class_map = {}
+            for cls, sec in class_sections:
+                cls_norm = normalize_value(cls)
+                sec_norm = normalize_value(sec)
+                if cls_norm not in class_map:
+                    class_map[cls_norm] = []
+                if sec_norm and sec_norm not in class_map[cls_norm]:
+                    class_map[cls_norm].append(sec_norm)
+                    
+            class_map_json = json.dumps(class_map)
+    except Exception as e:
+        messages.error(request, f"Error fetching classes/sections: {str(e)}")
 
     return render(request, 'users/teacher_circular_upload.html', {
         'circulars': circulars,
-        'classes': classes,
-        'sections': sections
+        'class_map_json': class_map_json
     })
 
 
@@ -1956,8 +1978,21 @@ def admin_accept_portal(request):
     classes = []
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT class FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class")
-            classes = [row[0] for row in cursor.fetchall()]
+            cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+            rows = cursor.fetchall()
+            class_map = {}
+            for c, s in rows:
+                c = normalize_value(c) if c else None
+                s = normalize_value(s) if s else ''
+                if not c: continue
+                if c not in class_map:
+                    class_map[c] = []
+                if s and s not in class_map[c]:
+                    class_map[c].append(s)
+            
+            import json
+            class_map_json = json.dumps(class_map)
+            classes = list(class_map.keys())
     except Exception as e:
         print(f"Error fetching classes: {str(e)}")
 
@@ -1967,7 +2002,8 @@ def admin_accept_portal(request):
         'pending_count': pending_count,
         'approved_count': approved_count,
         'rejected_count': rejected_count,
-        'classes': classes
+        'classes': classes,
+        'class_map_json': class_map_json
     }
     
     return render(request, 'users/admin_accept_portal.html', context)
@@ -1983,9 +2019,11 @@ def leave_get_students(request):
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
     class_num = request.GET.get('class')
-    section = request.GET.get('section')
+    section = request.GET.get('section', '')
+    if section == 'all':
+        section = ''
 
-    if not class_num or not section:
+    if not class_num:
         return JsonResponse({'students': []})
 
     try:
@@ -1995,10 +2033,10 @@ def leave_get_students(request):
                 SELECT DISTINCT name 
                 FROM student_page1 
                 WHERE class = %s 
-                  AND section = %s 
+                  AND (section = %s OR (section IS NULL AND %s = ''))
                   AND name IS NOT NULL
                 ORDER BY name
-            """, [class_num, section])
+            """, [class_num, section, section])
             
             students = [row[0] for row in cursor.fetchall()]
             
@@ -2238,16 +2276,27 @@ def admin_study_materials_upload(request):
         return redirect('admin_login')
 
     # Fetch distinct classes and sections for dropdowns
+    class_map_json = "{}"
+    classes = []
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT class FROM student_page1")
-            classes = [row[0] for row in cursor.fetchall()]
-            cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-            sections = [row[0] for row in cursor.fetchall()]
+            cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+            rows = cursor.fetchall()
+            class_map = {}
+            for c, s in rows:
+                c = normalize_value(c) if c else None
+                s = normalize_value(s) if s else ''
+                if not c: continue
+                if c not in class_map:
+                    class_map[c] = []
+                if s and s not in class_map[c]:
+                    class_map[c].append(s)
+            
+            import json
+            class_map_json = json.dumps(class_map)
+            classes = list(class_map.keys())
     except Exception as e:
         messages.error(request, f"Error fetching classes/sections: {str(e)}")
-        classes = []
-        sections = []
 
     if request.method == 'POST':
         title = request.POST.get("title")
@@ -2348,8 +2397,9 @@ def admin_study_materials_upload(request):
             params = []
             where_clause = ""
             if selected_class and selected_section:
-                where_clause = "WHERE class = %s AND section = %s"
-                params = [selected_class, selected_section]
+                section_query_val = None if selected_section == 'all' else selected_section
+                where_clause = "WHERE class = %s AND section <=> %s"
+                params = [selected_class, section_query_val]
 
             cursor.execute(query.format(where_clause=where_clause), params)
             study_materials = [
@@ -2369,7 +2419,7 @@ def admin_study_materials_upload(request):
         "study_materials": study_materials,
         "media_url": settings.MEDIA_URL,
         "classes": classes,
-        "sections": sections,
+        "class_map_json": class_map_json,
         "selected_class": selected_class,
         "selected_section": selected_section
     })
@@ -2381,17 +2431,23 @@ def teacher_study_materials_upload(request):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('teacher_login')
 
-    # Fetch distinct classes and sections for dropdowns
+    # Fetch classes and sections to build class_map_json
+    class_map_json = '{}'
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT class FROM student_page1")
-            classes = [row[0] for row in cursor.fetchall()]
-            cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-            sections = [row[0] for row in cursor.fetchall()]
+            cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class, section")
+            class_sections = [(row[0], row[1] if row[1] else '') for row in cursor.fetchall()]
+            
+            class_map = {}
+            for cls, sec in class_sections:
+                if cls not in class_map:
+                    class_map[cls] = []
+                if sec and sec not in class_map[cls]:
+                    class_map[cls].append(sec)
+                    
+            class_map_json = json.dumps(class_map)
     except Exception as e:
         messages.error(request, f"Error fetching classes/sections: {str(e)}")
-        classes = []
-        sections = []
 
     if request.method == 'POST':
         title = request.POST.get("title")
@@ -2456,8 +2512,12 @@ def teacher_study_materials_upload(request):
             params = []
             where_clause = ""
             if selected_class and selected_section:
-                where_clause = "WHERE class = %s AND section = %s"
-                params = [selected_class, selected_section]
+                if selected_section == 'all':
+                    where_clause = "WHERE class = %s"
+                    params = [selected_class]
+                else:
+                    where_clause = "WHERE class = %s AND section <=> %s"
+                    params = [selected_class, selected_section if selected_section else None]
 
             cursor.execute(query.format(where_clause=where_clause), params)
             study_materials = [
@@ -2476,8 +2536,7 @@ def teacher_study_materials_upload(request):
     return render(request, "users/teacher_study_materials.html", {
         "study_materials": study_materials,
         "media_url": settings.MEDIA_URL,
-        "classes": classes,
-        "sections": sections,
+        "class_map_json": class_map_json,
         "selected_class": selected_class,
         "selected_section": selected_section
     })
@@ -2514,10 +2573,10 @@ def study_materials(request):
             query = """
                 SELECT title, file_path, upload_date, class, section
                 FROM study_materials
-                WHERE class = %s AND section = %s
+                WHERE class = %s AND section <=> %s
                 ORDER BY upload_date DESC
             """
-            cursor.execute(query, [student_class, student_section])
+            cursor.execute(query, [student_class, student_section if student_section else None])
             study_materials = [
                 {
                     "title": r[0],
@@ -2667,16 +2726,27 @@ def admin_homework_panel(request):
         return redirect('admin_login')
 
     # Fetch distinct classes and sections
+    class_map_json = "{}"
+    classes = []
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT class FROM student_page1")
-            classes = [row[0] for row in cursor.fetchall()]
-            cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-            sections = [row[0] for row in cursor.fetchall()]
+            cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+            rows = cursor.fetchall()
+            class_map = {}
+            for c, s in rows:
+                c = normalize_value(c) if c else None
+                s = normalize_value(s) if s else ''
+                if not c: continue
+                if c not in class_map:
+                    class_map[c] = []
+                if s and s not in class_map[c]:
+                    class_map[c].append(s)
+            
+            import json
+            class_map_json = json.dumps(class_map)
+            classes = list(class_map.keys())
     except Exception as e:
         messages.error(request, f"Error fetching classes/sections: {str(e)}")
-        classes = []
-        sections = []
 
     # Get filter values
     selected_class = request.POST.get('class', '')
@@ -2694,12 +2764,10 @@ def admin_homework_panel(request):
             params = []
             where_clause = ""
             
-            if selected_section == 'all':
-                selected_section = ''
-                
             if selected_class and selected_section:
-                where_clause = "WHERE h.class = %s AND h.section = %s"
-                params = [selected_class, selected_section]
+                section_query_val = None if selected_section == 'all' else selected_section
+                where_clause = "WHERE h.class = %s AND h.section <=> %s"
+                params = [selected_class, section_query_val]
 
             cursor.execute(query.format(where_clause=where_clause), params)
             homework_list = [
@@ -2721,7 +2789,7 @@ def admin_homework_panel(request):
         "homework_list": homework_list,
         "media_url": settings.MEDIA_URL,
         "classes": classes,
-        "sections": sections,
+        "class_map_json": class_map_json,
         "selected_class": selected_class,
         "selected_section": selected_section
     })
@@ -3072,18 +3140,15 @@ def teacher_homework_panel(request):
             params = []
             where_clause = ""
             
-            if selected_section == 'all':
-                selected_section = ''
-            
             if selected_class and selected_section:
-                where_clause = "WHERE h.class = %s AND h.section = %s"
-                params = [selected_class, selected_section]
+                where_clause = "WHERE h.class = %s AND h.section <=> %s"
+                params = [selected_class, selected_section if selected_section else None]
             elif selected_class:
                 where_clause = "WHERE h.class = %s"
                 params = [selected_class]
             elif selected_section:
-                where_clause = "WHERE h.section = %s"
-                params = [selected_section]
+                where_clause = "WHERE h.section <=> %s"
+                params = [selected_section if selected_section else None]
 
             cursor.execute(query.format(where_clause=where_clause), params)
             homework_list = [
@@ -3103,17 +3168,23 @@ def teacher_homework_panel(request):
     except Exception as e:
         messages.error(request, f"Error retrieving homework submissions: {str(e)}")
 
-    # Fetch classes and sections from student_page1
+    # Fetch classes and sections to build class_map_json
+    class_map_json = '{}'
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT class FROM student_page1 ORDER BY class")
-            classes = [normalize_value(row[0]) for row in cursor.fetchall()]
-            cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL ORDER BY section")
-            sections = [normalize_value(row[0]) for row in cursor.fetchall()]
+            cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class, section")
+            class_sections = [(row[0], row[1] if row[1] else '') for row in cursor.fetchall()]
+            
+            class_map = {}
+            for cls, sec in class_sections:
+                if cls not in class_map:
+                    class_map[cls] = []
+                if sec and sec not in class_map[cls]:
+                    class_map[cls].append(sec)
+                    
+            class_map_json = json.dumps(class_map)
     except Exception as e:
         messages.error(request, f"Error fetching classes/sections: {str(e)}")
-        classes = []
-        sections = []
 
     # Default subjects list (can be customized)
     subjects = ['Mathematics', 'English', 'Science', 'Social Studies', 'Hindi', 
@@ -3124,8 +3195,7 @@ def teacher_homework_panel(request):
         "homework_list": homework_list,
         "uploaded_homework": uploaded_homework,
         "media_url": settings.MEDIA_URL,
-        "classes": classes,
-        "sections": sections,
+        "class_map_json": class_map_json,
         "subjects": subjects,
         "selected_class": selected_class,
         "selected_section": selected_section
@@ -3507,6 +3577,18 @@ def student_info(request):
                 'male': stat[3],
                 'female': stat[4]
             }
+            
+        class_map = {}
+        for c, s in class_sections:
+            c_norm = c.strip() if c else None
+            s_norm = s.strip() if s else ''
+            if not c_norm: continue
+            if c_norm not in class_map:
+                class_map[c_norm] = []
+            if s_norm and s_norm not in class_map[c_norm]:
+                class_map[c_norm].append(s_norm)
+        import json
+        class_map_json = json.dumps(class_map)
 
     # Organize students by class-section
     class_section_groups = {}
@@ -3541,6 +3623,7 @@ def student_info(request):
         'class_section_groups': class_section_groups,
         'total_students': total_students,
         'class_options': sorted(list(set([cs[0] for cs in class_sections if cs[0] is not None]))) + ['All'],
+        'class_map_json': class_map_json,
         'section_options': sorted(list(set([cs[1] for cs in class_sections if cs[1] is not None]))) + ['All'],
         'gender_options': ['All', 'Male', 'Female'],
         'selected_class': class_filter,
@@ -3681,13 +3764,13 @@ def add_student(request):
                     request.POST.get('caste', ''),
                     request.POST.get('religion', ''),
                     request.POST.get('place_of_birth', ''),
-                    request.POST.get('aadhaar', ''),
+                    request.POST.get('aadhaar', None) or None,
                     request.POST.get('disability', ''),
                     request.POST.get('id_mark1', ''),
                     request.POST.get('id_mark2', ''),
                     class_part,
                     request.POST.get('admission_class', class_part),
-                    request.POST.get('admission_year', ''),
+                    request.POST.get('admission_year', None) or None,
                     request.POST.get('admission_date', None) or None
                 ])
 
@@ -3877,7 +3960,7 @@ def update_student(request, student_id):
                 ] if not value]
                 messages.error(request, f'Missing required fields: {", ".join(missing)}')
                 # Inline context prep for error case
-                post_data = dict(request.POST)
+                post_data = request.POST.dict()
                 # Map boolean fields from DB robustly (handles int 0/1 or str 'yes'/'no')
                 teacher_ward_db = student_data[36] if len(student_data) > 36 else None
                 teacher_ward = 'yes' if teacher_ward_db in (1, 'yes', 'Yes', True) else 'no'
@@ -3968,7 +4051,7 @@ def update_student(request, student_id):
             except ValueError:
                 messages.error(request, 'Class-Section must be in format "Class-Section" (e.g., 2-A)')
                 # Inline context prep for error case (same as above)
-                post_data = dict(request.POST)
+                post_data = request.POST.dict()
                 teacher_ward_db = student_data[36] if len(student_data) > 36 else None
                 teacher_ward = 'yes' if teacher_ward_db in (1, 'yes', 'Yes', True) else 'no'
                 rte_db = student_data[37] if len(student_data) > 37 else None
@@ -4069,7 +4152,7 @@ def update_student(request, student_id):
                     if cursor.fetchone():
                         messages.error(request, f'Admission number {new_admission_number} already exists.')
                         # Inline context prep for error case (same as above)
-                        post_data = dict(request.POST)
+                        post_data = request.POST.dict()
                         teacher_ward_db = student_data[36] if len(student_data) > 36 else None
                         teacher_ward_disp = 'yes' if teacher_ward_db in (1, 'yes', 'Yes', True) else 'no'
                         rte_db = student_data[37] if len(student_data) > 37 else None
@@ -4158,8 +4241,8 @@ def update_student(request, student_id):
                     UPDATE student_page1
                     SET name = %s, admission_number = %s, class = %s, section = %s, 
                         roll_number = %s, emis = %s
-                    WHERE admission_number = %s
-                """, [name, new_admission_number, class_part, section, roll_number, emis, admission_number])
+                    WHERE id = %s
+                """, [name, new_admission_number, class_part, section, roll_number, emis, student_id])
 
                 # 2. Update student_page2 (personal info)
                 cursor.execute("""
@@ -4176,21 +4259,21 @@ def update_student(request, student_id):
                     request.POST.get('gender', ''),
                     request.POST.get('community', ''),
                     request.POST.get('tamil_name', ''),
-                    request.POST.get('dob', ''),
+                    request.POST.get('dob', None) or None,
                     request.POST.get('nationality', ''),
                     request.POST.get('blood_group', ''),
                     request.POST.get('mother_tongue', ''),
                     request.POST.get('caste', ''),
                     request.POST.get('religion', ''),
                     request.POST.get('place_of_birth', ''),
-                    request.POST.get('aadhaar', ''),
+                    request.POST.get('aadhaar', None) or None,
                     request.POST.get('disability', ''),
                     request.POST.get('id_mark1', ''),
                     request.POST.get('id_mark2', ''),
                     class_part,  # current_class
                     request.POST.get('admission_class', class_part),
-                    request.POST.get('admission_year', ''),
-                    request.POST.get('admission_date', ''),
+                    request.POST.get('admission_year', None) or None,
+                    request.POST.get('admission_date', None) or None,
                     user_id
                 ])
 
@@ -4280,7 +4363,7 @@ def update_student(request, student_id):
         except Exception as e:
             messages.error(request, f'Error updating student: {str(e)}')
             # Inline context prep for error case (same as above)
-            post_data = dict(request.POST)
+            post_data = request.POST.dict()
             teacher_ward_db = student_data[36] if len(student_data) > 36 else None
             teacher_ward = 'yes' if teacher_ward_db in (1, 'yes', 'Yes', True) else 'no'
             rte_db = student_data[37] if len(student_data) > 37 else None
@@ -5669,8 +5752,6 @@ def manage_teachers(request):
                     'exam_duties': row[37],
                 })
                 
-                })
-                
             # Fetch classes and sections to build class_map_json
             cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class, section")
             class_sections = [(row[0], row[1] if row[1] else '') for row in cursor.fetchall()]
@@ -6466,12 +6547,31 @@ def teacher_change_credentials(request):
     return redirect('teacher_login')
 
 def teacher_dashboard(request):
+    teacher_id = request.session.get('teacher_id')
     username = request.session.get('username')
-    if not username:
-        messages.error(request, 'Please log in to access the mark entry system.')
+    if not teacher_id:
+        messages.error(request, 'Please log in to access the dashboard.')
         return redirect('teacher_login')
     
-    return render(request, 'users/teacher_dashboard.html', {'username': username})
+    class_teacher_of = "Not Assigned"
+    subject_teacher_roles = []
+
+    with connection.cursor() as cursor:
+        # Fetch Class Teacher role
+        cursor.execute("SELECT class_teacher_of FROM teachers WHERE id = %s", [teacher_id])
+        row = cursor.fetchone()
+        if row and row[0]:
+            class_teacher_of = row[0]
+
+        # Fetch Subject Teacher roles
+        cursor.execute("SELECT DISTINCT subject, class_id FROM timetable WHERE teacher_id = %s ORDER BY class_id, subject", [teacher_id])
+        subject_teacher_roles = [{'subject': r[0], 'class_id': r[1]} for r in cursor.fetchall()]
+
+    return render(request, 'users/teacher_dashboard.html', {
+        'username': username,
+        'class_teacher_of': class_teacher_of,
+        'subject_teacher_roles': subject_teacher_roles,
+    })
 
 
 
@@ -6776,8 +6876,20 @@ def admin_attendance_portal(request):
     
     with connection.cursor() as cursor:
         cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class, section")
-        class_sections = [(row[0], row[1] if row[1] else '') for row in cursor.fetchall()]
-        classes = sorted(set(row[0] for row in class_sections)) or []
+        rows = cursor.fetchall()
+        class_map = {}
+        for c, s in rows:
+            c = normalize_value(c) if c else None
+            s = normalize_value(s) if s else ''
+            if not c: continue
+            if c not in class_map:
+                class_map[c] = []
+            if s and s not in class_map[c]:
+                class_map[c].append(s)
+        
+        import json
+        class_map_json = json.dumps(class_map)
+        classes = list(class_map.keys())
 
     selected_class = request.GET.get('class', '')
     selected_section = request.GET.get('section', '')
@@ -6841,7 +6953,7 @@ def admin_attendance_portal(request):
 
     return render(request, 'users/admin_attendance.html', {
         'classes': classes,
-        'class_sections': json.dumps(class_sections),
+        'class_map_json': class_map_json,
         'selected_class': selected_class,
         'selected_section': selected_section,
         'selected_date': selected_date,
@@ -6902,7 +7014,7 @@ def admin_mark_attendance(request):
         selected_class = request.POST.get('class')
         selected_section = request.POST.get('section')
         selected_date = request.POST.get('date')
-        if not selected_section or selected_section.lower() in ['none', 'n/a', 'not-provided']:
+        if not selected_section or selected_section.lower() in ['none', 'n/a', 'not-provided', 'all']:
             selected_section = None
         with connection.cursor() as cursor:
             for key, value in request.POST.items():
@@ -7002,7 +7114,7 @@ def admin_generate_attendance_pdf(request):
         messages.error(request, 'Please select class and date to generate the PDF.')
         return redirect('admin_attendance_portal')
     
-    if not selected_section or selected_section.lower() in ['none', 'n/a', 'not-provided']:
+    if not selected_section or selected_section.lower() in ['none', 'n/a', 'not-provided', 'all']:
         selected_section = None
 
     # Debugging logs
@@ -7372,16 +7484,50 @@ def parent_dashboard(request):
         messages.error(request, 'Please log in to access the dashboard.')
         return redirect('parent_login')
 
+    user_id = request.session['user_id']
     admin_name = "Guest"
+    class_teacher_name = "Not Assigned"
+    subject_teachers = []
+
     with connection.cursor() as cursor:
-        cursor.execute("SELECT username FROM users WHERE id = %s", [request.session['user_id']])
+        cursor.execute("SELECT username FROM users WHERE id = %s", [user_id])
         result = cursor.fetchone()
         if result:
             admin_name = result[0]
+            
+        # Get student's class and section
+        cursor.execute("SELECT class, section FROM student_page1 WHERE user_id = %s", [user_id])
+        student = cursor.fetchone()
+        if student:
+            s_class = student[0]
+            s_section = student[1]
+            if s_section:
+                class_id = f"{s_class}-{s_section}"
+            else:
+                class_id = s_class
+
+            # Get Class Teacher
+            cursor.execute("SELECT name FROM teachers WHERE class_teacher_of = %s", [class_id])
+            ct_row = cursor.fetchone()
+            if ct_row:
+                class_teacher_name = ct_row[0]
+
+            # Get Subject Teachers from Timetable
+            cursor.execute("""
+                SELECT DISTINCT t.subject, tr.name 
+                FROM timetable t 
+                JOIN teachers tr ON t.teacher_id = tr.id 
+                WHERE t.class_id = %s
+                ORDER BY t.subject
+            """, [class_id])
+            for r in cursor.fetchall():
+                subject_teachers.append({'subject': r[0], 'teacher_name': r[1]})
 
     return render(request, 'users/parent_dashboard.html', {
         'admin_name': admin_name,
-        'notification_user_id': request.session['user_id'],  # ← add this
+        'notification_user_id': user_id,
+        'class_teacher_name': class_teacher_name,
+        'subject_teachers': subject_teachers,
     })
 
 
@@ -7422,12 +7568,18 @@ def mark_entry(request):
             display_name, assigned_class_section = row
             role = 'classTeacher'
 
-        # Get distinct classes and sections
-        cursor.execute("SELECT DISTINCT class FROM student_page1 ORDER BY class")
-        classes = [row[0] for row in cursor.fetchall() if row[0]]
+        cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+        rows = cursor.fetchall()
+        class_map = {}
+        for c, s in rows:
+            if not c: continue
+            if c not in class_map:
+                class_map[c] = []
+            if s and s not in class_map[c]:
+                class_map[c].append(s)
 
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL ORDER BY section")
-        sections = [row[0] for row in cursor.fetchall() if row[0]]
+        class_map_json = json.dumps(class_map)
+        classes = list(class_map.keys())
 
         if not classes:
             messages.warning(request, 'No classes found in the system.')
@@ -7438,17 +7590,14 @@ def mark_entry(request):
                 'role': role, 'user_type': user_type
             })
 
-        # Selected class/section from GET
-        selected_class = request.GET.get('class', classes[0])
-        selected_section = request.GET.get('section', sections[0] if sections else '')
+        # We won't use these fallbacks because frontend dynamically populates it via AJAX/class_map
+        selected_class = request.GET.get('class', '')
+        selected_section = request.GET.get('section', '')
 
-        # Validate
-        if selected_class not in classes:
-            selected_class = classes[0]
-        if selected_section not in sections:
-            selected_section = sections[0] if sections else ''
-
-        class_section_key = f"{selected_class}-{selected_section}"
+        if selected_section and selected_section.lower() != 'all':
+            class_section_key = f"{selected_class}-{selected_section}"
+        else:
+            class_section_key = selected_class
 
         # === Find assigned class teacher name for display ===
         cursor.execute("SELECT name FROM teachers WHERE class_teacher_of = %s", [class_section_key])
@@ -7479,15 +7628,19 @@ def mark_entry(request):
             subjects = [{'id': r[0], 'name': r[1], 'max_marks': r[2]} for r in cursor.fetchall()]
 
         # === Get students ===
-        if selected_class and selected_section:
             try:
+                if selected_section and selected_section.lower() != 'all':
+                    section_query_val = selected_section
+                else:
+                    section_query_val = None
+
                 cursor.execute("""
                     SELECT user_id, name, roll_number, class, section,
                            COALESCE(admission_number, '') AS admission_number
                     FROM student_page1
-                    WHERE class = %s AND section = %s
+                    WHERE class = %s AND section <=> %s
                     ORDER BY name
-                """, [selected_class, selected_section])
+                """, [selected_class, section_query_val])
                 students = [
                     {'id': r[0], 'name': r[1], 'roll_number': r[2],
                      'class': r[3], 'section': r[4], 'admission_number': r[5]}
@@ -7498,9 +7651,9 @@ def mark_entry(request):
                     cursor.execute("""
                         SELECT user_id, name, roll_number, class, section
                         FROM student_page1
-                        WHERE class = %s AND section = %s
+                        WHERE class = %s AND section <=> %s
                         ORDER BY name
-                    """, [selected_class, selected_section])
+                    """, [selected_class, section_query_val])
                     students = [
                         {'id': r[0], 'name': r[1], 'roll_number': r[2],
                          'class': r[3], 'section': r[4], 'admission_number': ''}
@@ -7516,7 +7669,7 @@ def mark_entry(request):
         'class_teacher_name': class_teacher_name,  # Actual class teacher (for report)
         'role': role,
         'classes': classes,
-        'sections': sections,
+        'class_map_json': class_map_json,
         'selected_class': selected_class,
         'selected_section': selected_section,
         'user_type': user_type,
@@ -7573,16 +7726,12 @@ def save_marks(request):
                     return JsonResponse({'success': False, 'message': 'Invalid role.'}, status=403)
 
                 # Verify student exists in class/section
-                if section == 'all':
-                    cursor.execute(
-                        "SELECT user_id FROM student_page1 WHERE user_id = %s AND class = %s AND (section IS NULL OR section = '')",
-                        [student_id, class_name]
-                    )
-                else:
-                    cursor.execute(
-                        "SELECT user_id FROM student_page1 WHERE user_id = %s AND class = %s AND section = %s",
-                        [student_id, class_name, section]
-                    )
+                section_query_val = None if section == 'all' else section
+                
+                cursor.execute(
+                    "SELECT user_id FROM student_page1 WHERE user_id = %s AND class = %s AND section <=> %s",
+                    [student_id, class_name, section_query_val]
+                )
                 if not cursor.fetchone():
                     return JsonResponse({'success': False, 'message': 'Student not found in this class/section.'}, status=400)
 
@@ -7649,9 +7798,6 @@ def add_subject(request):
                 return JsonResponse({'success': False, 'message': 'Max marks must be positive.'}, status=400)
 
             with connection.cursor() as cursor:
-                cursor.execute("SELECT COUNT(*) FROM student_page1 WHERE class = %s", [class_name])
-                if cursor.fetchone()[0] == 0:
-                    return JsonResponse({'success': False, 'message': 'Invalid class.'}, status=400)
 
                 cursor.execute("SELECT COUNT(*) FROM school_subjects WHERE name = %s AND class = %s", [subject_name, class_name])
                 if cursor.fetchone()[0] > 0:
@@ -7775,17 +7921,28 @@ def progress_card(request):
                 )
                 marks = [{'subject': row[0], 'marks': row[1] or 0, 'max_marks': row[2], 'grade': row[3] or 'E'} for row in cursor.fetchall()]
 
-                # Signature
-                cursor.execute("SELECT signature FROM teacher_signature WHERE teacher_id = %s", [request.session['admin_id']])
-                signature_row = cursor.fetchone()
-                signature = signature_row[0] if signature_row else None
+                # Teacher Signature (fetch the assigned class teacher for this section)
+                class_section_key = class_name if not section or section == 'all' else f"{class_name}-{section}"
 
-                # Principal Signature
-                cursor.execute("SELECT signature FROM principal_signature WHERE principal_id = %s", [request.session['admin_id']])
+                cursor.execute("""
+                    SELECT t.name, ts.signature 
+                    FROM teachers t
+                    LEFT JOIN teacher_signature ts ON t.id = ts.teacher_id
+                    WHERE t.class_teacher_of = %s
+                """, [class_section_key])
+                teacher_row = cursor.fetchone()
+                
+                if teacher_row and teacher_row[1]:
+                    teacher_name = teacher_row[0]
+                    signature = teacher_row[1]
+                else:
+                    teacher_name = 'Class Teacher'
+                    signature = None
+
+                # Principal Signature (globally set by admin, id=1)
+                cursor.execute("SELECT signature FROM principal_signature LIMIT 1")
                 principal_signature_row = cursor.fetchone()
                 principal_signature = principal_signature_row[0] if principal_signature_row else None
-
-                teacher_name = request.session.get('admin_display_name', 'Admin')
 
                 # Calculations
                 total_marks = sum(mark['marks'] for mark in marks)
@@ -7842,12 +7999,9 @@ def get_students(request):
 
             # Students with admission_number fallback (and class/section for display)
             try:
-                if section == 'all':
-                    query_cond = "WHERE class = %s AND (section IS NULL OR section = '')"
-                    params = [class_name]
-                else:
-                    query_cond = "WHERE class = %s AND section = %s"
-                    params = [class_name, section]
+                section_query_val = None if section == 'all' else section
+                query_cond = "WHERE class = %s AND section <=> %s"
+                params = [class_name, section_query_val]
                     
                 cursor.execute(
                     f"""
@@ -7872,12 +8026,9 @@ def get_students(request):
                 ]
             except Exception as col_err:
                 if "Unknown column 'admission_number'" in str(col_err):
-                    if section == 'all':
-                        query_cond = "WHERE class = %s AND (section IS NULL OR section = '')"
-                        params = [class_name]
-                    else:
-                        query_cond = "WHERE class = %s AND section = %s"
-                        params = [class_name, section]
+                    section_query_val = None if section == 'all' else section
+                    query_cond = "WHERE class = %s AND section <=> %s"
+                    params = [class_name, section_query_val]
                         
                     cursor.execute(
                         f"""
@@ -7960,27 +8111,27 @@ def teacher_mark_entry(request):
         selected_section = ''
 
         if class_teacher_of:
-            # Smart parsing
             clean_value = class_teacher_of.strip()
             if clean_value.lower().startswith('class '):
                 clean_value = clean_value[6:].strip()
 
             parts = [part.strip() for part in clean_value.split('-') if part.strip()]
             if len(parts) == 2:
-                selected_class = parts[0]
-                selected_section = parts[1].upper()
+                selected_class = selected_class_norm = parts[0]
+                selected_section = selected_section_norm = parts[1].upper()
+            elif len(parts) == 1:
+                selected_class = selected_class_norm = parts[0]
+                selected_section = '' # None or empty string for sectionless
+                selected_section_norm = ''
             else:
                 messages.warning(request, f'Invalid class format: "{class_teacher_of}". Contact admin.')
-        else:
-            messages.warning(request, 'You are not assigned as a class teacher. No class available.')
 
-        # === ONLY SHOW TEACHER'S ASSIGNED CLASS IN DROPDOWN ===
-        if selected_class and selected_section:
-            classes = [selected_class]          # Only their class
-            sections = [selected_section]       # Only their section
-        else:
-            classes = []
-            sections = []
+        # Build class_map_json specifically for this teacher (or all if we want to allow subject teachers)
+        # For Mark Entry, we restrict to their assigned class_teacher_of for now
+        class_map = {}
+        if selected_class:
+            class_map[selected_class] = [selected_section] if selected_section else []
+        class_map_json = json.dumps(class_map)
 
         # Load subjects and students
         subjects = []
@@ -7998,9 +8149,9 @@ def teacher_mark_entry(request):
                     SELECT user_id, name, roll_number, class, section,
                            COALESCE(admission_number, '') AS admission_number
                     FROM student_page1
-                    WHERE class = %s AND section = %s
+                    WHERE class = %s AND section <=> %s
                     ORDER BY name
-                """, [selected_class, selected_section])
+                """, [selected_class, selected_section if selected_section else None])
                 students = [
                     {'id': row[0], 'name': row[1], 'roll_number': row[2],
                      'class': row[3], 'section': row[4], 'admission_number': row[5]}
@@ -8011,9 +8162,9 @@ def teacher_mark_entry(request):
                     cursor.execute("""
                         SELECT user_id, name, roll_number, class, section
                         FROM student_page1
-                        WHERE class = %s AND section = %s
+                        WHERE class = %s AND section <=> %s
                         ORDER BY name
-                    """, [selected_class, selected_section])
+                    """, [selected_class, selected_section if selected_section else None])
                     students = [
                         {'id': row[0], 'name': row[1], 'roll_number': row[2],
                          'class': row[3], 'section': row[4], 'admission_number': ''}
@@ -8032,8 +8183,7 @@ def teacher_mark_entry(request):
         'class_teacher_name': class_teacher_name,
         'role': 'classTeacher',
         'teacher_subject': teacher_subject,
-        'classes': classes,                   # Only 1 class
-        'sections': sections,                 # Only 1 section
+        'class_map_json': class_map_json,
         'selected_class': selected_class,
         'selected_section': selected_section,
         'assigned_class_section': class_teacher_of,
@@ -8055,9 +8205,8 @@ def teacher_save_marks(request):
         marks_data = data.get('marks')
         class_name = data.get('class')
         section = data.get('section')
-        principal_signature_data = data.get('principalSignature')
 
-        if not all([student_id, marks_data, class_name, section, principal_signature_data]):
+        if not all([student_id, marks_data, class_name, section]):
             return JsonResponse({'success': False, 'message': 'Missing required fields.'}, status=400)
 
         if isinstance(marks_data, dict):
@@ -8067,7 +8216,10 @@ def teacher_save_marks(request):
         if not teacher_signature_data:
             return JsonResponse({'success': False, 'message': 'Teacher signature required.'}, status=400)
 
-        class_section_key = f"{class_name}-{section}"
+        if section and section.lower() != 'all' and section.strip() != '':
+            class_section_key = f"{class_name}-{section}"
+        else:
+            class_section_key = class_name
 
         with connection.cursor() as cursor:
             teacher_id = request.session['teacher_id']
@@ -8097,13 +8249,6 @@ def teacher_save_marks(request):
                 VALUES (%s, %s, %s)
                 ON DUPLICATE KEY UPDATE signature = %s
             """, [class_teacher_id, class_section_key, teacher_signature_data, teacher_signature_data])
-
-            # Save principal signature
-            cursor.execute("""
-                INSERT INTO principal_signature (principal_id, signature)
-                VALUES (1, %s)
-                ON DUPLICATE KEY UPDATE signature = %s
-            """, [principal_signature_data, principal_signature_data])
 
             # Grade function
             def calculate_grade(marks, max_marks):
@@ -8169,9 +8314,6 @@ def teacher_add_subject(request):
                 return JsonResponse({'success': False, 'message': 'Max marks must be positive.'}, status=400)
 
             with connection.cursor() as cursor:
-                cursor.execute("SELECT COUNT(*) FROM student_page1 WHERE class = %s", [class_name])
-                if cursor.fetchone()[0] == 0:
-                    return JsonResponse({'success': False, 'message': 'Invalid class.'}, status=400)
 
                 cursor.execute(
                     "SELECT COUNT(*) FROM school_subjects WHERE name = %s AND class = %s",
@@ -8313,10 +8455,9 @@ def teacher_progress_card(request):
                 signature_row = cursor.fetchone()
                 signature = signature_row[0] if signature_row else None
 
-                # Fetch principal signature (using teacher_id as proxy, similar to admin setup)
+                # Fetch principal signature (set by admin, id=1)
                 cursor.execute(
-                    "SELECT signature FROM principal_signature WHERE principal_id = %s",
-                    [request.session['teacher_id']]
+                    "SELECT signature FROM principal_signature WHERE principal_id = 1"
                 )
                 principal_signature_row = cursor.fetchone()
                 principal_signature = principal_signature_row[0] if principal_signature_row else None
@@ -8494,10 +8635,21 @@ def admin_timetable_view(request):
         return redirect('admin_login')
     
     with connection.cursor() as cursor:
-        cursor.execute("SELECT DISTINCT class FROM student_page1")
-        classes = [row[0] for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+        rows = cursor.fetchall()
+        class_map = {}
+        for c, s in rows:
+            c = normalize_value(c) if c else None
+            s = normalize_value(s) if s else ''
+            if not c: continue
+            if c not in class_map:
+                class_map[c] = []
+            if s and s not in class_map[c]:
+                class_map[c].append(s)
+        
+        import json
+        class_map_json = json.dumps(class_map)
+        classes = list(class_map.keys())
         cursor.execute("SELECT id, name FROM teachers")
         teachers = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
         cursor.execute("SELECT DISTINCT subject FROM exams ORDER BY subject")
@@ -8536,7 +8688,7 @@ def admin_timetable_view(request):
             })
     
     return render(request, 'users/admin_timetable.html', {
-        'classes': classes, 'sections': sections, 'teachers': teachers,
+        'classes': classes, 'class_map_json': class_map_json, 'teachers': teachers,
         'subjects': subjects, 'exams': exams, 'timetables': timetables
     })
 
@@ -8592,10 +8744,21 @@ def admin_exam_filter(request):
                 'room': row[6], 'invigilator_name': row[7]
             })
         
-        cursor.execute("SELECT DISTINCT class FROM student_page1")
-        classes = [row[0] for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+        rows = cursor.fetchall()
+        class_map = {}
+        for c, s in rows:
+            c = normalize_value(c) if c else None
+            s = normalize_value(s) if s else ''
+            if not c: continue
+            if c not in class_map:
+                class_map[c] = []
+            if s and s not in class_map[c]:
+                class_map[c].append(s)
+        
+        import json
+        class_map_json = json.dumps(class_map)
+        classes = list(class_map.keys())
         cursor.execute("SELECT id, name FROM teachers")
         teachers = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
         cursor.execute("SELECT DISTINCT subject FROM exams ORDER BY subject")
@@ -8619,7 +8782,7 @@ def admin_exam_filter(request):
             })
     
     return render(request, 'users/admin_timetable.html', {
-        'exams': exams, 'classes': classes, 'sections': sections, 
+        'exams': exams, 'classes': classes, 'class_map_json': class_map_json, 
         'teachers': teachers, 'subjects': subjects, 'timetables': timetables,
         'selected_exam_class': class_filter,
         'selected_exam_subject': subject_filter,
@@ -8681,17 +8844,28 @@ def admin_timetable_filter(request):
                 'week_start_date': row[8], 'week_end_date': row[9]
             })
         
-        cursor.execute("SELECT DISTINCT class FROM student_page1")
-        classes = [row[0] for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+        rows = cursor.fetchall()
+        class_map = {}
+        for c, s in rows:
+            c = normalize_value(c) if c else None
+            s = normalize_value(s) if s else ''
+            if not c: continue
+            if c not in class_map:
+                class_map[c] = []
+            if s and s not in class_map[c]:
+                class_map[c].append(s)
+        
+        import json
+        class_map_json = json.dumps(class_map)
+        classes = list(class_map.keys())
         cursor.execute("SELECT id, name FROM teachers")
         teachers = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
         cursor.execute("SELECT DISTINCT week_start_date FROM timetable ORDER BY week_start_date DESC")
         weeks = [row[0] for row in cursor.fetchall()]
     
     return render(request, 'users/admin_timetable.html', {
-        'timetables': timetables, 'classes': classes, 'sections': sections, 
+        'timetables': timetables, 'classes': classes, 'class_map_json': class_map_json, 
         'teachers': teachers, 'selected_class': class_filter, 
         'selected_section': section_filter, 'selected_teacher': teacher_id, 
         'selected_day': day_filter, 'weeks': weeks, 'selected_week': week_filter
@@ -8762,13 +8936,24 @@ def admin_timetable_add(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT id, name, subject FROM teachers")
         teachers = [{'id': row[0], 'name': row[1], 'subject': row[2]} for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT class FROM student_page1")
-        classes = [row[0] for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+        rows = cursor.fetchall()
+        class_map = {}
+        for c, s in rows:
+            c = normalize_value(c) if c else None
+            s = normalize_value(s) if s else ''
+            if not c: continue
+            if c not in class_map:
+                class_map[c] = []
+            if s and s not in class_map[c]:
+                class_map[c].append(s)
+        
+        import json
+        class_map_json = json.dumps(class_map)
+        classes = list(class_map.keys())
     
     return render(request, 'users/admin_timetable_add.html', {
-        'teachers': teachers, 'classes': classes, 'sections': sections
+        'teachers': teachers, 'classes': classes, 'class_map_json': class_map_json
     })
 
 def admin_timetable_edit(request, id):
@@ -8863,14 +9048,25 @@ def admin_timetable_edit(request, id):
         
         cursor.execute("SELECT id, name, subject FROM teachers")
         teachers = [{'id': row[0], 'name': row[1], 'subject': row[2]} for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT class FROM student_page1")
-        classes = [row[0] for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+        rows = cursor.fetchall()
+        class_map = {}
+        for c, s in rows:
+            c = normalize_value(c) if c else None
+            s = normalize_value(s) if s else ''
+            if not c: continue
+            if c not in class_map:
+                class_map[c] = []
+            if s and s not in class_map[c]:
+                class_map[c].append(s)
+        
+        import json
+        class_map_json = json.dumps(class_map)
+        classes = list(class_map.keys())
     
     return render(request, 'users/admin_timetable_edit.html', {
         'timetable': timetable_data, 'teachers': teachers, 
-        'classes': classes, 'sections': sections
+        'classes': classes, 'class_map_json': class_map_json
     })
 
 def admin_timetable_delete(request, id):
@@ -11637,7 +11833,9 @@ def admin_exam_add(request):
     
     if request.method == 'POST':
         class_name = request.POST.get('class_id')
-        section = request.POST.get('section')
+        section = request.POST.get('section', '')
+        if section == 'all':
+            section = ''
         subject = request.POST.get('subject')
         exam_date = request.POST.get('exam_date')
         start_time = request.POST.get('start_time')
@@ -11689,15 +11887,26 @@ def admin_exam_add(request):
         return redirect('admin_timetable')
     
     with connection.cursor() as cursor:
-        cursor.execute("SELECT DISTINCT class FROM student_page1")
-        classes = [row[0] for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+        rows = cursor.fetchall()
+        class_map = {}
+        for c, s in rows:
+            c = normalize_value(c) if c else None
+            s = normalize_value(s) if s else ''
+            if not c: continue
+            if c not in class_map:
+                class_map[c] = []
+            if s and s not in class_map[c]:
+                class_map[c].append(s)
+        
+        import json
+        class_map_json = json.dumps(class_map)
+        classes = list(class_map.keys())
         cursor.execute("SELECT id, name FROM teachers")
         teachers = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
     
     return render(request, 'users/admin_exam_add.html', {
-        'classes': classes, 'sections': sections, 'teachers': teachers
+        'classes': classes, 'class_map_json': class_map_json, 'teachers': teachers
     })
 
 # Admin Exam Schedule Creation (similar to weekly timetable)
@@ -11726,7 +11935,9 @@ def admin_exam_schedule(request):
     
     if request.method == 'POST' and 'create_schedule' in request.POST:
         class_name = request.POST.get('class')
-        section = request.POST.get('section')
+        section = request.POST.get('section', '')
+        if section == 'all':
+            section = ''
         class_id = f"{class_name}{section}" if section else class_name
         
         if not class_name or not class_id:
@@ -11769,16 +11980,27 @@ def admin_exam_schedule(request):
     
     # Fetch data for form
     with connection.cursor() as cursor:
-        cursor.execute("SELECT DISTINCT class FROM student_page1")
-        classes = [row[0] for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+        rows = cursor.fetchall()
+        class_map = {}
+        for c, s in rows:
+            c = normalize_value(c) if c else None
+            s = normalize_value(s) if s else ''
+            if not c: continue
+            if c not in class_map:
+                class_map[c] = []
+            if s and s not in class_map[c]:
+                class_map[c].append(s)
+        
+        import json
+        class_map_json = json.dumps(class_map)
+        classes = list(class_map.keys())
         cursor.execute("SELECT id, name FROM teachers")
         teachers = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
     
     return render(request, 'users/admin_exam_schedule.html', {
         'exam_days': exam_days, 'teachers': teachers, 
-        'classes': classes, 'sections': sections, 'num_days': num_days
+        'classes': classes, 'class_map_json': class_map_json, 'num_days': num_days
     })
 
 def admin_exam_pdf_download(request):
@@ -11895,7 +12117,9 @@ def admin_exam_edit(request, exam_id):
     
     if request.method == 'POST':
         class_name = request.POST.get('class_id')
-        section = request.POST.get('section')
+        section = request.POST.get('section', '')
+        if section == 'all':
+            section = ''
         subject = request.POST.get('subject')
         exam_date = request.POST.get('exam_date')
         start_time = request.POST.get('start_time')
@@ -11949,15 +12173,26 @@ def admin_exam_edit(request, exam_id):
     
     # Fetch data for form
     with connection.cursor() as cursor:
-        cursor.execute("SELECT DISTINCT class FROM student_page1")
-        classes = [row[0] for row in cursor.fetchall()]
-        cursor.execute("SELECT DISTINCT section FROM student_page1 WHERE section IS NOT NULL")
-        sections = [row[0] for row in cursor.fetchall()]
+        cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+        rows = cursor.fetchall()
+        class_map = {}
+        for c, s in rows:
+            c = normalize_value(c) if c else None
+            s = normalize_value(s) if s else ''
+            if not c: continue
+            if c not in class_map:
+                class_map[c] = []
+            if s and s not in class_map[c]:
+                class_map[c].append(s)
+        
+        import json
+        class_map_json = json.dumps(class_map)
+        classes = list(class_map.keys())
         cursor.execute("SELECT id, name FROM teachers")
         teachers = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
     
     return render(request, 'users/admin_exam_edit.html', {
-        'classes': classes, 'sections': sections, 'teachers': teachers,
+        'classes': classes, 'class_map_json': class_map_json, 'teachers': teachers,
         'exam': exam, 'current_class': current_class, 'current_section': current_section
     })
 

@@ -510,7 +510,7 @@
 
     <div class="container">
         <div class="back-buttons">
-            <button class="back-student-btn cancel-btn" onclick="window.location.href='{% url 'student_info' %}'">
+            <button class="back-student-btn cancel-btn" onclick="window.location.href=`{% url 'student_info' %}`">
                 <i class="fas fa-arrow-left"></i> Back to Student Info
             </button>
         </div>
@@ -658,10 +658,7 @@
                         <label>Religion</label>
                         <input type="text" name="religion" value="{{ religion|default:'' }}">
                     </div>
-                    <div class="form-group">
-                        <label>Place of Birth</label>
-                        <input type="text" name="place_of_birth" value="{{ place_of_birth|default:'' }}">
-                    </div>
+
                     <div class="form-group required">
                         <label>Aadhaar Number</label>
                         <input type="text" name="aadhaar" value="{{ aadhaar|default:'' }}" required>
@@ -670,38 +667,7 @@
                         <label>Disability</label>
                         <input type="text" name="disability" value="{{ disability|default:'' }}">
                     </div>
-                    <div class="form-group">
-                        <label>Identification Mark 1</label>
-                        <input type="text" name="id_mark1" value="{{ id_mark1|default:'' }}">
-                    </div>
-                    <div class="form-group">
-                        <label>Identification Mark 2</label>
-                        <input type="text" name="id_mark2" value="{{ id_mark2|default:'' }}">
-                    </div>
-                    <div class="form-group required" data-field="admission_class">
-                        <label>Admission Class</label>
-                        <input type="text" name="admission_class" value="{{ admission_class|default:'' }}" required>
-                        <div class="field-error" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <span>Please enter admission class</span>
-                        </div>
-                    </div>
-                    <div class="form-group required" data-field="admission_year">
-                        <label>Admission Year</label>
-                        <input type="text" name="admission_year" value="{{ admission_year|default:'' }}" required>
-                        <div class="field-error" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <span>Please enter admission year</span>
-                        </div>
-                    </div>
-                    <div class="form-group required" data-field="admission_date">
-                        <label>Admission Date</label>
-                        <input type="date" name="admission_date" value="{{ admission_date|default:'' }}" required>
-                        <div class="field-error" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <span>Please enter admission date</span>
-                        </div>
-                    </div>
+
                 </div>
             </div>
             <div class="section">
@@ -737,14 +703,7 @@
                         <label>Pincode</label>
                         <input type="text" name="pincode" value="{{ pincode|default:'' }}">
                     </div>
-                    <div class="form-group">
-                        <label>Status</label>
-                        <input type="text" name="status" value="{{ status|default:'' }}">
-                    </div>
-                    <div class="form-group">
-                        <label>House</label>
-                        <input type="text" name="house" value="{{ house|default:'' }}">
-                    </div>
+
                     <div class="form-group required" data-field="teacher_ward">
                         <label>Teacher Ward</label>
                         <select name="teacher_ward" required>
@@ -784,14 +743,7 @@
                             <span>Please select sports quota option</span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Previous School</label>
-                        <input type="text" name="prev_school" value="{{ prev_school|default:'' }}">
-                    </div>
-                    <div class="form-group">
-                        <label>Previous Board</label>
-                        <input type="text" name="prev_board" value="{{ prev_board|default:'' }}">
-                    </div>
+
                 </div>
             </div>
             <div class="section">
@@ -907,7 +859,7 @@
                 </div>
             </div>
             <div class="form-actions">
-                <button type="button" class="cancel-btn" onclick="window.location.href='{% url 'student_info' %}'">
+                <button type="button" class="cancel-btn" onclick="window.location.href=`{% url 'student_info' %}`">
                     <i class="fas fa-times"></i> Cancel
                 </button>
                 <button type="submit" class="save-btn">
@@ -936,9 +888,10 @@
             document.documentElement.scrollTop = 0;
         }
 
-        const classMap = {{ class_map_json|safe }};
+        const classMap = JSON.parse('{{ class_map_json|escapejs }}' || '{}');
+        const currentSection = "{{ section|default:'' }}";
 
-        function updateSections() {
+        function updateSections(initial = false) {
             const classSelect = document.getElementById('id_class');
             const sectionSelect = document.getElementById('id_section');
             const sectionGroup = document.getElementById('section_group');
@@ -955,13 +908,17 @@
                 const allOption = document.createElement('option');
                 allOption.value = 'all';
                 allOption.textContent = 'All Sections / No Section';
+                if (initial && currentSection === 'all') allOption.selected = true;
                 sectionSelect.appendChild(allOption);
 
                 classMap[selectedClass].forEach(function(sec) {
-                    const option = document.createElement('option');
-                    option.value = sec;
-                    option.textContent = sec;
-                    sectionSelect.appendChild(option);
+                    if (sec) {
+                        const option = document.createElement('option');
+                        option.value = sec;
+                        option.textContent = sec;
+                        if (initial && sec === currentSection) option.selected = true;
+                        sectionSelect.appendChild(option);
+                    }
                 });
             } else {
                 // Class has no sections
@@ -977,26 +934,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Restore form values
-            {% for field, value in request.POST.items %}
-                {% if value %}
-                    const field_{{ field }} = document.querySelector('[name="{{ field }}"]');
-                    if (field_{{ field }} && field_{{ field }}.tagName === 'SELECT') {
-                        if ('{{ field }}' === 'class') {
-                            field_{{ field }}.value = '{{ value }}';
-                            updateSections(); // Populate sections based on restored class
-                        } else if ('{{ field }}' === 'section') {
-                            field_{{ field }}.value = '{{ value }}';
-                        } else {
-                            field_{{ field }}.value = '{{ value }}';
-                        }
-                    }
-                {% endif %}
-            {% endfor %}
-
             // Initial call if class is already selected (e.g. from template context)
             if (document.getElementById('id_class').value) {
-                updateSections();
+                updateSections(true);
             }
 
             // Form validation

@@ -354,9 +354,6 @@
                             </label>
                             <select id="section" name="section">
                                 <option value="all">All Sections / No Section</option>
-                                {% for sec in sections %}
-                                <option value="{{ sec }}">{{ sec|capfirst }}</option>
-                                {% endfor %}
                             </select>
                         </div>
 
@@ -443,6 +440,31 @@
     </div>
 
     <script>
+        const classMap = {{ class_map_json|safe|default:"{}" }};
+        
+        function updateSections() {
+            const classSelect = document.getElementById('class');
+            const sectionSelect = document.getElementById('section');
+            const selectedClass = classSelect.value;
+            
+            sectionSelect.innerHTML = '<option value="all">All Sections / No Section</option>';
+            
+            if (selectedClass && classMap[selectedClass]) {
+                const sections = classMap[selectedClass];
+                sections.forEach(sec => {
+                    if (sec) { // Only add non-empty sections
+                        const option = document.createElement('option');
+                        option.value = sec;
+                        option.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
+                        sectionSelect.appendChild(option);
+                    }
+                });
+            }
+            checkConflicts();
+        }
+
+        document.getElementById('class').addEventListener('change', updateSections);
+
         // Set minimum date to today
         document.addEventListener('DOMContentLoaded', function() {
             const dateInput = document.getElementById('week_start_date');

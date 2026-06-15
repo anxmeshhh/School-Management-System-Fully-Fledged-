@@ -700,18 +700,12 @@
                                 <label for="class"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i> Select Class:</label>
                                 <select id="class" name="class" required>
                                     <option value="">Select Class</option>
-                                    {% for class in classes %}
-                                        <option value="{{ class }}">{{ class }}</option>
-                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="section"><i class="fas fa-th-large" style="color: #f39c12;"></i> Select Section:</label>
                                 <select id="section" name="section">
                                     <option value="all">All Sections / No Section</option>
-                                    {% for section in sections %}
-                                        <option value="{{ section }}">{{ section|capfirst }}</option>
-                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -734,18 +728,12 @@
                                 <label for="class_filter"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i> Filter by Class:</label>
                                 <select id="class_filter" name="class">
                                     <option value="">All Classes</option>
-                                    {% for class in classes %}
-                                        <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
-                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="section_filter"><i class="fas fa-th-large" style="color: #f39c12;"></i> Filter by Section:</label>
                                 <select id="section_filter" name="section">
                                     <option value="all">All Sections / No Section</option>
-                                    {% for section in sections %}
-                                        <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section|capfirst }}</option>
-                                    {% endfor %}
                                 </select>
                             </div>
                             <button type="submit" class="filter-btn">
@@ -856,6 +844,59 @@
                     }
                 });
             });
+        });
+
+        // Dynamic Class and Section Dropdowns
+        document.addEventListener('DOMContentLoaded', () => {
+            const classMapData = {{ class_map_json|safe|default:'{}' }};
+            const selectedClassFilter = "{{ selected_class|default:''|escapejs }}";
+            const selectedSectionFilter = "{{ selected_section|default:''|escapejs }}";
+
+            function populateDropdowns(classSelectId, sectionSelectId, preSelectClass, preSelectSection) {
+                const classSelect = document.getElementById(classSelectId);
+                const sectionSelect = document.getElementById(sectionSelectId);
+
+                if (!classSelect || !sectionSelect || !classMapData) return;
+
+                // Populate class dropdown
+                Object.keys(classMapData).forEach(cls => {
+                    const opt = document.createElement('option');
+                    opt.value = cls;
+                    opt.textContent = cls.charAt(0).toUpperCase() + cls.slice(1);
+                    if (cls === preSelectClass) opt.selected = true;
+                    classSelect.appendChild(opt);
+                });
+
+                // Function to update section based on selected class
+                const updateSections = (selectedCls, preSelSec) => {
+                    sectionSelect.innerHTML = '<option value="all">All Sections / No Section</option>';
+                    if (selectedCls && classMapData[selectedCls] && classMapData[selectedCls].length > 0) {
+                        classMapData[selectedCls].forEach(sec => {
+                            const opt = document.createElement('option');
+                            opt.value = sec;
+                            opt.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
+                            if (sec === preSelSec) opt.selected = true;
+                            sectionSelect.appendChild(opt);
+                        });
+                    }
+                };
+
+                // Initial load
+                if (preSelectClass) {
+                    updateSections(preSelectClass, preSelectSection);
+                }
+
+                // Handle class change
+                classSelect.addEventListener('change', () => {
+                    updateSections(classSelect.value, '');
+                });
+            }
+
+            // Initialize for Upload Form
+            populateDropdowns('class', 'section', '', '');
+            
+            // Initialize for Filter Form
+            populateDropdowns('class_filter', 'section_filter', selectedClassFilter, selectedSectionFilter);
         });
     </script>
 </body>

@@ -756,11 +756,8 @@
                                         </span>
                                         Class:
                                     </label>
-                                    <select name="class" id="class" required>
+                                    <select name="class" id="class" required onchange="updateSections()">
                                         <option value="">Select Class</option>
-                                        {% for cls in classes %}
-                                        <option value="{{ cls }}">{{ cls }}</option>
-                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -772,9 +769,6 @@
                                     </label>
                                     <select name="section" id="section">
                                         <option value="all">All Sections / No Section</option>
-                                        {% for sec in sections %}
-                                        <option value="{{ sec }}">{{ sec|capfirst }}</option>
-                                        {% endfor %}
                                     </select>
                                 </div>
                             </div>
@@ -844,7 +838,41 @@
     </div>
 
     <script>
+        const classMapData = {{ class_map_json|safe }};
+
+        function populateClasses() {
+            const classSelect = document.getElementById('class');
+            if (!classSelect) return;
+            classSelect.innerHTML = '<option value="">Select Class</option>';
+            Object.keys(classMapData).forEach(cls => {
+                const opt = document.createElement('option');
+                opt.value = cls;
+                opt.textContent = cls.charAt(0).toUpperCase() + cls.slice(1);
+                classSelect.appendChild(opt);
+            });
+        }
+
+        function updateSections() {
+            const classSelect = document.getElementById('class');
+            const sectionSelect = document.getElementById('section');
+            if (!classSelect || !sectionSelect) return;
+
+            const selectedClass = classSelect.value;
+            sectionSelect.innerHTML = '<option value="all">All Sections / No Section</option>';
+
+            if (selectedClass && classMapData[selectedClass] && classMapData[selectedClass].length > 0) {
+                classMapData[selectedClass].forEach(sec => {
+                    const opt = document.createElement('option');
+                    opt.value = sec;
+                    opt.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
+                    sectionSelect.appendChild(opt);
+                });
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            populateClasses();
+
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');

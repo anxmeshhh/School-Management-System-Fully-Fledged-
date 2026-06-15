@@ -706,20 +706,14 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="class"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i> Select Class:</label>
-                                <select id="class" name="class" required>
+                                <select id="class" name="class" required onchange="updateUploadSections()">
                                     <option value="">Select Class</option>
-                                    {% for class in classes %}
-                                        <option value="{{ class }}">{{ class }}</option>
-                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="section"><i class="fas fa-th-large" style="color: #f39c12;"></i> Select Section:</label>
                                 <select id="section" name="section">
                                     <option value="all">All Sections / No Section</option>
-                                    {% for section in sections %}
-                                        <option value="{{ section }}">{{ section|capfirst }}</option>
-                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -740,20 +734,14 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="class_filter"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i> Filter by Class:</label>
-                                <select id="class_filter" name="class">
+                                <select id="class_filter" name="class" onchange="updateFilterSections()">
                                     <option value="">All Classes</option>
-                                    {% for class in classes %}
-                                        <option value="{{ class }}" {% if class == selected_class %}selected{% endif %}>{{ class }}</option>
-                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="section_filter"><i class="fas fa-th-large" style="color: #f39c12;"></i> Filter by Section:</label>
                                 <select id="section_filter" name="section">
                                     <option value="all">All Sections / No Section</option>
-                                    {% for section in sections %}
-                                        <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section|capfirst }}</option>
-                                    {% endfor %}
                                 </select>
                             </div>
                             <button type="submit" class="filter-btn">
@@ -802,7 +790,59 @@
     </div>
 
     <script>
+        const classMapData = {{ class_map_json|safe }};
+        const selectedFilterClass = "{{ selected_class|default:'' }}";
+        const selectedFilterSection = "{{ selected_section|default:'all' }}";
+
+        function populateClasses(selectElementId, addAllOption, selectedValue) {
+            const select = document.getElementById(selectElementId);
+            if (!select) return;
+            select.innerHTML = addAllOption ? '<option value="">All Classes</option>' : '<option value="">Select Class</option>';
+            Object.keys(classMapData).forEach(cls => {
+                const opt = document.createElement('option');
+                opt.value = cls;
+                opt.textContent = cls.charAt(0).toUpperCase() + cls.slice(1);
+                if (cls === selectedValue) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function updateSections(classSelectId, sectionSelectId, selectedSectionVal) {
+            const classSelect = document.getElementById(classSelectId);
+            const sectionSelect = document.getElementById(sectionSelectId);
+            if (!classSelect || !sectionSelect) return;
+
+            const selectedClass = classSelect.value;
+            sectionSelect.innerHTML = '<option value="all">All Sections / No Section</option>';
+
+            if (selectedClass && classMapData[selectedClass] && classMapData[selectedClass].length > 0) {
+                classMapData[selectedClass].forEach(sec => {
+                    const opt = document.createElement('option');
+                    opt.value = sec;
+                    opt.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
+                    if (sec === selectedSectionVal) opt.selected = true;
+                    sectionSelect.appendChild(opt);
+                });
+            }
+        }
+
+        function updateUploadSections() {
+            updateSections('class', 'section', 'all');
+        }
+
+        function updateFilterSections() {
+            updateSections('class_filter', 'section_filter', selectedFilterSection);
+        }
+
+        function initDropdowns() {
+            populateClasses('class', false, '');
+            populateClasses('class_filter', true, selectedFilterClass);
+            updateFilterSections();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            initDropdowns();
+            
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -860,7 +900,7 @@
 
             document.querySelector('form').addEventListener('submit', function(e) {
                 const sectionSelect = document.getElementById('section');
-                if (sectionSelect.value === 'all') {
+                if (sectionSelect && sectionSelect.value === 'all') {
                     console.log("[v0] Uploading to all sections for selected class");
                 }
             });

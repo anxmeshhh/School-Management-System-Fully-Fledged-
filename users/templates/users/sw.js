@@ -24,10 +24,17 @@ self.addEventListener('activate', function (event) {
 // ─── Fetch ────────────────────────────────────────────────────────────────────
 // Required for PWA Installability (Add to Home Screen)
 self.addEventListener('fetch', function (event) {
+    // Do not intercept non-GET requests (POST, PUT, DELETE)
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
     // Pass-through strategy for now. Caching can be expanded later.
-    event.respondWith(fetch(event.request).catch(function() {
-        return caches.match(event.request);
-    }));
+    event.respondWith(
+        fetch(event.request).catch(function() {
+            return caches.match(event.request);
+        })
+    );
 });
 
 

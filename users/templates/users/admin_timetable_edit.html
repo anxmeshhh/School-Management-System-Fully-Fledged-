@@ -469,9 +469,6 @@
                             </label>
                             <select id="section" name="section">
                                 <option value="all">All Sections / No Section</option>
-                                {% for sec in sections %}
-                                <option value="{{ sec }}" {% if sec == timetable.section %}selected{% endif %}>{{ sec|capfirst }}</option>
-                                {% endfor %}
                             </select>
                         </div>
 
@@ -581,6 +578,38 @@
     </div>
 
     <script>
+        const classMap = {{ class_map_json|safe|default:"{}" }};
+        const currentSection = "{{ timetable.section|default:'' }}";
+        
+        function updateSections(initial = false) {
+            const classSelect = document.getElementById('class');
+            const sectionSelect = document.getElementById('section');
+            const selectedClass = classSelect.value;
+            
+            sectionSelect.innerHTML = '<option value="all">All Sections / No Section</option>';
+            
+            if (selectedClass && classMap[selectedClass]) {
+                const sections = classMap[selectedClass];
+                sections.forEach(sec => {
+                    if (sec) { // Only add non-empty sections
+                        const option = document.createElement('option');
+                        option.value = sec;
+                        option.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
+                        if (initial && sec === currentSection) {
+                            option.selected = true;
+                        }
+                        sectionSelect.appendChild(option);
+                    }
+                });
+            }
+            if (!initial) {
+                checkConflicts();
+                checkTeacherAvailability();
+            }
+        }
+
+        document.getElementById('class').addEventListener('change', () => updateSections(false));
+
         // NEW: Time Preset Function
         function setTime(type, time) {
             document.getElementById(type + '_time').value = time;
@@ -719,6 +748,7 @@
 
         // Initial load
         document.addEventListener('DOMContentLoaded', function() {
+            updateSections(true);
             checkConflicts();
             checkTeacherAvailability();
         });

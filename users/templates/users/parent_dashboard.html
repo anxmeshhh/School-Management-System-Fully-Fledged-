@@ -781,6 +781,50 @@
                 <h2>Hello, {{ admin_name|default:"Guest" }}!</h2>
                 <p id="quote" class="quote"></p>
             </div>
+
+            <!-- Assigned Teachers Card -->
+            <div class="card-container" style="text-align: left; padding: 2.5rem;">
+                <h2 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; font-size: 1.5rem;">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary-color);">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    My Child's Teachers
+                </h2>
+                
+                <div style="background: var(--light-bg); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid var(--primary-color);">
+                    <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        Class Teacher
+                    </h3>
+                    <p style="font-size: 1.05rem; color: var(--text-color);">
+                        {% if class_teacher_name and class_teacher_name != 'Not Assigned' %}
+                            <strong>{{ class_teacher_name }}</strong>
+                        {% else %}
+                            <span style="color: var(--text-light); font-style: italic;">Class Teacher not yet assigned.</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 1.5rem; border-radius: 12px; border-left: 4px solid #8b5cf6;">
+                    <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-color); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        Subject Teachers
+                    </h3>
+                    {% if subject_teachers %}
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                            {% for role in subject_teachers %}
+                                <div style="background: var(--white); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                                    <div style="font-weight: 600; color: #8b5cf6; margin-bottom: 0.25rem;">{{ role.subject }}</div>
+                                    <div style="font-size: 0.9rem; color: var(--text-color);">{{ role.teacher_name }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p style="color: var(--text-light); font-style: italic;">No subject teachers found in timetable.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 

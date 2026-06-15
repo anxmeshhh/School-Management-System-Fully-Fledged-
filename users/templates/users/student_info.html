@@ -639,9 +639,6 @@
                             <label for="section"><i class="fas fa-th-large" style="color: #8b5cf6; margin-right: 8px;"></i> Section</label>
                             <select name="section" id="section">
                                 <option value="All">All Sections / No Section</option>
-                                {% for section in section_options %}
-                                    <option value="{{ section }}" {% if section == selected_section %}selected{% endif %}>{{ section }}</option>
-                                {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
@@ -725,6 +722,57 @@
             document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0;
         }
+
+        const classMap = {{ class_map_json|safe|default:"{}" }};
+        const currentSection = "{{ selected_section|default:'All' }}";
+        
+        function updateSections(initial = false) {
+            const classSelect = document.getElementById('class');
+            const sectionSelect = document.getElementById('section');
+            const selectedClass = classSelect.value;
+            
+            sectionSelect.innerHTML = '<option value="All">All Sections / No Section</option>';
+            
+            if (selectedClass && selectedClass !== 'All' && classMap[selectedClass]) {
+                const sections = classMap[selectedClass];
+                sections.forEach(sec => {
+                    if (sec) { // Only add non-empty sections
+                        const option = document.createElement('option');
+                        option.value = sec;
+                        option.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
+                        if (initial && sec === currentSection) {
+                            option.selected = true;
+                        }
+                        sectionSelect.appendChild(option);
+                    }
+                });
+            } else if (selectedClass === 'All') {
+                // If "All" classes is selected, show all unique sections from all classes
+                const allSections = new Set();
+                Object.values(classMap).forEach(sections => {
+                    sections.forEach(sec => {
+                        if (sec) allSections.add(sec);
+                    });
+                });
+                const sortedSections = Array.from(allSections).sort();
+                sortedSections.forEach(sec => {
+                    const option = document.createElement('option');
+                    option.value = sec;
+                    option.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
+                    if (initial && sec === currentSection) {
+                        option.selected = true;
+                    }
+                    sectionSelect.appendChild(option);
+                });
+            }
+        }
+
+        document.getElementById('class').addEventListener('change', () => updateSections(false));
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSections(true);
+        });
     </script>
 </body>
 </html>

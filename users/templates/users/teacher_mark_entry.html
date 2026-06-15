@@ -1042,20 +1042,14 @@
                     <div class="form-group class-section">
                         <div>
                             <label for="classSelect"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i> Class</label>
-                            <select id="classSelect" required>
+                            <select id="classSelect" required onchange="updateSections('classSelect', 'sectionSelect')">
                                 <option value="">Select Class</option>
-                                {% for class in classes %}
-                                    <option value="{{ class }}">{{ class }}</option>
-                                {% endfor %}
                             </select>
                         </div>
                         <div>
                             <label for="sectionSelect"><i class="fas fa-th-large" style="color: #f39c12;"></i> Section</label>
                             <select id="sectionSelect">
                                 <option value="all">All Sections / No Section</option>
-                                {% for section in sections %}
-                                    <option value="{{ section }}">{{ section }}</option>
-                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -1073,13 +1067,6 @@
                             <canvas id="signaturePad" class="signature-pad" width="300" height="100"></canvas>
                             <button id="clearSignature" class="button button-secondary">
                                 <i class="fas fa-eraser"></i> Clear Teacher Signature
-                            </button>
-                        </div>
-                        <div class="form-group" style="flex: 1;">
-                            <label for="principalSignaturePad"><i class="fas fa-signature" style="color: #3498db;"></i> Principal Digital Signature</label>
-                            <canvas id="principalSignaturePad" class="signature-pad" width="300" height="100"></canvas>
-                            <button id="clearPrincipalSignature" class="button button-secondary">
-                                <i class="fas fa-eraser"></i> Clear Principal Signature
                             </button>
                         </div>
                     </div>
@@ -1106,20 +1093,14 @@
                     <div class="form-group class-section">
                         <div>
                             <label for="progressClassSelect"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i> Class</label>
-                            <select id="progressClassSelect" required>
+                            <select id="progressClassSelect" required onchange="updateSections('progressClassSelect', 'progressSectionSelect')">
                                 <option value="">Select Class</option>
-                                {% for class in classes %}
-                                    <option value="{{ class }}">{{ class }}</option>
-                                {% endfor %}
                             </select>
                         </div>
                         <div>
                             <label for="progressSectionSelect"><i class="fas fa-th-large" style="color: #f39c12;"></i> Section</label>
                             <select id="progressSectionSelect">
                                 <option value="all">All Sections / No Section</option>
-                                {% for section in sections %}
-                                    <option value="{{ section }}">{{ section }}</option>
-                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -1256,9 +1237,7 @@
    
             // Signature pad elements
             const signaturePad = document.getElementById('signaturePad');
-            const principalSignaturePad = document.getElementById('principalSignaturePad');
             const clearSignatureBtn = document.getElementById('clearSignature');
-            const clearPrincipalSignatureBtn = document.getElementById('clearPrincipalSignature');
 
             // Variables
             const role = '{{ role }}';
@@ -1267,6 +1246,56 @@
             let currentSignature = null;
             let currentPrincipalSignature = null;
             let currentProgressData = null;
+
+            const classMapData = {{ class_map_json|safe|default:'{}' }};
+            const preSelectedClass = "{{ selected_class|default:'' }}";
+            const preSelectedSection = "{{ selected_section|default:'' }}";
+
+            function populateClasses() {
+                const classSelect = document.getElementById('classSelect');
+                const progressClassSelect = document.getElementById('progressClassSelect');
+                
+                if (classSelect) classSelect.innerHTML = '<option value="">Select Class</option>';
+                if (progressClassSelect) progressClassSelect.innerHTML = '<option value="">Select Class</option>';
+
+                Object.keys(classMapData).forEach(cls => {
+                    const opt1 = document.createElement('option');
+                    opt1.value = cls;
+                    opt1.textContent = cls.charAt(0).toUpperCase() + cls.slice(1);
+                    if (cls === preSelectedClass) opt1.selected = true;
+                    if (classSelect) classSelect.appendChild(opt1);
+
+                    const opt2 = document.createElement('option');
+                    opt2.value = cls;
+                    opt2.textContent = cls.charAt(0).toUpperCase() + cls.slice(1);
+                    if (cls === preSelectedClass) opt2.selected = true;
+                    if (progressClassSelect) progressClassSelect.appendChild(opt2);
+                });
+            }
+
+            function updateSections(classId, sectionId) {
+                const classSelect = document.getElementById(classId);
+                const sectionSelect = document.getElementById(sectionId);
+                if (!classSelect || !sectionSelect) return;
+
+                const selectedClass = classSelect.value;
+                sectionSelect.innerHTML = '<option value="all">All Sections / No Section</option>';
+
+                if (selectedClass && classMapData[selectedClass] && classMapData[selectedClass].length > 0) {
+                    classMapData[selectedClass].forEach(sec => {
+                        const opt = document.createElement('option');
+                        opt.value = sec;
+                        opt.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
+                        if (sec === preSelectedSection) opt.selected = true;
+                        sectionSelect.appendChild(opt);
+                    });
+                }
+            }
+
+            // Initialize dropdowns
+            populateClasses();
+            updateSections('classSelect', 'sectionSelect');
+            updateSections('progressClassSelect', 'progressSectionSelect');
 
             // Utility Functions
             function getCsrfToken() {
@@ -1348,68 +1377,7 @@
                 currentSignature = null;
             });
 
-            // Principal Signature Pad Setup
-            const ctxPrincipal = principalSignaturePad.getContext('2d');
-            let isDrawingPrincipal = false;
-            let lastXPrincipal = 0;
-            let lastYPrincipal = 0;
 
-            function getEventPosPrincipal(e) {
-                const rect = principalSignaturePad.getBoundingClientRect();
-                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-                return {
-                    x: clientX - rect.left,
-                    y: clientY - rect.top
-                };
-            }
-
-            function startDrawingPrincipal(e) {
-                e.preventDefault();
-                isDrawingPrincipal = true;
-                const pos = getEventPosPrincipal(e);
-                lastXPrincipal = pos.x;
-                lastYPrincipal = pos.y;
-            }
-
-            function drawPrincipal(e) {
-                e.preventDefault();
-                if (!isDrawingPrincipal) return;
-                const pos = getEventPosPrincipal(e);
-                ctxPrincipal.beginPath();
-                ctxPrincipal.moveTo(lastXPrincipal, lastYPrincipal);
-                ctxPrincipal.lineTo(pos.x, pos.y);
-                ctxPrincipal.strokeStyle = '#000000';
-                ctxPrincipal.lineWidth = 2;
-                ctxPrincipal.lineCap = 'round';
-                ctxPrincipal.stroke();
-                lastXPrincipal = pos.x;
-                lastYPrincipal = pos.y;
-            }
-
-            function stopDrawingPrincipal(e) {
-                e.preventDefault();
-                if (isDrawingPrincipal) {
-                    isDrawingPrincipal = false;
-                    currentPrincipalSignature = principalSignaturePad.toDataURL();
-                }
-            }
-
-            // Mouse events for principal
-            principalSignaturePad.addEventListener('mousedown', startDrawingPrincipal);
-            principalSignaturePad.addEventListener('mousemove', drawPrincipal);
-            principalSignaturePad.addEventListener('mouseup', stopDrawingPrincipal);
-            principalSignaturePad.addEventListener('mouseleave', stopDrawingPrincipal);
-
-            // Touch events for principal
-            principalSignaturePad.addEventListener('touchstart', startDrawingPrincipal);
-            principalSignaturePad.addEventListener('touchmove', drawPrincipal);
-            principalSignaturePad.addEventListener('touchend', stopDrawingPrincipal);
-
-            clearPrincipalSignatureBtn.addEventListener('click', () => {
-                ctxPrincipal.clearRect(0, 0, principalSignaturePad.width, principalSignaturePad.height);
-                currentPrincipalSignature = null;
-            });
 
             // Image loading utility with CORS handling
             function loadImageAsBase64(src) {
@@ -1571,8 +1539,6 @@
                 studentSelect.value = '';
                 ctxTeacher.clearRect(0, 0, signaturePad.width, signaturePad.height);
                 currentSignature = null;
-                ctxPrincipal.clearRect(0, 0, principalSignaturePad.width, principalSignaturePad.height);
-                currentPrincipalSignature = null;
 
                 if (role === 'subjectTeacher') {
                     const marksInput = document.getElementById('marks');
@@ -1989,7 +1955,6 @@
                 const sectionValue = sectionSelect.value;
                 const studentId = studentSelect.value;
                 const signatureData = currentSignature;
-                const principalSignatureData = currentPrincipalSignature;
                 
                 if (!classValue || !sectionValue || !studentId) {
                     showAlert('Please select class, section, and student.', 'error');
@@ -1997,10 +1962,6 @@
                 }
                 if (!signatureData) {
                     showAlert('Please provide a teacher digital signature.', 'error');
-                    return;
-                }
-                if (!principalSignatureData) {
-                    showAlert('Please provide a principal digital signature.', 'error');
                     return;
                 }
                 
@@ -2058,8 +2019,7 @@
                             studentId, 
                             class: classValue, 
                             section: sectionValue, 
-                            marks: marksData, 
-                            principalSignature: principalSignatureData 
+                            marks: marksData
                         })
                     });
            

@@ -997,30 +997,19 @@
             sectionSelect.disabled = false;
             studentSelect.disabled = true;
 
-            let classSections = [];
-            try {
-                classSections = JSON.parse('{{ class_sections|escapejs }}');
-            } catch (e) {
-                console.error('Failed to parse class_sections:', e);
-            }
+            const classMapData = {{ class_map_json|safe|default:'{}' }};
 
-            const availableSections = [...new Set(
-                classSections
-                    .filter(([cls, sec]) => cls === selectedClass && sec && sec.trim() !== '')
-                    .map(([_, sec]) => sec)
-            )].sort();
-
-            if (availableSections.length > 0) {
-                availableSections.forEach(sec => {
+            if (selectedClass && classMapData[selectedClass] && classMapData[selectedClass].length > 0) {
+                classMapData[selectedClass].forEach(sec => {
                     const opt = document.createElement('option');
                     opt.value = sec;
-                    opt.textContent = sec;
+                    opt.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
                     if (sec === '{{ selected_section|escapejs }}') opt.selected = true;
                     sectionSelect.appendChild(opt);
                 });
                 if (noSectionsMessage) noSectionsMessage.style.display = 'none';
             } else {
-                if (noSectionsMessage) noSectionsMessage.style.display = 'block';
+                if (noSectionsMessage && selectedClass) noSectionsMessage.style.display = 'block';
             }
 
             // If section was pre-selected (page reload), load students

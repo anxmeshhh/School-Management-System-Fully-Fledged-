@@ -1096,18 +1096,12 @@
                             <label for="classSelect"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i> Class</label>
                             <select id="classSelect" required>
                                 <option value="">Select Class</option>
-                                {% for class in classes %}
-                                    <option value="{{ class }}">{{ class }}</option>
-                                {% endfor %}
                             </select>
                         </div>
                         <div>
                             <label for="sectionSelect"><i class="fas fa-th-large" style="color: #f39c12;"></i> Section</label>
                             <select id="sectionSelect">
                                 <option value="all">All Sections / No Section</option>
-                                {% for section in sections %}
-                                    <option value="{{ section }}">{{ section }}</option>
-                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -1160,18 +1154,12 @@
                             <label for="progressClassSelect"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i> Class</label>
                             <select id="progressClassSelect" required>
                                 <option value="">Select Class</option>
-                                {% for class in classes %}
-                                    <option value="{{ class }}">{{ class }}</option>
-                                {% endfor %}
                             </select>
                         </div>
                         <div>
                             <label for="progressSectionSelect"><i class="fas fa-th-large" style="color: #f39c12;"></i> Section</label>
                             <select id="progressSectionSelect">
                                 <option value="all">All Sections / No Section</option>
-                                {% for section in sections %}
-                                    <option value="{{ section }}">{{ section }}</option>
-                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -1317,6 +1305,58 @@
             let currentSignature = null;
             let currentPrincipalSignature = null;
             let currentProgressData = null;
+
+            // Class Map Data
+            const classMapData = {{ class_map_json|safe|default:'{}' }};
+            const preSelectedClass = "{{ selected_class|default:'' }}";
+            const preSelectedSection = "{{ selected_section|default:'' }}";
+
+            function populateClasses() {
+                const classSelect = document.getElementById('classSelect');
+                const progressClassSelect = document.getElementById('progressClassSelect');
+                
+                if (classSelect) classSelect.innerHTML = '<option value="">Select Class</option>';
+                if (progressClassSelect) progressClassSelect.innerHTML = '<option value="">Select Class</option>';
+
+                Object.keys(classMapData).forEach(cls => {
+                    const opt1 = document.createElement('option');
+                    opt1.value = cls;
+                    opt1.textContent = cls.charAt(0).toUpperCase() + cls.slice(1);
+                    if (cls === preSelectedClass) opt1.selected = true;
+                    if (classSelect) classSelect.appendChild(opt1);
+
+                    const opt2 = document.createElement('option');
+                    opt2.value = cls;
+                    opt2.textContent = cls.charAt(0).toUpperCase() + cls.slice(1);
+                    if (cls === preSelectedClass) opt2.selected = true;
+                    if (progressClassSelect) progressClassSelect.appendChild(opt2);
+                });
+            }
+
+            function updateSections(classId, sectionId) {
+                const classSelect = document.getElementById(classId);
+                const sectionSelect = document.getElementById(sectionId);
+                if (!classSelect || !sectionSelect) return;
+
+                const selectedClass = classSelect.value;
+                sectionSelect.innerHTML = '<option value="all">All Sections / No Section</option>';
+
+                if (selectedClass && classMapData[selectedClass] && classMapData[selectedClass].length > 0) {
+                    classMapData[selectedClass].forEach(sec => {
+                        const opt = document.createElement('option');
+                        opt.value = sec;
+                        opt.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
+                        if (sec === preSelectedSection) opt.selected = true;
+                        sectionSelect.appendChild(opt);
+                    });
+                }
+            }
+
+            // Initialize dropdowns
+            populateClasses();
+            updateSections('classSelect', 'sectionSelect');
+            updateSections('progressClassSelect', 'progressSectionSelect');
+
             // Utility Functions
             function getCsrfToken() {
                 const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
@@ -1873,9 +1913,13 @@
                 progressCard.style.display = 'none';
                 currentProgressData = null;
             });
-            classSelect.addEventListener('change', updateMarkEntryForm);
+            classSelect.addEventListener('change', () => {
+                updateSections('classSelect', 'sectionSelect');
+                updateMarkEntryForm();
+            });
             sectionSelect.addEventListener('change', updateMarkEntryForm);
             progressClassSelect.addEventListener('change', () => {
+                updateSections('progressClassSelect', 'progressSectionSelect');
                 if (progressClassSelect.value && progressSectionSelect.value) {
                     fetchStudents(progressClassSelect.value, progressSectionSelect.value);
                 } else {
