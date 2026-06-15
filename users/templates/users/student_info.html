@@ -685,10 +685,10 @@
                                         <p><i class="fas fa-id-card"></i> Adm No: {{ student.admission_number }}</p>
                                         <p><i class="fas fa-hashtag"></i> Roll No: {{ student.roll_number }}</p>
                                         <div class="student-actions">
-                                            <a href="{% url 'update_student' student.admission_number %}" class="update-btn">
+                                            <a href="{% url 'update_student' student.id %}" class="update-btn">
                                                 <i class="fas fa-edit"></i> View / Update
                                             </a>
-                                            <a href="{% url 'delete_student' student.admission_number %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete {{ student.name|escapejs }}?')">
+                                            <a href="{% url 'delete_student' student.id %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete {{ student.name|escapejs }}?')">
                                                 <i class="fas fa-trash"></i> Delete
                                             </a>
                                         </div>

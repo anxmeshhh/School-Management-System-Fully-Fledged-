@@ -522,12 +522,12 @@
                 </div>
                 <div class="grid">
                     <div class="form-group required">
-                        <label><i class="fas fa-chalkboard-teacher"></i> Class Number</label>
-                        <input type="text" name="class_number" id="class_number" value="{{ class_number|default:'' }}" placeholder="Enter class number (e.g., 2)" required>
+                        <label><i class="fas fa-chalkboard-teacher"></i> Class Name</label>
+                        <input type="text" name="class_number" id="class_number" value="{{ class_number|default:'' }}" placeholder="Enter class (e.g., 2, Toddler Mellon)" required>
                     </div>
-                    <div class="form-group required">
-                        <label><i class="fas fa-layer-group"></i> Section</label>
-                        <input type="text" name="section_name" id="section_name" value="{{ section_name|default:'' }}" placeholder="Enter section (e.g., A)" required>
+                    <div class="form-group">
+                        <label><i class="fas fa-layer-group"></i> Section (Optional)</label>
+                        <input type="text" name="section_name" id="section_name" value="{{ section_name|default:'' }}" placeholder="Enter section (e.g., A)">
                     </div>
                 </div>
             </div>
@@ -581,11 +581,15 @@
             document.getElementById('classForm').addEventListener('submit', function(e) {
                 const classNum = document.getElementById('class_number').value.trim();
                 const section = document.getElementById('section_name').value.trim();
-                if (classNum && section) {
-                    document.getElementById('class_name_hidden').value = classNum + '-' + section.toUpperCase();
+                if (classNum) {
+                    if (section) {
+                        document.getElementById('class_name_hidden').value = classNum + '-' + section.toUpperCase();
+                    } else {
+                        document.getElementById('class_name_hidden').value = classNum;
+                    }
                 } else {
                     e.preventDefault();
-                    alert('Please fill both class number and section.');
+                    alert('Please fill the class name.');
                 }
             });
         });

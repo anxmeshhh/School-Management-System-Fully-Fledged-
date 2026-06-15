@@ -92,8 +92,8 @@ urlpatterns = [
     # Student Information URLs
     path('student_info/', views.student_info, name='student_info'),
     path('add_student/', views.add_student, name='add_student'),
-    path('update/<str:admission_number>/', views.update_student, name='update_student'),
-    path('delete/<str:admission_number>/', views.delete_student, name='delete_student'),
+    path('update/<int:student_id>/', views.update_student, name='update_student'),
+    path('delete/<int:student_id>/', views.delete_student, name='delete_student'),
     # Batch Management URLs
     path('view_batches/', views.view_batches, name='view_batches'),
     path('add_batch/', views.add_batch, name='add_batch'),

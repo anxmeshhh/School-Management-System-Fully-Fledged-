@@ -139,9 +139,10 @@ function loadStudents() {
                             <td>${escapeHtml(s.admission_number)}</td>
                             <td>
                                 <button onclick="sendWA(
+                                    '${encodeURIComponent(s.id)}',
                                     '${encodeURIComponent(s.name)}',
-                                    '${encodeURIComponent(s.admission_number)}',
-                                    '${encodeURIComponent(s.contact || "")}',
+                                    '${encodeURIComponent(s.admission_number || '')}',
+                                    '${encodeURIComponent(s.contact || '')}',
                                     this
                                 )">
                                     Send WhatsApp
@@ -160,7 +161,8 @@ function loadStudents() {
         });
 }
 
-function sendWA(nameEnc, admissionEnc, contactEnc, btn) {
+function sendWA(idEnc, nameEnc, admissionEnc, contactEnc, btn) {
+    const student_id = decodeURIComponent(idEnc);
     const name = decodeURIComponent(nameEnc);
     const admission = decodeURIComponent(admissionEnc);
     const contact = decodeURIComponent(contactEnc);
@@ -186,7 +188,8 @@ function sendWA(nameEnc, admissionEnc, contactEnc, btn) {
         body: new URLSearchParams({
             mobile: mobile,
             name: name,
-            admission_number: admission
+            admission_number: admission,
+            student_id: student_id
         })
     })
     .then(res => res.json())

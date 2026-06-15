@@ -545,6 +545,7 @@ def generate_id_card(request):
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT 
+                sp1.id,
                 sp1.name, 
                 sp1.class, 
                 sp1.admission_number, 
@@ -561,7 +562,7 @@ def generate_id_card(request):
     if not student_data:
         return render(request, "users/profile.html", {"error": "Student data not found."})
 
-    name, student_class, admission_number, address = student_data
+    student_id, name, student_class, admission_number, address = student_data
 
     # Fetch profile picture
     profile_picture = None
@@ -645,7 +646,7 @@ def generate_id_card(request):
               addr_text, font=detail_font, fill="black")
 
     # Generate QR code
-    qr = qrcode.make(f"http://yourdomain.com/id_card/{admission_number or 'unknown'}/")  # Fallback for None
+    qr = qrcode.make(f"http://yourdomain.com/id_card/{student_id}/")  # Fallback for None
     qr_buffer = BytesIO()
     qr.save(qr_buffer)
     qr_buffer.seek(0)
@@ -696,7 +697,7 @@ def generate_id_card(request):
 
     # Return PDF response
     response = HttpResponse(pdf_buffer, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="ID_Card_{admission_number or "unknown"}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="ID_Card_{student_id}.pdf"'
     return response
 
 
@@ -719,6 +720,7 @@ def qr_page(request):
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT 
+                sp1.id,
                 sp1.name, 
                 sp1.class, 
                 sp1.admission_number, 
@@ -736,12 +738,12 @@ def qr_page(request):
         return render(request, "users/profile.html", {"error": "Student data not found."})
 
     # Extract the student data
-    name, student_class, admission_number, address = student_data
+    student_id, name, student_class, admission_number, address = student_data
 
     # Generate QR code for the ID card URL
     qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L,
                        box_size=10, border=4)
-    qr.add_data(f"http://yourdomain.com/id_card/{admission_number}/")  # Replace with actual URL
+    qr.add_data(f"http://yourdomain.com/id_card/{student_id}/")  # Replace with actual URL
     qr.make(fit=True)
 
     # Create an in-memory image for the QR code
@@ -811,6 +813,7 @@ def bulk_id_card(request):
         with connection.cursor() as cursor:
             cursor.execute("""
     SELECT
+        sp1.id,
         sp1.user_id,
         sp1.name,
         sp1.class,
@@ -846,7 +849,7 @@ def bulk_id_card(request):
 
         for student_data in students_data:
             (
-                user_id, name, student_class, admission_number, roll_number,
+                student_id, user_id, name, student_class, admission_number, roll_number,
                 address, father_name, father_contact, father_email,
                 mother_name, mother_contact, mother_email, dob
             ) = student_data
@@ -936,7 +939,7 @@ def bulk_id_card(request):
             # If you want to keep a short address on front, you can add it back here
 
             # Generate QR code
-            qr = qrcode.make(f"http://yourdomain.com/id_card/{admission_number or 'unknown'}/")
+            qr = qrcode.make(f"http://yourdomain.com/id_card/{student_id}/")
             qr_buffer = BytesIO()
             qr.save(qr_buffer)
             qr_buffer.seek(0)
@@ -1028,7 +1031,7 @@ def bulk_id_card(request):
             current_y += line_spacing + 10
 
             
-            qr = qrcode.make(f"http://yourdomain.com/id_card/{admission_number or 'unknown'}/")
+            qr = qrcode.make(f"http://yourdomain.com/id_card/{student_id}/")
             qr_buffer_back = BytesIO()
             qr.save(qr_buffer_back)
             qr_buffer_back.seek(0)
@@ -1649,7 +1652,7 @@ def student_leave(request):
             }
 
 
-            required_fields = ["student_name", "reg_number", "class_number", "leave_reason", 
+            required_fields = ["student_name", "class_number", "leave_reason", 
                              "leave_start_date", "leave_end_date", "leave_duration"]
             missing_fields = [field for field in required_fields if not form_data[field]]
             if missing_fields:
@@ -3151,14 +3154,26 @@ def add_class(request):
         class_name = request.POST.get('class_name')
         if class_name:
             try:
-                class_part, section = class_name.split('-')
+                if '-' in class_name:
+                    class_part, section = class_name.split('-', 1)
+                    class_part = class_part.strip()
+                    section = section.strip().upper()
+                else:
+                    class_part = class_name.strip()
+                    section = None
                 
                 with connection.cursor() as cursor:
                     # Check if this exact class-section combo already exists for this admin
-                    cursor.execute("""
-                        SELECT COUNT(*) FROM admin_student_classes
-                        WHERE admin_id = %s AND class = %s AND section = %s
-                    """, [admin_id, class_part, section])
+                    if section is None:
+                        cursor.execute("""
+                            SELECT COUNT(*) FROM admin_student_classes
+                            WHERE admin_id = %s AND class = %s AND (section IS NULL OR section = '')
+                        """, [admin_id, class_part])
+                    else:
+                        cursor.execute("""
+                            SELECT COUNT(*) FROM admin_student_classes
+                            WHERE admin_id = %s AND class = %s AND section = %s
+                        """, [admin_id, class_part, section])
                     exists = cursor.fetchone()[0]
 
                     if exists:
@@ -3207,13 +3222,26 @@ def update_class(request, class_id):
         new_class_name = request.POST.get('class_name')
         if new_class_name:
             try:
-                new_class, new_section = new_class_name.split('-')
+                if '-' in new_class_name:
+                    new_class, new_section = new_class_name.split('-', 1)
+                    new_class = new_class.strip()
+                    new_section = new_section.strip().upper()
+                else:
+                    new_class = new_class_name.strip()
+                    new_section = None
+                    
                 with connection.cursor() as cursor:
                     # Check if the new class-section combo already exists for this admin
-                    cursor.execute("""
-                        SELECT COUNT(*) FROM admin_student_classes
-                        WHERE admin_id = %s AND class = %s AND section = %s AND id != %s
-                    """, [admin_id, new_class, new_section, class_id])
+                    if new_section is None:
+                        cursor.execute("""
+                            SELECT COUNT(*) FROM admin_student_classes
+                            WHERE admin_id = %s AND class = %s AND (section IS NULL OR section = '') AND id != %s
+                        """, [admin_id, new_class, class_id])
+                    else:
+                        cursor.execute("""
+                            SELECT COUNT(*) FROM admin_student_classes
+                            WHERE admin_id = %s AND class = %s AND section = %s AND id != %s
+                        """, [admin_id, new_class, new_section, class_id])
                     exists = cursor.fetchone()[0]
 
                     if exists:
@@ -3422,7 +3450,8 @@ def student_info(request):
     # Organize students by class-section
     class_section_groups = {}
     for student in students:
-        class_section = f"{student[3]}-{student[4]}"
+        section_str = f"-{student[4]}" if student[4] else ""
+        class_section = f"{student[3]}{section_str}"
         if class_section not in class_section_groups:
             class_section_groups[class_section] = {
                 'count': 0,
@@ -3439,19 +3468,19 @@ def student_info(request):
         class_section_groups[class_section]['students'].append({
             'id': student[0],
             'name': student[1],
-            'admission_number': student[2],
+            'admission_number': student[2] if student[2] and str(student[2]).lower() != 'none' else 'Not-Provided',
             'class': student[3],
             'section': student[4],
-            'roll_number': student[5],
-            'gender': student[6],
+            'roll_number': student[5] if student[5] and str(student[5]).lower() != 'none' else 'Not-Provided',
+            'gender': student[6] if student[6] and str(student[6]).lower() != 'none' else 'Not Specified',
             'image_path': student[7]  # Add image path to student data
         })
 
     context = {
         'class_section_groups': class_section_groups,
         'total_students': total_students,
-        'class_options': sorted(list(set([cs[0] for cs in class_sections]))) + ['All'],
-        'section_options': sorted(list(set([cs[1] for cs in class_sections]))) + ['All'],
+        'class_options': sorted(list(set([cs[0] for cs in class_sections if cs[0] is not None]))) + ['All'],
+        'section_options': sorted(list(set([cs[1] for cs in class_sections if cs[1] is not None]))) + ['All'],
         'gender_options': ['All', 'Male', 'Female'],
         'selected_class': class_filter,
         'selected_section': section_filter,
@@ -3481,11 +3510,14 @@ def add_student(request):
             emis = request.POST.get('emis', '').strip()
             email = request.POST.get('email', '').strip()
 
+            # Clean optional fields
+            if admission_number.lower() in ['none', 'n/a', 'not-provided', '']:
+                admission_number = None
+
             # Validate required fields
-            if not all([name, admission_number, class_section, roll_number, emis, email]):
+            if not all([name, class_section, roll_number, emis, email]):
                 missing = [field for field, value in [
                     ('name', name),
-                    ('admission_number', admission_number),
                     ('class_section', class_section),
                     ('roll_number', roll_number),
                     ('emis', emis),
@@ -3504,41 +3536,40 @@ def add_student(request):
                     'sports_quota_options': ['yes', 'no']
                 })
 
-            # Split class and section
-            try:
-                class_part, section = class_section.split('-')
-            except ValueError:
-                messages.error(request, 'Class-Section must be in format "Class-Section" (e.g., 2-A)')
-                return render(request, 'users/add_student.html', {
-                    'title': 'Add New Student',
-                    **request.POST.dict(),
-                    'gender_options': ['Male', 'Female', 'Other'],
-                    'community_options': ['General', 'OBC', 'SC', 'ST', 'Other'],
-                    'blood_group_options': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
-                    'teacher_ward_options': ['yes', 'no'],
-                    'rte_options': ['yes', 'no'],
-                    'sports_quota_options': ['yes', 'no']
-                })
+            # Split class and section gracefully
+            if '-' in class_section:
+                class_part, section = class_section.split('-', 1)
+                class_part = class_part.strip()
+                section = section.strip()
+            else:
+                class_part = class_section.strip()
+                section = None
 
             with connection.cursor() as cursor:
-                # Check if admission number already exists
-                cursor.execute("SELECT admission_number FROM student_page1 WHERE admission_number = %s", [admission_number])
-                if cursor.fetchone():
-                    messages.error(request, f'Admission number {admission_number} already exists.')
-                    return render(request, 'users/add_student.html', {
-                        'title': 'Add New Student',
-                        **request.POST.dict(),
-                        'gender_options': ['Male', 'Female', 'Other'],
-                        'community_options': ['General', 'OBC', 'SC', 'ST', 'Other'],
-                        'blood_group_options': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
-                        'teacher_ward_options': ['yes', 'no'],
-                        'rte_options': ['yes', 'no'],
-                        'sports_quota_options': ['yes', 'no']
-                    })
+                # Check if admission number already exists (only if provided)
+                if admission_number:
+                    cursor.execute("SELECT admission_number FROM student_page1 WHERE admission_number = %s", [admission_number])
+                    if cursor.fetchone():
+                        messages.error(request, f'Admission number {admission_number} already exists.')
+                        return render(request, 'users/add_student.html', {
+                            'title': 'Add New Student',
+                            **request.POST.dict(),
+                            'gender_options': ['Male', 'Female', 'Other'],
+                            'community_options': ['General', 'OBC', 'SC', 'ST', 'Other'],
+                            'blood_group_options': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
+                            'teacher_ward_options': ['yes', 'no'],
+                            'rte_options': ['yes', 'no'],
+                            'sports_quota_options': ['yes', 'no']
+                        })
 
                 # Create a user account
-                username = f"student_{admission_number}"
-                password = admission_number  # Default password (Note: Not hashed for simplicity as per original code)
+                import uuid
+                if admission_number:
+                    username = f"student_{admission_number}"
+                    password = admission_number
+                else:
+                    username = f"student_{uuid.uuid4().hex[:8]}"
+                    password = "password123"
 
                 cursor.execute("""
                     INSERT INTO users (username, email, password)
@@ -3701,7 +3732,7 @@ from django.db import connection
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-def update_student(request, admission_number):
+def update_student(request, student_id):
     if not request.session.get('admin_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
@@ -3733,13 +3764,15 @@ def update_student(request, admission_number):
                 LEFT JOIN student_page2 sp2 ON sp1.user_id = sp2.user_id
                 LEFT JOIN student_page3 sp3 ON sp1.user_id = sp3.user_id
                 LEFT JOIN student_page4 sp4 ON sp1.user_id = sp4.user_id
-                WHERE sp1.admission_number = %s
-            """, [admission_number])
+                WHERE sp1.id = %s
+            """, [student_id])
             student_data = cursor.fetchone()
 
             if not student_data:
                 messages.error(request, 'Student not found.')
                 return redirect('student_info')
+            
+            admission_number = student_data[3]
 
     except Exception as e:
         messages.error(request, f'Error fetching student data: {str(e)}')
@@ -4348,7 +4381,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.db import IntegrityError
 
-def delete_student(request, admission_number):
+def delete_student(request, student_id):
     if not request.session.get('admin_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
@@ -4360,8 +4393,8 @@ def delete_student(request, admission_number):
                 cursor.execute("""
                     SELECT user_id, name 
                     FROM student_page1 
-                    WHERE admission_number = %s
-                """, [admission_number])
+                    WHERE id = %s
+                """, [student_id])
                 student_info = cursor.fetchone()
                 
                 if not student_info:
@@ -4392,7 +4425,7 @@ def delete_student(request, admission_number):
                 cursor.execute("DELETE FROM student_leave_requests WHERE user_id = %s", [user_id])
                 
                 # Delete from student_page1
-                cursor.execute("DELETE FROM student_page1 WHERE admission_number = %s", [admission_number])
+                cursor.execute("DELETE FROM student_page1 WHERE id = %s", [student_id])
                 
                 # Delete from users table
                 cursor.execute("DELETE FROM users WHERE id = %s", [user_id])
@@ -4998,16 +5031,26 @@ def add_class(request):
         
         if class_name:
             try:
-                class_part, section = class_name.split('-')
-                class_part = class_part.strip()
-                section = section.strip().upper()
+                if '-' in class_name:
+                    class_part, section = class_name.split('-', 1)
+                    class_part = class_part.strip()
+                    section = section.strip().upper()
+                else:
+                    class_part = class_name.strip()
+                    section = None
                 
                 with connection.cursor() as cursor:
                     # Check if this exact class-section combo already exists for this admin
-                    cursor.execute("""
-                        SELECT COUNT(*) FROM admin_student_classes
-                        WHERE admin_id = %s AND class = %s AND section = %s
-                    """, [admin_id, class_part, section])
+                    if section is None:
+                        cursor.execute("""
+                            SELECT COUNT(*) FROM admin_student_classes
+                            WHERE admin_id = %s AND class = %s AND (section IS NULL OR section = '')
+                        """, [admin_id, class_part])
+                    else:
+                        cursor.execute("""
+                            SELECT COUNT(*) FROM admin_student_classes
+                            WHERE admin_id = %s AND class = %s AND section = %s
+                        """, [admin_id, class_part, section])
                     exists = cursor.fetchone()[0]
 
                     if exists:
@@ -5054,13 +5097,26 @@ def update_class(request, class_id):
         new_class_name = request.POST.get('class_name')
         if new_class_name:
             try:
-                new_class, new_section = new_class_name.split('-')
+                if '-' in new_class_name:
+                    new_class, new_section = new_class_name.split('-', 1)
+                    new_class = new_class.strip()
+                    new_section = new_section.strip().upper()
+                else:
+                    new_class = new_class_name.strip()
+                    new_section = None
+                    
                 with connection.cursor() as cursor:
                     # Check if the new class-section combo already exists for this admin
-                    cursor.execute("""
-                        SELECT COUNT(*) FROM admin_student_classes
-                        WHERE admin_id = %s AND class = %s AND section = %s AND id != %s
-                    """, [admin_id, new_class, new_section, class_id])
+                    if new_section is None:
+                        cursor.execute("""
+                            SELECT COUNT(*) FROM admin_student_classes
+                            WHERE admin_id = %s AND class = %s AND (section IS NULL OR section = '') AND id != %s
+                        """, [admin_id, new_class, class_id])
+                    else:
+                        cursor.execute("""
+                            SELECT COUNT(*) FROM admin_student_classes
+                            WHERE admin_id = %s AND class = %s AND section = %s AND id != %s
+                        """, [admin_id, new_class, new_section, class_id])
                     exists = cursor.fetchone()[0]
 
                     if exists:
@@ -5188,21 +5244,14 @@ def bulk_upload(request):
                     fs.delete(filename)
                     return redirect('bulk_upload')
 
-                # Validate admission_number
-                if df['admission_number'].isna().any():
-                    messages.error(request, 'The admission_number column contains null or missing values.')
-                    fs.delete(filename)
-                    return redirect('bulk_upload')
+                # Validate admission_number (now optional)
+                # Convert to string, replacing literal 'nan', 'none' with None
+                df['admission_number'] = df['admission_number'].apply(
+                    lambda x: str(x).strip() if pd.notna(x) and str(x).strip().lower() not in ['nan', 'none', 'n/a', 'not-provided', ''] else None
+                )
 
-                try:
-                    df['admission_number'] = df['admission_number'].astype(str).str.strip()
-                except Exception as e:
-                    messages.error(request, f'Invalid data in admission_number column: {e}')
-                    fs.delete(filename)
-                    return redirect('bulk_upload')
-
-                if df['admission_number'].duplicated().any():
-                    messages.error(request, 'The admission_number column contains duplicate values.')
+                if df['admission_number'].dropna().duplicated().any():
+                    messages.error(request, 'The admission_number column contains duplicate values for non-empty records.')
                     fs.delete(filename)
                     return redirect('bulk_upload')
 
@@ -5277,23 +5326,14 @@ def bulk_upload(request):
                     fs.delete(filename)
                     return redirect('bulk_upload')
 
-                # Validate admission_number
-                if df['admission_number'].isna().any():
-                    messages.error(request, 'The admission_number column contains null or missing values.')
-                    fs.delete(filename)
-                    return redirect('bulk_upload')
+                # Validate admission_number (now optional)
+                # Convert to string, replacing literal 'nan', 'none' with None
+                df['admission_number'] = df['admission_number'].apply(
+                    lambda x: str(x).strip() if pd.notna(x) and str(x).strip().lower() not in ['nan', 'none', 'n/a', 'not-provided', ''] else None
+                )
 
-                try:
-                    # Convert all admission numbers to strings and strip extra spaces
-                    df['admission_number'] = df['admission_number'].astype(str).str.strip()
-                except Exception as e:
-                    messages.error(request, f'Invalid data in admission_number column: {e}')
-                    fs.delete(filename)
-                    return redirect('bulk_upload')
-
-
-                if df['admission_number'].duplicated().any():
-                    messages.error(request, 'The admission_number column contains duplicate values.')
+                if df['admission_number'].dropna().duplicated().any():
+                    messages.error(request, 'The admission_number column contains duplicate values for non-empty records.')
                     fs.delete(filename)
                     return redirect('bulk_upload')
 
@@ -6400,18 +6440,21 @@ def mark_single_attendance(request):
         status = request.POST.get('status')
 
         # Validate all required fields
-        if not all([selected_class, selected_section, selected_date, student_name, status]):
+        if not all([selected_class, selected_date, student_name, status]):
             return JsonResponse({
                 'success': False, 
                 'message': 'Missing required fields'
             }, status=400)
+
+        if not selected_section or selected_section.lower() in ['none', 'n/a', 'not-provided']:
+            selected_section = None
 
         with connection.cursor() as cursor:
             # Get student info
             cursor.execute("""
                 SELECT user_id, name, admission_number, section
                 FROM student_page1 
-                WHERE name = %s AND class = %s AND section = %s
+                WHERE name = %s AND class = %s AND section <=> %s
             """, [student_name, selected_class, selected_section])
             
             student_info = cursor.fetchone()
@@ -6428,7 +6471,7 @@ def mark_single_attendance(request):
             cursor.execute("""
                 SELECT id, status 
                 FROM attendance 
-                WHERE student_id = %s AND class = %s AND section = %s AND date = %s
+                WHERE student_id = %s AND class = %s AND section <=> %s AND date = %s
             """, [student_id, selected_class, selected_section, selected_date])
             
             existing = cursor.fetchone()
@@ -6455,13 +6498,13 @@ def mark_single_attendance(request):
                 
                 cursor.execute("""
                     SELECT COUNT(*) FROM student_page1 
-                    WHERE class = %s AND section = %s
+                    WHERE class = %s AND section <=> %s
                 """, [selected_class, selected_section])
                 total_students = cursor.fetchone()[0]
                 
                 cursor.execute("""
                     SELECT COUNT(*) FROM attendance 
-                    WHERE class = %s AND section = %s AND date = %s
+                    WHERE class = %s AND section <=> %s AND date = %s
                 """, [selected_class, selected_section, selected_date])
                 marked_students = cursor.fetchone()[0]
                 
@@ -6505,8 +6548,11 @@ def get_attendance(request):
     section = request.GET.get('section', '')
     date = request.GET.get('date', '')
     
-    if not class_name or not section or not date:
+    if not class_name or not date:
         return JsonResponse({'error': 'Missing parameters'}, status=400)
+    
+    if not section or section.lower() in ['none', 'n/a', 'not-provided']:
+        section = None
     
     attendance_dict = {}
     
@@ -6515,7 +6561,7 @@ def get_attendance(request):
             SELECT s.name, a.status
             FROM attendance a
             JOIN student_page1 s ON a.student_id = s.user_id
-            WHERE a.class = %s AND a.section = %s AND a.date = %s
+            WHERE a.class = %s AND a.section <=> %s AND a.date = %s
         """, [class_name, section, date])
         
         for row in cursor.fetchall():
@@ -6534,14 +6580,17 @@ def get_students_by_class_section(request):
     class_name = request.GET.get('class', '')
     section = request.GET.get('section', '')
     
-    if not class_name or not section:
+    if not class_name:
         return JsonResponse({'students': []})
+
+    if not section or section.lower() in ['none', 'n/a', 'not-provided']:
+        section = None
     
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT name 
             FROM student_page1 
-            WHERE class = %s AND section = %s 
+            WHERE class = %s AND section <=> %s 
             ORDER BY name
         """, [class_name, section])
         
@@ -6565,11 +6614,14 @@ def submit_attendance_batch(request):
         selected_section = request.POST.get('section')
         selected_date = request.POST.get('date')
 
-        if not all([selected_class, selected_section, selected_date]):
+        if not all([selected_class, selected_date]):
             return JsonResponse({
                 'success': False, 
                 'message': 'Missing required fields'
             }, status=400)
+
+        if not selected_section or selected_section.lower() in ['none', 'n/a', 'not-provided']:
+            selected_section = None
 
         with connection.cursor() as cursor:
             # Get counts
@@ -6720,6 +6772,8 @@ def admin_mark_attendance(request):
         selected_class = request.POST.get('class')
         selected_section = request.POST.get('section')
         selected_date = request.POST.get('date')
+        if not selected_section or selected_section.lower() in ['none', 'n/a', 'not-provided']:
+            selected_section = None
         with connection.cursor() as cursor:
             for key, value in request.POST.items():
                 if key.startswith('student_'):
@@ -6743,7 +6797,7 @@ def admin_mark_attendance(request):
                         cursor.execute(
                             """
                             SELECT id FROM admin_attendance 
-                            WHERE student_id = %s AND class = %s AND section = %s AND date = %s
+                            WHERE student_id = %s AND class = %s AND section <=> %s AND date = %s
                             """,
                             [student_id, selected_class, selected_section, selected_date]
                         )
@@ -6753,14 +6807,14 @@ def admin_mark_attendance(request):
                                 """
                                 UPDATE admin_attendance 
                                 SET status = %s, name = %s, admission_number = %s, section = %s
-                                WHERE student_id = %s AND class = %s AND section = %s AND date = %s
+                                WHERE student_id = %s AND class = %s AND section <=> %s AND date = %s
                                 """,
                                 [status, name, admission_number, section, student_id, selected_class, selected_section, selected_date]
                             )
                             cursor.execute(
                                 """
                                 SELECT id FROM attendance 
-                                WHERE student_id = %s AND class = %s AND section = %s AND date = %s
+                                WHERE student_id = %s AND class = %s AND section <=> %s AND date = %s
                                 """,
                                 [student_id, selected_class, selected_section, selected_date]
                             )
@@ -6770,7 +6824,7 @@ def admin_mark_attendance(request):
                                     """
                                     UPDATE attendance 
                                     SET status = %s
-                                    WHERE student_id = %s AND class = %s AND section = %s AND date = %s
+                                    WHERE student_id = %s AND class = %s AND section <=> %s AND date = %s
                                     """,
                                     [status, student_id, selected_class, selected_section, selected_date]
                                 )
@@ -6814,9 +6868,12 @@ def admin_generate_attendance_pdf(request):
     selected_date = request.GET.get('date')
 
     # Input validation
-    if not all([selected_class, selected_section, selected_date]):
-        messages.error(request, 'Please select class, section, and date to generate the PDF.')
+    if not all([selected_class, selected_date]):
+        messages.error(request, 'Please select class and date to generate the PDF.')
         return redirect('admin_attendance_portal')
+    
+    if not selected_section or selected_section.lower() in ['none', 'n/a', 'not-provided']:
+        selected_section = None
 
     # Debugging logs
     print(f"Generating PDF - Class: {selected_class}, Section: {selected_section}, Date: {selected_date}")
@@ -6827,8 +6884,8 @@ def admin_generate_attendance_pdf(request):
             SELECT s.user_id, s.name, s.admission_number, s.section, a.status 
             FROM student_page1 s
             LEFT JOIN admin_attendance a ON s.user_id = a.student_id 
-                AND a.class = %s AND a.section = %s AND a.date = %s
-            WHERE s.class = %s AND COALESCE(s.section, '') = COALESCE(%s, '')
+                AND a.class = %s AND a.section <=> %s AND a.date = %s
+            WHERE s.class = %s AND s.section <=> %s
             ORDER BY s.name, s.admission_number
             """,
             [selected_class, selected_section, selected_date, selected_class, selected_section]
@@ -6993,9 +7050,18 @@ def parent_signup(request):
         section = request.POST.get('section')
         roll_number = request.POST.get('roll_number')
 
-        # Validate inputs
-        if not all([admission_number, contact, email, class_grade, section, roll_number]):
-            messages.error(request, 'All fields are required')
+        # Clean optional section
+        if not section or section.lower() in ['none', 'n/a', 'not-provided']:
+            section = None
+
+        # Validate required inputs (section is optional)
+        if not all([admission_number, contact, email, class_grade, roll_number]):
+            messages.error(request, 'All fields except Section are required')
+            return render(request, 'users/parent_signup.html')
+
+        # Strictly validate admission number
+        if admission_number.lower() in ['none', 'n/a', 'not-provided']:
+            messages.error(request, 'A valid Admission Number is required to sign up. Contact Administrator if yours is missing.')
             return render(request, 'users/parent_signup.html')
 
         # Validate email format
@@ -7071,8 +7137,12 @@ from django.db import connection
 
 def parent_login(request):
     if request.method == "POST":
-        admission_number = request.POST.get("username")
-        contact = request.POST.get("password")
+        admission_number = request.POST.get("username", "").strip()
+        contact = request.POST.get("password", "").strip()
+
+        if not admission_number or admission_number.lower() in ['none', 'n/a', 'not-provided']:
+            messages.error(request, "Invalid Admission Number. Contact Administration.")
+            return redirect('parent_login')
 
         # Check user credentials in MySQL
         with connection.cursor() as cursor:
@@ -10890,11 +10960,11 @@ def scan_qr_code(request):
             data = json.loads(request.body)
             qr_url = data.get('url', '')
             
-            # Extract admission number from URL
-            admission_number = qr_url.split('/')[-2] if qr_url.endswith('/') else qr_url.split('/')[-1]
+            # Extract student_id from URL
+            student_id = qr_url.split('/')[-2] if qr_url.endswith('/') else qr_url.split('/')[-1]
             
             # Remove any query parameters or fragments
-            admission_number = admission_number.split('?')[0].split('#')[0]
+            student_id = student_id.split('?')[0].split('#')[0]
 
             with connection.cursor() as cursor:
                 # Fetch student data with better error handling
@@ -10929,13 +10999,13 @@ def scan_qr_code(request):
                     LEFT JOIN 
                         student_page4 sp4 ON sp1.user_id = sp4.user_id
                     WHERE 
-                        sp1.admission_number = %s
-                """, [admission_number])
+                        sp1.id = %s
+                """, [student_id])
                 
                 student_data = cursor.fetchone()
 
                 if not student_data:
-                    return JsonResponse({"error": f"Student not found with admission number: {admission_number}"}, status=404)
+                    return JsonResponse({"error": f"Student not found with ID: {student_id}"}, status=404)
 
                 user_id = student_data[0]
                 profile_picture = None
@@ -12170,7 +12240,7 @@ from django.http import JsonResponse, FileResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-def generate_student_pdf(admission_number, name):
+def generate_student_pdf(student_id, admission_number, name):
     """
     Generates a student PDF on demand using ReportLab.
     Safe for Windows & Linux.
@@ -12179,7 +12249,8 @@ def generate_student_pdf(admission_number, name):
     pdf_dir = os.path.join(settings.MEDIA_ROOT, "student_pdfs")
     os.makedirs(pdf_dir, exist_ok=True)
 
-    file_path = os.path.join(pdf_dir, f"{admission_number}.pdf")
+    # Use student_id to ensure a unique, valid filename even if admission_number is missing
+    file_path = os.path.join(pdf_dir, f"{student_id}_{name.replace(' ', '_')}.pdf")
 
     c = canvas.Canvas(file_path)
     c.setFont("Helvetica-Bold", 16)
@@ -12200,7 +12271,7 @@ def generate_student_pdf(admission_number, name):
 def admin_send_student_pdf(request):
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT user_id, name, admission_number
+            SELECT id, user_id, name, admission_number
             FROM student_page1
             ORDER BY name
         """)
@@ -12221,6 +12292,7 @@ def fetch_students_by_class_section(request):
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT 
+                s1.id,
                 s1.name,
                 s1.admission_number,
                 s3.contact
@@ -12234,9 +12306,10 @@ def fetch_students_by_class_section(request):
 
     students = [
         {
-            "name": r[0],
-            "admission_number": r[1],
-            "contact": r[2] or ""
+            "id": r[0],
+            "name": r[1],
+            "admission_number": r[2],
+            "contact": r[3] or ""
         }
         for r in rows
     ]
@@ -12250,15 +12323,16 @@ def generate_whatsapp_link(request):
         mobile = request.POST.get("mobile", "").strip()
         name = request.POST.get("name", "").strip()
         admission_number = request.POST.get("admission_number", "").strip()
+        student_id = request.POST.get("student_id", "").strip()
 
-        if not mobile or not name or not admission_number:
+        if not mobile or not name or not student_id:
             return JsonResponse({"error": "Missing required fields"}, status=400)
 
         # 🔥 Generate PDF on demand
-        generate_student_pdf(admission_number, name)
+        generate_student_pdf(student_id, admission_number, name)
 
         pdf_url = request.build_absolute_uri(
-            f"/media/student_pdfs/{admission_number}.pdf"
+            f"/media/student_pdfs/{student_id}_{name.replace(' ', '_')}.pdf"
         )
 
         message = (
