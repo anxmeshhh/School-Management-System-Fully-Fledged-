@@ -1164,6 +1164,10 @@ def admin_change_credentials(request):
         if new_password != confirm_password:
             return HttpResponse("Error: Passwords do not match")
 
+        import re
+        if len(new_password) < 8 or not re.search(r'[A-Za-z]', new_password) or not re.search(r'\d', new_password) or not re.search(r'[^A-Za-z0-9]', new_password):
+            return HttpResponse("Error: Password must be at least 8 characters long and contain alphabets, numbers, and symbols")
+
         with connection.cursor() as cursor:
             # Check if current email exists
             cursor.execute("SELECT id FROM admins WHERE email = %s", [current_email])
@@ -1208,8 +1212,9 @@ def admin_signup(request):
             return render(request, 'users/admin_signup.html')
 
         # Basic validation (add more as needed, e.g., email format)
-        if len(password) < 6:
-            messages.error(request, "Password must be at least 6 characters.")
+        import re
+        if len(password) < 8 or not re.search(r'[A-Za-z]', password) or not re.search(r'\d', password) or not re.search(r'[^A-Za-z0-9]', password):
+            messages.error(request, "Password must be at least 8 characters long and contain alphabets, numbers, and symbols.")
             return render(request, 'users/admin_signup.html')
 
         try:
