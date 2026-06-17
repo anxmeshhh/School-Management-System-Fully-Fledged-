@@ -550,7 +550,10 @@
                         </div>
                     </div>
                     <div class="form-group required" data-field="class">
-                        <label>Class</label>
+                        <label>
+                            Class 
+                            <small style="float: right; margin-left: 10px;"><a href="{% url 'view_edit_class' %}" style="color: var(--primary-color); text-decoration: none;"><i class="fas fa-plus-circle"></i> Class missing? Create it here</a></small>
+                        </label>
                         <select name="class" id="id_class" required onchange="updateSections()">
                             <option value="">Select Class</option>
                             {% for c in classes %}
