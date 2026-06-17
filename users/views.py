@@ -3540,8 +3540,8 @@ def student_info(request):
     with connection.cursor() as cursor:
         # Get all unique class-section combinations
         cursor.execute("""
-            SELECT DISTINCT class, section 
-            FROM student_page1 
+            SELECT class, section 
+            FROM admin_student_classes 
             ORDER BY class, section
         """)
         class_sections = cursor.fetchall()
@@ -3612,7 +3612,32 @@ def student_info(request):
 
     # Organize students by class-section
     class_section_groups = {}
+    
+    # Pre-populate all available classes from admin_student_classes that match filters
+    for c, s in class_sections:
+        if not c: continue
+        # Apply filters
+        if class_filter != 'All' and str(c) != str(class_filter): continue
+        if section_filter != 'All':
+            # 'All' logic for section: if filter is 'All Sections / No Section' or something, but we use 'All'
+            # If section filter is specific, match it
+            # Wait, the UI sends 'All' if not filtering, or it sends the exact section
+            # For section, 'All' means no filter. What if they want specifically 'No Section'?
+            # Actually, standard filter just passes 'All'
+            if str(s) != str(section_filter): continue
+
+        section_str = f"-{s}" if s else ""
+        class_section = f"{c}{section_str}"
+        if class_section not in class_section_groups:
+            class_section_groups[class_section] = {
+                'count': 0,
+                'male_count': 0,
+                'female_count': 0,
+                'students': []
+            }
+
     for student in students:
+        # Extra safety check to prevent students from non-admin_student_classes from crashing or appearing unexpectedly
         section_str = f"-{student[4]}" if student[4] else ""
         class_section = f"{student[3]}{section_str}"
         if class_section not in class_section_groups:
