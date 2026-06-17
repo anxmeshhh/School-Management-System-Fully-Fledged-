@@ -3361,8 +3361,8 @@ def update_class(request, class_id):
         cursor.execute("""
             SELECT id, class, section 
             FROM admin_student_classes 
-            WHERE id = %s AND admin_id = %s
-        """, [class_id, admin_id])
+            WHERE id = %s
+        """, [class_id])
         class_data = cursor.fetchone()
         if not class_data:
             messages.error(request, 'Class not found or you don\'t have permission.')
@@ -3428,8 +3428,8 @@ def delete_class(request, class_id):
             # Delete the record from admin_student_classes
             cursor.execute("""
                 DELETE FROM admin_student_classes 
-                WHERE id = %s AND admin_id = %s
-            """, [class_id, admin_id])
+                WHERE id = %s
+            """, [class_id])
         messages.success(request, 'Class deleted successfully.')
         # ── Notification: Class deleted ──
         notify_all_admins('class', 'Class Deleted', 'A class has been deleted.', '/view_edit_class/')
@@ -5330,8 +5330,8 @@ def update_class(request, class_id):
         cursor.execute("""
             SELECT id, class, section 
             FROM admin_student_classes 
-            WHERE id = %s AND admin_id = %s
-        """, [class_id, admin_id])
+            WHERE id = %s
+        """, [class_id])
         class_data = cursor.fetchone()
         if not class_data:
             messages.error(request, 'Class not found or you don\'t have permission.')
@@ -5397,8 +5397,8 @@ def delete_class(request, class_id):
             # Delete the record from admin_student_classes
             cursor.execute("""
                 DELETE FROM admin_student_classes 
-                WHERE id = %s AND admin_id = %s
-            """, [class_id, admin_id])
+                WHERE id = %s
+            """, [class_id])
         messages.success(request, 'Class deleted successfully.')
     except Exception as e:
         messages.error(request, f'Error deleting class: {str(e)}')
