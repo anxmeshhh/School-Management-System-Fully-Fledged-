@@ -3958,14 +3958,12 @@ def update_student(request, student_id):
             email = request.POST.get('email', '').strip()
 
             # Validate required fields
-            if not all([name, new_admission_number, class_section, roll_number, emis, email]):
+            if not all([name, new_admission_number, class_section, roll_number]):
                 missing = [field for field, value in [
                     ('name', name),
                     ('admission_number', new_admission_number),
                     ('class_section', class_section),
-                    ('roll_number', roll_number),
-                    ('emis', emis),
-                    ('email', email)
+                    ('roll_number', roll_number)
                 ] if not value]
                 messages.error(request, f'Missing required fields: {", ".join(missing)}')
                 # Inline context prep for error case

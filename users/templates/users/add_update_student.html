@@ -545,13 +545,13 @@
                         <label><i class="fas fa-hashtag"></i> Roll Number</label>
                         <input type="text" name="roll_number" value="{{ post_data.roll_number|default:roll_number|default_if_none:'' }}" required>
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group">
                         <label><i class="fas fa-fingerprint"></i> EMIS Number</label>
-                        <input type="text" name="emis" value="{{ post_data.emis|default:emis|default_if_none:'' }}" required>
+                        <input type="text" name="emis" value="{{ post_data.emis|default:emis|default_if_none:'' }}">
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group">
                         <label><i class="fas fa-envelope"></i> Email</label>
-                        <input type="email" name="email" value="{{ post_data.email|default:email|default_if_none:'' }}" required>
+                        <input type="email" name="email" value="{{ post_data.email|default:email|default_if_none:'' }}">
                     </div>
                 </div>
             </div>
