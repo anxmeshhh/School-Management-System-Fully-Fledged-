@@ -3286,7 +3286,7 @@ def view_edit_class(request):
         classes = cursor.fetchall()
 
     # Format as "class-section" for display
-    class_list = [{'id': row[0], 'class_name': f"{row[1]}-{row[2]}"} for row in classes]
+    class_list = [{'id': row[0], 'class_name': f"{row[1]}-{row[2]}" if row[2] and str(row[2]).strip() not in ["None", ""] else row[1]} for row in classes]
 
     return render(request, 'users/view_edit_class.html', {
         'classes': class_list,
@@ -5250,7 +5250,7 @@ def view_edit_class(request):
         classes = cursor.fetchall()
 
     # Format as "class-section" for display
-    class_list = [{'id': row[0], 'class_name': f"{row[1]}-{row[2]}"} for row in classes]
+    class_list = [{'id': row[0], 'class_name': f"{row[1]}-{row[2]}" if row[2] and str(row[2]).strip() not in ["None", ""] else row[1]} for row in classes]
 
     return render(request, 'users/view_edit_class.html', {
         'classes': class_list,
