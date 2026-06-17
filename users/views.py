@@ -3281,9 +3281,8 @@ def view_edit_class(request):
         cursor.execute("""
             SELECT id, class, section 
             FROM admin_student_classes 
-            WHERE admin_id = %s
             ORDER BY class DESC, section DESC
-        """, [admin_id])
+        """)
         classes = cursor.fetchall()
 
     # Format as "class-section" for display
@@ -5246,9 +5245,8 @@ def view_edit_class(request):
         cursor.execute("""
             SELECT id, class, section 
             FROM admin_student_classes 
-            WHERE admin_id = %s
             ORDER BY class DESC, section DESC
-        """, [admin_id])
+        """)
         classes = cursor.fetchall()
 
     # Format as "class-section" for display
