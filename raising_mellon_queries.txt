@@ -1,0 +1,203 @@
+-- Student: AARAV PUROHIT
+INSERT INTO users (id, username, email, password) VALUES (32001, 'AARAV PUROHIT', 'aarav.purohit_32001_51ec56a1@example.com', '1');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32001, 'AARAV PUROHIT', 'CMSRM01', 'RAISING MELLON', 1.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32001, 'AARAV PUROHIT', 1.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32001, '2023-09-03 00:00:00', 'HINDI ');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32001, 'NO 6, FIRST FLOOR, KUMARAPPA STREET,SEVENWELLS,CHENNAI-01', '7070577064.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32001, 'NITESH KUMAR', 'PINKI', '7070577064.0', '9080695391');
+
+-- Student: AVIYUKTH (PP)
+INSERT INTO users (id, username, email, password) VALUES (32002, 'AVIYUKTH (PP)', 'aviyukth.(pp)_32002_0c38767e@example.com', '2');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32002, 'AVIYUKTH (PP)', 'CMSRM02', 'RAISING MELLON', 2.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32002, 'AVIYUKTH (PP)', 2.0);
+
+-- Student: CHIRAG PATEL
+INSERT INTO users (id, username, email, password) VALUES (32003, 'CHIRAG PATEL', 'chirag.patel_32003_c2588b92@example.com', '3');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32003, 'CHIRAG PATEL', 'CMSRM03', 'RAISING MELLON', 3.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32003, 'CHIRAG PATEL', 3.0);
+
+-- Student: DHANISHKA KEDIA
+INSERT INTO users (id, username, email, password) VALUES (32004, 'DHANISHKA KEDIA', 'dhanishka.kedia_32004_faa065a1@example.com', '4');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32004, 'DHANISHKA KEDIA', 'CMSRM04', 'RAISING MELLON', 4.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32004, 'DHANISHKA KEDIA', 4.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32004, '2023-05-10 00:00:00', 'HINDI ');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32004, 'OLD NO 36, NEW NO 69 MINT ST 4TH FLOOR, NEAR RAJA RANI STORE CHENNAI 01', '9840017055.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32004, 'ARUN KEDIA', 'NIDHI KEDIA', '9840017055.0', '9383317055');
+
+-- Student: DHANVIKASRI.M
+INSERT INTO users (id, username, email, password) VALUES (32005, 'DHANVIKASRI.M', 'dhanvikasri.m_32005_4c0bee25@example.com', '5');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32005, 'DHANVIKASRI.M', 'CMSRM05', 'RAISING MELLON', 5.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32005, 'DHANVIKASRI.M', 5.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32005, '2023-03-16 00:00:00', 'TELUGU');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32005, '3/5, KUMARAPPAN STREET, SEVEN WELLS  MINT , CHENNAI 01', '9884388756.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32005, 'GIRI', 'GOMATHI', '9884388756.0', '6374850493');
+
+-- Student: DHANVINE .M
+INSERT INTO users (id, username, email, password) VALUES (32006, 'DHANVINE .M', 'dhanvine..m_32006_244faff4@example.com', '6');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32006, 'DHANVINE .M', 'CMSRM06', 'RAISING MELLON', 6.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32006, 'DHANVINE .M', 6.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32006, '2023-03-16 00:00:00', 'TELUGU');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32006, '3/5, KUMARAPPAN STREET, SEVEN WELLS  MINT , CHENNAI 01', '9884388756.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32006, 'GIRI', 'GOMATHI', '9884388756.0', '6374850493');
+
+-- Student: HARSHITH.R
+INSERT INTO users (id, username, email, password) VALUES (32007, 'HARSHITH.R', 'harshith.r_32007_08b616d1@example.com', '7');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32007, 'HARSHITH.R', 'CMSRM07', 'RAISING MELLON', 7.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32007, 'HARSHITH.R', 7.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32007, '2023-04-10 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32007, 'FRANCIS TURIN STREET 7WELLS CH01', '9789946985.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32007, 'RAJASEKAR', 'DR.T.PRIYA', '9789946985.0', '8667031685');
+
+-- Student: HITANSH .M. JAIN
+INSERT INTO users (id, username, email, password) VALUES (32008, 'HITANSH .M. JAIN', 'hitansh..m..jain_32008_20caf380@example.com', '8');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32008, 'HITANSH .M. JAIN', 'CMSRM08', 'RAISING MELLON', 8.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32008, 'HITANSH .M. JAIN', 8.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32008, '2023-07-17 00:00:00', 'HINDI ');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32008, '9A/15, TEYNAMPET RAMASWAMY STREET KONDITHOPE CHENNAI 01', '7019041690.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32008, 'MUKESH ', 'SWATI ', '7019041690.0', '7397498044');
+
+-- Student: KANISHK AYVAN.T
+INSERT INTO users (id, username, email, password) VALUES (32009, 'KANISHK AYVAN.T', 'kanishk.ayvan.t_32009_5985e1d1@example.com', '9');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32009, 'KANISHK AYVAN.T', 'CMSRM09', 'RAISING MELLON', 9.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32009, 'KANISHK AYVAN.T', 9.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32009, '2023-11-20 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32009, '25/53 1ST FLOOR, MUNIAPPAN STREET KONDITHOPE CHENNAI O1', '8056164692.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32009, 'N.THANIGAIVEL', 'T.SOUNDARYA', '8056164692.0', '6382518965');
+
+-- Student: KATHIRVELAN
+INSERT INTO users (id, username, email, password) VALUES (32010, 'KATHIRVELAN', 'kathirvelan_32010_210f4981@example.com', '10');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32010, 'KATHIRVELAN', 'CMSRM10', 'RAISING MELLON', 10.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32010, 'KATHIRVELAN', 10.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32010, '2023-01-23 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32010, 'M BLOCK 18 NO KONDITHOPE POLICE QUARTERS', '9498136806.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32010, 'RAJENDRAN.V', 'MAHALAKSHMI.S', '9498136806.0', '9444506106');
+
+-- Student: MAFAZ MOHAMED.M
+INSERT INTO users (id, username, email, password) VALUES (32011, 'MAFAZ MOHAMED.M', 'mafaz.mohamed.m_32011_c54651b1@example.com', '11');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32011, 'MAFAZ MOHAMED.M', 'CMSRM11', 'RAISING MELLON', 11.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32011, 'MAFAZ MOHAMED.M', 11.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32011, '2023-05-07 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32011, '266, THAMBU CHETTY STREET, MANNADY, CHENNAI 01', '9789011691.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32011, 'MOHAMED WASIM AKRAM', 'MOHAMED MALHA BEEVI', '9789011691.0', '9940205199');
+
+-- Student: MALLAPU HIMANI
+INSERT INTO users (id, username, email, password) VALUES (32012, 'MALLAPU HIMANI', 'mallapu.himani_32012_282e5abf@example.com', '12');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32012, 'MALLAPU HIMANI', 'CMSRM12', 'RAISING MELLON', 12.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32012, 'MALLAPU HIMANI', 12.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32012, '2023-06-20 00:00:00', 'TELUGU');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32012, '30, MUNIYAPPAN STREET KONDITHOPE CHENNAI 01', '9940485572.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32012, 'MALLAPU BALAJI', 'POKKALI MEENAKSHI BALAJI ', '9940485572.0', '9445725555');
+
+-- Student: MOKSHITHA.Y
+INSERT INTO users (id, username, email, password) VALUES (32013, 'MOKSHITHA.Y', 'mokshitha.y_32013_6a685a13@example.com', '13');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32013, 'MOKSHITHA.Y', 'CMSRM13', 'RAISING MELLON', 13.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32013, 'MOKSHITHA.Y', 13.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32013, '2023-05-01 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32013, '22, AMBEDKAR NAGAR 6TH STREET KORUKKUPET CHENNAI 21', '9500160072.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32013, 'YUVARAJ.M', 'REVATHY ', '9500160072.0', '9789971682');
+
+-- Student: MUHAMMAD IZYAN
+INSERT INTO users (id, username, email, password) VALUES (32014, 'MUHAMMAD IZYAN', 'muhammad.izyan_32014_3c083701@example.com', '14');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32014, 'MUHAMMAD IZYAN', 'CMSRM14', 'RAISING MELLON', 14.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32014, 'MUHAMMAD IZYAN', 14.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32014, '2023-01-19 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32014, '24/25, MUTHU NAICKEN STREET MANNADY BROADWAY CHENNAI 1', '9566826298.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32014, 'SEYED MOHAMMED BUHARI', 'S.V.AYSHA RIFCA', '9566826298.0', '9652969283');
+
+-- Student: NITHYASREE
+INSERT INTO users (id, username, email, password) VALUES (32015, 'NITHYASREE', 'nithyasree_32015_d5aa4fdc@example.com', '15');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32015, 'NITHYASREE', 'CMSRM15', 'RAISING MELLON', 15.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32015, 'NITHYASREE', 15.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32015, '2024-01-08 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32015, '22/24 RIAINBOW APARTMENT ,KUMARAPPA STREET, SEVENWELLS CHENNAI 01.', '9840375661.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32015, 'K.KARTHIKEYAN', 'S.BHUVANESHWARI', '9840375661.0', '9094733307');
+
+-- Student: NIVANSHI
+INSERT INTO users (id, username, email, password) VALUES (32016, 'NIVANSHI', 'nivanshi_32016_0195d73c@example.com', '16');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32016, 'NIVANSHI', 'CMSRM16', 'RAISING MELLON', 16.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32016, 'NIVANSHI', 16.0);
+
+-- Student: PAWAN SAI. R
+INSERT INTO users (id, username, email, password) VALUES (32017, 'PAWAN SAI. R', 'pawan.sai..r_32017_498e56ee@example.com', '17');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32017, 'PAWAN SAI. R', 'CMSRM17', 'RAISING MELLON', 17.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32017, 'PAWAN SAI. R', 17.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32017, '2023-04-05 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32017, '7/19, KUTTY MAISTRY STREET SEVEN WELLS CHENNAI 01', '9940504401.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32017, 'RAJESH ', 'GEETHA', '9940504401.0', '6381839019');
+
+-- Student: PON MITHRAN.M.M
+INSERT INTO users (id, username, email, password) VALUES (32018, 'PON MITHRAN.M.M', 'pon.mithran.m.m_32018_78a4c35e@example.com', '18');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32018, 'PON MITHRAN.M.M', 'CMSRM18', 'RAISING MELLON', 18.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32018, 'PON MITHRAN.M.M', 18.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32018, '2023-02-11 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32018, '7/2,RATHINAM STREET KONDITHOPE CHENNAI 01', '9840934033.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32018, 'MADHIARASAN', 'PRIYADARSHINI', '9840934033.0', '9840031211');
+
+-- Student: RIDHIMA MAJI
+INSERT INTO users (id, username, email, password) VALUES (32019, 'RIDHIMA MAJI', 'ridhima.maji_32019_1128c149@example.com', '19');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32019, 'RIDHIMA MAJI', 'CMSRM19', 'RAISING MELLON', 19.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32019, 'RIDHIMA MAJI', 19.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32019, '2022-03-13 00:00:00', 'BENGALI');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32019, '15/17, VADAMALAI MAISTRY STREET KONDITHOPE CHENNAI 01', '8838119102.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32019, 'RADHE SHYAM MAJI', 'MANDIRA MAJI ', '8838119102.0', '9962035869');
+
+-- Student: RIDIT DEWASI
+INSERT INTO users (id, username, email, password) VALUES (32020, 'RIDIT DEWASI', 'ridit.dewasi_32020_0c07c346@example.com', '20');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32020, 'RIDIT DEWASI', 'CMSRM20', 'RAISING MELLON', 20.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32020, 'RIDIT DEWASI', 20.0);
+
+-- Student: SARA IZNA
+INSERT INTO users (id, username, email, password) VALUES (32021, 'SARA IZNA', 'sara.izna_32021_e95549f7@example.com', '21');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32021, 'SARA IZNA', 'CMSRM21', 'RAISING MELLON', 21.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32021, 'SARA IZNA', 21.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32021, '2023-10-15 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32021, '89/64 SEVENWELLS STREET,SEVENWELLS GEORGE TOWN CHENNAI 01', '9941196144.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32021, 'KAMAAL KHAN A', 'IZRA MUSBIRA M S', '9941196144.0', '9789901932');
+
+-- Student: SHRISTIKA.P
+INSERT INTO users (id, username, email, password) VALUES (32022, 'SHRISTIKA.P', 'shristika.p_32022_729f41b7@example.com', '22');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32022, 'SHRISTIKA.P', 'CMSRM22', 'RAISING MELLON', 22.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32022, 'SHRISTIKA.P', 22.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32022, '2023-07-09 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32022, 'NO.6, AMMAN KOIL STREET PARK TOWN CHENNAI -600003', '9361971440.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32022, 'K.PRABHU ', 'T. MEENA', '9361971440.0', '8838810364');
+
+-- Student: SRI VARAHI .R
+INSERT INTO users (id, username, email, password) VALUES (32023, 'SRI VARAHI .R', 'sri.varahi..r_32023_a974a0ac@example.com', '23');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32023, 'SRI VARAHI .R', 'CMSRM23', 'RAISING MELLON', 23.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32023, 'SRI VARAHI .R', 23.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32023, '2023-04-10 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32023, '73/36,PERIYANNA MUDALI STREET SEVEN WELLS CHENNAI 01', '9940212798.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32023, 'RAJESH ', 'JAGADEESHWARI ', '9940212798.0', '7305618408');
+
+-- Student: TAQIYAH THANZIL
+INSERT INTO users (id, username, email, password) VALUES (32024, 'TAQIYAH THANZIL', 'taqiyah.thanzil_32024_424f1416@example.com', '24');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32024, 'TAQIYAH THANZIL', 'CMSRM24', 'RAISING MELLON', 24.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32024, 'TAQIYAH THANZIL', 24.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32024, '2023-06-18 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32024, 'NO 266/201 THAMBU CHETTY STREET, MANNADY CHENNAI 01', '9003351444.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32024, 'THANZILUR REHMAN SHAHUL HAMEED', 'THASNEEM KALANJIAM Z', '9003351444.0', '9003359444');
+
+-- Student: VEDHA SREE.R
+INSERT INTO users (id, username, email, password) VALUES (32025, 'VEDHA SREE.R', 'vedha.sree.r_32025_e4f99a2e@example.com', '25');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32025, 'VEDHA SREE.R', 'CMSRM25', 'RAISING MELLON', 25.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32025, 'VEDHA SREE.R', 25.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32025, '2023-07-15 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32025, 'NO 25/9 PERUMAL STREET, KONDITHOPE ,CHENNAI 01', '9176734090.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32025, 'S.RAJESH', 'R.PREETHI', '9176734090.0', '8056273355');
+
+-- Student: YASHMIKA.D
+INSERT INTO users (id, username, email, password) VALUES (32026, 'YASHMIKA.D', 'yashmika.d_32026_623672cd@example.com', '26');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32026, 'YASHMIKA.D', 'CMSRM26', 'RAISING MELLON', 26.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32026, 'YASHMIKA.D', 26.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32026, '2022-10-01 00:00:00', 'TELUGU');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32026, '23/12 PERUMAL KOIL GARDEN STREET,SOWCARPET,CHENNAI 01', '8939145981.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32026, 'DINESH D', 'D.PRIYANKA', '8939145981.0', '8428713573');
+
+-- Student: YATHVIKA SRI .V
+INSERT INTO users (id, username, email, password) VALUES (32027, 'YATHVIKA SRI .V', 'yathvika.sri..v_32027_8e97458c@example.com', '27');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (32027, 'YATHVIKA SRI .V', 'CMSRM27', 'RAISING MELLON', 27.0);
+INSERT INTO school_students (id, name, roll_number) VALUES (32027, 'YATHVIKA SRI .V', 27.0);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (32027, '2023-11-15 00:00:00', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (32027, '35, NEW STREET MANNADY CHENNAI 01', '9841093551.0');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (32027, 'VIGNESH ', 'PRIYA ', '9841093551.0', '9150260817');

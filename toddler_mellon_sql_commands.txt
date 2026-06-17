@@ -1,0 +1,42 @@
+INSERT IGNORE INTO users (id, username, email, password) VALUES (40001, 'ABDUL AZEEZ ZAYYAN', 'abdul.azeez.zayyan_40001_bbc93fa5@example.com', '1');
+INSERT IGNORE INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (40001, 'ABDUL AZEEZ ZAYYAN', 'CMSTDM01', 'TODDLER MELLON', 1);
+INSERT IGNORE INTO student_page2 (user_id, dob, mother_tongue) VALUES (40001, '2023-10-13', 'HINDI');
+INSERT IGNORE INTO student_page3 (user_id, address, contact) VALUES (40001, '56/55, IBRAHIM 3RD LANE NORTH BEACH ROYAPURAM', '9840452376');
+INSERT IGNORE INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (40001, 'MOHAMED ZAID', 'NAILA FARHEEN', '9840452376', '9940688593');
+INSERT IGNORE INTO school_students (id, name, roll_number) VALUES (40001, 'ABDUL AZEEZ ZAYYAN', 1);
+
+INSERT IGNORE INTO users (id, username, email, password) VALUES (40002, 'FATHIMAH ZUHURIAH', 'fathimah.zuhuriah_40002_e43a5551@example.com', '2');
+INSERT IGNORE INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (40002, 'FATHIMAH ZUHURIAH', 'CMSTDM02', 'TODDLER MELLON', 2);
+INSERT IGNORE INTO student_page2 (user_id, dob, mother_tongue) VALUES (40002, '2023-10-13', 'HINDI');
+INSERT IGNORE INTO student_page3 (user_id, address, contact) VALUES (40002, '56/55, IBRAHIM 3RD LANE NORTH BEACH ROYAPURAM', '9840452376');
+INSERT IGNORE INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (40002, 'MOHAMED ZAID', 'NAILA FARHEEN', '9840452376', '9940688593');
+INSERT IGNORE INTO school_students (id, name, roll_number) VALUES (40002, 'FATHIMAH ZUHURIAH', 2);
+
+INSERT IGNORE INTO users (id, username, email, password) VALUES (40003, 'NEKHIL RANGESH', 'nekhil.rangesh_40003_f47826ab@example.com', '3');
+INSERT IGNORE INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (40003, 'NEKHIL RANGESH', 'CMSTDM03', 'TODDLER MELLON', 3);
+INSERT IGNORE INTO student_page2 (user_id, dob, mother_tongue) VALUES (40003, '2024-07-17', 'TAMIL');
+INSERT IGNORE INTO student_page3 (user_id, address, contact) VALUES (40003, '129/4 RAMASWAMY STREET MANNADY CHENNAI 01', '9094544924');
+INSERT IGNORE INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (40003, 'RANGESH', 'PAVITRA', '9094544924', '9791199752');
+INSERT IGNORE INTO school_students (id, name, roll_number) VALUES (40003, 'NEKHIL RANGESH', 3);
+
+INSERT IGNORE INTO users (id, username, email, password) VALUES (40004, 'PRISHA JAIN.J', 'prisha.jain.j_40004_b1b8d373@example.com', '4');
+INSERT IGNORE INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (40004, 'PRISHA JAIN.J', 'CMSTDM04', 'TODDLER MELLON', 4);
+INSERT IGNORE INTO student_page2 (user_id, dob, mother_tongue) VALUES (40004, '2024-03-26', 'HINDI');
+INSERT IGNORE INTO student_page3 (user_id, address, contact) VALUES (40004, 'NO 483, 1ST FLOOR , MINT STREET, SOWCARPET CHENNAI - 01', '9003180550');
+INSERT IGNORE INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (40004, 'P.JITHENDAR KUMAR', 'PRIYANKA', '9003180550', '8939476324');
+INSERT IGNORE INTO school_students (id, name, roll_number) VALUES (40004, 'PRISHA JAIN.J', 4);
+
+INSERT IGNORE INTO users (id, username, email, password) VALUES (40005, 'SANVI MALI', 'sanvi.mali_40005_9f5213fd@example.com', '5');
+INSERT IGNORE INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (40005, 'SANVI MALI', 'CMSTDM05', 'TODDLER MELLON', 5);
+INSERT IGNORE INTO student_page2 (user_id, dob, mother_tongue) VALUES (40005, '2024-02-11', 'HINDI');
+INSERT IGNORE INTO student_page3 (user_id, address, contact) VALUES (40005, 'NO 17/9 FIRST NARAYANA STREET, SEVENWELLS CHENNAI 01', '9566070523');
+INSERT IGNORE INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (40005, 'ESWAR.H.SOLANKI', 'KAVITHA KUMARI', '9566070523', '6369049986');
+INSERT IGNORE INTO school_students (id, name, roll_number) VALUES (40005, 'SANVI MALI', 5);
+
+INSERT IGNORE INTO users (id, username, email, password) VALUES (40006, 'YUVASHREE', 'yuvashree_40006_fd63eb4e@example.com', '6');
+INSERT IGNORE INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (40006, 'YUVASHREE', 'CMSTDM06', '', 6);
+INSERT IGNORE INTO student_page2 (user_id, dob, mother_tongue) VALUES (40006, NULL, '');
+INSERT IGNORE INTO student_page3 (user_id, address, contact) VALUES (40006, '', '');
+INSERT IGNORE INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (40006, '', '', '', '');
+INSERT IGNORE INTO school_students (id, name, roll_number) VALUES (40006, 'YUVASHREE', 6);
+

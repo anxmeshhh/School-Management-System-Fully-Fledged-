@@ -1,0 +1,78 @@
+DELETE FROM users WHERE id = 10001;
+DELETE FROM student_page1 WHERE user_id = 10001;
+DELETE FROM student_page2 WHERE user_id = 10001;
+DELETE FROM student_page3 WHERE user_id = 10001;
+DELETE FROM student_page4 WHERE user_id = 10001;
+DELETE FROM school_students WHERE id = 10001;
+INSERT INTO users (id, username, email, password) VALUES (10001, 'ABDUL AZEEZ ZAYYAN', 'abdul.azeez.zayyan_10001_e1e0504b@example.com', '1');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (10001, 'ABDUL AZEEZ ZAYYAN', 'CMSTDM01', 'TODDLER MELLON', 1);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (10001, '2023-10-13', 'HINDI');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (10001, '56/55, IBRAHIM 3RD LANE NORTH BEACH ROYAPURAM', '9840452376');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (10001, 'MOHAMED ZAID', 'NAILA FARHEEN', '9840452376', '9940688593');
+INSERT INTO school_students (id, name, roll_number) VALUES (10001, 'ABDUL AZEEZ ZAYYAN', 1);
+
+DELETE FROM users WHERE id = 10002;
+DELETE FROM student_page1 WHERE user_id = 10002;
+DELETE FROM student_page2 WHERE user_id = 10002;
+DELETE FROM student_page3 WHERE user_id = 10002;
+DELETE FROM student_page4 WHERE user_id = 10002;
+DELETE FROM school_students WHERE id = 10002;
+INSERT INTO users (id, username, email, password) VALUES (10002, 'FATHIMAH ZUHURIAH', 'fathimah.zuhuriah_10002_1d5eb5fa@example.com', '2');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (10002, 'FATHIMAH ZUHURIAH', 'CMSTDM02', 'TODDLER MELLON', 2);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (10002, '2023-10-13', 'HINDI');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (10002, '56/55, IBRAHIM 3RD LANE NORTH BEACH ROYAPURAM', '9840452376');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (10002, 'MOHAMED ZAID', 'NAILA FARHEEN', '9840452376', '9940688593');
+INSERT INTO school_students (id, name, roll_number) VALUES (10002, 'FATHIMAH ZUHURIAH', 2);
+
+DELETE FROM users WHERE id = 10003;
+DELETE FROM student_page1 WHERE user_id = 10003;
+DELETE FROM student_page2 WHERE user_id = 10003;
+DELETE FROM student_page3 WHERE user_id = 10003;
+DELETE FROM student_page4 WHERE user_id = 10003;
+DELETE FROM school_students WHERE id = 10003;
+INSERT INTO users (id, username, email, password) VALUES (10003, 'NEKHIL RANGESH', 'nekhil.rangesh_10003_32892718@example.com', '3');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (10003, 'NEKHIL RANGESH', 'CMSTDM03', 'TODDLER MELLON', 3);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (10003, '2024-07-17', 'TAMIL');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (10003, '129/4 RAMASWAMY STREET MANNADY CHENNAI 01', '9094544924');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (10003, 'RANGESH', 'PAVITRA', '9094544924', '9791199752');
+INSERT INTO school_students (id, name, roll_number) VALUES (10003, 'NEKHIL RANGESH', 3);
+
+DELETE FROM users WHERE id = 10004;
+DELETE FROM student_page1 WHERE user_id = 10004;
+DELETE FROM student_page2 WHERE user_id = 10004;
+DELETE FROM student_page3 WHERE user_id = 10004;
+DELETE FROM student_page4 WHERE user_id = 10004;
+DELETE FROM school_students WHERE id = 10004;
+INSERT INTO users (id, username, email, password) VALUES (10004, 'PRISHA JAIN.J', 'prisha.jain.j_10004_637ad2e9@example.com', '4');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (10004, 'PRISHA JAIN.J', 'CMSTDM04', 'TODDLER MELLON', 4);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (10004, '2024-03-26', 'HINDI');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (10004, 'NO 483, 1ST FLOOR , MINT STREET, SOWCARPET CHENNAI - 01', '9003180550');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (10004, 'P.JITHENDAR KUMAR', 'PRIYANKA', '9003180550', '8939476324');
+INSERT INTO school_students (id, name, roll_number) VALUES (10004, 'PRISHA JAIN.J', 4);
+
+DELETE FROM users WHERE id = 10005;
+DELETE FROM student_page1 WHERE user_id = 10005;
+DELETE FROM student_page2 WHERE user_id = 10005;
+DELETE FROM student_page3 WHERE user_id = 10005;
+DELETE FROM student_page4 WHERE user_id = 10005;
+DELETE FROM school_students WHERE id = 10005;
+INSERT INTO users (id, username, email, password) VALUES (10005, 'SANVI MALI', 'sanvi.mali_10005_2e1ca0cc@example.com', '5');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (10005, 'SANVI MALI', 'CMSTDM05', 'TODDLER MELLON', 5);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (10005, '2024-02-11', 'HINDI');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (10005, 'NO 17/9 FIRST NARAYANA STREET, SEVENWELLS CHENNAI 01', '9566070523');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (10005, 'ESWAR.H.SOLANKI', 'KAVITHA KUMARI', '9566070523', '6369049986');
+INSERT INTO school_students (id, name, roll_number) VALUES (10005, 'SANVI MALI', 5);
+
+DELETE FROM users WHERE id = 10006;
+DELETE FROM student_page1 WHERE user_id = 10006;
+DELETE FROM student_page2 WHERE user_id = 10006;
+DELETE FROM student_page3 WHERE user_id = 10006;
+DELETE FROM student_page4 WHERE user_id = 10006;
+DELETE FROM school_students WHERE id = 10006;
+INSERT INTO users (id, username, email, password) VALUES (10006, 'YUVASHREE', 'yuvashree_10006_41df005f@example.com', '6');
+INSERT INTO student_page1 (user_id, name, admission_number, class, roll_number) VALUES (10006, 'YUVASHREE', 'CMSTDM06', '', 6);
+INSERT INTO student_page2 (user_id, dob, mother_tongue) VALUES (10006, NULL, '');
+INSERT INTO student_page3 (user_id, address, contact) VALUES (10006, '', '');
+INSERT INTO student_page4 (user_id, father_name, mother_name, father_contact, mother_contact) VALUES (10006, '', '', '', '');
+INSERT INTO school_students (id, name, roll_number) VALUES (10006, 'YUVASHREE', 6);
+
