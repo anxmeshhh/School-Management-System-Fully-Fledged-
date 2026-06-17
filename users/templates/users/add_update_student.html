@@ -503,7 +503,7 @@
             {% endif %}
         </div>
 
-        <form method="POST" onsubmit="return confirm('Are you sure you want to update this student\'s information?');">
+        <form method="POST" enctype="multipart/form-data" onsubmit="return confirm('Are you sure you want to update this student\'s information?');">
             {% csrf_token %}
             <input type="hidden" name="user_id" value="{{ user_id }}">
 
@@ -513,6 +513,22 @@
                     <h3><i class="fas fa-user"></i> Basic Information</h3>
                 </div>
                 <div class="grid">
+                    <div class="form-group" style="grid-column: 1 / -1; display: flex; align-items: center; gap: 1rem;">
+                        <div style="flex-shrink: 0;">
+                            {% if profile_picture %}
+                                <img src="{{ profile_picture }}" alt="Profile Picture" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid var(--border-color);">
+                            {% else %}
+                                <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--light-bg); border: 2px dashed var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-light);">
+                                    <i class="fas fa-user fa-2x"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div style="flex-grow: 1;">
+                            <label><i class="fas fa-camera"></i> Profile Picture</label>
+                            <input type="file" name="profile_pic" accept="image/png, image/jpeg" style="padding: 0.5rem; width: 100%;">
+                            <small style="color: var(--text-light); display: block; margin-top: 0.25rem;">Upload new photo (PNG/JPG, max 5MB). Leave empty to keep current.</small>
+                        </div>
+                    </div>
                     <div class="form-group required">
                         <label><i class="fas fa-user"></i> Full Name</label>
                         <input type="text" name="name" value="{{ post_data.name|default:name|default_if_none:'' }}" required>

@@ -3939,6 +3939,10 @@ def update_student(request, student_id):
             
             admission_number = student_data[3]
 
+            cursor.execute("SELECT image_path FROM profile_pics WHERE user_id = %s", [student_data[1]])
+            pic_res = cursor.fetchone()
+            profile_picture = f"{settings.MEDIA_URL}{pic_res[0]}" if pic_res else None
+
     except Exception as e:
         messages.error(request, f'Error fetching student data: {str(e)}')
         return redirect('student_info')
@@ -3975,6 +3979,8 @@ def update_student(request, student_id):
                 sports_quota = 'yes' if sports_quota_db in (1, 'yes', 'Yes', True) else 'no'
                 context = {
                     'title': 'Update Student',
+
+                    'profile_picture': profile_picture,
                     'admission_number': admission_number,
                     'post_data': post_data,  # For repopulating form on errors
                     'id': student_data[0] if len(student_data) > 0 else '',
@@ -4065,6 +4071,8 @@ def update_student(request, student_id):
                 sports_quota = 'yes' if sports_quota_db in (1, 'yes', 'Yes', True) else 'no'
                 context = {
                     'title': 'Update Student',
+
+                    'profile_picture': profile_picture,
                     'admission_number': admission_number,
                     'post_data': post_data,
                     'id': student_data[0] if len(student_data) > 0 else '',
@@ -4166,6 +4174,8 @@ def update_student(request, student_id):
                         sports_quota_disp = 'yes' if sports_quota_db in (1, 'yes', 'Yes', True) else 'no'
                         context = {
                             'title': 'Update Student',
+
+                            'profile_picture': profile_picture,
                             'admission_number': admission_number,
                             'post_data': post_data,
                             'id': student_data[0] if len(student_data) > 0 else '',
@@ -4362,6 +4372,42 @@ def update_student(request, student_id):
                         WHERE id = %s
                     """, [new_username, user_id])
 
+
+            # Handle profile picture upload
+            if 'profile_pic' in request.FILES and request.FILES['profile_pic']:
+                import os
+                import uuid
+                from django.utils import timezone
+                profile_pic_file = request.FILES['profile_pic']
+                allowed_extensions = ['.png', '.jpg', '.jpeg']
+                file_ext = os.path.splitext(profile_pic_file.name)[1].lower()
+                
+                if file_ext in allowed_extensions and profile_pic_file.size <= 5 * 1024 * 1024:
+                    filename = f"{uuid.uuid4().hex}_{user_id}{file_ext}"
+                    pfpics_dir = os.path.join(settings.MEDIA_ROOT, 'pfpics')
+                    os.makedirs(pfpics_dir, exist_ok=True)
+                    file_path = os.path.join(pfpics_dir, filename)
+                    
+                    with open(file_path, 'wb+') as destination:
+                        for chunk in profile_pic_file.chunks():
+                            destination.write(chunk)
+                    
+                    with connection.cursor() as cursor:
+                        cursor.execute("SELECT image_path FROM profile_pics WHERE user_id = %s", [user_id])
+                        old_pic = cursor.fetchone()
+                        if old_pic:
+                            old_file_path = os.path.join(settings.MEDIA_ROOT, old_pic[0])
+                            if os.path.exists(old_file_path):
+                                os.remove(old_file_path)
+                        
+                        db_path = f"pfpics/{filename}"
+                        if old_pic:
+                            cursor.execute("UPDATE profile_pics SET image_path = %s, uploaded_at = %s WHERE user_id = %s", [db_path, timezone.now(), user_id])
+                        else:
+                            cursor.execute("INSERT INTO profile_pics (user_id, image_path, uploaded_at) VALUES (%s, %s, %s)", [user_id, db_path, timezone.now()])
+                else:
+                    messages.error(request, 'Invalid profile picture. Only PNG/JPG up to 5MB allowed.')
+
             messages.success(request, f'Student {name} updated successfully.')
             return redirect('student_info')
 
@@ -4377,6 +4423,8 @@ def update_student(request, student_id):
             sports_quota = 'yes' if sports_quota_db in (1, 'yes', 'Yes', True) else 'no'
             context = {
                 'title': 'Update Student',
+
+                'profile_picture': profile_picture,
                 'admission_number': admission_number,
                 'post_data': post_data,
                 'id': student_data[0] if len(student_data) > 0 else '',
@@ -4463,6 +4511,8 @@ def update_student(request, student_id):
     sports_quota = 'yes' if sports_quota_db in (1, 'yes', 'Yes', True) else 'no'
     context = {
         'title': 'Update Student',
+
+        'profile_picture': profile_picture,
         'admission_number': admission_number,
         'post_data': post_data,  # For repopulating form on errors
         'id': student_data[0] if len(student_data) > 0 else '',
