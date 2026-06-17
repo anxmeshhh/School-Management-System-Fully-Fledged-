@@ -1042,12 +1042,16 @@
                                         </span>
                                     </td>
                                     <td>
+                                        {% if user.role != 'parent' %}
                                         <button class="action-btn update-btn" onclick="showPopup('update', '{{ user.id }}', '{{ user.name|escapejs }}', '{{ user.email|escapejs }}', '{{ user.username|escapejs }}', '{{ user.password|escapejs }}', '{{ user.role }}')">
                                             <i class="fas fa-edit"></i> Edit
                                         </button>
                                         <button class="action-btn delete-btn" onclick="deleteUser('{{ user.id }}', '{{ user.name|escapejs }}')">
                                             <i class="fas fa-trash"></i> Delete
                                         </button>
+                                        {% else %}
+                                        <span style="color: var(--text-light); font-size: 0.85rem;"><i class="fas fa-info-circle"></i> Managed via Students</span>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% empty %}

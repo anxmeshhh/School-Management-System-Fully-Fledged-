@@ -4834,6 +4834,9 @@ def manage_users(request):
 
     try:
         with connection.cursor() as cursor:
+            user_list = []
+            
+            # Fetch from admin_manage_users
             cursor.execute("""
                 SELECT id, name, email, username, password, role, created_at, updated_at
                 FROM admin_manage_users
@@ -4841,7 +4844,6 @@ def manage_users(request):
             """)
             users = cursor.fetchall()
             
-            user_list = []
             for row in users:
                 user_id, name, email, username, password, role, created_at, updated_at = row
                 # Fetch profile picture based on role
@@ -4856,7 +4858,7 @@ def manage_users(request):
                     profile_pic_url = f"{settings.MEDIA_URL}{pic_result[0]}" if pic_result else f"{settings.MEDIA_URL}pfpicsusers/default.jpg"
                 
                 user_list.append({
-                    'id': user_id,
+                    'id': str(user_id),
                     'name': name,
                     'email': email,
                     'username': username,
@@ -4867,6 +4869,36 @@ def manage_users(request):
                     'profile_pic_url': profile_pic_url
                 })
             
+            # Fetch Parents from student_pages
+            cursor.execute("""
+                SELECT u.id, sp4.father_name, sp3.email, sp1.admission_number, sp3.contact 
+                FROM users u
+                JOIN student_page1 sp1 ON u.id = sp1.user_id
+                JOIN student_page3 sp3 ON u.id = sp3.user_id
+                LEFT JOIN student_page4 sp4 ON u.id = sp4.user_id
+                WHERE sp1.admission_number IS NOT NULL AND sp1.admission_number != ''
+            """)
+            parents = cursor.fetchall()
+            for row in parents:
+                uid, father_name, email, admission_number, contact = row
+                name = father_name if father_name else f"Parent of {admission_number}"
+                pic_url = f"{settings.MEDIA_URL}pfpicsusers/default.jpg"
+                
+                user_list.append({
+                    'id': f"parent_{uid}",
+                    'name': name,
+                    'email': email if email else 'Not Provided',
+                    'username': admission_number,
+                    'password': contact,
+                    'role': 'parent',
+                    'created_at': None,
+                    'updated_at': None,
+                    'profile_pic_url': pic_url
+                })
+                
+        # Sort users by role and then name
+        user_list.sort(key=lambda x: (x['role'] == 'parent', x['name']))
+
         return render(request, 'users/manage_users.html', {
             'users': user_list
         })
@@ -4914,12 +4946,18 @@ def add_user(request):
                     )
                     user_id = cursor.lastrowid
 
-                    # Handle teacher-specific initialization
+                    # Handle role-specific initializations
                     if role == 'teacher':
                         cursor.execute(
                             """INSERT INTO teachers (id, name, email, password, subject, created_at)
                             VALUES (%s, %s, %s, %s, %s, NOW())""",
                             [user_id, name, email, password, '']
+                        )
+                    elif role == 'admin':
+                        cursor.execute(
+                            """INSERT INTO admins (full_name, email, password, created_at)
+                            VALUES (%s, %s, %s, NOW())""",
+                            [name, email, password]
                         )
 
                     # Handle profile picture
@@ -4965,6 +5003,10 @@ def update_user(request, user_id):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
 
+    if str(user_id).startswith('parent_'):
+        messages.error(request, 'Parents cannot be edited from this dashboard. Please update parent information in the "Manage Students" module.')
+        return redirect('manage_users')
+
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
@@ -4980,7 +5022,7 @@ def update_user(request, user_id):
             with transaction.atomic():
                 with connection.cursor() as cursor:
                     # Check if user exists
-                    cursor.execute("SELECT id, role, password FROM admin_manage_users WHERE id = %s", [user_id])
+                    cursor.execute("SELECT id, role, password, email FROM admin_manage_users WHERE id = %s", [user_id])
                     user_data = cursor.fetchone()
                     if not user_data:
                         messages.error(request, 'User not found')
@@ -4988,6 +5030,7 @@ def update_user(request, user_id):
                     
                     current_role = user_data[1]
                     current_password = user_data[2]
+                    current_email = user_data[3]
 
                     # Check for duplicate username or email in admin_manage_users
                     cursor.execute(
@@ -4998,16 +5041,12 @@ def update_user(request, user_id):
                         messages.error(request, 'Username or email already exists')
                         return redirect('manage_users')
 
-                    # NEW: Check dependencies before changing from teacher role
+                    # Check dependencies before changing from teacher role
                     if current_role == 'teacher' and role != 'teacher':
-                        # Check if teacher is assigned to any timetable
                         cursor.execute("SELECT COUNT(*) FROM timetable WHERE teacher_id = %s", [user_id])
                         timetable_count = cursor.fetchone()[0]
-                        
-                        # Check if teacher is assigned as invigilator in exams
                         cursor.execute("SELECT COUNT(*) FROM exams WHERE invigilator_id = %s", [user_id])
                         exam_count = cursor.fetchone()[0]
-                        
                         if timetable_count > 0 or exam_count > 0:
                             error_msg = f'Cannot change role from Teacher. This teacher is assigned to '
                             if timetable_count > 0:
@@ -5029,10 +5068,8 @@ def update_user(request, user_id):
                         [name, email, username, new_password, role, user_id]
                     )
 
-                    # Handle role changes
+                    # Handle teacher role changes
                     if current_role == 'teacher' and role != 'teacher':
-                        # Safe to delete now - we've already checked for dependencies above
-                        # Delete teacher record and profile picture
                         cursor.execute("SELECT profile_pic_url FROM profile_pics_teachers WHERE teacher_id = %s", [user_id])
                         old_pic = cursor.fetchone()
                         if old_pic:
@@ -5043,20 +5080,16 @@ def update_user(request, user_id):
                         cursor.execute("DELETE FROM teachers WHERE id = %s", [user_id])
 
                     elif role == 'teacher':
-                        # Update or insert teacher record
                         cursor.execute("SELECT id FROM teachers WHERE id = %s", [user_id])
                         teacher_exists = cursor.fetchone()
-                        
                         try:
                             if not teacher_exists:
-                                # Inserting new teacher record
                                 cursor.execute(
                                     """INSERT INTO teachers (id, name, email, password, subject, created_at)
                                     VALUES (%s, %s, %s, %s, %s, NOW())""",
                                     [user_id, name, email, new_password, '']
                                 )
                             else:
-                                # Updating existing teacher record
                                 cursor.execute(
                                     """UPDATE teachers 
                                     SET name = %s, email = %s, password = %s
@@ -5064,12 +5097,31 @@ def update_user(request, user_id):
                                     [name, email, new_password, user_id]
                                 )
                         except Exception as teacher_error:
-                            # Handle duplicate email error in teachers table
                             if '1062' in str(teacher_error) or 'Duplicate entry' in str(teacher_error):
                                 messages.error(request, f'Email {email} is already used by another teacher. Please use a different email.')
                                 return redirect('manage_users')
                             else:
                                 raise teacher_error
+
+                    # Handle admin role changes
+                    if current_role == 'admin' and role != 'admin':
+                        cursor.execute("DELETE FROM admins WHERE email = %s", [current_email])
+                    elif role == 'admin':
+                        cursor.execute("SELECT id FROM admins WHERE email = %s", [current_email])
+                        admin_exists = cursor.fetchone()
+                        if not admin_exists:
+                            cursor.execute(
+                                """INSERT INTO admins (full_name, email, password, created_at)
+                                VALUES (%s, %s, %s, NOW())""",
+                                [name, email, new_password]
+                            )
+                        else:
+                            cursor.execute(
+                                """UPDATE admins 
+                                SET full_name = %s, email = %s, password = %s
+                                WHERE email = %s""",
+                                [name, email, new_password, current_email]
+                            )
 
                     # Handle profile picture
                     if 'profile_pic' in request.FILES:
@@ -5088,7 +5140,6 @@ def update_user(request, user_id):
                         os.makedirs(pfpics_dir, exist_ok=True)
                         file_path = os.path.join(pfpics_dir, filename)
 
-                        # Delete old profile picture
                         table = 'profile_pics_teachers' if role == 'teacher' else 'otherusers_profile_pic'
                         id_column = 'teacher_id' if role == 'teacher' else 'user_id'
                         cursor.execute(f"SELECT profile_pic_url FROM {table} WHERE {id_column} = %s", [user_id])
@@ -5123,24 +5174,25 @@ def delete_user(request, user_id):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
 
+    if str(user_id).startswith('parent_'):
+        messages.error(request, 'Parents cannot be deleted from this dashboard. Please update parent information in the "Manage Students" module.')
+        return redirect('manage_users')
+
     try:
         with transaction.atomic():
             with connection.cursor() as cursor:
                 # Check user and role
-                cursor.execute("SELECT role, name FROM admin_manage_users WHERE id = %s", [user_id])
+                cursor.execute("SELECT role, name, email FROM admin_manage_users WHERE id = %s", [user_id])
                 user_data = cursor.fetchone()
                 if not user_data:
                     messages.error(request, 'User not found.')
                     return redirect('manage_users')
-                role, name = user_data
+                role, name, email = user_data
 
-                # NEW: Check dependencies before deleting teacher
+                # Check dependencies before deleting teacher
                 if role == 'teacher':
-                    # Check if teacher is assigned to any timetable
                     cursor.execute("SELECT COUNT(*) FROM timetable WHERE teacher_id = %s", [user_id])
                     timetable_count = cursor.fetchone()[0]
-                    
-                    # Check if teacher is assigned as invigilator in exams
                     cursor.execute("SELECT COUNT(*) FROM exams WHERE invigilator_id = %s", [user_id])
                     exam_count = cursor.fetchone()[0]
                     
@@ -5169,8 +5221,11 @@ def delete_user(request, user_id):
 
                 # Delete from teachers if applicable
                 if role == 'teacher':
-                    # Safe to delete now - we've already checked for dependencies
                     cursor.execute("DELETE FROM teachers WHERE id = %s", [user_id])
+                    
+                # Delete from admins if applicable
+                if role == 'admin':
+                    cursor.execute("DELETE FROM admins WHERE email = %s", [email])
 
                 # Delete from admin_manage_users
                 cursor.execute("DELETE FROM admin_manage_users WHERE id = %s", [user_id])
@@ -5184,9 +5239,6 @@ def delete_user(request, user_id):
     except Exception as e:
         messages.error(request, f'Error deleting user: {str(e)}')
         return redirect('manage_users')
-
-
-
 
 from django.shortcuts import render, redirect
 
