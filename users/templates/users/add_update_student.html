@@ -537,9 +537,28 @@
                         <label><i class="fas fa-id-card"></i> Admission Number</label>
                         <input type="text" name="admission_number" value="{{ post_data.admission_number|default:admission_number|default_if_none:'' }}" required>
                     </div>
-                    <div class="form-group required">
-                        <label><i class="fas fa-chalkboard"></i> Class-Section (e.g., 2-A)</label>
-                        <input type="text" name="class_section" value="{{ post_data.class_section|default:class_section|default_if_none:'' }}" required>
+                    <div class="form-group required" data-field="class">
+                        <label><i class="fas fa-chalkboard"></i> Class</label>
+                        <select name="class" id="id_class" required onchange="updateSections()">
+                            <option value="">Select Class</option>
+                            {% for c in classes %}
+                                <option value="{{ c }}" {% if post_data.class|default:class == c %}selected{% endif %}>{{ c }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please select class</span>
+                        </div>
+                    </div>
+                    <div class="form-group required" id="section_group" data-field="section">
+                        <label><i class="fas fa-users"></i> Section</label>
+                        <select name="section" id="id_section" required>
+                            <option value="">Select Section</option>
+                        </select>
+                        <div class="field-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Please select section</span>
+                        </div>
                     </div>
                     <div class="form-group required">
                         <label><i class="fas fa-hashtag"></i> Roll Number</label>
@@ -834,6 +853,57 @@
             document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0;
         }
+        const classMap = JSON.parse('{{ class_map_json|escapejs }}' || '{}');
+        const currentSection = "{{ post_data.section|default:section|default:'' }}";
+
+        function updateSections(initial = false) {
+            const classSelect = document.getElementById('id_class');
+            const sectionSelect = document.getElementById('id_section');
+            const sectionGroup = document.getElementById('section_group');
+            const selectedClass = classSelect.value;
+            
+            sectionSelect.innerHTML = '<option value="">Select Section</option>';
+            
+            if (selectedClass && classMap[selectedClass] && classMap[selectedClass].length > 0) {
+                // Class has sections
+                sectionGroup.style.display = 'block';
+                sectionSelect.required = true;
+                
+                // Add an "All Sections / No Section" option
+                const allOption = document.createElement('option');
+                allOption.value = 'all';
+                allOption.textContent = 'All Sections / No Section';
+                if (initial && currentSection === 'all') allOption.selected = true;
+                sectionSelect.appendChild(allOption);
+
+                classMap[selectedClass].forEach(function(sec) {
+                    if (sec) {
+                        const option = document.createElement('option');
+                        option.value = sec;
+                        option.textContent = sec;
+                        if (initial && sec === currentSection) option.selected = true;
+                        sectionSelect.appendChild(option);
+                    }
+                });
+            } else {
+                // Class has no sections
+                sectionGroup.style.display = 'none';
+                sectionSelect.required = false;
+                
+                // Set to 'all' transparently so the backend treats it properly
+                const hiddenOption = document.createElement('option');
+                hiddenOption.value = 'all';
+                hiddenOption.selected = true;
+                sectionSelect.appendChild(hiddenOption);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial call if class is already selected (e.g. from template context)
+            if (document.getElementById('id_class').value) {
+                updateSections(true);
+            }
+        });
     </script>
 </body>
 </html>
