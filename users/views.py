@@ -3984,7 +3984,7 @@ def update_student(request, student_id):
                     'id': student_data[0] if len(student_data) > 0 else '',
                     'user_id': student_data[1] if len(student_data) > 1 else '',
                     'name': student_data[2] if len(student_data) > 2 else '',
-                    'class_section': f"{student_data[4]}-{student_data[5]}" if len(student_data) > 5 else '',
+                    'class_section': f"{student_data[4]}-{student_data[5] if student_data[5] else ''}" if len(student_data) > 5 else '',
                     'roll_number': student_data[6] if len(student_data) > 6 else '',
                     'emis': student_data[7] if len(student_data) > 7 else '',
                     'email': student_data[8] if len(student_data) > 8 else '',
@@ -4057,6 +4057,8 @@ def update_student(request, student_id):
             # Split class and section
             try:
                 class_part, section = class_section.split('-')
+                if section.strip().lower() in ['none', 'null', '']:
+                    section = None
             except ValueError:
                 messages.error(request, 'Class-Section must be in format "Class-Section" (e.g., 2-A)')
                 # Inline context prep for error case (same as above)
@@ -4076,7 +4078,7 @@ def update_student(request, student_id):
                     'id': student_data[0] if len(student_data) > 0 else '',
                     'user_id': student_data[1] if len(student_data) > 1 else '',
                     'name': student_data[2] if len(student_data) > 2 else '',
-                    'class_section': f"{student_data[4]}-{student_data[5]}" if len(student_data) > 5 else '',
+                    'class_section': f"{student_data[4]}-{student_data[5] if student_data[5] else ''}" if len(student_data) > 5 else '',
                     'roll_number': student_data[6] if len(student_data) > 6 else '',
                     'emis': student_data[7] if len(student_data) > 7 else '',
                     'email': student_data[8] if len(student_data) > 8 else '',
@@ -4179,7 +4181,7 @@ def update_student(request, student_id):
                             'id': student_data[0] if len(student_data) > 0 else '',
                             'user_id': student_data[1] if len(student_data) > 1 else '',
                             'name': student_data[2] if len(student_data) > 2 else '',
-                            'class_section': f"{student_data[4]}-{student_data[5]}" if len(student_data) > 5 else '',
+                            'class_section': f"{student_data[4]}-{student_data[5] if student_data[5] else ''}" if len(student_data) > 5 else '',
                             'roll_number': student_data[6] if len(student_data) > 6 else '',
                             'emis': student_data[7] if len(student_data) > 7 else '',
                             'email': student_data[8] if len(student_data) > 8 else '',
@@ -4428,7 +4430,7 @@ def update_student(request, student_id):
                 'id': student_data[0] if len(student_data) > 0 else '',
                 'user_id': student_data[1] if len(student_data) > 1 else '',
                 'name': student_data[2] if len(student_data) > 2 else '',
-                'class_section': f"{student_data[4]}-{student_data[5]}" if len(student_data) > 5 else '',
+                'class_section': f"{student_data[4]}-{student_data[5] if student_data[5] else ''}" if len(student_data) > 5 else '',
                 'roll_number': student_data[6] if len(student_data) > 6 else '',
                 'emis': student_data[7] if len(student_data) > 7 else '',
                 'email': student_data[8] if len(student_data) > 8 else '',
@@ -4516,7 +4518,7 @@ def update_student(request, student_id):
         'id': student_data[0] if len(student_data) > 0 else '',
         'user_id': student_data[1] if len(student_data) > 1 else '',
         'name': student_data[2] if len(student_data) > 2 else '',
-        'class_section': f"{student_data[4]}-{student_data[5]}" if len(student_data) > 5 else '',
+        'class_section': f"{student_data[4]}-{student_data[5] if student_data[5] else ''}" if len(student_data) > 5 else '',
         'roll_number': student_data[6] if len(student_data) > 6 else '',
         'emis': student_data[7] if len(student_data) > 7 else '',
         'email': student_data[8] if len(student_data) > 8 else '',
