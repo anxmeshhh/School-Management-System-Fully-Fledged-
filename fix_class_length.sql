@@ -1,5 +1,8 @@
 -- 1. Fix the column size on your VPS so it can hold the full 'TODDLER MELLON' string
-ALTER TABLE admin_student_classes MODIFY class VARCHAR(50);
+ALTER TABLE admin_student_classes MODIFY class VARCHAR(50) NULL;
+
+-- Fix the section column to ensure it allows NULL values
+ALTER TABLE admin_student_classes MODIFY section VARCHAR(10) NULL;
 
 -- 2. Delete the incorrectly truncated short classes that were inserted
 DELETE FROM admin_student_classes WHERE class IN ('TODDLER ME', 'JUNIOR MEL', 'MASTER MEL', 'RAISING ME', 'GRAND MELL');
