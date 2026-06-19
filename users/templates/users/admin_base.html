@@ -676,40 +676,49 @@
                 Manavargal SMS
             </div>
             <nav class="sidebar-nav">
-                <a href="{% url 'admin_master' %}"
-                    class="{% if request.resolver_match.url_name == 'admin_master' %}active{% endif %}">
-                    <img src="https://img.icons8.com/fluency/24/home.png" alt="Master Data Icon">
-                    Master Data
+                <a href="{% url 'admin_master' %}" class="{% if request.resolver_match.url_name == 'admin_master' %}active{% endif %}">
+                    <img src="https://img.icons8.com/fluency/24/home.png" alt="Master Data">
+                    <span>Master Data</span>
                 </a>
-                <a href="{% url 'admin_send_student_pdf' %}"
-                    class="{% if request.resolver_match.url_name == 'admin_send_student_pdf' %}active{% endif %}">
-                    <img src="https://img.icons8.com/color/24/whatsapp--v1.png" alt="WhatsApp Icon">
-                    WhatsApp Communication
+                <a href="{% url 'admin_accept_portal' %}" class="{% if request.resolver_match.url_name == 'admin_accept_portal' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/calendar--v1.png" alt="Leave Reports">
+                    <span>Students Leave Reports</span>
                 </a>
-                <a href="{% url 'admin_accept_portal' %}"
-                    class="{% if request.resolver_match.url_name == 'admin_accept_portal' %}active{% endif %}">
-                    <img src="https://img.icons8.com/color/24/000000/calendar--v1.png" alt="Attendance and Leave Icon">
-                    Attendance and Leave
+                <a href="{% url 'admin_attendance_portal' %}" class="{% if request.resolver_match.url_name == 'admin_attendance_portal' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/48/todo-list.png" alt="Attendance">
+                    <span>Students Attendance Reports</span>
                 </a>
-                <a href="{% url 'admin_attendance_portal' %}"
-                    class="{% if request.resolver_match.url_name == 'admin_attendance_portal' %}active{% endif %}">
-                    <img src="https://img.icons8.com/color/48/todo-list.png" alt="Attendance Update Icon">
-                    Attendance Update
+                <a href="{% url 'admin_circular_upload' %}" class="{% if request.resolver_match.url_name == 'admin_circular_upload' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/classroom.png" alt="Circulars">
+                    <span>Circulars</span>
                 </a>
-                <a href="{% url 'admin_circular_upload' %}"
-                    class="{% if request.resolver_match.url_name == 'admin_circular_upload' %}active{% endif %}">
-                    <img src="https://img.icons8.com/color/24/000000/classroom.png" alt="Circulars Icon">
-                    Circulars
+                <a href="{% url 'admin_study_materials_upload' %}" class="{% if request.resolver_match.url_name == 'admin_study_materials_upload' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/graduation-cap.png" alt="Materials">
+                    <span>Student Materials</span>
                 </a>
-                <a href="{% url 'admin_study_materials_upload' %}"
-                    class="{% if request.resolver_match.url_name == 'admin_study_materials_upload' %}active{% endif %}">
-                    <img src="https://img.icons8.com/color/24/000000/graduation-cap.png" alt="Student Materials Icon">
-                    Student Materials
+                <a href="{% url 'admin_homework_panel' %}" class="{% if request.resolver_match.url_name == 'admin_homework_panel' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/homework.png" alt="Homework">
+                    <span>Homework</span>
                 </a>
-                <a href="{% url 'admin_homework_panel' %}"
-                    class="{% if request.resolver_match.url_name == 'admin_homework_panel' %}active{% endif %}">
-                    <img src="https://img.icons8.com/color/24/000000/homework.png" alt="Homework Icon">
-                    Homework
+                <a href="{% url 'admin_timetable' %}" class="{% if request.resolver_match.url_name == 'admin_timetable' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/add-user-male.png" alt="Timetable">
+                    <span>Timetable/Exam Scheduler</span>
+                </a>
+                <a href="{% url 'mark_entry' %}" class="{% if request.resolver_match.url_name == 'mark_entry' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/user-group-man-woman.png" alt="Progress Card">
+                    <span>Progress Card</span>
+                </a>
+                <a href="{% url 'fees_admin' %}" class="{% if request.resolver_match.url_name == 'fees_admin' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/edit--v1.png" alt="Fees">
+                    <span>Fees Collection</span>
+                </a>
+                <a href="{% url 'manage_teachers' %}" class="{% if request.resolver_match.url_name == 'manage_teachers' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="Teachers">
+                    <span>Teacher Management</span>
+                </a>
+                <a href="{% url 'admin_send_student_pdf' %}" class="{% if request.resolver_match.url_name == 'admin_send_student_pdf' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/whatsapp.png" alt="WhatsApp">
+                    <span>WHATSAPP BETA TESTING</span>
                 </a>
             </nav>
         </div>
