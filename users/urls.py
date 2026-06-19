@@ -1,8 +1,7 @@
 from django.urls import path
-from . import views
+from . import views, whatsapp_beta_views, whatsapp_beta_admin_views
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import path
 from users.views import profile_view, login_view  # Import views directly
 from django.utils import timezone
 urlpatterns = [
@@ -207,10 +206,10 @@ urlpatterns = [
 
 
 
-     # Admin page to send PDFs via WhatsApp
+    # Admin page to send PDFs via WhatsApp
     path(
         "admin/send-pdf/",
-        views.admin_send_student_pdf,
+        whatsapp_beta_views.admin_send_student_pdf_regulated,
         name="admin_send_student_pdf"
     ),
 
@@ -221,11 +220,71 @@ urlpatterns = [
         name="fetch_students"
     ),
 
-    # AJAX: generate WhatsApp link (auto-generates PDF)
+    # AJAX: generate regulated WhatsApp link (auto-generates PDF)
     path(
         "admin/whatsapp-link/",
-        views.generate_whatsapp_link,
+        whatsapp_beta_views.generate_whatsapp_link_regulated,
         name="generate_whatsapp_link"
+    ),
+
+    # AJAX: generate regulated WhatsApp messages for circular, birthday, late, leave, notification
+    path(
+        "admin/whatsapp-message-link/",
+        whatsapp_beta_views.generate_whatsapp_message_link_regulated,
+        name="generate_whatsapp_message_link"
+    ),
+
+    path(
+        "admin/whatsapp-beta/",
+        whatsapp_beta_views.admin_send_student_pdf_regulated,
+        name="whatsapp_beta_send"
+    ),
+    path(
+        "admin/whatsapp-beta-dashboard/",
+        whatsapp_beta_admin_views.admin_whatsapp_beta_dashboard,
+        name="whatsapp_beta_dashboard"
+    ),
+    path(
+        "admin/whatsapp-approve-tester/",
+        whatsapp_beta_admin_views.approve_beta_tester,
+        name="approve_beta_tester"
+    ),
+    path(
+        "admin/whatsapp-deactivate-tester/",
+        whatsapp_beta_admin_views.deactivate_beta_tester,
+        name="deactivate_beta_tester"
+    ),
+    path(
+        "admin/whatsapp-tester-details/",
+        whatsapp_beta_admin_views.get_beta_tester_details,
+        name="get_beta_tester_details"
+    ),
+    path(
+        "admin/whatsapp-compliance-alerts/",
+        whatsapp_beta_admin_views.get_compliance_alerts,
+        name="get_compliance_alerts"
+    ),
+    path(
+        "admin/whatsapp-resolve-alert/",
+        whatsapp_beta_admin_views.resolve_compliance_alert,
+        name="resolve_compliance_alert"
+    ),
+
+    # AJAX: dynamic data for WhatsApp panel (classes → sections → students)
+    path(
+        "admin/whatsapp-classes/",
+        whatsapp_beta_views.api_whatsapp_classes,
+        name="whatsapp_classes"
+    ),
+    path(
+        "admin/whatsapp-sections/",
+        whatsapp_beta_views.api_whatsapp_sections,
+        name="whatsapp_sections"
+    ),
+    path(
+        "admin/whatsapp-students/",
+        whatsapp_beta_views.api_whatsapp_students,
+        name="whatsapp_students"
     ),
 
     # Serve generated student PDFs
@@ -236,6 +295,7 @@ urlpatterns = [
     ),
 
     # ─── Notification API Endpoints ──────────────────────────────────────
+    path('api/notifications/stream/', views.api_notification_stream, name='api_notification_stream'),
     path('api/notifications/', views.api_get_notifications, name='api_notifications'),
     path('api/notifications/count/', views.api_notification_count, name='api_notification_count'),
     path('api/notifications/read/<int:notification_id>/', views.api_mark_read, name='api_mark_read'),

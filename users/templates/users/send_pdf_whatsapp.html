@@ -1,213 +1,695 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin – Send Student PDF via WhatsApp</title>
+{% extends 'users/admin_base.html' %}
+{% load static %}
 
-    <!-- CSRF token for JS -->
-    <meta name="csrf-token" content="{{ csrf_token }}">
+{% block page_title %}WhatsApp Beta Center{% endblock %}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-        }
-        .card {
-            max-width: 720px;
-            margin: 40px auto;
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        h2 {
-            margin-bottom: 10px;
-        }
-        select, button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-        }
-        button {
-            background: #25D366;
-            border: none;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            opacity: 0.9;
-        }
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background: #f0f0f0;
-        }
-        .muted {
-            color: #777;
-            font-size: 13px;
-            margin-bottom: 15px;
-        }
-    </style>
-</head>
+{% block content %}
+<style>
+    .whatsapp-panel {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        padding: 2rem;
+        border: 2px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .whatsapp-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #25D366, #128C7E);
+    }
+    
+    .beta-badge {
+        background: #e6f4ea;
+        color: #00a676;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid #a8d5c2;
+        margin-left: 10px;
+        vertical-align: middle;
+    }
+    
+    .status-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--sidebar-bg);
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        border: 1px solid var(--sidebar-border);
+    }
+    
+    .status-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .status-label {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-color);
+    }
+    
+    .filter-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+    
+    .form-control {
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: var(--transition);
+        background: var(--white);
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--white);
+    }
+    
+    th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    th {
+        background: var(--light-bg);
+        font-weight: 600;
+        color: var(--text-color);
+        white-space: nowrap;
+    }
+    
+    tbody tr {
+        transition: var(--transition);
+    }
+    
+    tbody tr:hover {
+        background: #f8fcf9;
+    }
+    
+    .btn-whatsapp {
+        background: #25D366;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-whatsapp:hover {
+        background: #128C7E;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(37, 211, 102, 0.2);
+    }
+    
+    .btn-whatsapp:disabled {
+        background: #a5d6a7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    /* Dynamic Fields Section */
+    .dynamic-fields {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 2rem;
+        display: none;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    .dynamic-fields.active {
+        display: grid;
+    }
+    
+    .dynamic-fields h4 {
+        grid-column: 1 / -1;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
 
-<body>
+    .loader {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #25D366;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        display: none;
+        margin: 20px auto;
+    }
 
-<div class="card">
-    <h2>Admin – Send Student PDF via WhatsApp</h2>
-    <p class="muted">
-        This tool opens WhatsApp with a pre-filled message.<br>
-        The PDF is generated <b>at the time of sending</b>.<br>
-        Admin must manually click <b>Send</b> in WhatsApp.
-    </p>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
 
-    <!-- Class & Section Selection -->
-    <select id="classSelect">
-        <option value="">Select Class</option>
-        <option value="11">Class 11</option>
-        <option value="12">Class 12</option>
-    </select>
+<div class="whatsapp-panel">
+    <h2 style="margin-bottom: 1.5rem;">
+        <img src="https://img.icons8.com/color/32/whatsapp.png" alt="WA" style="vertical-align: bottom;">
+        WhatsApp Communication Center
+        <span class="beta-badge">Beta v{{ beta_version|default:"1.1" }}</span>
+    </h2>
+    
+    {% if not can_send %}
+    <div style="background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+        <strong>Limit Exceeded:</strong> You have reached your daily limit for WhatsApp beta testing. Limits will reset at {{ reset_time }}.
+    </div>
+    {% endif %}
 
-    <select id="sectionSelect">
-        <option value="">Select Section</option>
-        <option value="A">Section A</option>
-        <option value="B">Section B</option>
-        <option value="C">Section C</option>
-    </select>
+    <div class="status-bar">
+        <div class="status-item">
+            <span class="status-label">Messages Remaining Today</span>
+            <span class="status-value" style="color: {% if messages_remaining < 10 %}#ef4444{% else %}#25D366{% endif %}">
+                {{ messages_remaining|default:"0" }}
+            </span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">Access Level</span>
+            <span class="status-value">Regulated</span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">Approved By</span>
+            <span class="status-value">System Admin</span>
+        </div>
+    </div>
 
-    <button onclick="loadStudents()">Fetch Students</button>
+    <div class="filter-section">
+        <div class="form-group">
+            <label for="messageType">Message Type</label>
+            <select id="messageType" class="form-control" onchange="updateDynamicFields()">
+                <option value="student_pdf" {% if not features.send_student_pdfs %}disabled{% endif %}>Student ID PDF</option>
+                <option value="parent_circular" {% if not features.send_parent_circulars %}disabled{% endif %}>Parent Circular</option>
+                <option value="birthday" {% if not features.send_birthday_messages %}disabled{% endif %}>Birthday Wish</option>
+                <option value="late" {% if not features.send_late_messages %}disabled{% endif %}>Late Reminder</option>
+                <option value="leave" {% if not features.send_leave_messages %}disabled{% endif %}>Leave Update</option>
+                <option value="notification" {% if not features.send_notifications %}disabled{% endif %}>Custom Notification</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="classSelect">Class</label>
+            <select id="classSelect" class="form-control" onchange="loadSections()">
+                <option value="">Select Class...</option>
+                <!-- Filled via API -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="sectionSelect">Section</label>
+            <select id="sectionSelect" class="form-control" onchange="loadStudents()">
+                <option value="">Select Section...</option>
+                <!-- Filled via API -->
+            </select>
+        </div>
+    </div>
 
-    <!-- Students Table -->
-    <table id="studentsTable" style="display:none;">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Admission No</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="studentsBody"></tbody>
-    </table>
+    <!-- Dynamic Fields for Message Template Data -->
+    <div id="dynamicFields" class="dynamic-fields">
+        <!-- Injected via JS based on Message Type -->
+    </div>
+
+    <div id="loader" class="loader"></div>
+
+    <div class="table-container" id="studentsTableContainer" style="display: none;">
+        <div style="padding: 1rem; background: var(--light-bg); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: var(--text-color);">Students List</h3>
+            <button id="bulkSendBtn" class="btn-whatsapp" onclick="startBulkSend()" {% if not can_send %}disabled{% endif %}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                Bulk Send Selected
+            </button>
+        </div>
+        <table id="studentsTable">
+            <thead>
+                <tr>
+                    <th style="width: 40px;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                    <th>Student Name</th>
+                    <th>Class</th>
+                    <th>Adm. No</th>
+                    <th>Parent/Guardian</th>
+                    <th>Contact No.</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="studentsBody">
+                <!-- Filled via API -->
+            </tbody>
+        </table>
+    </div>
+    <!-- Bulk Send Progress Widget -->
+    <div id="bulkProgressWidget" style="display: none; position: fixed; bottom: 2rem; right: 2rem; background: var(--white); border: 2px solid var(--primary-color); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-lg); z-index: 1000; min-width: 300px;">
+        <h4 style="margin-top: 0; margin-bottom: 0.5rem; color: var(--primary-color);">Bulk Send Queue <span id="queueCount" class="beta-badge">0 of 0</span></h4>
+        <p id="queueStatus" style="margin-bottom: 1rem; font-size: 0.95rem; font-weight: 500;">Ready to send</p>
+        <div style="display: flex; gap: 1rem;">
+            <button id="nextQueueBtn" class="btn-whatsapp" onclick="processNextInQueue()">
+                Send Next Message
+            </button>
+            <button class="btn-whatsapp" style="background: #ef4444;" onclick="cancelBulkSend()">
+                Cancel
+            </button>
+        </div>
+    </div>
 </div>
 
 <script>
-const fetchStudentsUrl = "{% url 'fetch_students' %}";
-const generateWaLinkUrl = "{% url 'generate_whatsapp_link' %}";
-const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+const csrfToken = "{{ csrf_token }}";
 
-function escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text || "";
-    return div.innerHTML;
+let bulkQueue = [];
+let currentQueueIndex = 0;
+
+// On Load
+document.addEventListener("DOMContentLoaded", () => {
+    loadClasses();
+    updateDynamicFields();
+    loadStudents();
+});
+
+function loadClasses() {
+    fetch("{% url 'whatsapp_classes' %}")
+        .then(res => res.json())
+        .then(data => {
+            const select = document.getElementById("classSelect");
+            select.innerHTML = '<option value="">Select Class...</option>';
+            if(data.classes) {
+                data.classes.forEach(c => {
+                    select.innerHTML += `<option value="${c}">${c}</option>`;
+                });
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+function loadSections() {
+    const cls = document.getElementById("classSelect").value;
+    const sectionSelect = document.getElementById("sectionSelect");
+    sectionSelect.innerHTML = '<option value="">Select Section...</option>';
+    
+    if(!cls) {
+        loadStudents();
+        return;
+    }
+    
+    fetch(`{% url 'whatsapp_sections' %}?class=${encodeURIComponent(cls)}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.sections) {
+                data.sections.forEach(s => {
+                    sectionSelect.innerHTML += `<option value="${s}">${s}</option>`;
+                });
+            }
+            loadStudents();
+        })
+        .catch(err => {
+            console.error(err);
+            loadStudents();
+        });
 }
 
 function loadStudents() {
     const cls = document.getElementById("classSelect").value;
     const sec = document.getElementById("sectionSelect").value;
-
-    if (!cls || !sec) {
-        alert("Please select both class and section");
-        return;
-    }
-
-    fetch(`${fetchStudentsUrl}?class=${encodeURIComponent(cls)}&section=${encodeURIComponent(sec)}`)
+    const container = document.getElementById("studentsTableContainer");
+    const tbody = document.getElementById("studentsBody");
+    const loader = document.getElementById("loader");
+    
+    container.style.display = "none";
+    loader.style.display = "block";
+    
+    fetch(`{% url 'whatsapp_students' %}?class=${encodeURIComponent(cls)}&section=${encodeURIComponent(sec)}`)
         .then(res => res.json())
         .then(data => {
-            const tbody = document.getElementById("studentsBody");
+            loader.style.display = "none";
             tbody.innerHTML = "";
-
-            if (!data.students || data.students.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3">No students found</td></tr>`;
+            document.getElementById("selectAll").checked = false;
+            
+            if(!data.students || data.students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #777;">No students found</td></tr>';
             } else {
-                data.students.forEach(s => {
+                window.currentStudentsData = data.students; // Store globally to avoid JSON string escaping issues in HTML
+                
+                data.students.forEach((s, idx) => {
+                    const contactDisplay = s.contact || s.alt_contact || 'No number';
+                    const parentDisplay = s.parent_name || 'N/A';
+                    const classSecDisplay = `${escapeHtml(s.class)} - ${escapeHtml(s.section)}`;
+                    
                     tbody.innerHTML += `
                         <tr>
-                            <td>${escapeHtml(s.name)}</td>
+                            <td><input type="checkbox" class="student-checkbox" data-index="${idx}"></td>
+                            <td style="font-weight: 500;">${escapeHtml(s.name)}</td>
+                            <td>${classSecDisplay}</td>
                             <td>${escapeHtml(s.admission_number)}</td>
+                            <td>${escapeHtml(parentDisplay)}</td>
+                            <td>${escapeHtml(contactDisplay)}</td>
                             <td>
-                                <button onclick="sendWA(
-                                    '${encodeURIComponent(s.id)}',
-                                    '${encodeURIComponent(s.name)}',
-                                    '${encodeURIComponent(s.admission_number || '')}',
-                                    '${encodeURIComponent(s.contact || '')}',
-                                    this
-                                )">
-                                    Send WhatsApp
+                                <button class="btn-whatsapp" onclick="sendWhatsApp(this, window.currentStudentsData[${idx}])" {% if not can_send %}disabled{% endif %}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                                    Send
                                 </button>
                             </td>
                         </tr>
                     `;
                 });
             }
-
-            document.getElementById("studentsTable").style.display = "table";
+            container.style.display = "block";
         })
         .catch(err => {
             console.error(err);
+            loader.style.display = "none";
             alert("Error loading students");
         });
 }
 
-function sendWA(idEnc, nameEnc, admissionEnc, contactEnc, btn) {
-    const student_id = decodeURIComponent(idEnc);
-    const name = decodeURIComponent(nameEnc);
-    const admission = decodeURIComponent(admissionEnc);
-    const contact = decodeURIComponent(contactEnc);
+function updateDynamicFields() {
+    const type = document.getElementById("messageType").value;
+    const fields = document.getElementById("dynamicFields");
+    
+    let html = `<h4>Message Template Configuration</h4>`;
+    let active = true;
+    
+    if (type === "student_pdf") {
+        active = false; // No extra fields needed
+    } else if (type === "parent_circular") {
+        html += `
+            <div class="form-group">
+                <label>Circular Title *</label>
+                <input type="text" id="tpl_title" class="form-control" placeholder="e.g. Annual Sports Day" required>
+            </div>
+            <div class="form-group">
+                <label>Circular Link/URL *</label>
+                <input type="url" id="tpl_circular_url" class="form-control" placeholder="https://..." required>
+            </div>
+            <div class="form-group">
+                <label>Date (Optional)</label>
+                <input type="date" id="tpl_date" class="form-control">
+            </div>
+        `;
+    } else if (type === "birthday") {
+        // Birthday only needs student_name which we have from the row
+        active = false;
+    } else if (type === "late") {
+        html += `
+            <div class="form-group">
+                <label>Date of Late Arrival *</label>
+                <input type="date" id="tpl_date" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Time of Arrival (Optional)</label>
+                <input type="time" id="tpl_time" class="form-control">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label>Reason / Note (Optional)</label>
+                <input type="text" id="tpl_reason" class="form-control" placeholder="e.g. Missed the school bus">
+            </div>
+        `;
+    } else if (type === "leave") {
+        html += `
+            <div class="form-group">
+                <label>Status *</label>
+                <select id="tpl_status" class="form-control">
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Pending">Pending Review</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>From Date</label>
+                <input type="date" id="tpl_start_date" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>To Date</label>
+                <input type="date" id="tpl_end_date" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Reason/Comments</label>
+                <input type="text" id="tpl_reason" class="form-control">
+            </div>
+        `;
+    } else if (type === "notification") {
+        html += `
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label>Custom Message *</label>
+                <textarea id="tpl_message" class="form-control" rows="3" placeholder="Enter your custom notification here..." required></textarea>
+            </div>
+        `;
+    }
+    
+    fields.innerHTML = html;
+    if (active) {
+        fields.classList.add("active");
+    } else {
+        fields.classList.remove("active");
+    }
+}
 
-    let mobile = prompt("Enter WhatsApp Number", contact || "");
-    if (!mobile) return;
+function sendWhatsApp(btn, studentData, isBulk = false) {
+    const messageType = document.getElementById("messageType").value;
+    let url = "{% url 'generate_whatsapp_message_link' %}";
+    
+    // Check if it's the old PDF type that has a separate dedicated endpoint in the beta view
+    if (messageType === "student_pdf") {
+        url = "{% url 'generate_whatsapp_link' %}";
+    }
 
+    // Collect base student data
+    let mobile = "";
+    if (isBulk) {
+        mobile = studentData.contact || studentData.alt_contact || studentData.father_contact || studentData.mother_contact || "";
+        if (!mobile) {
+            console.warn(`Skipping ${studentData.name} - No contact number available.`);
+            // When skipping, we could auto-advance, but since the user clicks next, we just let them click next again.
+            return;
+        }
+    } else {
+        mobile = prompt(`Enter WhatsApp Number for ${studentData.name}'s parent:`, studentData.contact || "");
+        if (mobile === null) return; // User cancelled
+    }
+    
     mobile = mobile.replace(/\s+/g, "");
+    if (!/^\+?\d{10,15}$/.test(mobile)) {
+        if (!isBulk) alert("Please enter a valid WhatsApp number.");
+        return;
+    }
 
-    if (!/^\d{10,15}$/.test(mobile)) {
-        alert("Please enter a valid WhatsApp number (digits only)");
+    const payload = new URLSearchParams();
+    payload.append("message_type", messageType);
+    payload.append("mobile", mobile);
+    payload.append("student_id", studentData.id);
+    payload.append("admission_number", studentData.admission_number || "");
+    payload.append("name", studentData.name || ""); // Needed by older endpoint
+    payload.append("student_name", studentData.name || "");
+    payload.append("recipient_name", studentData.parent_name || "Parent");
+    payload.append("class", studentData.class || "");
+    payload.append("section", studentData.section || "");
+
+    // Collect dynamic fields if present
+    const dynamicInputs = document.getElementById("dynamicFields").querySelectorAll("input, select, textarea");
+    let missingRequired = false;
+    
+    dynamicInputs.forEach(input => {
+        if(input.required && !input.value.trim()) {
+            missingRequired = true;
+            input.style.borderColor = "red";
+        } else {
+            input.style.borderColor = "var(--border-color)";
+        }
+        
+        // Remove the 'tpl_' prefix when sending to API
+        const key = input.id.replace("tpl_", "");
+        payload.append(key, input.value.trim());
+    });
+    
+    if(missingRequired) {
+        if(!isBulk) alert("Please fill in all required message fields.");
         return;
     }
 
     btn.disabled = true;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = isBulk ? "Generating..." : "Sending...";
 
-    fetch(generateWaLinkUrl, {
+    fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
             "X-CSRFToken": csrfToken
         },
-        body: new URLSearchParams({
-            mobile: mobile,
-            name: name,
-            admission_number: admission,
-            student_id: student_id
-        })
+        body: payload
     })
-    .then(res => res.json())
-    .then(data => {
+    .then(res => res.json().then(data => ({status: res.status, body: data})))
+    .then(({status, body}) => {
         btn.disabled = false;
-        if (data.whatsapp_url) {
-            window.open(data.whatsapp_url, "_blank");
+        btn.innerHTML = originalText;
+        
+        if (status === 429) {
+            alert(body.error || "Rate limit exceeded.");
+            location.reload(); // Reload to show exact limits
+        } else if (status !== 200 || !body.success) {
+            if(!isBulk) alert(body.error || "Failed to generate message.");
         } else {
-            alert(data.error || "Failed to generate WhatsApp link");
+            // Check for missing optional fields warnings
+            if (body.missing_optional_fields && body.missing_optional_fields.length > 0) {
+                console.warn("Message generated, but missing optimal fields: ", body.missing_optional_fields);
+            }
+            
+            // Open WhatsApp
+            if (body.whatsapp_url) {
+                window.open(body.whatsapp_url, "_blank");
+                // Update UI counter locally if provided
+                if (body.rate_info && body.rate_info.messages_remaining !== undefined) {
+                    const statusVal = document.querySelector('.status-value');
+                    if(statusVal) statusVal.innerText = body.rate_info.messages_remaining;
+                }
+            }
         }
     })
     .catch(err => {
         btn.disabled = false;
+        btn.innerHTML = originalText;
         console.error(err);
-        alert("Failed to open WhatsApp");
+        if(!isBulk) alert("A network error occurred.");
     });
 }
-</script>
 
-</body>
-</html>
+function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Bulk Send Logic
+function toggleSelectAll(checkbox) {
+    const checkboxes = document.querySelectorAll('.student-checkbox');
+    checkboxes.forEach(cb => cb.checked = checkbox.checked);
+}
+
+function startBulkSend() {
+    const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+    if (checkboxes.length === 0) {
+        alert("Please select at least one student to send messages.");
+        return;
+    }
+    
+    // Check if required dynamic fields are filled before starting
+    const dynamicInputs = document.getElementById("dynamicFields").querySelectorAll("input, select, textarea");
+    let missingRequired = false;
+    dynamicInputs.forEach(input => {
+        if(input.required && !input.value.trim()) {
+            missingRequired = true;
+            input.style.borderColor = "red";
+        }
+    });
+    if(missingRequired) {
+        alert("Please fill in all required message fields before bulk sending.");
+        return;
+    }
+
+    bulkQueue = Array.from(checkboxes).map(cb => window.currentStudentsData[parseInt(cb.getAttribute("data-index"))]);
+    currentQueueIndex = 0;
+    
+    document.getElementById('bulkProgressWidget').style.display = 'block';
+    updateQueueStatus();
+    
+    // Automatically process the first one
+    processNextInQueue();
+}
+
+function updateQueueStatus() {
+    const current = Math.min(currentQueueIndex + 1, bulkQueue.length);
+    document.getElementById('queueCount').innerText = `${current} of ${bulkQueue.length}`;
+    if (currentQueueIndex < bulkQueue.length) {
+        document.getElementById('queueStatus').innerText = `Sending to: ${bulkQueue[currentQueueIndex].name}`;
+        document.getElementById('nextQueueBtn').innerText = "Send Next Message";
+    } else {
+        document.getElementById('queueStatus').innerText = "Bulk send completed!";
+        document.getElementById('nextQueueBtn').innerText = "Finish";
+    }
+}
+
+function processNextInQueue() {
+    if (currentQueueIndex >= bulkQueue.length) {
+        cancelBulkSend(); // finish
+        return;
+    }
+    
+    const studentData = bulkQueue[currentQueueIndex];
+    const btn = document.getElementById('nextQueueBtn');
+    
+    // Call sendWhatsApp with isBulk = true
+    sendWhatsApp(btn, studentData, true);
+    
+    currentQueueIndex++;
+    updateQueueStatus();
+}
+
+function cancelBulkSend() {
+    bulkQueue = [];
+    currentQueueIndex = 0;
+    document.getElementById('bulkProgressWidget').style.display = 'none';
+    // Uncheck all after bulk send
+    const checkboxes = document.querySelectorAll('.student-checkbox');
+    checkboxes.forEach(cb => cb.checked = false);
+    document.getElementById("selectAll").checked = false;
+}
+</script>
+{% endblock %}
