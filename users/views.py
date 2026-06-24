@@ -5470,6 +5470,18 @@ def bulk_upload(request):
                 # --- Normalize for Minimalist / New Excel Format ---
                 df.columns = df.columns.astype(str).str.strip().str.upper()
                 
+                # Handle duplicate 'CONTACT' columns (Father's and Mother's contact)
+                cols = list(df.columns)
+                contact_count = 0
+                for i, c in enumerate(cols):
+                    if c == 'CONTACT':
+                        if contact_count == 0:
+                            cols[i] = 'FATHER_CONTACT'
+                        elif contact_count == 1:
+                            cols[i] = 'MOTHER_CONTACT'
+                        contact_count += 1
+                df.columns = cols
+                
                 sno_col = next((c for c in ['S.NO', 'SNO', 'ROLL_NUMBER', 'ROLL NUMBER'] if c in df.columns), None)
                 adm_col = next((c for c in ['ADMISSION NUMBER', 'ADMISSION_NUMBER', 'ADM NO', 'ADM.NO', 'ADMISSION NO'] if c in df.columns), None)
                 name_col = 'NAME' if 'NAME' in df.columns else None
@@ -5485,13 +5497,13 @@ def bulk_upload(request):
                         'DOB': 'dob',
                         'CLASS': 'class',
                         'FATHER NAME': 'father_name',
-                        'CONTACT': 'contact',
+                        'FATHER_CONTACT': 'father_contact',
                         'MOTHER NAME': 'mother_name',
+                        'MOTHER_CONTACT': 'mother_contact',
                         'ADDRESS': 'address'
                     }
                     df = df.rename(columns=rename_map)
                     df['user_id'] = None
-                    df['father_contact'] = df.get('contact', None)
                     df['mother_tongue'] = df.get('LINGUISTIC', df.get('LINGUSTIC', df.get('LINGUISTICS', df.get('LINGUSTICS', None))))
                     df['mother_contact'] = df.get('MOTHER CONTACT', df.get('CONTAC T', df.get('CONTACT T', None)))
                     
@@ -5612,6 +5624,18 @@ def bulk_upload(request):
                 # --- Normalize for Minimalist / New Excel Format ---
                 df.columns = df.columns.astype(str).str.strip().str.upper()
                 
+                # Handle duplicate 'CONTACT' columns (Father's and Mother's contact)
+                cols = list(df.columns)
+                contact_count = 0
+                for i, c in enumerate(cols):
+                    if c == 'CONTACT':
+                        if contact_count == 0:
+                            cols[i] = 'FATHER_CONTACT'
+                        elif contact_count == 1:
+                            cols[i] = 'MOTHER_CONTACT'
+                        contact_count += 1
+                df.columns = cols
+                
                 sno_col = next((c for c in ['S.NO', 'SNO', 'ROLL_NUMBER', 'ROLL NUMBER'] if c in df.columns), None)
                 adm_col = next((c for c in ['ADMISSION NUMBER', 'ADMISSION_NUMBER', 'ADM NO', 'ADM.NO', 'ADMISSION NO'] if c in df.columns), None)
                 name_col = 'NAME' if 'NAME' in df.columns else None
@@ -5627,16 +5651,14 @@ def bulk_upload(request):
                         'DOB': 'dob',
                         'CLASS': 'class',
                         'FATHER NAME': 'father_name',
-                        'CONTACT': 'contact',
+                        'FATHER_CONTACT': 'father_contact',
                         'MOTHER NAME': 'mother_name',
+                        'MOTHER_CONTACT': 'mother_contact',
                         'ADDRESS': 'address'
                     }
                     df = df.rename(columns=rename_map)
                     df['user_id'] = None
-                    df['father_contact'] = df.get('contact', None)
                     df['mother_tongue'] = df.get('LINGUISTIC', df.get('LINGUSTIC', df.get('LINGUISTICS', df.get('LINGUSTICS', None))))
-                    df['mother_contact'] = df.get('MOTHER CONTACT', df.get('CONTAC T', df.get('CONTACT T', None)))
-                    
                 df.columns = df.columns.str.lower()
                 df = df.loc[:, ~df.columns.duplicated()]
                 
