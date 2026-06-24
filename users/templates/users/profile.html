@@ -191,7 +191,7 @@
                     </div>
                     <div class="form-group">
                       <label for="dob">Date of Birth</label>
-                      <input type="date" id="dob" name="dob" value="{{ student_data.9|default_if_none:'' }}">
+                      <input type="date" id="dob" name="dob" value="{{ student_data.9|date:'Y-m-d'|default_if_none:'' }}">
                     </div>
                   </div>
 
@@ -281,7 +281,7 @@
 
                   <div class="form-group">
                     <label for="admission-date">Admission Date</label>
-                    <input type="date" id="admission-date" name="admission_date" value="{{ student_data.23|default_if_none:'' }}">
+                    <input type="date" id="admission-date" name="admission_date" value="{{ student_data.23|date:'Y-m-d'|default_if_none:'' }}">
                   </div>
                 </div>
               </div>

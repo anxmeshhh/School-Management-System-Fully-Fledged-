@@ -5520,9 +5520,9 @@ def bulk_upload(request):
 
                 # Convert date fields
                 if 'dob' in df.columns:
-                    df['dob'] = pd.to_datetime(df['dob'], errors='coerce').dt.strftime('%Y-%m-%d')
+                    df['dob'] = pd.to_datetime(df['dob'], dayfirst=True, errors='coerce').dt.strftime('%Y-%m-%d')
                 if 'admission_date' in df.columns:
-                    df['admission_date'] = pd.to_datetime(df['admission_date'], errors='coerce').dt.strftime('%Y-%m-%d')
+                    df['admission_date'] = pd.to_datetime(df['admission_date'], dayfirst=True, errors='coerce').dt.strftime('%Y-%m-%d')
 
                 preview_data = df.head(10).to_dict('records')
                 preview_columns = df.columns.tolist()
@@ -5602,9 +5602,9 @@ def bulk_upload(request):
 
                 # Convert date fields
                 if 'dob' in df.columns:
-                    df['dob'] = pd.to_datetime(df['dob'], errors='coerce').dt.strftime('%Y-%m-%d')
+                    df['dob'] = pd.to_datetime(df['dob'], dayfirst=True, errors='coerce').dt.strftime('%Y-%m-%d')
                 if 'admission_date' in df.columns:
-                    df['admission_date'] = pd.to_datetime(df['admission_date'], errors='coerce').dt.strftime('%Y-%m-%d')
+                    df['admission_date'] = pd.to_datetime(df['admission_date'], dayfirst=True, errors='coerce').dt.strftime('%Y-%m-%d')
 
                 skipped_rows = []
                 with connection.cursor() as cursor:
@@ -11500,9 +11500,12 @@ def scan_qr_code(request):
                     profile_picture_path = None
 
                 # Helper function to safely convert values
+                import datetime
                 def safe_str(value):
                     if value is None:
                         return "N/A"
+                    if isinstance(value, datetime.date):
+                        return value.strftime('%d/%m/%Y')
                     return str(value)
 
                 response_data = {

@@ -642,7 +642,7 @@
                         </div>
                         <div class="info-item">
                             <div class="info-label"><i class="fas fa-calendar" style="color: #f59e0b;"></i> Date of Birth</div>
-                            <div class="info-value">{{ student.dob|default:"Not Specified" }}</div>
+                            <div class="info-value">{{ student.dob|date:"d/m/Y"|default:"Not Specified" }}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label"><i class="fas fa-tint" style="color: #ef4444;"></i> Blood Group</div>
