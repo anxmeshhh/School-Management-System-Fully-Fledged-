@@ -5706,11 +5706,30 @@ def bulk_upload(request):
                     for index, row in df.iterrows():
                         try:
                             with transaction.atomic():
-                                user_id = row['user_id']
+                                user_id = row.get('user_id')
                                 if user_id is None:
-                                    cursor.execute("SELECT MAX(id) FROM users")
-                                    max_id = cursor.fetchone()[0] or 0
-                                    user_id = max_id + 1
+                                    # 1. Try to find existing user by admission_number (most reliable)
+                                    adm_no = row.get('admission_number')
+                                    if adm_no and str(adm_no).strip() != '':
+                                        cursor.execute("SELECT user_id FROM student_page1 WHERE admission_number = %s LIMIT 1", [adm_no])
+                                        res = cursor.fetchone()
+                                        if res:
+                                            user_id = res[0]
+                                    
+                                    # 2. If not found, try to find existing user by name (fallback)
+                                    if user_id is None:
+                                        name = row.get('name')
+                                        if name and str(name).strip() != '':
+                                            cursor.execute("SELECT id FROM users WHERE username = %s LIMIT 1", [name])
+                                            res = cursor.fetchone()
+                                            if res:
+                                                user_id = res[0]
+                                                
+                                    # 3. If STILL not found, generate new user_id
+                                    if user_id is None:
+                                        cursor.execute("SELECT MAX(id) FROM users")
+                                        max_id = cursor.fetchone()[0] or 0
+                                        user_id = max_id + 1
 
                                 base_username = str(row.get('name', ''))[:100]
                                 contact = str(row.get('contact', '')) if row.get('contact') else None
