@@ -3581,8 +3581,8 @@ def student_info(request):
         gender_stats_query = """
             SELECT sp1.class, sp1.section, 
                    COUNT(*) as total,
-                   SUM(CASE WHEN sp2.gender = 'Male' THEN 1 ELSE 0 END) as male_count,
-                   SUM(CASE WHEN sp2.gender = 'Female' THEN 1 ELSE 0 END) as female_count
+                   SUM(CASE WHEN LOWER(TRIM(sp2.gender)) = 'male' THEN 1 ELSE 0 END) as male_count,
+                   SUM(CASE WHEN LOWER(TRIM(sp2.gender)) = 'female' THEN 1 ELSE 0 END) as female_count
             FROM student_page1 sp1
             LEFT JOIN student_page2 sp2 ON sp1.user_id = sp2.user_id
             GROUP BY sp1.class, sp1.section
@@ -3651,9 +3651,11 @@ def student_info(request):
                 'students': []
             }
         class_section_groups[class_section]['count'] += 1
-        if student[6] == 'Male':
+        
+        gender_val = str(student[6]).strip().lower() if student[6] else ''
+        if gender_val == 'male':
             class_section_groups[class_section]['male_count'] += 1
-        elif student[6] == 'Female':
+        elif gender_val == 'female':
             class_section_groups[class_section]['female_count'] += 1
             
         class_section_groups[class_section]['students'].append({
