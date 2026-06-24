@@ -5472,22 +5472,26 @@ def bulk_upload(request):
                 is_minimalist = 'S.NO' in df.columns and 'NAME' in df.columns and 'ADMISSION NUMBER' in df.columns
                 
                 if is_minimalist:
+                    rename_map = {
+                        'S.NO': 'roll_number',
+                        'NAME': 'name',
+                        'GENDER': 'gender',
+                        'ADMISSION NUMBER': 'admission_number',
+                        'DOB': 'dob',
+                        'CLASS': 'class',
+                        'FATHER NAME': 'father_name',
+                        'CONTACT': 'contact',
+                        'MOTHER NAME': 'mother_name',
+                        'ADDRESS': 'address'
+                    }
+                    df = df.rename(columns=rename_map)
                     df['user_id'] = None
-                    df['roll_number'] = df['S.NO']
-                    df['name'] = df['NAME']
-                    df['gender'] = df['GENDER'] if 'GENDER' in df.columns else None
-                    df['admission_number'] = df['ADMISSION NUMBER']
-                    df['dob'] = df['DOB'] if 'DOB' in df.columns else None
+                    df['father_contact'] = df.get('contact', None)
                     df['mother_tongue'] = df.get('LINGUISTIC', df.get('LINGUSTIC', df.get('LINGUISTICS', df.get('LINGUSTICS', None))))
-                    df['class'] = df['CLASS'] if 'CLASS' in df.columns else None
-                    df['father_name'] = df.get('FATHER NAME', None)
-                    df['father_contact'] = df.get('CONTACT', None)
-                    df['contact'] = df.get('CONTACT', None)
-                    df['mother_name'] = df.get('MOTHER NAME', None)
                     df['mother_contact'] = df.get('MOTHER CONTACT', df.get('CONTAC T', df.get('CONTACT T', None)))
-                    df['address'] = df.get('ADDRESS', None)
                     
                 df.columns = df.columns.str.lower()
+                df = df.loc[:, ~df.columns.duplicated()]
                 
                 # Convert NaN, pd.NA, and None to None (MySQL NULL)
                 df = df.replace([pd.NA, np.nan, None], None)
@@ -5577,22 +5581,26 @@ def bulk_upload(request):
                 is_minimalist = 'S.NO' in df.columns and 'NAME' in df.columns and 'ADMISSION NUMBER' in df.columns
                 
                 if is_minimalist:
+                    rename_map = {
+                        'S.NO': 'roll_number',
+                        'NAME': 'name',
+                        'GENDER': 'gender',
+                        'ADMISSION NUMBER': 'admission_number',
+                        'DOB': 'dob',
+                        'CLASS': 'class',
+                        'FATHER NAME': 'father_name',
+                        'CONTACT': 'contact',
+                        'MOTHER NAME': 'mother_name',
+                        'ADDRESS': 'address'
+                    }
+                    df = df.rename(columns=rename_map)
                     df['user_id'] = None
-                    df['roll_number'] = df['S.NO']
-                    df['name'] = df['NAME']
-                    df['gender'] = df['GENDER'] if 'GENDER' in df.columns else None
-                    df['admission_number'] = df['ADMISSION NUMBER']
-                    df['dob'] = df['DOB'] if 'DOB' in df.columns else None
+                    df['father_contact'] = df.get('contact', None)
                     df['mother_tongue'] = df.get('LINGUISTIC', df.get('LINGUSTIC', df.get('LINGUISTICS', df.get('LINGUSTICS', None))))
-                    df['class'] = df['CLASS'] if 'CLASS' in df.columns else None
-                    df['father_name'] = df.get('FATHER NAME', None)
-                    df['father_contact'] = df.get('CONTACT', None)
-                    df['contact'] = df.get('CONTACT', None)
-                    df['mother_name'] = df.get('MOTHER NAME', None)
                     df['mother_contact'] = df.get('MOTHER CONTACT', df.get('CONTAC T', df.get('CONTACT T', None)))
-                    df['address'] = df.get('ADDRESS', None)
                     
                 df.columns = df.columns.str.lower()
+                df = df.loc[:, ~df.columns.duplicated()]
                 
                 # Convert NaN, pd.NA, and None to None (MySQL NULL)
                 df = df.replace([pd.NA, np.nan, None], None)
