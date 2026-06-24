@@ -5522,6 +5522,12 @@ def bulk_upload(request):
                 
                 # Convert NaN, pd.NA, and None to None (MySQL NULL)
                 df = df.replace([pd.NA, np.nan, None], None)
+                
+                # Apply "NIL" to all string columns
+                non_nil_cols = ['user_id', 'name', 'admission_number', 'roll_number', 'dob', 'admission_date', 'admission_year', 'teacher_ward', 'rte', 'sports_quota']
+                for col in df.columns:
+                    if col not in non_nil_cols:
+                        df[col] = df[col].apply(lambda x: 'NIL' if x is None or str(x).strip().upper() in ['NIL', 'NAN', 'NONE', 'NA', 'N/A', ''] else x)
 
                 if not is_minimalist:
                     # Validate user_id
@@ -5647,6 +5653,12 @@ def bulk_upload(request):
                 
                 # Convert NaN, pd.NA, and None to None (MySQL NULL)
                 df = df.replace([pd.NA, np.nan, None], None)
+                
+                # Apply "NIL" to all string columns
+                non_nil_cols = ['user_id', 'name', 'admission_number', 'roll_number', 'dob', 'admission_date', 'admission_year', 'teacher_ward', 'rte', 'sports_quota']
+                for col in df.columns:
+                    if col not in non_nil_cols:
+                        df[col] = df[col].apply(lambda x: 'NIL' if x is None or str(x).strip().upper() in ['NIL', 'NAN', 'NONE', 'NA', 'N/A', ''] else x)
 
                 if not is_minimalist:
                     # Validate user_id
