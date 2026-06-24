@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-# ─── Notification Service Import ────────────────────────────────────────────
+# ????????? Notification Service Import ????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 from users.notifications import (
     create_notification, notify, notify_all_admins, notify_all_teachers,
     notify_class_students, notify_class_parents, notify_student_and_parents,
@@ -59,7 +59,7 @@ def signup_view(request):
                 cursor.execute(query, (username, email, password))
                 connection.commit()
 
-                # ── Notification: New student registered ──
+                # ?????? Notification: New student registered ??????
                 notify_all_admins('auth', 'New Student Registered', f'New student registered: {username}', '/admin_master/')
 
                 return HttpResponse("Success")
@@ -163,7 +163,7 @@ def change_password_view(request):
                 cursor.execute("UPDATE users SET password = %s WHERE username = %s", (new_password, current_username))
             connection.commit()
 
-            # ── Notification: Credentials updated ──
+            # ?????? Notification: Credentials updated ??????
             user_id_val = request.session.get('user_id')
             if user_id_val:
                 notify('student', user_id_val, 'auth', 'Credentials Updated', 'Your credentials were updated successfully.')
@@ -1249,7 +1249,7 @@ def admin_signup(request):
                 cursor.execute(query, (full_name, email, password))
                 connection.commit()
 
-            # ── Notification: New admin registered ──
+            # ?????? Notification: New admin registered ??????
             notify_all_admins('auth', 'New Admin Registered', f'New admin registered: {full_name}')
 
             messages.success(request, 'Signup successful! Please login.')
@@ -1349,7 +1349,7 @@ def admin_circular_upload(request):
                 messages.error(request, 'Error saving circular metadata.')
                 return redirect('admin_circular_upload')
 
-            # ── Notification: Circular uploaded ──
+            # ?????? Notification: Circular uploaded ??????
             if target == 'specific' and class_name and section:
                 notify_class_students(class_name, section, 'circular', 'New Circular', f'New circular: {title}', '/student_circular/')
                 notify_class_parents(class_name, section, 'circular', 'New Circular', f'New circular: {title}', '/parent-student-circular/')
@@ -1610,7 +1610,7 @@ def teacher_circular_upload(request):
 
         messages.success(request, 'Circular uploaded successfully.')
 
-        # ── Notification: Teacher circular uploaded ──
+        # ?????? Notification: Teacher circular uploaded ??????
         notify_class_students(class_name, section, 'circular', 'New Circular', f'New circular from teacher: {title}', '/student_circular/')
         notify_class_parents(class_name, section, 'circular', 'New Circular', f'New circular from teacher: {title}', '/parent-student-circular/')
 
@@ -1759,7 +1759,7 @@ def student_leave(request):
                       "Pending"])
                 connection.commit()
 
-            # ── Notification: Leave request submitted ──
+            # ?????? Notification: Leave request submitted ??????
             notify_all_admins('leave', 'New Leave Request', f'Leave request from {form_data["student_name"]} for {form_data["leave_start_date"]} to {form_data["leave_end_date"]}', '/admin_accept_portal/', 'student', user_id)
             notify_all_teachers('leave', 'New Leave Request', f'Leave request from {form_data["student_name"]} for {form_data["leave_start_date"]} to {form_data["leave_end_date"]}', '/teacher_accept_portal/', 'student', user_id)
 
@@ -1900,12 +1900,12 @@ def admin_accept_portal(request):
                     if cursor.rowcount == 0:
                         messages.error(request, 'Cannot update: Request already processed or not found.')
                     else:
-                        # ── Notification: Leave approved/rejected by admin ──
+                        # ?????? Notification: Leave approved/rejected by admin ??????
                         try:
                             cursor.execute("SELECT user_id, student_name FROM student_leave_requests WHERE id = %s", [leave_id])
                             lr = cursor.fetchone()
                             if lr:
-                                status_emoji = '✅' if new_status == 'Approved' else '❌'
+                                status_emoji = '???' if new_status == 'Approved' else '???'
                                 notify('student', lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} {status_emoji}', '/student-portal/leave/')
                         except Exception:
                             pass
@@ -2113,12 +2113,12 @@ def teacher_accept_portal(request):
                     if cursor.rowcount == 0:
                         messages.error(request, 'Cannot update: Request already processed or not found.')
                     else:
-                        # ── Notification: Leave approved/rejected by teacher ──
+                        # ?????? Notification: Leave approved/rejected by teacher ??????
                         try:
                             cursor.execute("SELECT user_id, student_name FROM student_leave_requests WHERE id = %s", [leave_id])
                             lr = cursor.fetchone()
                             if lr:
-                                status_emoji = '✅' if new_status == 'Approved' else '❌'
+                                status_emoji = '???' if new_status == 'Approved' else '???'
                                 notify('student', lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} by teacher {status_emoji}', '/student-portal/leave/')
                         except Exception:
                             pass
@@ -2380,7 +2380,7 @@ def admin_study_materials_upload(request):
                         )
                     messages.success(request, "Study material uploaded to all sections successfully!")
 
-                    # ── Notification: Study material for all sections ──
+                    # ?????? Notification: Study material for all sections ??????
                     for sec in sections_for_class:
                         notify_class_students(selected_class, sec, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{sec}', '/study_materials/')
                         notify_class_parents(selected_class, sec, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{sec}', '/parent-study-materials/')
@@ -2395,7 +2395,7 @@ def admin_study_materials_upload(request):
                     )
                     messages.success(request, "Study material uploaded successfully!")
 
-                    # ── Notification: Study material for specific section ──
+                    # ?????? Notification: Study material for specific section ??????
                     notify_class_students(selected_class, selected_section, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{selected_section}', '/study_materials/')
                     notify_class_parents(selected_class, selected_section, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{selected_section}', '/parent-study-materials/')
         except Exception as e:
@@ -2708,7 +2708,7 @@ def homework_view(request):
                 )
             messages.success(request, "Homework submitted successfully!")
 
-            # ── Notification: Student homework submitted ──
+            # ?????? Notification: Student homework submitted ??????
             notify_all_admins('homework', 'Homework Submitted', f'Homework submitted by student: {title}', '/teacher_homework_panel/', 'student', user_id)
             if student_class and student_section:
                 notify_class_teacher(student_class, student_section, 'homework', 'Homework Submitted', f'Homework submitted by student: {title}', '/teacher_homework_panel/', 'student', user_id)
@@ -3028,7 +3028,7 @@ def teacher_homework_panel(request):
 
         messages.success(request, f'Homework "{title}" uploaded successfully!')
 
-        # ── Notification: Teacher assigned homework ──
+        # ?????? Notification: Teacher assigned homework ??????
         if target == 'specific' and class_name and section:
             notify_class_students(class_name, section, 'homework', 'New Homework', f'New homework assigned: {title}' + (f' (Due: {due_date})' if due_date else ''), '/homework/')
             notify_class_parents(class_name, section, 'homework', 'New Homework', f'New homework assigned: {title}' + (f' (Due: {due_date})' if due_date else ''), '/parent-homework/')
@@ -3340,7 +3340,7 @@ def add_class(request):
                         """, [admin_id, class_part, section])
                         
                         messages.success(request, f'Class {class_name} added successfully.')
-                        # ── Notification: Class added ──
+                        # ?????? Notification: Class added ??????
                         notify_all_admins('class', 'New Class Created', f'New class created: {class_name}', '/view_edit_class/')
                         return redirect('view_edit_class')
                         
@@ -3435,7 +3435,7 @@ def delete_class(request, class_id):
                 WHERE id = %s
             """, [class_id])
         messages.success(request, 'Class deleted successfully.')
-        # ── Notification: Class deleted ──
+        # ?????? Notification: Class deleted ??????
         notify_all_admins('class', 'Class Deleted', 'A class has been deleted.', '/view_edit_class/')
     except Exception as e:
         messages.error(request, f'Error deleting class: {str(e)}')
@@ -3512,7 +3512,7 @@ def duplicate_class(request):
                 source_class_display = f"{source_class[0]}-{source_class[1]}"
                 new_class_display = f"{new_class}-{new_section}"
                 
-                messages.success(request, f'✅ Class "{new_class_display}" created successfully as a duplicate of "{source_class_display}"!')
+                messages.success(request, f'??? Class "{new_class_display}" created successfully as a duplicate of "{source_class_display}"!')
                 
             except Exception as e:
                 messages.error(request, f'Error creating duplicate class: {str(e)}')
@@ -3900,7 +3900,7 @@ def add_student(request):
 
             messages.success(request, f'Student {name} added successfully with Admission Number: {admission_number}')
 
-            # ── Notification: Student added ──
+            # ?????? Notification: Student added ??????
             notify_all_admins('student', 'New Student Added', f'New student added: {name} to class {class_part}-{section}', '/student_info/')
 
             return redirect('student_info')
@@ -4628,7 +4628,7 @@ def delete_student(request, student_id):
                 cursor.execute("DELETE FROM users WHERE id = %s", [user_id])
 
         messages.success(request, f'Student {student_name} deleted successfully.')
-        # ── Notification: Student deleted ──
+        # ?????? Notification: Student deleted ??????
         notify_all_admins('student', 'Student Removed', f'Student removed: {student_name}', '/student_info/')
     except IntegrityError as e:
         error_code, error_message = e.args
@@ -5467,14 +5467,19 @@ def bulk_upload(request):
 
                 # --- Normalize for Minimalist / New Excel Format ---
                 df.columns = df.columns.astype(str).str.strip().str.upper()
-                is_minimalist = 'S.NO' in df.columns and 'NAME' in df.columns and 'ADMISSION NUMBER' in df.columns
+                
+                sno_col = next((c for c in ['S.NO', 'SNO', 'ROLL_NUMBER', 'ROLL NUMBER'] if c in df.columns), None)
+                adm_col = next((c for c in ['ADMISSION NUMBER', 'ADMISSION_NUMBER', 'ADM NO', 'ADM.NO', 'ADMISSION NO'] if c in df.columns), None)
+                name_col = 'NAME' if 'NAME' in df.columns else None
+                
+                is_minimalist = bool(sno_col and name_col and adm_col)
                 
                 if is_minimalist:
                     rename_map = {
-                        'S.NO': 'roll_number',
-                        'NAME': 'name',
+                        sno_col: 'roll_number',
+                        name_col: 'name',
                         'GENDER': 'gender',
-                        'ADMISSION NUMBER': 'admission_number',
+                        adm_col: 'admission_number',
                         'DOB': 'dob',
                         'CLASS': 'class',
                         'FATHER NAME': 'father_name',
@@ -5598,14 +5603,19 @@ def bulk_upload(request):
 
                 # --- Normalize for Minimalist / New Excel Format ---
                 df.columns = df.columns.astype(str).str.strip().str.upper()
-                is_minimalist = 'S.NO' in df.columns and 'NAME' in df.columns and 'ADMISSION NUMBER' in df.columns
+                
+                sno_col = next((c for c in ['S.NO', 'SNO', 'ROLL_NUMBER', 'ROLL NUMBER'] if c in df.columns), None)
+                adm_col = next((c for c in ['ADMISSION NUMBER', 'ADMISSION_NUMBER', 'ADM NO', 'ADM.NO', 'ADMISSION NO'] if c in df.columns), None)
+                name_col = 'NAME' if 'NAME' in df.columns else None
+                
+                is_minimalist = bool(sno_col and name_col and adm_col)
                 
                 if is_minimalist:
                     rename_map = {
-                        'S.NO': 'roll_number',
-                        'NAME': 'name',
+                        sno_col: 'roll_number',
+                        name_col: 'name',
                         'GENDER': 'gender',
-                        'ADMISSION NUMBER': 'admission_number',
+                        adm_col: 'admission_number',
                         'DOB': 'dob',
                         'CLASS': 'class',
                         'FATHER NAME': 'father_name',
@@ -6105,7 +6115,7 @@ def add_teacher(request):
                 ])
 
         messages.success(request, f'Teacher "{full_name}" added successfully!')
-        # ── Notification: Teacher added ──
+        # ?????? Notification: Teacher added ??????
         notify_all_admins('user', 'New Teacher Added', f'New teacher added: {full_name}', '/teachers/')
         
     except IntegrityError as e:
@@ -6310,7 +6320,7 @@ def delete_teacher(request, teacher_id):
                 )
 
         messages.success(request, 'Teacher and all associated records deleted successfully.')
-        # ── Notification: Teacher deleted ──
+        # ?????? Notification: Teacher deleted ??????
         notify_all_admins('user', 'Teacher Removed', 'A teacher and all associated records have been deleted.', '/teachers/')
     except Error as e:
         messages.error(request, f'Error deleting teacher: {str(e)}')
@@ -6666,7 +6676,7 @@ def teacher_signup(request):
 
         messages.success(request, 'Registration successful! Please login.')
 
-        # ── Notification: New teacher registered ──
+        # ?????? Notification: New teacher registered ??????
         notify_all_admins('auth', 'New Teacher Registered', f'New teacher registered: {name} (ID: {teacher_id})', '/master-data/')
 
         return redirect('teacher_login')
@@ -6938,7 +6948,7 @@ def mark_single_attendance(request):
                 
                 return JsonResponse({
                     'success': True,
-                    'message': f'✓ {name}: {status.upper()}',
+                    'message': f'??? {name}: {status.upper()}',
                     'status': status,
                     'all_marked': all_marked,
                     'marked_count': marked_students,
@@ -7068,7 +7078,7 @@ def submit_attendance_batch(request):
                     'message': f'Cannot submit: {total_count - marked_count} students still need attendance marked.'
                 }, status=400)
 
-            # ── Notification: Batch attendance submitted ──
+            # ?????? Notification: Batch attendance submitted ??????
             try:
                 notify_class_students(selected_class, selected_section, 'attendance', 'Attendance Submitted', f'Attendance has been finalized for your class on {selected_date}.', '/student_timetable/')
                 notify_class_parents(selected_class, selected_section, 'attendance', 'Attendance Submitted', f'Attendance has been finalized for class {selected_class}-{selected_section} on {selected_date}.', '/parent_dashboard/')
@@ -7078,7 +7088,7 @@ def submit_attendance_batch(request):
 
             return JsonResponse({
                 'success': True,
-                'message': f'✓ Attendance submitted successfully for {marked_count} students',
+                'message': f'??? Attendance submitted successfully for {marked_count} students',
                 'total_count': total_count,
                 'marked_count': marked_count
             })
@@ -7587,7 +7597,7 @@ def parent_signup(request):
 
                 connection.commit()
 
-                # ── Notification: New parent registered ──
+                # ?????? Notification: New parent registered ??????
                 notify_all_admins('auth', 'New Parent Registered', f'New parent registered for admission: {admission_number}')
 
                 messages.success(request, 'Account created successfully! Please log in.')
@@ -9149,7 +9159,7 @@ def admin_timetable_add(request):
             """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room or None, week_start, week_end])
         
         messages.success(request, 'Timetable entry added successfully.')
-        # ── Notification: Admin added timetable entry ──
+        # ?????? Notification: Admin added timetable entry ??????
         try:
             notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable updated for {class_name}-{section}: {subject} on {day_of_week}', '/student_timetable/')
             notify_class_parents(class_name, section, 'timetable', 'Timetable Updated', f'Timetable updated for {class_name}-{section}: {subject} on {day_of_week}', '/parent-student-timetable/')
@@ -9262,7 +9272,7 @@ def admin_timetable_edit(request, id):
                 return redirect('admin_timetable_edit', id=id)
             
             messages.success(request, 'Timetable entry updated successfully.')
-            # ── Notification: Admin edited timetable entry ──
+            # ?????? Notification: Admin edited timetable entry ??????
             try:
                 notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable changed for {class_name}-{section}: {subject} on {day_of_week}', '/student_timetable/')
                 notify_class_parents(class_name, section, 'timetable', 'Timetable Updated', f'Timetable changed for {class_name}-{section}: {subject} on {day_of_week}', '/parent-student-timetable/')
@@ -9321,7 +9331,7 @@ def admin_timetable_delete(request, id):
         cursor.execute("DELETE FROM timetable WHERE id = %s", [id])
     
     messages.success(request, 'Timetable entry deleted successfully.')
-    # ── Notification: Admin deleted timetable entry ──
+    # ?????? Notification: Admin deleted timetable entry ??????
     try:
         if class_name:
             notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable entry removed for {class_name}-{section}: {subject} on {day_of_week}', '/student_timetable/')
@@ -9792,7 +9802,7 @@ def teacher_timetable_add(request):
             """, [class_id, subject, teacher_id, day_of_week, start_time, end_time, room or None, week_start, week_end])
         
         messages.success(request, 'Timetable entry added successfully.')
-        # ── Notification: Teacher added timetable entry ──
+        # ?????? Notification: Teacher added timetable entry ??????
         try:
             notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable updated by teacher: {class_name}-{section}: {subject} on {day_of_week}', '/student_timetable/')
             notify_class_parents(class_name, section, 'timetable', 'Timetable Updated', f'Timetable updated by teacher: {class_name}-{section}: {subject} on {day_of_week}', '/parent-student-timetable/')
@@ -9897,7 +9907,7 @@ def teacher_timetable_edit(request, id):
                 return redirect('teacher_timetable_edit', id=id)
             
             messages.success(request, 'Timetable entry updated successfully.')
-            # ── Notification: Teacher updated timetable entry ──
+            # ?????? Notification: Teacher updated timetable entry ??????
             try:
                 notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable changed by teacher: {class_name}-{section}: {subject} on {day_of_week}', '/student_timetable/')
                 notify_class_parents(class_name, section, 'timetable', 'Timetable Updated', f'Timetable changed by teacher: {class_name}-{section}: {subject} on {day_of_week}', '/parent-student-timetable/')
@@ -9950,7 +9960,7 @@ def teacher_timetable_delete(request, id):
             messages.error(request, 'Timetable entry not found or you do not have permission.')
         else:
             messages.success(request, 'Timetable entry deleted successfully.')
-            # ── Notification: Teacher deleted timetable entry ──
+            # ?????? Notification: Teacher deleted timetable entry ??????
             try:
                 if class_name:
                     notify_class_students(class_name, section, 'timetable', 'Timetable Updated', f'Timetable entry removed by teacher: {subject} on {day_of_week}', '/student_timetable/')
@@ -10776,7 +10786,7 @@ def parent_student_leave(request):
                       "Pending"])
                 connection.commit()
             
-            # ── Notification: Parent Leave Request ──
+            # ?????? Notification: Parent Leave Request ??????
             notify_all_admins('leave', 'New Leave Request', f'Leave request from parent for {form_data["student_name"]} ({form_data["class_number"]}-{form_data["section"]}) from {form_data["leave_start_date"]} to {form_data["leave_end_date"]}', '/accept-portal/', 'parent', user_id)
             notify_class_teacher(form_data["class_number"], form_data["section"], 'leave', 'New Leave Request', f'Leave request from parent for {form_data["student_name"]} from {form_data["leave_start_date"]} to {form_data["leave_end_date"]}', '/teacher_accept_portal/', 'parent', user_id)
 
@@ -11516,7 +11526,7 @@ def save_parent_signature(request):
                 
                 connection.commit()
                 
-                # ── Notification: Parent signature saved ──
+                # ?????? Notification: Parent signature saved ??????
                 try:
                     cursor.execute("SELECT name, class, section FROM student_page1 WHERE user_id = %s", [student_id])
                     student_info = cursor.fetchone()
@@ -12105,7 +12115,7 @@ def admin_exam_add(request):
             """, [class_id, subject, exam_date, start_time, end_time, room or None, invigilator_id])
         
         messages.success(request, 'Exam entry added successfully.')
-        # ── Notification: Admin scheduled new exam ──
+        # ?????? Notification: Admin scheduled new exam ??????
         try:
             notify_class_students(class_name, section, 'exam', 'New Exam Scheduled', f'New exam scheduled: {subject} for class {class_name}-{section} on {exam_date}', '/student_timetable/')
             notify_class_parents(class_name, section, 'exam', 'New Exam Scheduled', f'New exam scheduled: {subject} for class {class_name}-{section} on {exam_date}', '/parent-student-timetable/')
@@ -12390,7 +12400,7 @@ def admin_exam_edit(request, exam_id):
             """, [class_id_new, subject, exam_date, start_time, end_time, room or None, invigilator_id, exam_id])
         
         messages.success(request, 'Exam entry updated successfully.')
-        # ── Notification: Admin modified exam schedule ──
+        # ?????? Notification: Admin modified exam schedule ??????
         try:
             notify_class_students(class_name, section, 'exam', 'Exam Schedule Changed', f'Exam schedule updated: {subject} for class {class_name}-{section} on {exam_date}', '/student_timetable/')
             notify_class_parents(class_name, section, 'exam', 'Exam Schedule Changed', f'Exam schedule updated: {subject} for class {class_name}-{section} on {exam_date}', '/parent-student-timetable/')
@@ -12471,7 +12481,7 @@ def admin_exam_delete(request, exam_id):
             # Removed the DELETE from exam_students since the table doesn't exist
         
         messages.success(request, 'Exam entry deleted successfully.')
-        # ── Notification: Admin deleted exam ──
+        # ?????? Notification: Admin deleted exam ??????
         try:
             if class_name:
                 notify_class_students(class_name, section, 'exam', 'Exam Cancelled', f'Exam cancelled: {subject} on {exam_date}', '/student_timetable/')
@@ -12985,7 +12995,7 @@ def generate_whatsapp_link(request):
         if not mobile or not name or not student_id:
             return JsonResponse({"error": "Missing required fields"}, status=400)
 
-        # 🔥 Generate PDF on demand
+        # ???? Generate PDF on demand
         generate_student_pdf(student_id, admission_number, name)
 
         pdf_url = request.build_absolute_uri(
@@ -13043,9 +13053,9 @@ from users.notifications import (
     generate_dynamic_reminders
 )
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 # NOTIFICATION API VIEWS
-# ═══════════════════════════════════════════════════════════════════════════════
+# ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
 REMINDER_INTERVAL = 300  # 5 minutes
 
@@ -13083,7 +13093,7 @@ def _maybe_generate_reminders(request, user_type, user_id):
         request.session[session_key] = now
 
 
-# ─── SSE: Real-Time Notification Stream ──────────────────────────────────────
+# ????????? SSE: Real-Time Notification Stream ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 # Replaces polling entirely when the tab is open.
 # The client connects once; the server pushes count updates instantly.
 # Reconnects automatically on drop (EventSource is self-healing).
@@ -13091,7 +13101,7 @@ def _maybe_generate_reminders(request, user_type, user_id):
 def api_notification_stream(request):
     """
     GET /api/notifications/stream/?type=<>&id=<>
-    Server-Sent Events endpoint — pushes count updates to the tab in real time.
+    Server-Sent Events endpoint ??? pushes count updates to the tab in real time.
     Falls back gracefully: if the client disconnects, Django drops the generator.
     Keep-alive ping every 25s prevents proxy/load-balancer timeout disconnects.
     """
@@ -13115,7 +13125,7 @@ def api_notification_stream(request):
             try:
                 now = time.time()
 
-                # Keep-alive ping — prevents nginx/proxy from closing idle connection
+                # Keep-alive ping ??? prevents nginx/proxy from closing idle connection
                 if now - last_ping >= KEEPALIVE:
                     yield ": ping\n\n"
                     last_ping = now
@@ -13130,10 +13140,10 @@ def api_notification_stream(request):
                 time.sleep(POLL_DB_EVERY)
 
             except GeneratorExit:
-                # Client disconnected cleanly — stop the generator
+                # Client disconnected cleanly ??? stop the generator
                 break
             except Exception:
-                # DB hiccup — wait and retry rather than crashing the stream
+                # DB hiccup ??? wait and retry rather than crashing the stream
                 time.sleep(10)
 
     response = StreamingHttpResponse(
@@ -13147,11 +13157,11 @@ def api_notification_stream(request):
     return response
 
 
-# ─── Notifications List ───────────────────────────────────────────────────────
+# ????????? Notifications List ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
 @csrf_exempt
 def api_get_notifications(request):
-    """GET /api/notifications/ — Fetch notifications with grouping."""
+    """GET /api/notifications/ ??? Fetch notifications with grouping."""
     user_type, user_id = _get_notif_user(request)
     if not user_type or not user_id:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
@@ -13163,7 +13173,7 @@ def api_get_notifications(request):
     return JsonResponse({'notifications': notifications})
 
 
-# ─── Count (kept for SW background sync fallback) ────────────────────────────
+# ????????? Count (kept for SW background sync fallback) ????????????????????????????????????????????????????????????????????????????????????
 
 @csrf_exempt
 def api_notification_count(request):
@@ -13182,11 +13192,11 @@ def api_notification_count(request):
     return JsonResponse({'count': count})
 
 
-# ─── Mark Read ────────────────────────────────────────────────────────────────
+# ????????? Mark Read ????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
 @csrf_exempt
 def api_mark_read(request, notification_id):
-    """POST /api/notifications/read/<id>/ — Mark notification(s) as read."""
+    """POST /api/notifications/read/<id>/ ??? Mark notification(s) as read."""
     if request.method != 'POST':
         return JsonResponse({'error': 'POST required'}, status=405)
 
@@ -13211,7 +13221,7 @@ def api_mark_read(request, notification_id):
 
 @csrf_exempt
 def api_mark_all_read(request):
-    """POST /api/notifications/read-all/ — Mark all notifications as read."""
+    """POST /api/notifications/read-all/ ??? Mark all notifications as read."""
     if request.method != 'POST':
         return JsonResponse({'error': 'POST required'}, status=405)
 
@@ -13223,7 +13233,7 @@ def api_mark_all_read(request):
     return JsonResponse({'success': True, 'marked': count})
 
 
-# ─── Push Subscribe ───────────────────────────────────────────────────────────
+# ????????? Push Subscribe ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
 @csrf_exempt
 def api_push_subscribe(request):
@@ -13244,7 +13254,7 @@ def api_push_subscribe(request):
     try:
         user_type, user_id = _get_notif_user(request)
 
-        # SW-initiated renewal won't have a session — fall back to body params
+        # SW-initiated renewal won't have a session ??? fall back to body params
         if not user_type or not user_id:
             user_type = data.get('type')
             raw_id    = data.get('id')
