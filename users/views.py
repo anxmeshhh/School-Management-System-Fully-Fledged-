@@ -834,6 +834,10 @@ def bulk_id_card(request):
         cursor.execute("SELECT DISTINCT class FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class")
         classes = [row[0] for row in cursor.fetchall()]
 
+    if request.method == 'GET':
+        success_data = request.session.pop('upload_success', None)
+        return render(request, 'users/bulk_upload.html', {'success_data': success_data})
+
     if request.method == 'POST':
         student_class = request.POST.get('class')
         section = request.POST.get('section')
@@ -5551,7 +5555,7 @@ def bulk_upload(request):
                 if 'admission_date' in df.columns:
                     df['admission_date'] = pd.to_datetime(df['admission_date'], dayfirst=True, errors='coerce').dt.strftime('%Y-%m-%d')
 
-                preview_data = df.head(10).to_dict('records')
+                preview_data = df.to_dict('records')
                 preview_columns = df.columns.tolist()
 
                 request.session['temp_excel_file'] = filename
@@ -5769,9 +5773,14 @@ def bulk_upload(request):
                             skipped_rows.append(error_msg)
                             continue  # Continue with the next row
 
-                if skipped_rows:
-                    messages.warning(request, f"Some rows were skipped: {'; '.join(skipped_rows)}")
-                messages.success(request, 'Data upload completed!')
+                # Set success data in session
+                request.session['upload_success'] = {
+                    'total': len(df),
+                    'inserted': len(df) - len(skipped_rows),
+                    'skipped': len(skipped_rows),
+                    'skipped_details': skipped_rows
+                }
+
                 fs.delete(filename)
                 if 'temp_excel_file' in request.session:
                     del request.session['temp_excel_file']
@@ -5784,6 +5793,7 @@ def bulk_upload(request):
                     del request.session['temp_excel_file']
                 return redirect('bulk_upload')
 
+    # Fallback return
     return render(request, 'users/bulk_upload.html')
 
 
