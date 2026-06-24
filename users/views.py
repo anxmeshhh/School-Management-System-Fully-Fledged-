@@ -5731,18 +5731,24 @@ def bulk_upload(request):
                                 else:
                                     print(f"Skipped user_id: {user_id} (already exists in users)")
 
-                                # Insert into student_page1 (update name if exists)
+                                # Insert into student_page1 (update if exists)
                                 cursor.execute("""
                                     INSERT INTO student_page1 (
                                         user_id, name, admission_number, class, section, roll_number, emis
                                     ) VALUES (%s, %s, %s, %s, %s, %s, %s)
-                                    ON DUPLICATE KEY UPDATE name = name
+                                    ON DUPLICATE KEY UPDATE 
+                                        name = VALUES(name),
+                                        admission_number = VALUES(admission_number),
+                                        class = VALUES(class),
+                                        section = VALUES(section),
+                                        roll_number = VALUES(roll_number),
+                                        emis = VALUES(emis)
                                 """, [
                                     user_id, row.get('name'), row.get('admission_number'), row.get('class'),
                                     row.get('section'), row.get('roll_number'), row.get('emis')
                                 ])
 
-                                # Insert into student_page2 (update gender if exists)
+                                # Insert into student_page2 (update if exists)
                                 cursor.execute("""
                                     INSERT INTO student_page2 (
                                         user_id, gender, community, tamil_name, dob, nationality, blood_group,
@@ -5750,7 +5756,25 @@ def bulk_upload(request):
                                         id_mark1, id_mark2, current_class, admission_class, admission_year,
                                         admission_date
                                     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                    ON DUPLICATE KEY UPDATE gender = gender
+                                    ON DUPLICATE KEY UPDATE 
+                                        gender = VALUES(gender),
+                                        community = VALUES(community),
+                                        tamil_name = VALUES(tamil_name),
+                                        dob = VALUES(dob),
+                                        nationality = VALUES(nationality),
+                                        blood_group = VALUES(blood_group),
+                                        mother_tongue = VALUES(mother_tongue),
+                                        caste = VALUES(caste),
+                                        religion = VALUES(religion),
+                                        place_of_birth = VALUES(place_of_birth),
+                                        aadhaar = VALUES(aadhaar),
+                                        disability = VALUES(disability),
+                                        id_mark1 = VALUES(id_mark1),
+                                        id_mark2 = VALUES(id_mark2),
+                                        current_class = VALUES(current_class),
+                                        admission_class = VALUES(admission_class),
+                                        admission_year = VALUES(admission_year),
+                                        admission_date = VALUES(admission_date)
                                 """, [
                                     user_id, row.get('gender'), row.get('community'), row.get('tamil_name'), row.get('dob'),
                                     row.get('nationality'), row.get('blood_group'), row.get('mother_tongue'),
@@ -5759,13 +5783,28 @@ def bulk_upload(request):
                                     row.get('admission_class'), row.get('admission_year'), row.get('admission_date')
                                 ])
 
-                                # Insert into student_page3 (update email if exists)
+                                # Insert into student_page3 (update if exists)
                                 cursor.execute("""
                                     INSERT INTO student_page3 (
                                         user_id, email, address, contact, alt_contact, country, state, city, pincode,
                                         status, house, teacher_ward, rte, sports_quota, prev_school, prev_board
                                     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                    ON DUPLICATE KEY UPDATE email = email
+                                    ON DUPLICATE KEY UPDATE 
+                                        email = VALUES(email),
+                                        address = VALUES(address),
+                                        contact = VALUES(contact),
+                                        alt_contact = VALUES(alt_contact),
+                                        country = VALUES(country),
+                                        state = VALUES(state),
+                                        city = VALUES(city),
+                                        pincode = VALUES(pincode),
+                                        status = VALUES(status),
+                                        house = VALUES(house),
+                                        teacher_ward = VALUES(teacher_ward),
+                                        rte = VALUES(rte),
+                                        sports_quota = VALUES(sports_quota),
+                                        prev_school = VALUES(prev_school),
+                                        prev_board = VALUES(prev_board)
                                 """, [
                                     user_id, row.get('email'), row.get('address'), row.get('contact'), row.get('alt_contact'),
                                     row.get('country'), row.get('state'), row.get('city'), row.get('pincode'),
@@ -5773,7 +5812,7 @@ def bulk_upload(request):
                                     row.get('sports_quota'), row.get('prev_school'), row.get('prev_board')
                                 ])
 
-                                # Insert into student_page4 (update father_name if exists)
+                                # Insert into student_page4 (update if exists)
                                 cursor.execute("""
                                     INSERT INTO student_page4 (
                                         user_id, father_name, father_name_tamil, mother_name, mother_name_tamil,
@@ -5782,7 +5821,32 @@ def bulk_upload(request):
                                         mother_income, guardian_name, guardian_contact, guardian_email, child_living,
                                         rights_on_child, med_blood_group, diseases, allergies, medicines, hospital, doctor
                                     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                    ON DUPLICATE KEY UPDATE father_name = father_name
+                                    ON DUPLICATE KEY UPDATE 
+                                        father_name = VALUES(father_name),
+                                        father_name_tamil = VALUES(father_name_tamil),
+                                        mother_name = VALUES(mother_name),
+                                        mother_name_tamil = VALUES(mother_name_tamil),
+                                        father_contact = VALUES(father_contact),
+                                        mother_contact = VALUES(mother_contact),
+                                        father_email = VALUES(father_email),
+                                        mother_email = VALUES(mother_email),
+                                        father_qualification = VALUES(father_qualification),
+                                        mother_qualification = VALUES(mother_qualification),
+                                        father_occupation = VALUES(father_occupation),
+                                        mother_occupation = VALUES(mother_occupation),
+                                        father_income = VALUES(father_income),
+                                        mother_income = VALUES(mother_income),
+                                        guardian_name = VALUES(guardian_name),
+                                        guardian_contact = VALUES(guardian_contact),
+                                        guardian_email = VALUES(guardian_email),
+                                        child_living = VALUES(child_living),
+                                        rights_on_child = VALUES(rights_on_child),
+                                        med_blood_group = VALUES(med_blood_group),
+                                        diseases = VALUES(diseases),
+                                        allergies = VALUES(allergies),
+                                        medicines = VALUES(medicines),
+                                        hospital = VALUES(hospital),
+                                        doctor = VALUES(doctor)
                                 """, [
                                     user_id, row.get('father_name'), row.get('father_name_tamil'), row.get('mother_name'),
                                     row.get('mother_name_tamil'), row.get('father_contact'), row.get('mother_contact'),
