@@ -5533,7 +5533,7 @@ def bulk_upload(request):
                     return redirect('bulk_upload')
                 
                 # Convert NaN, pd.NA, and None to None (MySQL NULL)
-                df = df.replace([pd.NA, np.nan, None], None)
+                df = df.astype(object).where(pd.notnull(df), None)
                 
                 # Apply "NIL" to all string columns
                 non_nil_cols = ['user_id', 'name', 'admission_number', 'roll_number', 'dob', 'admission_date', 'admission_year', 'teacher_ward', 'rte', 'sports_quota']
@@ -5674,7 +5674,7 @@ def bulk_upload(request):
                         df[col] = df[col].apply(lambda x: val_map.get(str(x).strip().lower(), str(x).strip()) if pd.notna(x) and str(x).strip() else None)
                 
                 # Convert NaN, pd.NA, and None to None (MySQL NULL)
-                df = df.replace([pd.NA, np.nan, None], None)
+                df = df.astype(object).where(pd.notnull(df), None)
                 
                 # Apply "NIL" to all string columns
                 non_nil_cols = ['user_id', 'name', 'admission_number', 'roll_number', 'dob', 'admission_date', 'admission_year', 'teacher_ward', 'rte', 'sports_quota']
