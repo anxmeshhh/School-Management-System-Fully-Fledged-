@@ -5496,6 +5496,17 @@ def bulk_upload(request):
                         if col not in df.columns:
                             df[col] = None
 
+                # Standardize case-sensitive ENUM fields
+                standardize_map = {
+                    'gender': {'male': 'Male', 'female': 'Female', 'other': 'Other'},
+                    'community': {'general': 'General', 'obc': 'OBC', 'sc': 'SC', 'st': 'ST', 'other': 'Other'},
+                    'blood_group': {'a+ve': 'A+ve', 'a-ve': 'A-ve', 'b+ve': 'B+ve', 'b-ve': 'B-ve', 'o+ve': 'O+ve', 'o-ve': 'O-ve', 'ab+ve': 'AB+ve', 'ab-ve': 'AB-ve'},
+                    'med_blood_group': {'a+ve': 'A+ve', 'a-ve': 'A-ve', 'b+ve': 'B+ve', 'b-ve': 'B-ve', 'o+ve': 'O+ve', 'o-ve': 'O-ve', 'ab+ve': 'AB+ve', 'ab-ve': 'AB-ve'}
+                }
+                for col, val_map in standardize_map.items():
+                    if col in df.columns:
+                        df[col] = df[col].apply(lambda x: val_map.get(str(x).strip().lower(), str(x).strip()) if pd.notna(x) and str(x).strip() else None)
+
                 missing_columns = [col for col in expected_columns if col not in df.columns]
                 if missing_columns:
                     messages.error(request, f'Missing columns in Excel file: {", ".join(missing_columns)}')
@@ -5610,6 +5621,17 @@ def bulk_upload(request):
                     
                 df.columns = df.columns.str.lower()
                 df = df.loc[:, ~df.columns.duplicated()]
+                
+                # Standardize case-sensitive ENUM fields
+                standardize_map = {
+                    'gender': {'male': 'Male', 'female': 'Female', 'other': 'Other'},
+                    'community': {'general': 'General', 'obc': 'OBC', 'sc': 'SC', 'st': 'ST', 'other': 'Other'},
+                    'blood_group': {'a+ve': 'A+ve', 'a-ve': 'A-ve', 'b+ve': 'B+ve', 'b-ve': 'B-ve', 'o+ve': 'O+ve', 'o-ve': 'O-ve', 'ab+ve': 'AB+ve', 'ab-ve': 'AB-ve'},
+                    'med_blood_group': {'a+ve': 'A+ve', 'a-ve': 'A-ve', 'b+ve': 'B+ve', 'b-ve': 'B-ve', 'o+ve': 'O+ve', 'o-ve': 'O-ve', 'ab+ve': 'AB+ve', 'ab-ve': 'AB-ve'}
+                }
+                for col, val_map in standardize_map.items():
+                    if col in df.columns:
+                        df[col] = df[col].apply(lambda x: val_map.get(str(x).strip().lower(), str(x).strip()) if pd.notna(x) and str(x).strip() else None)
                 
                 # Convert NaN, pd.NA, and None to None (MySQL NULL)
                 df = df.replace([pd.NA, np.nan, None], None)
