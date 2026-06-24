@@ -953,7 +953,7 @@
                             <tbody>
                                 {% for row in preview_data %}
                                     <tr class="{% cycle '' 'highlight' %}">
-                                        {% for value in row %}
+                                        {% for value in row.values %}
                                             <td class="{% if not value %}error{% endif %}">
                                                 {{ value|default:"(empty)"|safe }}
                                             </td>
