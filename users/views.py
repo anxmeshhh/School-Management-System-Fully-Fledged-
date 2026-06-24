@@ -5467,26 +5467,49 @@ def bulk_upload(request):
                     fs.delete(filename)
                     return redirect('bulk_upload')
 
+                # --- Normalize for Minimalist / New Excel Format ---
+                df.columns = df.columns.astype(str).str.strip().str.upper()
+                is_minimalist = 'S.NO' in df.columns and 'NAME' in df.columns and 'ADMISSION NUMBER' in df.columns
+                
+                if is_minimalist:
+                    df['user_id'] = None
+                    df['roll_number'] = df['S.NO']
+                    df['name'] = df['NAME']
+                    df['gender'] = df['GENDER'] if 'GENDER' in df.columns else None
+                    df['admission_number'] = df['ADMISSION NUMBER']
+                    df['dob'] = df['DOB'] if 'DOB' in df.columns else None
+                    df['mother_tongue'] = df.get('LINGUISTIC', df.get('LINGUSTIC', df.get('LINGUISTICS', df.get('LINGUSTICS', None))))
+                    df['class'] = df['CLASS'] if 'CLASS' in df.columns else None
+                    df['father_name'] = df.get('FATHER NAME', None)
+                    df['father_contact'] = df.get('CONTACT', None)
+                    df['contact'] = df.get('CONTACT', None)
+                    df['mother_name'] = df.get('MOTHER NAME', None)
+                    df['mother_contact'] = df.get('MOTHER CONTACT', df.get('CONTAC T', df.get('CONTACT T', None)))
+                    df['address'] = df.get('ADDRESS', None)
+                    
+                df.columns = df.columns.str.lower()
+                
                 # Convert NaN, pd.NA, and None to None (MySQL NULL)
                 df = df.replace([pd.NA, np.nan, None], None)
 
-                # Validate user_id
-                if df['user_id'].isna().any():
-                    messages.error(request, 'The user_id column contains null or missing values.')
-                    fs.delete(filename)
-                    return redirect('bulk_upload')
+                if not is_minimalist:
+                    # Validate user_id
+                    if df['user_id'].isna().any():
+                        messages.error(request, 'The user_id column contains null or missing values.')
+                        fs.delete(filename)
+                        return redirect('bulk_upload')
 
-                try:
-                    df['user_id'] = df['user_id'].astype(int)
-                except (ValueError, TypeError):
-                    messages.error(request, 'Invalid data in user_id column. All values must be integers.')
-                    fs.delete(filename)
-                    return redirect('bulk_upload')
+                    try:
+                        df['user_id'] = df['user_id'].astype(int)
+                    except (ValueError, TypeError):
+                        messages.error(request, 'Invalid data in user_id column. All values must be integers.')
+                        fs.delete(filename)
+                        return redirect('bulk_upload')
 
-                if df['user_id'].duplicated().any():
-                    messages.error(request, 'The user_id column contains duplicate values.')
-                    fs.delete(filename)
-                    return redirect('bulk_upload')
+                    if df['user_id'].duplicated().any():
+                        messages.error(request, 'The user_id column contains duplicate values.')
+                        fs.delete(filename)
+                        return redirect('bulk_upload')
 
                 # Validate admission_number (now optional)
                 # Convert to string, replacing literal 'nan', 'none' with None
@@ -5549,26 +5572,49 @@ def bulk_upload(request):
             try:
                 df = pd.read_excel(fs.path(filename))
 
+                # --- Normalize for Minimalist / New Excel Format ---
+                df.columns = df.columns.astype(str).str.strip().str.upper()
+                is_minimalist = 'S.NO' in df.columns and 'NAME' in df.columns and 'ADMISSION NUMBER' in df.columns
+                
+                if is_minimalist:
+                    df['user_id'] = None
+                    df['roll_number'] = df['S.NO']
+                    df['name'] = df['NAME']
+                    df['gender'] = df['GENDER'] if 'GENDER' in df.columns else None
+                    df['admission_number'] = df['ADMISSION NUMBER']
+                    df['dob'] = df['DOB'] if 'DOB' in df.columns else None
+                    df['mother_tongue'] = df.get('LINGUISTIC', df.get('LINGUSTIC', df.get('LINGUISTICS', df.get('LINGUSTICS', None))))
+                    df['class'] = df['CLASS'] if 'CLASS' in df.columns else None
+                    df['father_name'] = df.get('FATHER NAME', None)
+                    df['father_contact'] = df.get('CONTACT', None)
+                    df['contact'] = df.get('CONTACT', None)
+                    df['mother_name'] = df.get('MOTHER NAME', None)
+                    df['mother_contact'] = df.get('MOTHER CONTACT', df.get('CONTAC T', df.get('CONTACT T', None)))
+                    df['address'] = df.get('ADDRESS', None)
+                    
+                df.columns = df.columns.str.lower()
+                
                 # Convert NaN, pd.NA, and None to None (MySQL NULL)
                 df = df.replace([pd.NA, np.nan, None], None)
 
-                # Validate user_id
-                if df['user_id'].isna().any():
-                    messages.error(request, 'The user_id column contains null or missing values.')
-                    fs.delete(filename)
-                    return redirect('bulk_upload')
+                if not is_minimalist:
+                    # Validate user_id
+                    if df['user_id'].isna().any():
+                        messages.error(request, 'The user_id column contains null or missing values.')
+                        fs.delete(filename)
+                        return redirect('bulk_upload')
 
-                try:
-                    df['user_id'] = df['user_id'].astype(int)
-                except (ValueError, TypeError):
-                    messages.error(request, 'Invalid data in user_id column. All values must be integers.')
-                    fs.delete(filename)
-                    return redirect('bulk_upload')
+                    try:
+                        df['user_id'] = df['user_id'].astype(int)
+                    except (ValueError, TypeError):
+                        messages.error(request, 'Invalid data in user_id column. All values must be integers.')
+                        fs.delete(filename)
+                        return redirect('bulk_upload')
 
-                if df['user_id'].duplicated().any():
-                    messages.error(request, 'The user_id column contains duplicate values.')
-                    fs.delete(filename)
-                    return redirect('bulk_upload')
+                    if df['user_id'].duplicated().any():
+                        messages.error(request, 'The user_id column contains duplicate values.')
+                        fs.delete(filename)
+                        return redirect('bulk_upload')
 
                 # Validate admission_number (now optional)
                 # Convert to string, replacing literal 'nan', 'none' with None
@@ -5611,42 +5657,29 @@ def bulk_upload(request):
                     for index, row in df.iterrows():
                         try:
                             with transaction.atomic():
-                                user_id = row['user_id']  # Use Excel-provided user_id (integer)
-                                base_username = str(row.get('name', ''))[:100]  # Reserve space for suffix
+                                user_id = row['user_id']
+                                if user_id is None:
+                                    cursor.execute("SELECT MAX(id) FROM users")
+                                    max_id = cursor.fetchone()[0] or 0
+                                    user_id = max_id + 1
+
+                                base_username = str(row.get('name', ''))[:100]
                                 contact = str(row.get('contact', '')) if row.get('contact') else None
                                 alt_contact = str(row.get('alt_contact', '')) if row.get('alt_contact') else None
-                                unique_id = str(uuid.uuid4())[:8]  # Short UUID for uniqueness
-                                email = f"{base_username.lower().replace(' ', '.')}_{user_id}_{unique_id}@example.com"[:255]  # Unique email
-                                password = str(row.get('roll_number', ''))[:255]  # Use roll_number as password
+                                unique_id = str(uuid.uuid4())[:8]
+                                email = f"{base_username.lower().replace(' ', '.')}_{user_id}_{unique_id}@example.com"[:255]
+                                password = str(row.get('roll_number', ''))[:255]
 
-                                # Check if user_id exists in users
                                 cursor.execute("SELECT id FROM users WHERE id = %s", [user_id])
                                 user_exists = cursor.fetchone()
 
-                                # Handle users table insertion
                                 if not user_exists:
-                                    # Check if username exists
                                     username = base_username
-                                    cursor.execute("SELECT username, email FROM users WHERE username = %s", [username])
+                                    cursor.execute("SELECT username FROM users WHERE username = %s", [username])
                                     existing_user = cursor.fetchone()
 
                                     if existing_user:
-                                        # If username exists, check phone numbers
-                                        cursor.execute("""
-                                            SELECT u.id 
-                                            FROM users u
-                                            JOIN student_page3 sp3 ON u.id = sp3.user_id
-                                            WHERE u.username = %s AND (sp3.contact = %s OR sp3.alt_contact = %s)
-                                        """, [username, contact, alt_contact])
-                                        matching_phone = cursor.fetchone()
-
-                                        if matching_phone:
-                                            # Same username and phone number; skip this user
-                                            print(f"Skipped user_id: {user_id} (duplicate username '{username}' and phone match)")
-                                            skipped_rows.append(f"Row {index + 2}: user_id {user_id} (duplicate username and phone)")
-                                            continue
-
-                                        # Different phone or no phone match; append user_id to username
+                                        # Force a unique username if it already exists to bypass skips
                                         username = f"{base_username}_{user_id}"[:150]
 
                                     # Insert into users
