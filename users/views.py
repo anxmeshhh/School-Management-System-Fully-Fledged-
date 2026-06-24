@@ -5465,12 +5465,6 @@ def bulk_upload(request):
                     'med_blood_group', 'diseases', 'allergies', 'medicines', 'hospital', 'doctor'
                 ]
 
-                missing_columns = [col for col in expected_columns if col not in df.columns]
-                if missing_columns:
-                    messages.error(request, f'Missing columns in Excel file: {", ".join(missing_columns)}')
-                    fs.delete(filename)
-                    return redirect('bulk_upload')
-
                 # --- Normalize for Minimalist / New Excel Format ---
                 df.columns = df.columns.astype(str).str.strip().str.upper()
                 is_minimalist = 'S.NO' in df.columns and 'NAME' in df.columns and 'ADMISSION NUMBER' in df.columns
@@ -5496,6 +5490,17 @@ def bulk_upload(request):
                     
                 df.columns = df.columns.str.lower()
                 df = df.loc[:, ~df.columns.duplicated()]
+                
+                if is_minimalist:
+                    for col in expected_columns:
+                        if col not in df.columns:
+                            df[col] = None
+
+                missing_columns = [col for col in expected_columns if col not in df.columns]
+                if missing_columns:
+                    messages.error(request, f'Missing columns in Excel file: {", ".join(missing_columns)}')
+                    fs.delete(filename)
+                    return redirect('bulk_upload')
                 
                 # Convert NaN, pd.NA, and None to None (MySQL NULL)
                 df = df.replace([pd.NA, np.nan, None], None)
