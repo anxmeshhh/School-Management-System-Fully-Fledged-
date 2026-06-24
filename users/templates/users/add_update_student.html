@@ -589,7 +589,7 @@
                         <select name="gender">
                             <option value="" {% if not post_data.gender|default:gender %}selected{% endif %}>Select Gender</option>
                             {% for option in gender_options %}
-                                <option value="{{ option }}" {% if post_data.gender|default:gender == option %}selected{% endif %}>{{ option }}</option>
+                                <option value="{{ option }}" {% if post_data.gender|default:gender|lower == option|lower %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -598,7 +598,7 @@
                         <select name="community">
                             <option value="" {% if not post_data.community|default:community %}selected{% endif %}>Select Community</option>
                             {% for option in community_options %}
-                                <option value="{{ option }}" {% if post_data.community|default:community == option %}selected{% endif %}>{{ option }}</option>
+                                <option value="{{ option }}" {% if post_data.community|default:community|lower == option|lower %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -619,7 +619,7 @@
                         <select name="blood_group">
                             <option value="" {% if not post_data.blood_group|default:blood_group %}selected{% endif %}>Select Blood Group</option>
                             {% for option in blood_group_options %}
-                                <option value="{{ option }}" {% if post_data.blood_group|default:blood_group == option %}selected{% endif %}>{{ option }}</option>
+                                <option value="{{ option }}" {% if post_data.blood_group|default:blood_group|lower == option|lower %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -687,7 +687,7 @@
                         <select name="teacher_ward">
                             <option value="" {% if not post_data.teacher_ward|default:teacher_ward %}selected{% endif %}>Select Option</option>
                             {% for option in teacher_ward_options %}
-                                <option value="{{ option }}" {% if post_data.teacher_ward|default:teacher_ward == option %}selected{% endif %}>{{ option|title }}</option>
+                                <option value="{{ option }}" {% if post_data.teacher_ward|default:teacher_ward|lower == option|lower %}selected{% endif %}>{{ option|title }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -696,7 +696,7 @@
                         <select name="rte">
                             <option value="" {% if not post_data.rte|default:rte %}selected{% endif %}>Select Option</option>
                             {% for option in rte_options %}
-                                <option value="{{ option }}" {% if post_data.rte|default:rte == option %}selected{% endif %}>{{ option|title }}</option>
+                                <option value="{{ option }}" {% if post_data.rte|default:rte|lower == option|lower %}selected{% endif %}>{{ option|title }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -705,7 +705,7 @@
                         <select name="sports_quota">
                             <option value="" {% if not post_data.sports_quota|default:sports_quota %}selected{% endif %}>Select Option</option>
                             {% for option in sports_quota_options %}
-                                <option value="{{ option }}" {% if post_data.sports_quota|default:sports_quota == option %}selected{% endif %}>{{ option|title }}</option>
+                                <option value="{{ option }}" {% if post_data.sports_quota|default:sports_quota|lower == option|lower %}selected{% endif %}>{{ option|title }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -800,7 +800,7 @@
                         <select name="med_blood_group">
                             <option value="" {% if not post_data.med_blood_group|default:med_blood_group %}selected{% endif %}>Select Blood Group</option>
                             {% for option in blood_group_options %}
-                                <option value="{{ option }}" {% if post_data.med_blood_group|default:med_blood_group == option %}selected{% endif %}>{{ option }}</option>
+                                <option value="{{ option }}" {% if post_data.med_blood_group|default:med_blood_group|lower == option|lower %}selected{% endif %}>{{ option }}</option>
                             {% endfor %}
                         </select>
                     </div>
