@@ -14181,3 +14181,98 @@ def admin_progress_cards(request):
         pass
 
     return render(request, 'users/admin_progress_cards.html', {'cards': cards})
+
+
+def admin_bulk_credentials(request):
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
+    return render(request, 'users/admin_bulk_credentials.html')
+
+
+def download_bulk_credentials_pdf(request):
+    """Generates a PDF containing login credentials for all students."""
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
+
+    students = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT sp1.name, sp1.class, sp1.section, sp1.admission_number, sp1.roll_number, sp3.contact 
+                FROM student_page1 sp1
+                LEFT JOIN student_page3 sp3 ON sp1.user_id = sp3.user_id
+                ORDER BY sp1.class, sp1.section, CAST(sp1.roll_number AS UNSIGNED), sp1.name
+            """)
+            cols = [col[0] for col in cursor.description]
+            students = [dict(zip(cols, row)) for row in cursor.fetchall()]
+    except Exception as e:
+        print(f"[Bulk Credentials PDF Error] {e}")
+
+    # Create PDF buffer
+    pdf_buffer = BytesIO()
+    c = canvas.Canvas(pdf_buffer, pagesize=letter)
+    width, height = letter
+
+    # Card configuration
+    cards_per_page = 4
+    card_margin = 40
+    card_width = width - (2 * card_margin)
+    card_height = (height - (2 * card_margin)) / cards_per_page
+    
+    current_card = 0
+
+    for st in students:
+        if current_card >= cards_per_page:
+            c.showPage()
+            current_card = 0
+
+        # Calculate Y position (top to bottom)
+        y_pos = height - card_margin - (current_card * card_height)
+
+        # Draw card border
+        c.setStrokeColorRGB(0.8, 0.8, 0.8)
+        c.setLineWidth(1.5)
+        c.rect(card_margin, y_pos - card_height + 25, card_width, card_height - 35)
+
+        # Card Title
+        c.setFont("Helvetica-Bold", 15)
+        c.setFillColorRGB(0.0, 0.65, 0.46) # Primary color #00a676
+        c.drawString(card_margin + 20, y_pos - 15, "Manavargal SMS - Parent Portal Credentials")
+
+        # Student Name & Class
+        c.setFont("Helvetica-Bold", 12)
+        c.setFillColorRGB(0, 0, 0)
+        c.drawString(card_margin + 20, y_pos - 45, f"Student Name: {st['name'] or 'N/A'}")
+        
+        c.setFont("Helvetica", 11)
+        cls_sec = f"{st['class'] or 'N/A'}"
+        if st['section']:
+            cls_sec += f" - {st['section']}"
+        if st['roll_number']:
+            cls_sec += f" (Roll: {st['roll_number']})"
+        c.drawString(card_margin + 20, y_pos - 65, f"Class & Section: {cls_sec}")
+
+        # Credentials Box
+        c.setStrokeColorRGB(0.9, 0.9, 0.9)
+        c.setFillColorRGB(0.97, 0.97, 0.97)
+        c.rect(card_margin + 20, y_pos - 125, card_width - 40, 50, fill=1)
+
+        c.setFont("Helvetica-Bold", 12)
+        c.setFillColorRGB(0.2, 0.2, 0.2)
+        c.drawString(card_margin + 35, y_pos - 95, f"Username (Admission No):  {st['admission_number'] or 'N/A'}")
+        
+        pwd = st['contact'] or "No Mobile Registered"
+        c.drawString(card_margin + 35, y_pos - 115, f"Password (Mobile No):  {pwd}")
+
+        # Instructions
+        c.setFont("Helvetica-Oblique", 10)
+        c.setFillColorRGB(0.4, 0.4, 0.4)
+        c.drawString(card_margin + 20, y_pos - 150, "Keep this card safe. Visit the parent portal to track attendance, homework, and more.")
+
+        current_card += 1
+
+    c.save()
+    pdf_buffer.seek(0)
+    response = HttpResponse(pdf_buffer, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="Bulk_Parent_Credentials.pdf"'
+    return response
