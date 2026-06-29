@@ -361,12 +361,17 @@
         {% for material in study_materials %}
             <div class="material-box">
                 <h3>{{ material.title }}</h3>
-                <p><strong>Class:</strong> {{ material.class|capfirst }}</p>
-                <p><strong>Section:</strong> {{ material.section|capfirst }}</p>
+                {% if material.description %}
+                <p style="margin:4px 0 8px;color:#495057;font-size:0.9rem;line-height:1.5;">{{ material.description }}</p>
+                {% endif %}
                 <p><strong>Uploaded on:</strong> {{ material.upload_date }}</p>
                 <div class="file-preview">
-                    <a href="{% url 'serve_pdf' material.file_path %}" target="_blank"><i class="fas fa-eye icon"></i> View PDF</a>
-                    <a href="{% url 'serve_pdf' material.file_path %}?download=true" target="_blank"><i class="fas fa-download icon"></i> Download PDF</a>
+                    {% if material.file_path %}
+                        <a href="{% url 'serve_pdf' material.file_path %}" target="_blank"><i class="fas fa-eye icon"></i> View</a>
+                        <a href="{% url 'serve_pdf' material.file_path %}?download=true" target="_blank"><i class="fas fa-download icon"></i> Download</a>
+                    {% else %}
+                        <span style="color:#27ae60;font-size:0.85rem;"><i class="fas fa-comment-dots"></i> Text-only material — no file attached.</span>
+                    {% endif %}
                 </div>
             </div>
         {% empty %}

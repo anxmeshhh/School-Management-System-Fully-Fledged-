@@ -58,6 +58,7 @@ urlpatterns = [
     path('admin/change-credentials/', views.admin_change_credentials, name='admin_change_credentials'),  # New URL for changing admin credentials (POST handler, returns text response like "Success")
     path('admin_signup/', views.admin_signup, name='admin_signup'),
     path('admin_page/', views.admin_page, name='admin_page'),
+    path('admin/send-credentials/', views.send_student_credentials, name='send_student_credentials'),
     path('admin_portal/', views.admin_accept_portal, name='admin_accept_portal'),
     path('admin/leave-get-students/', views.leave_get_students, name='leave_get_students'),
     path('admin_study_materials_upload/', views.admin_study_materials_upload, name='admin_study_materials_upload'),  # Updated path
@@ -302,8 +303,19 @@ urlpatterns = [
     path('api/notifications/read-all/', views.api_mark_all_read, name='api_mark_all_read'),
     path('api/notifications/subscribe/', views.api_push_subscribe, name='api_push_subscribe'),
     path('parent/register/', views.parent_register, name='parent_register'),
-path('parent/register/submit/', views.parent_register_submit, name='parent_register_submit'),
-path('admin/parent-registrations/', views.admin_parent_registrations, name='admin_parent_registrations'),
+    path('parent/register/submit/', views.parent_register_submit, name='parent_register_submit'),
+    path('parent/generate-admission-number/', views.generate_admission_number, name='generate_admission_number'),
+    path('parent/get-classes/', views.get_available_classes, name='get_available_classes'),
+    path('parent/get-class-sections/', views.get_class_sections, name='get_class_sections'),
+    path('teacher/save-attendance/', views.save_attendance_batch, name='teacher_save_attendance_batch'),
+    path('admin/save-attendance/', views.save_attendance_batch, name='admin_save_attendance_batch'),
+    path('teacher/get-approved-leaves/', views.get_approved_leaves, name='get_approved_leaves'),
+    path('admin/parent-registrations/', views.admin_parent_registrations, name='admin_parent_registrations'),
+    path('admin/fill-guest-student/', views.admin_fill_guest_student, name='admin_fill_guest_student'),
+    path('admin/parent-registrations/<int:pk>/approve/', views.approve_parent_registration, name='approve_parent_registration'),
+    path('admin/parent-registrations/<int:pk>/reject/', views.reject_parent_registration, name='reject_parent_registration'),
+    path('admin/parent-registrations/<int:pk>/activate/', views.activate_parent_registration, name='activate_parent_registration'),
+    path('admin/progress-cards/', views.admin_progress_cards, name='admin_progress_cards'),
 ]
 
 if settings.DEBUG:

@@ -23,7 +23,7 @@
         background: var(--white);
         min-height: 100vh;
         color: var(--text-color);
-        overflow: hidden;
+        overflow: hidden; /* Prevent double scrollbars */
     }
 
     h1, h2, h3 {
@@ -57,7 +57,7 @@
         overflow-x: hidden;
     }
 
-    /* Sidebar - Independent scroll */
+    /* Sidebar - Fixed, independent scroll */
     .sidebar {
         width: 280px;
         height: 100vh;
@@ -69,7 +69,7 @@
         top: 0;
         left: 0;
         z-index: 1000;
-        transition: transform 0.3s ease, opacity 0.3s ease;
+        transition: var(--transition);
         border-right: 2px solid var(--sidebar-border);
     }
 
@@ -184,24 +184,24 @@
     }
 
     .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        transition: var(--transition);
-        pointer-events: none;
-    }
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: var(--transition);
+    pointer-events: none;      /* ← NEW */
+}
 
-    .sidebar-overlay.active {
-        display: block;
-        opacity: 1;
-        pointer-events: all;
-    }
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+    pointer-events: all;       /* ← NEW: Allows clicks when open */
+}
 
     /* Page Wrapper - Independent scroll */
     .page-wrapper {
@@ -289,43 +289,45 @@
 
     h2 {
         color: var(--primary-color);
-        font-size: 1.75rem;
+        font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 1.5rem;
         text-align: center;
     }
 
-    /* IMPROVED FORM STYLES */
     .form-group {
-        margin-bottom: 1.25rem;
-        width: 100%;
+        margin-bottom: 1.5rem;
     }
 
     .form-group label {
         display: block;
         color: var(--text-color);
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 500;
         margin-bottom: 0.5rem;
     }
 
     .form-group input[type="text"],
     .form-group input[type="date"],
-    .form-group input[type="file"],
-    .form-group select {
+    .form-group select,
+    .form-group textarea {
         width: 100%;
         padding: 0.75rem;
         border-radius: 8px;
         border: 1px solid var(--border-color);
         background: var(--white);
-        font-size: 1rem;
+        font-size: 0.95rem;
         transition: var(--transition);
+    }
+
+    .form-group textarea {
+        resize: vertical;
     }
 
     .form-group input[type="text"]:focus,
     .form-group input[type="date"]:focus,
-    .form-group input[type="file"]:focus,
-    .form-group select:focus {
+    .form-group select:focus,
+    .form-group textarea:focus {
         border-color: var(--primary-color);
         box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.1);
         outline: none;
@@ -339,28 +341,76 @@
         appearance: none;
     }
 
-    /* IMPROVED FORM ROW - Better responsive alignment */
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input-wrapper input[type="file"] {
+        position: absolute;
+        left: -9999px;
+    }
+
+    .file-input-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--white);
+        border: 2px dashed var(--border-color);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--transition);
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .file-input-label:hover {
+        background: var(--light-bg);
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .file-input-label i {
+        font-size: 1.5rem;
+    }
+
+    .file-name-display {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        background: var(--light-bg);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        color: var(--text-color);
+        display: none;
+    }
+
+    .file-name-display.show {
+        display: block;
+    }
+
     .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr auto;
+        display: flex;
+        align-items: flex-end;
         gap: 1rem;
-        align-items: end;
-        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
     }
 
     .form-row .form-group {
-        margin-bottom: 0;
+        flex: 1;
+        min-width: 150px;
     }
 
-    /* BUTTON STYLES - Fixed alignment */
-    .upload-btn,
     .filter-btn {
         padding: 0.75rem 1.5rem;
         background: var(--primary-color);
-        border: none;
+        border: 2px solid var(--border-color);
         border-radius: 8px;
         color: var(--white);
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 500;
         cursor: pointer;
         transition: var(--transition);
@@ -368,29 +418,21 @@
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        white-space: nowrap;
-        height: fit-content;
-        min-height: 46px;
+        transform: translateY(-25px);
     }
 
-    .upload-btn:hover,
     .filter-btn:hover {
         background: var(--primary-hover);
         box-shadow: var(--shadow-md);
     }
 
-    /* Standalone button (not in form-row) */
-    .upload-btn:not(.form-row .upload-btn):not(.form-row .filter-btn) {
-        margin-top: 1rem;
-    }
-
-    .material-grid {
+    .homework-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 1.5rem;
     }
 
-    .material-card {
+    .homework-card {
         background: var(--white);
         border: 2px solid var(--border-color);
         border-radius: 8px;
@@ -401,23 +443,33 @@
         flex-direction: column;
     }
 
-    .material-card:hover {
+    .homework-card:hover {
         box-shadow: var(--shadow-md);
     }
 
-    .material-card h3 {
+    .homework-card h3 {
         color: var(--primary-color);
         font-size: 1.25rem;
         font-weight: 600;
         margin-bottom: 0.8rem;
-        text-align: left;
     }
 
-    /* Updated View & Download Buttons */
+    .homework-card p {
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+        color: var(--text-color);
+    }
+
+    .homework-card p strong {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    /* View & Download Buttons - Identical to Circular page */
     .file-preview {
         display: flex;
         gap: 0.75rem;
-        margin-top: auto;
+        margin-top: auto; /* Pushes buttons to bottom of card */
     }
 
     .view-btn,
@@ -426,7 +478,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.45rem;
+        gap: 0.45rem; /* Space between icon & text */
         padding: 0.65rem 1rem;
         text-decoration: none;
         border-radius: 8px;
@@ -460,140 +512,88 @@
         box-shadow: var(--shadow-md);
     }
 
-    .no-materials {
-        font-size: 1rem;
-        color: var(--text-color);
+    .no-submissions {
+        color: var(--primary-color);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
         text-align: center;
-        margin-top: 1.5rem;
         padding: 1.5rem;
         background: var(--light-bg);
         border-radius: 8px;
         border: 2px solid var(--border-color);
-        box-shadow: var(--shadow-sm);
         grid-column: 1 / -1;
     }
 
-    /* RESPONSIVE STYLES - Improved breakpoints */
+    .study-materials-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--primary-color);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--white);
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .study-materials-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Responsive Styles */
     @media (max-width: 1024px) {
         .sidebar { width: 250px; }
         .page-wrapper { margin-left: 250px; }
         .logo-container-sidebar { width: 80px; height: 64px; }
-        
-        .form-row {
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        
-        .form-row .upload-btn,
-        .form-row .filter-btn {
-            grid-column: 1 / -1;
-            width: 100%;
-        }
     }
 
     @media (max-width: 768px) {
-        .menu-toggle { 
-            display: flex; 
-        }
-        
-        .sidebar { 
-            transform: translateX(-100%);
-        }
-        
-        .sidebar.active { 
-            transform: translateX(0);
-        }
-        
-        .sidebar-overlay { 
-            display: block; 
-        }
-        
-        .page-wrapper { 
-            margin-left: 0; 
-        }
-        
-        .container { 
-            padding: 1.5rem 15px; 
-        }
-        
-        .header h1 { 
-            font-size: 1.5rem; 
-        }
-        
-        .main-content { 
-            padding: 1.5rem; 
-        }
-        
-        /* Stack form fields on mobile */
-        .form-row {
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        
-        .form-row .upload-btn,
-        .form-row .filter-btn {
-            width: 100%;
-            grid-column: 1;
-        }
-        
-        .material-grid { 
-            grid-template-columns: 1fr; 
-        }
-        
-        .file-preview { 
-            flex-direction: column; 
-        }
+        .menu-toggle { display: flex; }
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-overlay { display: block; }
+        .page-wrapper { margin-left: 0; }
+        .container { padding: 1.5rem 15px; }
+        .header h1 { font-size: 1.5rem; }
+        .main-content { padding: 1.5rem; }
+        .section { padding: 1.2rem; }
+        h2 { font-size: 1.3rem; }
+        .form-row { flex-direction: column; align-items: stretch; gap: 1rem; }
+        .filter-btn { width: 100%; justify-content: center; transform: none; }
+        .homework-grid { grid-template-columns: 1fr; gap: 1rem; }
+        .file-preview { flex-direction: column; }
+        .study-materials-btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; bottom: 15px; right: 15px; }
     }
 
     @media (max-width: 480px) {
-        .sidebar {
-            width: 100%;
-            max-width: 320px;
-        }
-        
-        .container { 
-            padding: 1rem; 
-        }
-        
-        .header { 
-            padding: 1rem; 
-        }
-        
-        .header h1 { 
-            font-size: 1.25rem; 
-        }
-        
-        .main-content { 
-            padding: 1rem; 
-        }
-        
-        .section { 
-            padding: 1rem; 
-        }
-        
-        h2 { 
-            font-size: 1.4rem; 
-        }
-        
-        .form-group label {
-            font-size: 0.95rem;
-        }
-        
-        .upload-btn,
-        .filter-btn {
-            font-size: 0.95rem;
-            padding: 0.65rem 1.25rem;
-        }
+        .sidebar { width: 100%; max-width: 320px; }
+        .container { padding: 1rem; }
+        .header { padding: 1rem; }
+        .header h1 { font-size: 1.25rem; }
+        .main-content { padding: 1rem; border-radius: 8px; }
+        .section { padding: 1rem; }
+        h2 { font-size: 1.15rem; }
+        .form-group label { font-size: 0.85rem; }
+        .form-group input, .form-group select { font-size: 0.85rem; padding: 0.6rem; }
+        .homework-card { padding: 1rem; }
+        .file-preview a { padding: 0.6rem 1rem; font-size: 0.9rem; }
+        .study-materials-btn { padding: 0.6rem 1rem; font-size: 0.85rem; bottom: 10px; right: 10px; }
+        .menu-toggle { width: 45px; height: 45px; font-size: 1.25rem; }
     }
 
-    /* Touch device optimizations */
     @media (hover: none) {
-        .section:hover, 
-        .upload-btn:hover, 
-        .filter-btn:hover, 
-        .material-card:hover, 
-        .view-btn:hover, 
-        .download-btn:hover {
+        .section:hover, .filter-btn:hover, .homework-card:hover, .logo-container-sidebar:hover, .study-materials-btn:hover, .view-btn:hover, .download-btn:hover {
             transform: none;
             box-shadow: var(--shadow-sm);
         }
@@ -601,15 +601,11 @@
         .menu-toggle:hover { transform: none; }
     }
 
-    /* Reduced motion preference */
     @media (prefers-reduced-motion: reduce) {
-        * { 
-            transition: none !important; 
-            animation: none !important; 
-        }
+        * { transition: none !important; animation: none !important; }
         html { scroll-behavior: auto; }
     }
-</style>
+    </style>
 </head>
 <body>
     <!-- Mobile Menu Toggle Button -->
@@ -682,108 +678,174 @@
     <div class="page-wrapper">
         <div class="container">
             <header class="header">
-                <h1><i class="fas fa-book-open"></i> Admin Study Materials Upload</h1>
+                <h1><i class="fas fa-tasks"></i> Admin Study Materials Upload</h1>
             </header>
 
             <main class="main-content">
-                <!-- Upload Section -->
-                <div class="section">
-                    <h2><i class="fas fa-upload" style="color: #3498db;"></i> Upload New Study Material</h2>
+                {% if messages %}
+                    <div class="alert-message">
+                        {% for message in messages %}
+                            <div class="{{ message.tags }}">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- ── Upload Study Material ──────────────────────────────────────────── -->
+                <section class="section">
+                    <h2><i class="fas fa-cloud-upload-alt" style="color: #8b5cf6;"></i> Upload Study Material</h2>
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
+
                         <div class="form-group">
-                            <label for="title"><i class="fas fa-heading" style="color: #9b59b6;"></i> Title:</label>
-                            <input type="text" id="title" name="title" required>
+                            <label for="title">
+                                <i class="fas fa-heading" style="color: #ef4444; margin-right: 8px;"></i>
+                                Material Title:
+                            </label>
+                            <input type="text" id="title" name="title" required placeholder="Enter material title">
                         </div>
+
+                        <div class="form-group">
+                            <label for="description">
+                                <i class="fas fa-align-left" style="color: #06b6d4; margin-right: 8px;"></i>
+                                Description <em style="font-weight:400;color:#868e96;">(optional)</em>:
+                            </label>
+                            <textarea id="description" name="description" rows="3" placeholder="Enter a brief description"></textarea>
+                        </div>
+
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="class"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i> Select Class:</label>
-                                <select id="class" name="class" required>
+                                <label for="class">
+                                    <i class="fas fa-users" style="color: #8b5cf6; margin-right: 8px;"></i>
+                                    Assign to Class:
+                                </label>
+                                <select id="class" name="class" required onchange="updateUploadSections()">
                                     <option value="">Select Class</option>
+                                    {% for cls in classes %}
+                                    <option value="{{ cls }}">Class {{ cls }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="section"><i class="fas fa-th-large" style="color: #f39c12;"></i> Select Section:</label>
+                                <label for="section">
+                                    <i class="fas fa-th-large" style="color: #f59e0b; margin-right: 8px;"></i>
+                                    Section:
+                                </label>
                                 <select id="section" name="section">
                                     <option value="all">All Sections / No Section</option>
                                 </select>
                             </div>
                         </div>
+
                         <div class="form-group">
-                            <label for="file"><i class="fas fa-file-pdf" style="color: #e74c3c;"></i> Upload File (PDF only - Max Size: 25MB):</label>
-                            <input type="file" id="file" name="file" accept="application/pdf" required>
+                            <label>
+                                <i class="fas fa-paperclip" style="color: #06b6d4; margin-right: 8px;"></i>
+                                Attach Document (PDF, DOCX, or Image) — <em style="font-weight:400;color:#868e96;">optional</em>
+                            </label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="file" name="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp" onchange="displayFileName(this)">
+                                <label for="file" class="file-input-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Choose File (optional)</span>
+                                </label>
+                            </div>
+                            <div class="file-name-display" id="fileNameDisplay"></div>
                         </div>
-                        <button type="submit" class="upload-btn">
-                            <i class="fas fa-upload"></i> Upload 
+
+                        <button type="submit" class="btn-save-material">
+                            <i class="fas fa-save"></i> Save Study Material
                         </button>
                     </form>
-                </div>
+                </section>
 
-                <!-- Filter and Existing Materials Section -->
-                <div class="section">
-                    <h2><i class="fas fa-list" style="color: #27ae60;"></i> Existing Study Materials</h2>
-                    <form method="GET">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="class_filter"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i> Filter by Class:</label>
-                                <select id="class_filter" name="class">
-                                    <option value="">All Classes</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="section_filter"><i class="fas fa-th-large" style="color: #f39c12;"></i> Filter by Section:</label>
-                                <select id="section_filter" name="section">
-                                    <option value="all">All Sections / No Section</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="filter-btn">
-                                <i class="fas fa-filter"></i> Filter
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="material-grid">
+                <!-- ── Uploaded Study Materials ────────────────────────────── -->
+                <section class="section">
+                    <h2><i class="fas fa-book-open" style="color: #3b82f6;"></i> Uploaded Study Materials</h2>
+                    <div class="homework-grid">
                         {% for material in study_materials %}
-                        <div class="material-card">
-                            <h3><i class="fas fa-file-pdf" style="color: #e74c3c;"></i> {{ material.title }}</h3>
-                            <p><strong><i class="fas fa-graduation-cap" style="color: #3498db; font-size: 0.9em;"></i> Class:</strong> {{ material.class|capfirst }}</p>
-                            <p><strong><i class="fas fa-th-large" style="color: #f39c12; font-size: 0.9em;"></i> Section:</strong> {{ material.section|capfirst }}</p>
-                            <p><strong><i class="fas fa-calendar-alt" style="color: #27ae60; font-size: 0.9em;"></i> Uploaded on:</strong> {{ material.upload_date }}</p>
-                            <div class="file-preview">
-                                {% if material.file_path %}
-                                    <a href="{% url 'serve_pdf' material.file_path %}" target="_blank" class="view-btn">
-                                        <i class="fas fa-eye"></i> View PDF
-                                    </a>
-                                    <a href="{% url 'serve_pdf' material.file_path %}?download=true" class="download-btn">
-                                        <i class="fas fa-download"></i> Download PDF
-                                    </a>
+                        <div class="homework-card">
+                            <h3>
+                                <i class="fas fa-file-alt" style="color: #3b82f6; margin-right: 6px;"></i>
+                                {{ material.title }}
+                                {% if not material.file_path %}
+                                    <span class="file-type-badge badge-text-only">No File</span>
+                                {% elif material.file_path|lower|slice:"-4:" == '.pdf' %}
+                                    <span class="file-type-badge badge-pdf">PDF</span>
+                                {% elif '.doc' in material.file_path|lower %}
+                                    <span class="file-type-badge badge-doc">DOC</span>
                                 {% else %}
-                                    <p style="grid-column: 1 / -1; text-align: center; color: #e67e22;">
-                                        <i class="fas fa-exclamation-triangle"></i> No file available.
-                                    </p>
+                                    <span class="file-type-badge badge-image">Image</span>
                                 {% endif %}
+                            </h3>
+                            {% if material.description %}
+                                <p><i class="fas fa-align-left" style="color:#06b6d4;margin-right:4px;"></i> <strong>Description:</strong> {{ material.description }}</p>
+                            {% endif %}
+                            <p>
+                                <i class="fas fa-graduation-cap" style="color:#8b5cf6;margin-right:4px;"></i>
+                                <strong>Class:</strong> {{ material.class|capfirst }}
+                                {% if material.section %} &nbsp;|&nbsp; <strong>Section:</strong> {{ material.section|upper }}{% endif %}
+                            </p>
+                            <p>
+                                <i class="fas fa-clock" style="color:#94a3b8;margin-right:4px;"></i>
+                                <strong>Uploaded on:</strong> {{ material.upload_date }}
+                            </p>
+                            {% if material.file_path %}
+                            <div class="file-preview">
+                                <a href="{{ media_url }}{{ material.file_path }}" target="_blank" class="view-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="{{ media_url }}{{ material.file_path }}" download class="download-btn">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
                             </div>
+                            {% endif %}
                         </div>
                         {% empty %}
-                        <p class="no-materials">
-                            {% if selected_class and selected_section %}
-                                <i class="fas fa-search" style="color: #95a5a6;"></i> No study materials available for Class: {{ selected_class|capfirst }}, Section: {{ selected_section|capfirst }}.
-                            {% else %}
-                                <i class="fas fa-search" style="color: #95a5a6;"></i> No study materials uploaded yet.
-                            {% endif %}
+                        <p class="no-submissions">
+                            <i class="fas fa-inbox" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+                            No study materials uploaded yet.
                         </p>
                         {% endfor %}
                     </div>
-                </div>
-
-                <a href="{% url 'admin_homework_panel' %}" class="upload-btn" style="display:inline-flex; margin-top: 1rem;">
-                    <i class="fas fa-tasks"></i> Go to Homework Panel
-                </a>
+                </section>
             </main>
         </div>
     </div>
 
     <script>
+        const classMapData = {{ class_map_json|safe }};
+
+        function displayFileName(input) {
+            const display = document.getElementById('fileNameDisplay');
+            if (!display) return;
+            if (input.files && input.files[0]) {
+                const f = input.files[0];
+                display.textContent = f.name + ' (' + (f.size / 1024).toFixed(1) + ' KB)';
+                display.classList.add('show');
+            } else {
+                display.textContent = '';
+                display.classList.remove('show');
+            }
+        }
+
+        function updateUploadSections() {
+            const classSelect = document.getElementById('class');
+            const sectionSelect = document.getElementById('section');
+            if (!classSelect || !sectionSelect) return;
+            const cls = classSelect.value;
+            sectionSelect.innerHTML = '<option value="all">All Sections / No Section</option>';
+            if (cls && classMapData[cls] && classMapData[cls].length > 0) {
+                classMapData[cls].forEach(function(sec) {
+                    const opt = document.createElement('option');
+                    opt.value = sec;
+                    opt.textContent = 'Section ' + sec;
+                    sectionSelect.appendChild(opt);
+                });
+            }
+        }
+
         // Sidebar functionality
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('menuToggle');
@@ -837,6 +899,7 @@
                         icon.style.transform = 'scale(1.1) rotate(5deg)';
                     }
                 });
+
                 item.addEventListener('mouseleave', function() {
                     const icon = this.querySelector('img');
                     if (icon) {
@@ -846,58 +909,6 @@
             });
         });
 
-        // Dynamic Class and Section Dropdowns
-        document.addEventListener('DOMContentLoaded', () => {
-            const classMapData = {{ class_map_json|safe|default:'{}' }};
-            const selectedClassFilter = "{{ selected_class|default:''|escapejs }}";
-            const selectedSectionFilter = "{{ selected_section|default:''|escapejs }}";
-
-            function populateDropdowns(classSelectId, sectionSelectId, preSelectClass, preSelectSection) {
-                const classSelect = document.getElementById(classSelectId);
-                const sectionSelect = document.getElementById(sectionSelectId);
-
-                if (!classSelect || !sectionSelect || !classMapData) return;
-
-                // Populate class dropdown
-                Object.keys(classMapData).forEach(cls => {
-                    const opt = document.createElement('option');
-                    opt.value = cls;
-                    opt.textContent = cls.charAt(0).toUpperCase() + cls.slice(1);
-                    if (cls === preSelectClass) opt.selected = true;
-                    classSelect.appendChild(opt);
-                });
-
-                // Function to update section based on selected class
-                const updateSections = (selectedCls, preSelSec) => {
-                    sectionSelect.innerHTML = '<option value="all">All Sections / No Section</option>';
-                    if (selectedCls && classMapData[selectedCls] && classMapData[selectedCls].length > 0) {
-                        classMapData[selectedCls].forEach(sec => {
-                            const opt = document.createElement('option');
-                            opt.value = sec;
-                            opt.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
-                            if (sec === preSelSec) opt.selected = true;
-                            sectionSelect.appendChild(opt);
-                        });
-                    }
-                };
-
-                // Initial load
-                if (preSelectClass) {
-                    updateSections(preSelectClass, preSelectSection);
-                }
-
-                // Handle class change
-                classSelect.addEventListener('change', () => {
-                    updateSections(classSelect.value, '');
-                });
-            }
-
-            // Initialize for Upload Form
-            populateDropdowns('class', 'section', '', '');
-            
-            // Initialize for Filter Form
-            populateDropdowns('class_filter', 'section_filter', selectedClassFilter, selectedSectionFilter);
-        });
     </script>
 </body>
 </html>

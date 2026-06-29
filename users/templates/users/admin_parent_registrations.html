@@ -201,7 +201,8 @@
             background: var(--white);
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: visible;
             box-shadow: var(--shadow-sm);
         }
 
@@ -256,9 +257,14 @@
             color: #856404;
         }
 
-        .badge-approved {
+        .badge-approved, .badge-activated {
             background: #d4edda;
             color: #155724;
+        }
+
+        .badge-activated {
+            background: #cce5ff;
+            color: #004085;
         }
 
         .badge-rejected {
@@ -277,9 +283,156 @@
             margin-bottom: 12px;
         }
 
-        .empty-state p {
-            font-size: 16px;
+        .empty-state p { font-size: 16px; }
+
+        .action-btns { display: flex; gap: 6px; flex-wrap: nowrap; }
+        .btn-activate {
+            padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer;
+            background: #cce5ff; color: #004085; font-size: 12px; font-weight: 600;
+            transition: background 0.2s;
         }
+        .btn-activate:hover { background: #007bff; color: #fff; }
+        .btn-reject {
+            padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer;
+            background: #f8d7da; color: #721c24; font-size: 12px; font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-reject:hover { background: #dc3545; color: #fff; }
+        .alert-msg {
+            padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;
+            font-size: 14px; font-weight: 500;
+        }
+        .alert-msg.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-msg.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* Tabs */
+        .tab-bar {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .tab-btn .tab-count {
+            display: inline-block;
+            background: #e9ecef;
+            color: var(--text-color);
+            border-radius: 50px;
+            font-size: 11px;
+            padding: 1px 7px;
+            margin-left: 6px;
+        }
+        .tab-btn.active .tab-count { background: var(--primary-color); color: #fff; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Guest status badge */
+        .badge-profile-done  { background: #d4edda; color: #155724; }
+        .badge-profile-empty { background: #fff3cd; color: #856404; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            width: 540px;
+            max-width: 96vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        .modal-box h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .modal-field { margin-bottom: 1rem; }
+        .modal-field label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.35rem;
+        }
+        .modal-field input,
+        .modal-field select {
+            width: 100%;
+            padding: 0.6rem 0.85rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .modal-field input:focus,
+        .modal-field select:focus { border-color: var(--primary-color); }
+        .modal-field input[readonly] { background: #f8f9fa; color: var(--text-light); }
+        .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+        .btn-modal-save {
+            flex: 1; padding: 0.65rem; border: none; border-radius: 8px;
+            background: var(--primary-color); color: #fff;
+            font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn-modal-save:hover { background: #008c44; }
+        .btn-modal-cancel {
+            flex: 1; padding: 0.65rem; border: 2px solid var(--border-color); border-radius: 8px;
+            background: none; color: var(--text-color);
+            font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-modal-cancel:hover { border-color: #dc3545; color: #dc3545; }
+        .btn-fill {
+            padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer;
+            background: #fff3cd; color: #856404; font-size: 12px; font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-fill:hover { background: #f59e0b; color: #fff; }
+        .btn-edit {
+            padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer;
+            background: #e0f2fe; color: #0369a1; font-size: 12px; font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-edit:hover { background: #0ea5e9; color: #fff; }
+        .modal-info-bar {
+            background: #f0f9f4;
+            border: 1px solid var(--sidebar-border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.85rem;
+            color: var(--text-color);
+        }
+        .modal-info-bar strong { color: var(--primary-color); }
 
         @media (max-width: 768px) {
             .page-wrapper {
@@ -332,6 +485,12 @@
                 <h1><i class="fas fa-users"></i> Parent Registration Requests</h1>
             </header>
 
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert-msg {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+
             <!-- Stats -->
             <div class="stats-bar">
                 <div class="stat-card">
@@ -346,63 +505,246 @@
                     <div class="stat-number" id="approvedCount">—</div>
                     <div class="stat-label">Approved</div>
                 </div>
-            </div>
-
-            <!-- Search -->
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="🔍  Search by name, admission no, mobile..."
-                    oninput="filterTable()">
-            </div>
-
-            <!-- Table -->
-            <div class="table-wrapper">
-                {% if registrations %}
-                <table id="regTable">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Parent Name</th>
-                            <th>Child Name</th>
-                            <th>Admission No</th>
-                            <th>Mobile</th>
-                            <th>Email</th>
-                            <th>Class / Section</th>
-                            <th>Address</th>
-                            <th>Status</th>
-                            <th>Submitted On</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for r in registrations %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ r.parent_name }}</td>
-                            <td>{{ r.child_name }}</td>
-                            <td><strong>{{ r.admission_no }}</strong></td>
-                            <td>{{ r.mobile }}</td>
-                            <td>{{ r.email|default:"—" }}</td>
-                            <td>{{ r.class_name|default:"—" }} {% if r.section %}- {{ r.section }}{% endif %}</td>
-                            <td>{{ r.address|default:"—"|truncatechars:40 }}</td>
-                            <td>
-                                <span class="badge badge-{{ r.status }}">{{ r.status|title }}</span>
-                            </td>
-                            <td>{{ r.created_at }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <div class="empty-state">
-                    <div class="empty-icon">📭</div>
-                    <p>No parent registration requests yet.</p>
+                <div class="stat-card">
+                    <div class="stat-number">{{ guest_accounts|length }}</div>
+                    <div class="stat-label">Active Guest Accounts</div>
                 </div>
-                {% endif %}
+            </div>
+
+            <!-- Tabs -->
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('all', this)">
+                    <i class="fas fa-list"></i> All Registrations
+                    <span class="tab-count">{{ registrations|length }}</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('guest', this)">
+                    <i class="fas fa-user-clock"></i> Guest Accounts — Fill Student Details
+                    <span class="tab-count">{{ guest_accounts|length }}</span>
+                </button>
+            </div>
+
+            <!-- TAB 1: All Registrations -->
+            <div id="tab-all" class="tab-panel active">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="🔍  Search by name, admission no, mobile..."
+                        oninput="filterTable()">
+                </div>
+                <div class="table-wrapper">
+                    {% if registrations %}
+                    <table id="regTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Parent Name</th>
+                                <th>Child Name</th>
+                                <th>Admission No</th>
+                                <th>Mobile</th>
+                                <th>Email</th>
+                                <th>Class / Section</th>
+                                <th>Address</th>
+                                <th>Status</th>
+                                <th>Submitted On</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in registrations %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ r.parent_name }}</td>
+                                <td>{{ r.child_name }}</td>
+                                <td><strong>{{ r.admission_no }}</strong></td>
+                                <td>{{ r.mobile }}</td>
+                                <td>{{ r.email|default:"—" }}</td>
+                                <td>{{ r.class_name|default:"—" }} {% if r.section %}- {{ r.section }}{% endif %}</td>
+                                <td>{{ r.address|default:"—"|truncatechars:40 }}</td>
+                                <td>
+                                    <span class="badge badge-{{ r.status }}">{{ r.status|title }}</span>
+                                </td>
+                                <td>{{ r.created_at }}</td>
+                                <td style="white-space:nowrap;">
+                                    {% if r.status == 'activated' %}
+                                    <span style="color:#004085;font-size:12px;font-weight:600;"><i class="fas fa-check-circle"></i> Account Active</span>
+                                    {% elif r.status == 'rejected' %}
+                                    <div class="action-btns">
+                                        <form method="POST" action="{% url 'activate_parent_registration' r.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-activate" onclick="return confirm('Activate this account?')">
+                                                <i class="fas fa-user-check"></i> Activate
+                                            </button>
+                                        </form>
+                                    </div>
+                                    {% else %}
+                                    <div class="action-btns">
+                                        <form method="POST" action="{% url 'activate_parent_registration' r.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-activate" onclick="return confirm('Activate this account? The parent will be able to log in immediately.')">
+                                                <i class="fas fa-user-check"></i> Activate Account
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{% url 'reject_parent_registration' r.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-reject" onclick="return confirm('Reject this registration?')">
+                                                <i class="fas fa-times"></i> Reject
+                                            </button>
+                                        </form>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <p>No parent registration requests yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- TAB 2: Guest Accounts — fill student profile -->
+            <div id="tab-guest" class="tab-panel">
+                <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:1rem;">
+                    <i class="fas fa-info-circle" style="color:#f59e0b;"></i>
+                    Activated parent accounts whose child's full student profile has not been entered yet.
+                    Fill in the details so the parent can access all modules in the portal.
+                </p>
+                <div class="table-wrapper">
+                    {% if guest_accounts %}
+                    <table id="guestTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Parent Name</th>
+                                <th>Child Name</th>
+                                <th>Admission No</th>
+                                <th>Mobile</th>
+                                <th>Registered Class</th>
+                                <th>Profile Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for g in guest_accounts %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ g.parent_name }}</td>
+                                <td>{{ g.child_name }}</td>
+                                <td><strong>{{ g.admission_no }}</strong></td>
+                                <td>{{ g.mobile }}</td>
+                                <td>{{ g.class_name|default:"—" }}{% if g.section %} - {{ g.section }}{% endif %}</td>
+                                <td>
+                                    {% if g.has_student %}
+                                    <span class="badge badge-profile-done"><i class="fas fa-check"></i> Complete</span>
+                                    {% else %}
+                                    <span class="badge badge-profile-empty"><i class="fas fa-exclamation-triangle"></i> Incomplete</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if g.has_student %}
+                                    <button class="btn-edit"
+                                        onclick="openFillModal({{ g.id }}, '{{ g.child_name|escapejs }}', '{{ g.admission_no|escapejs }}', '{{ g.class_name|default:''|escapejs }}', '{{ g.section|default:''|escapejs }}', '{{ g.mobile|escapejs }}')">
+                                        <i class="fas fa-edit"></i> Edit Details
+                                    </button>
+                                    {% else %}
+                                    <button class="btn-fill"
+                                        onclick="openFillModal({{ g.id }}, '{{ g.child_name|escapejs }}', '{{ g.admission_no|escapejs }}', '{{ g.class_name|default:''|escapejs }}', '{{ g.section|default:''|escapejs }}', '{{ g.mobile|escapejs }}')">
+                                        <i class="fas fa-user-plus"></i> Fill Details
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">✅</div>
+                        <p>All activated parent accounts have complete student profiles.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fill Student Details Modal -->
+    <div class="modal-overlay" id="fillModal">
+        <div class="modal-box">
+            <h2><i class="fas fa-user-graduate"></i> Fill Student Details</h2>
+            <div class="modal-info-bar" id="modalInfoBar">
+                Parent: <strong id="modalParentAdm">—</strong> &nbsp;|&nbsp; Admission No: <strong id="modalAdmNo">—</strong>
+            </div>
+            <div id="modalMsg" style="margin-bottom:0.75rem;display:none;padding:0.6rem 0.9rem;border-radius:7px;font-size:0.85rem;font-weight:600;"></div>
+
+            <input type="hidden" id="fillRegId">
+
+            <div class="modal-field">
+                <label>Student Full Name <span style="color:#dc2626;">*</span></label>
+                <input type="text" id="fillName" placeholder="Enter student's full name">
+            </div>
+            <div class="modal-row">
+                <div class="modal-field">
+                    <label>Class <span style="color:#dc2626;">*</span></label>
+                    <select id="fillClass" onchange="updateModalSections()">
+                        <option value="">— Select Class —</option>
+                        {% for cls in classes %}
+                        <option value="{{ cls }}">{{ cls }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Section</label>
+                    <select id="fillSection">
+                        <option value="">— Select Section —</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-row">
+                <div class="modal-field">
+                    <label>Roll Number</label>
+                    <input type="text" id="fillRoll" placeholder="e.g. 12">
+                </div>
+                <div class="modal-field">
+                    <label>Gender</label>
+                    <select id="fillGender">
+                        <option value="">— Select —</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Date of Birth</label>
+                <input type="date" id="fillDob">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-modal-save" onclick="submitFillForm()">
+                    <i class="fas fa-save"></i> Save & Unlock Parent Portal
+                </button>
+                <button class="btn-modal-cancel" onclick="closeFillModal()">Cancel</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Count badges
+        const classMapData = {{ class_map_json|safe }};
+        const fillUrl = "{% url 'admin_fill_guest_student' %}";
+        const csrfToken = "{{ csrf_token }}";
+
+        // Tabs
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Count badges on load
         document.addEventListener('DOMContentLoaded', function () {
             const rows = document.querySelectorAll('#regTable tbody tr');
             let pending = 0, approved = 0;
@@ -410,7 +752,7 @@
                 const badge = r.querySelector('.badge');
                 if (badge) {
                     if (badge.classList.contains('badge-pending')) pending++;
-                    if (badge.classList.contains('badge-approved')) approved++;
+                    if (badge.classList.contains('badge-approved') || badge.classList.contains('badge-activated')) approved++;
                 }
             });
             const pc = document.getElementById('pendingCount');
@@ -421,10 +763,98 @@
 
         function filterTable() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#regTable tbody tr');
-            rows.forEach(row => {
+            document.querySelectorAll('#regTable tbody tr').forEach(row => {
                 row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
             });
+        }
+
+        // Modal
+        function openFillModal(regId, childName, admNo, className, section, mobile) {
+            document.getElementById('fillRegId').value = regId;
+            document.getElementById('fillName').value = childName;
+            document.getElementById('modalAdmNo').textContent = admNo;
+            document.getElementById('modalParentAdm').textContent = childName;
+            document.getElementById('modalMsg').style.display = 'none';
+
+            // Set class
+            const clsSel = document.getElementById('fillClass');
+            clsSel.value = className || '';
+            updateModalSections(section);
+
+            document.getElementById('fillRoll').value = '';
+            document.getElementById('fillGender').value = '';
+            document.getElementById('fillDob').value = '';
+
+            document.getElementById('fillModal').classList.add('open');
+        }
+
+        function closeFillModal() {
+            document.getElementById('fillModal').classList.remove('open');
+        }
+
+        // Close on overlay click
+        document.getElementById('fillModal').addEventListener('click', function(e) {
+            if (e.target === this) closeFillModal();
+        });
+
+        function updateModalSections(preSelect) {
+            const cls = document.getElementById('fillClass').value;
+            const secSel = document.getElementById('fillSection');
+            secSel.innerHTML = '<option value="">— Select Section —</option>';
+            (classMapData[cls] || []).forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s; opt.textContent = s;
+                if (s === preSelect) opt.selected = true;
+                secSel.appendChild(opt);
+            });
+        }
+
+        async function submitFillForm() {
+            const regId      = document.getElementById('fillRegId').value;
+            const name       = document.getElementById('fillName').value.trim();
+            const cls        = document.getElementById('fillClass').value;
+            const section    = document.getElementById('fillSection').value;
+            const roll       = document.getElementById('fillRoll').value.trim();
+            const gender     = document.getElementById('fillGender').value;
+            const dob        = document.getElementById('fillDob').value;
+
+            const msg = document.getElementById('modalMsg');
+
+            if (!name || !cls) {
+                msg.textContent = 'Student name and class are required.';
+                msg.style.background = '#f8d7da'; msg.style.color = '#721c24';
+                msg.style.display = 'block';
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('reg_id', regId);
+            fd.append('student_name', name);
+            fd.append('class_name', cls);
+            fd.append('section', section);
+            fd.append('roll_number', roll);
+            fd.append('gender', gender);
+            fd.append('dob', dob);
+            fd.append('csrfmiddlewaretoken', csrfToken);
+
+            try {
+                const res = await fetch(fillUrl, { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    msg.textContent = '✅ Student profile saved! Parent portal is now fully unlocked.';
+                    msg.style.background = '#d4edda'; msg.style.color = '#155724';
+                    msg.style.display = 'block';
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    msg.textContent = '❌ ' + (data.message || 'Something went wrong');
+                    msg.style.background = '#f8d7da'; msg.style.color = '#721c24';
+                    msg.style.display = 'block';
+                }
+            } catch(e) {
+                msg.textContent = '❌ Network error. Please try again.';
+                msg.style.background = '#f8d7da'; msg.style.color = '#721c24';
+                msg.style.display = 'block';
+            }
         }
     </script>
 </body>

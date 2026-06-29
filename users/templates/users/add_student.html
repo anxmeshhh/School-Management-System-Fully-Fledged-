@@ -541,9 +541,9 @@
                             <span>Please enter full name</span>
                         </div>
                     </div>
-                    <div class="form-group required" data-field="admission_number">
-                        <label>Admission Number</label>
-                        <input type="text" name="admission_number" value="{{ admission_number|default:'' }}" required>
+                    <div class="form-group" data-field="admission_number">
+                        <label>Admission Number <span style="color:#6c757d;font-size:.85em;">(auto-generated if left blank)</span></label>
+                        <input type="text" name="admission_number" value="{{ admission_number|default:'' }}" placeholder="Leave blank to auto-assign">
                         <div class="field-error" style="display: none;">
                             <i class="fas fa-exclamation-circle"></i>
                             <span>Please enter admission number</span>

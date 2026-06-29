@@ -745,9 +745,21 @@
                     <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="Parent Edit Icon">
                     Teacher Management
                 </a>
+                <a href="{% url 'admin_progress_cards' %}">
+                    <img src="https://img.icons8.com/color/24/000000/graph.png" alt="Progress Cards">
+                    Progress Cards
+                </a>
+                <a href="{% url 'admin_parent_registrations' %}">
+                    <img src="https://img.icons8.com/color/24/000000/add-user-male.png" alt="Parent Registrations">
+                    Parent Registrations
+                </a>
                 <a href="{% url 'admin_send_student_pdf' %}">
                     <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="Parent Edit Icon">
                     WHATSAPP BETA TESTING
+                </a>
+                <a href="javascript:void(0)" onclick="document.getElementById('credentialsModal').style.display='flex'">
+                    <img src="https://img.icons8.com/color/24/000000/email--v1.png" alt="Send Credentials">
+                    Send Login Credentials
                 </a>
             </nav>
         </div>
@@ -890,5 +902,31 @@
         });
     </script>
     <script src="{% static 'users/js/notifications.js' %}"></script>
+
+    <!-- Send Credentials Modal -->
+    <div id="credentialsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:16px;padding:2rem;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+            <h2 style="margin-bottom:.5rem;color:#1f2937;font-size:1.3rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#10b981" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:.4rem;"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                Send Login Credentials
+            </h2>
+            <p style="color:#6b7280;font-size:.9rem;margin-bottom:1.5rem;">
+                This will email each student their username and password. Only students with email addresses on record will receive the message.
+            </p>
+            <form method="POST" action="{% url 'send_student_credentials' %}">
+                {% csrf_token %}
+                <div style="display:flex;gap:.75rem;justify-content:flex-end;">
+                    <button type="button" onclick="document.getElementById('credentialsModal').style.display='none'"
+                            style="padding:.6rem 1.4rem;border-radius:8px;border:1px solid #d1d5db;background:#fff;color:#374151;font-size:.95rem;cursor:pointer;">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            style="padding:.6rem 1.4rem;border-radius:8px;border:none;background:#10b981;color:#fff;font-size:.95rem;font-weight:600;cursor:pointer;">
+                        Send Emails
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

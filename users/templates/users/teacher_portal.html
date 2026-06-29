@@ -398,95 +398,66 @@
         border: 1px solid #10b981;
     }
 
-    .action-buttons {
+    .radio-attendance-group {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.6rem;
         margin-top: auto;
         flex-wrap: wrap;
     }
 
-    .status-btn {
-        padding: 0.75rem 1rem;
-        border: 2px solid transparent;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: var(--transition);
-        flex: 1;
-        min-width: 90px;
+    .radio-att-label {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
-        text-decoration: none;
-        opacity: 0.7;
-        position: relative;
+        gap: 0.4rem;
+        padding: 0.65rem 1.1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: var(--transition);
+        flex: 1;
+        min-width: 90px;
+        opacity: 0.55;
+        border: 2px solid transparent;
+        user-select: none;
     }
 
-    .status-btn:not(:disabled):hover {
+    .radio-att-label input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+        height: 0;
+    }
+
+    .radio-att-label.selected,
+    .radio-att-label:has(input:checked) {
         opacity: 1;
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-    }
-
-    .status-btn:disabled {
-        cursor: not-allowed;
-        opacity: 0.4;
-    }
-
-    .status-btn.active {
-        opacity: 1 !important;
         transform: scale(1.05);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25) !important;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.22);
         font-weight: 700;
-        z-index: 1;
+        border-color: rgba(255,255,255,0.6);
     }
 
-    .present-btn {
+    .radio-att-label:not(.locked-radio):hover {
+        opacity: 0.85;
+        transform: translateY(-1px);
+    }
+
+    .radio-att-label.locked-radio {
+        cursor: not-allowed;
+        opacity: 0.38;
+    }
+
+    .present-radio-lbl {
         background: #16a34a;
-        color: var(--white);
+        color: #fff;
     }
 
-    .present-btn:not(:disabled):hover {
-        background: #22c55e;
-    }
-
-    .present-btn.active {
-        background: #22c55e !important;
-        border-color: #16a34a !important;
-        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3) !important;
-    }
-
-    .absent-btn {
-        background: var(--primary-color);
-        color: var(--white);
-    }
-
-    .absent-btn:not(:disabled):hover {
-        background: var(--primary-hover);
-    }
-
-    .absent-btn.active {
-        background: var(--primary-hover) !important;
-        border-color: var(--primary-color) !important;
-        box-shadow: 0 0 0 4px rgba(0, 166, 118, 0.3) !important;
-    }
-
-    .leave-btn {
-        background: #eab308;
-        color: #000;
-    }
-
-    .leave-btn:not(:disabled):hover {
-        background: #facc15;
-    }
-
-    .leave-btn.active {
-        background: #facc15 !important;
-        color: #000 !important;
-        border-color: #eab308 !important;
-        box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.3) !important;
+    .absent-radio-lbl {
+        background: #dc2626;
+        color: #fff;
     }
 
     .no-students {
@@ -682,12 +653,12 @@
             padding: 0.875rem 1rem;
         }
 
-        .action-buttons {
-            gap: 0.5rem;
+        .radio-attendance-group {
+            gap: 0.4rem;
         }
 
-        .status-btn {
-            padding: 0.625rem 0.75rem;
+        .radio-att-label {
+            padding: 0.6rem 0.75rem;
             font-size: 0.85rem;
             min-width: 80px;
         }
@@ -845,11 +816,15 @@
                     <!-- Enhanced submit container with real-time counter -->
                     <div class="submit-container" id="submitContainer">
                         <div class="progress-info" id="progressInfo">
-                            <i class="fas fa-info-circle"></i> 
+                            <i class="fas fa-info-circle"></i>
                             <span id="progressText">Mark all students to enable final submission.</span>
                         </div>
-                        <button type="button" class="submit-btn" id="finalSubmitBtn" onclick="finalSubmitAttendance()" disabled>
-                            <i class="fas fa-check-double"></i> Submit Final Attendance
+                        <button type="button" class="submit-btn" id="markAllPresentBtn" onclick="markAllPresent()"
+                                style="background:#10b981;border-color:#10b981;margin-bottom:0.6rem;">
+                            <i class="fas fa-user-check"></i> Reset All to Present
+                        </button>
+                        <button type="button" class="submit-btn" id="finalSubmitBtn" onclick="saveAttendanceBatch()">
+                            <i class="fas fa-save"></i> Save Attendance
                         </button>
                     </div>
                 </section>
@@ -864,6 +839,8 @@
     let currentClass = '';
     let currentSection = '';
     let currentDate = '';
+    let isLocked = false;
+    let approvedLeaveSet = new Set();
 
     document.addEventListener('DOMContentLoaded', function() {
         const menuToggle = document.getElementById('menuToggle');
@@ -967,153 +944,96 @@
         return cookieValue;
     }
 
-    function getButtonHTML(status) {
-        const icons = {
-            'present': '<i class="fas fa-check"></i> Present',
-            'absent': '<i class="fas fa-times"></i> Absent',
-            'leave': '<i class="fas fa-calendar-times"></i> Leave'
-        };
-        return icons[status] || status;
-    }
-
-    window.markStudentAttendance = function(studentName, status, button) {
-        const classVal = document.getElementById('filter_class').value;
-        const sectionVal = document.getElementById('filter_section').value;
-        const dateVal = document.getElementById('filter_date').value;
-
-        if (attendanceStatus[studentName]) {
-            showAlert(`Attendance for ${studentName} already marked.`, 'warning');
-            return;
-        }
-
-        const safeName = studentName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+    window.setStudentStatus = function(name, status) {
+        if (isLocked) return;
+        attendanceStatus[name] = status;
+        const safeName = name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
         const card = document.querySelector(`[data-student="${safeName}"]`);
-        const allButtons = card.querySelectorAll('.status-btn');
-        
-        allButtons.forEach(btn => {
-            btn.disabled = true;
+        if (!card) return;
+        const colors = { present: '#16a34a', absent: '#dc2626' };
+        const statusEl = document.getElementById(`status-${safeName}`);
+        if (statusEl) {
+            statusEl.innerHTML = `<i class="fas fa-clipboard-check" style="color:#8b5cf6;margin-right:8px;"></i><strong>Status:</strong> <span style="text-transform:uppercase;font-weight:700;color:${colors[status] || '#555'};">${status}</span>`;
+        }
+        card.querySelectorAll('.radio-att-label').forEach(lbl => {
+            const inp = lbl.querySelector('input[type="radio"]');
+            lbl.classList.toggle('selected', inp && inp.value === status);
         });
-
-        const originalHTML = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-
-        const csrfToken = getCookie('csrftoken');
-        const formData = new FormData();
-        formData.append('csrfmiddlewaretoken', csrfToken);
-        formData.append('class', classVal);
-        formData.append('section', sectionVal);
-        formData.append('date', dateVal);
-        formData.append('student_name', studentName);
-        formData.append('status', status);
-
-        fetch('/teacher/mark-single-attendance/', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                attendanceStatus[studentName] = status;
-                
-                setTimeout(() => {
-                    updateStudentCardUI(studentName, status);
-                    showAlert(data.message, 'success');
-                    updateProgressDisplay(data.marked_count, data.total_count, data.remaining_count);
-                    
-                    if (data.all_marked) {
-                        showAlert(`✓ All ${data.total_count} students marked!`, 'success');
-                    }
-                }, 300);
-            } else {
-                showAlert(data.message, 'error');
-                allButtons.forEach(btn => {
-                    btn.disabled = false;
-                });
-                button.innerHTML = originalHTML;
-            }
-        })
-        .catch(err => {
-            console.error('Error:', err);
-            showAlert('Network error. Please try again.', 'error');
-            allButtons.forEach(btn => {
-                btn.disabled = false;
-            });
-            button.innerHTML = originalHTML;
-        });
+        updateProgressDisplay();
     };
 
-    function updateStudentCardUI(studentName, status) {
-        const safeName = studentName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-        const card = document.querySelector(`[data-student="${safeName}"]`);
-        
-        if (!card) return;
-
-        if (!card.querySelector('.locked-badge')) {
-            const badge = document.createElement('div');
-            badge.className = 'locked-badge';
-            badge.innerHTML = '<i class="fas fa-check-circle"></i> Attendance Marked';
-            card.insertBefore(badge, card.firstChild);
-        }
-
-        const statusColors = {
-            'present': '#16a34a',
-            'absent': '#00a676',
-            'leave': '#eab308'
-        };
-        
-        let statusDisplay = card.querySelector('.current-status');
-        if (!statusDisplay) {
-            statusDisplay = document.createElement('p');
-            statusDisplay.className = 'current-status';
-            const actionButtons = card.querySelector('.action-buttons');
-            actionButtons.parentNode.insertBefore(statusDisplay, actionButtons);
-        }
-        
-        statusDisplay.innerHTML = `
-            <i class="fas fa-clipboard-check" style="color: #8b5cf6; margin-right: 8px;"></i> 
-            <strong>Status:</strong> 
-            <span style="text-transform: uppercase; font-weight: 700; color: ${statusColors[status]};">
-                ${status}
-            </span>
-        `;
-
-        const buttons = card.querySelectorAll('.status-btn');
-        buttons.forEach(btn => {
-            btn.disabled = true;
-            btn.classList.remove('active');
-            if (btn.dataset.status === status) {
-                btn.classList.add('active');
-                btn.innerHTML = getButtonHTML(status);
-            }
+    function renderAttendanceCards() {
+        const container = document.getElementById('attendanceCards');
+        if (!allStudents.length) return;
+        const colors = { present: '#16a34a', absent: '#dc2626' };
+        let html = '';
+        allStudents.forEach(name => {
+            const safeName = name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+            const status = attendanceStatus[name] || 'present';
+            const onLeave = approvedLeaveSet.has(name);
+            html += `
+            <div class="attendance-card ${isLocked ? 'locked' : ''}" data-student="${safeName}" data-student-name="${name}">
+                ${isLocked ? '<div class="locked-badge"><i class="fas fa-lock"></i> Read-Only — Attendance Saved</div>' : ''}
+                ${onLeave ? '<div class="locked-badge" style="background:#fef3c7;color:#92400e;border-color:#fbbf24;"><i class="fas fa-calendar-check"></i> On Approved Leave</div>' : ''}
+                <p><i class="fas fa-user" style="color:#3b82f6;margin-right:8px;"></i><strong>Student:</strong> ${name}</p>
+                <p><i class="fas fa-graduation-cap" style="color:#10b981;margin-right:8px;"></i><strong>Class:</strong> ${currentClass}</p>
+                <p><i class="fas fa-calendar-alt" style="color:#06b6d4;margin-right:8px;"></i><strong>Date:</strong> ${currentDate}</p>
+                <p class="current-status" id="status-${safeName}">
+                    <i class="fas fa-clipboard-check" style="color:#8b5cf6;margin-right:8px;"></i>
+                    <strong>Status:</strong>
+                    <span style="text-transform:uppercase;font-weight:700;color:${colors[status] || '#555'};">${status}</span>
+                </p>
+                <div class="radio-attendance-group">
+                    <label class="radio-att-label present-radio-lbl ${status === 'present' ? 'selected' : ''} ${isLocked ? 'locked-radio' : ''}">
+                        <input type="radio" name="att_${safeName}" value="present"
+                               ${status === 'present' ? 'checked' : ''}
+                               ${isLocked ? 'disabled' : ''}
+                               onchange="setStudentStatus('${name}', 'present')">
+                        <i class="fas fa-check-circle"></i> Present
+                    </label>
+                    <label class="radio-att-label absent-radio-lbl ${status === 'absent' ? 'selected' : ''} ${isLocked ? 'locked-radio' : ''}">
+                        <input type="radio" name="att_${safeName}" value="absent"
+                               ${status === 'absent' ? 'checked' : ''}
+                               ${isLocked ? 'disabled' : ''}
+                               onchange="setStudentStatus('${name}', 'absent')">
+                        <i class="fas fa-times-circle"></i> Absent
+                    </label>
+                </div>
+            </div>`;
         });
-
-        card.classList.add('locked');
+        container.innerHTML = html;
     }
 
-    function updateProgressDisplay(markedCount, totalCount, remainingCount) {
+
+    function updateProgressDisplay() {
         const submitContainer = document.getElementById('submitContainer');
-        const submitBtn = document.getElementById('finalSubmitBtn');
+        const saveBtn = document.getElementById('finalSubmitBtn');
         const progressInfo = document.getElementById('progressInfo');
-        
-        if (totalCount > 0) {
-            submitContainer.classList.add('visible');
-            
-            if (remainingCount === 0) {
-                submitBtn.disabled = false;
-                progressInfo.innerHTML = `
-                    <i class="fas fa-check-circle complete"></i> 
-                    <span>All <strong class="complete">${totalCount}</strong> students marked!</span>
-                `;
-            } else {
-                submitBtn.disabled = true;
-                progressInfo.innerHTML = `
-                    <i class="fas fa-hourglass-half incomplete"></i> 
-                    <span><strong class="complete">${markedCount}</strong>/${totalCount} marked | <strong class="incomplete">${remainingCount}</strong> remaining</span>
-                `;
-            }
+
+        if (!allStudents.length) return;
+        submitContainer.classList.add('visible');
+
+        const counts = { present: 0, absent: 0, leave: 0 };
+        allStudents.forEach(name => {
+            const s = attendanceStatus[name] || 'present';
+            if (counts[s] !== undefined) counts[s]++;
+        });
+
+        progressInfo.innerHTML = `
+            <i class="fas fa-info-circle"></i>
+            <span>
+                <strong style="color:#16a34a">${counts.present}</strong> Present &nbsp;|&nbsp;
+                <strong style="color:#dc2626">${counts.absent}</strong> Absent &nbsp;|&nbsp;
+                <strong style="color:#d97706">${counts.leave}</strong> Leave
+            </span>`;
+
+        if (isLocked) {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-lock"></i> Attendance Saved';
+            saveBtn.style.opacity = '0.7';
+        } else {
+            saveBtn.disabled = false;
+            saveBtn.style.opacity = '1';
         }
     }
 
@@ -1134,89 +1054,51 @@
         attendanceStatus = {};
         allStudents = [];
         totalStudentsCount = 0;
+        isLocked = false;
+        approvedLeaveSet = new Set();
 
-        container.innerHTML = '<div class="loading-spinner active"><div class="spinner"></div><p style="margin-top: 1rem; color: var(--primary-color);">Loading students...</p></div>';
+        container.innerHTML = '<div class="loading-spinner active"><div class="spinner"></div><p style="margin-top:1rem;color:var(--primary-color);">Loading students...</p></div>';
+        document.getElementById('submitContainer').classList.remove('visible');
 
         fetch(`/teacher/leave-get-students/?class=${classVal}&section=${sectionVal}`)
-            .then(response => response.json())
-            .then(data => {
-                if (!data.students || data.students.length === 0) {
+            .then(r => r.json())
+            .then(studentData => {
+                if (!studentData.students || studentData.students.length === 0) {
                     container.innerHTML = '<p class="no-students"><i class="fas fa-users-slash"></i> No students found.</p>';
-                    document.getElementById('submitContainer').classList.remove('visible');
-                    return;
+                    return Promise.reject('no-students');
+                }
+                allStudents = studentData.students;
+                totalStudentsCount = allStudents.length;
+
+                return Promise.all([
+                    fetch(`/teacher/get-attendance/?class=${classVal}&section=${sectionVal}&date=${dateVal}`).then(r => r.json()),
+                    fetch(`/teacher/get-approved-leaves/?class=${encodeURIComponent(classVal)}&date=${dateVal}`).then(r => r.json())
+                ]);
+            })
+            .then(([attData, leaveData]) => {
+                const existingRecords = attData.attendance || {};
+                approvedLeaveSet = new Set(leaveData.students || []);
+                isLocked = Object.keys(existingRecords).length > 0;
+
+                if (isLocked) {
+                    attendanceStatus = { ...existingRecords };
+                } else {
+                    allStudents.forEach(name => { attendanceStatus[name] = 'present'; });
                 }
 
-                allStudents = data.students;
-                totalStudentsCount = data.students.length;
+                renderAttendanceCards();
+                updateProgressDisplay();
 
-                return fetch(`/teacher/get-attendance/?class=${classVal}&section=${sectionVal}&date=${dateVal}`)
-                    .then(response => response.json())
-                    .then(attendanceData => {
-                        const existingRecords = attendanceData.attendance || {};
-                        attendanceStatus = { ...existingRecords };
-                        
-                        let cardsHTML = '';
-                        data.students.forEach((name) => {
-                            const safeName = name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-                            const currentStatus = existingRecords[name] || '';
-                            const isLocked = !!currentStatus;
-
-                            const statusColors = {
-                                'present': '#16a34a',
-                                'absent': '#00a676',
-                                'leave': '#eab308'
-                            };
-
-                            cardsHTML += `
-                            <div class="attendance-card ${isLocked ? 'locked' : ''}" data-student="${safeName}" data-student-name="${name}">
-                                ${isLocked ? '<div class="locked-badge"><i class="fas fa-check-circle"></i> Attendance Marked</div>' : ''}
-                                <p><i class="fas fa-user" style="color: #3b82f6; margin-right: 8px;"></i> <strong>Student:</strong> ${name}</p>
-                                <p><i class="fas fa-graduation-cap" style="color: #10b981; margin-right: 8px;"></i> <strong>Class:</strong> ${classVal}</p>
-                                <p><i class="fas fa-layer-group" style="color: #f59e0b; margin-right: 8px;"></i> <strong>Section:</strong> ${sectionVal}</p>
-                                <p><i class="fas fa-calendar-alt" style="color: #06b6d4; margin-right: 8px;"></i> <strong>Date:</strong> ${dateVal}</p>
-                                ${currentStatus ? `<p class="current-status"><i class="fas fa-clipboard-check" style="color: #8b5cf6; margin-right: 8px;"></i> <strong>Status:</strong> <span style="text-transform: uppercase; font-weight: 700; color: ${statusColors[currentStatus]};">${currentStatus}</span></p>` : ''}
-
-                                <div class="action-buttons">
-                                    <button type="button" 
-                                            onclick="markStudentAttendance('${name}', 'present', this)" 
-                                            data-status="present"
-                                            class="status-btn present-btn ${currentStatus === 'present' ? 'active' : ''}" 
-                                            ${isLocked ? 'disabled' : ''}>
-                                        <i class="fas fa-check"></i> Present
-                                    </button>
-                                    <button type="button" 
-                                            onclick="markStudentAttendance('${name}', 'absent', this)" 
-                                            data-status="absent"
-                                            class="status-btn absent-btn ${currentStatus === 'absent' ? 'active' : ''}" 
-                                            ${isLocked ? 'disabled' : ''}>
-                                        <i class="fas fa-times"></i> Absent
-                                    </button>
-                                    <button type="button" 
-                                            onclick="markStudentAttendance('${name}', 'leave', this)" 
-                                            data-status="leave"
-                                            class="status-btn leave-btn ${currentStatus === 'leave' ? 'active' : ''}" 
-                                            ${isLocked ? 'disabled' : ''}>
-                                        <i class="fas fa-calendar-times"></i> Leave
-                                    </button>
-                                </div>
-                            </div>`;
-                        });
-
-                        container.innerHTML = cardsHTML;
-                        
-                        const markedCount = Object.keys(existingRecords).length;
-                        updateProgressDisplay(markedCount, totalStudentsCount, totalStudentsCount - markedCount);
-                        
-                        if (markedCount > 0) {
-                            showAlert(`Loaded ${data.students.length} students. ${markedCount} already marked.`, 'warning');
-                        } else {
-                            showAlert(`Loaded ${data.students.length} students.`, 'success');
-                        }
-                    });
+                const msg = isLocked
+                    ? `Loaded ${allStudents.length} students. Attendance already saved — read-only.`
+                    : `Loaded ${allStudents.length} students. All set to Present — mark absent/leave as needed, then click Save.`;
+                showAlert(msg, isLocked ? 'warning' : 'success');
             })
             .catch(err => {
-                console.error('Error:', err);
-                container.innerHTML = '<p class="no-students" style="color: #dc2626;"><i class="fas fa-exclamation-triangle"></i> Error loading students.</p>';
+                if (err !== 'no-students') {
+                    console.error('[Attendance] Load error:', err);
+                    container.innerHTML = '<p class="no-students" style="color:#dc2626;"><i class="fas fa-exclamation-triangle"></i> Error loading students.</p>';
+                }
                 document.getElementById('submitContainer').classList.remove('visible');
             });
     };
@@ -1229,58 +1111,73 @@
         attendanceStatus = {};
         allStudents = [];
         totalStudentsCount = 0;
+        isLocked = false;
+        approvedLeaveSet = new Set();
         document.getElementById('alertContainer').style.display = 'none';
         document.getElementById('submitContainer').classList.remove('visible');
     };
 
-    window.finalSubmitAttendance = function() {
-        const markedCount = Object.keys(attendanceStatus).length;
-        if (markedCount < totalStudentsCount) {
-            showAlert('Please mark attendance for all students.', 'warning');
-            return;
-        }
+    window.saveAttendanceBatch = function() {
+        if (isLocked) { showAlert('Attendance already saved for this date.', 'warning'); return; }
+        if (!allStudents.length) { showAlert('No students loaded.', 'warning'); return; }
+
+        const records = allStudents.map(name => ({
+            name,
+            status: attendanceStatus[name] || 'present'
+        }));
 
         const btn = document.getElementById('finalSubmitBtn');
-        const originalHTML = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
-        const csrfToken = getCookie('csrftoken');
-        const formData = new FormData();
-        formData.append('csrfmiddlewaretoken', csrfToken);
-        formData.append('class', currentClass);
-        formData.append('section', currentSection);
-        formData.append('date', currentDate);
-
-        fetch('/teacher/submit-attendance-batch/', {
+        fetch('/teacher/save-attendance/', {
             method: 'POST',
-            body: formData,
             headers: {
-                'X-CSRFToken': csrfToken
-            }
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                class: currentClass,
+                section: currentSection,
+                date: currentDate,
+                records
+            })
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
             if (data.success) {
+                isLocked = true;
                 btn.classList.add('success');
-                btn.innerHTML = '<i class="fas fa-check"></i> Submitted Successfully';
+                btn.innerHTML = '<i class="fas fa-check"></i> Attendance Saved';
                 showAlert(data.message, 'success');
-                
-                setTimeout(() => {
-                    clearFilters();
-                }, 2000);
+                renderAttendanceCards();
+                updateProgressDisplay();
             } else {
-                showAlert(data.message, 'error');
-                btn.disabled = false;
-                btn.innerHTML = originalHTML;
+                showAlert(data.message || 'Save failed.', data.locked ? 'warning' : 'error');
+                if (data.locked) {
+                    isLocked = true;
+                    renderAttendanceCards();
+                    updateProgressDisplay();
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-save"></i> Save Attendance';
+                }
             }
         })
         .catch(err => {
-            console.error('Error:', err);
-            showAlert('Network error during submission.', 'error');
+            console.error('[Attendance] Save error:', err);
+            showAlert('Network error during save.', 'error');
             btn.disabled = false;
-            btn.innerHTML = originalHTML;
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Attendance';
         });
+    };
+
+    window.markAllPresent = function() {
+        if (isLocked) return;
+        allStudents.forEach(name => { attendanceStatus[name] = 'present'; });
+        renderAttendanceCards();
+        updateProgressDisplay();
+        showAlert('All students reset to Present.', 'success');
     };
     </script>
 </body>

@@ -443,6 +443,60 @@
             pointer-events: all;
         }
 
+        /* Guest-mode locked nav items */
+        .sidebar-nav a.locked {
+            opacity: 0.45;
+            filter: blur(0.4px);
+            pointer-events: none;
+            cursor: not-allowed;
+            position: relative;
+        }
+        .sidebar-nav a.locked::after {
+            content: '\f023';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.7rem;
+            margin-left: auto;
+            color: #dc2626;
+        }
+
+        /* Guest warning banner */
+        .guest-warning-banner {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: #fef9c3;
+            border: 2px solid #f59e0b;
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 2px 8px rgba(245,158,11,0.13);
+        }
+        .guest-warning-banner .gw-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .guest-warning-banner h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 0.3rem;
+        }
+        .guest-warning-banner p {
+            font-size: 0.92rem;
+            color: #78350f;
+            margin: 0;
+            line-height: 1.5;
+        }
+        .guest-warning-banner .gw-steps {
+            margin-top: 0.5rem;
+            padding-left: 1.1rem;
+            font-size: 0.88rem;
+            color: #78350f;
+        }
+        .guest-warning-banner .gw-steps li { margin-bottom: 0.2rem; }
+
         .ripple {
             position: absolute;
             border-radius: 50%;
@@ -698,7 +752,7 @@
                 Manavargal SMS
             </div>
             <nav class="sidebar-nav">
-                <a href="{% url 'parent_profile_view' %}">
+                <a href="{% url 'parent_profile_view' %}" {% if is_guest_parent %}class="locked" title="Complete your profile data first"{% endif %}>
                     <img src="https://img.icons8.com/fluency/24/home.png" alt="Profile Icon">
                     Profile View
                 </a>
@@ -718,15 +772,15 @@
                     <img src="https://img.icons8.com/color/24/homework.png" alt="Homework Icon">
                     Homework
                 </a>
-                <a href="{% url 'parent_student_timetable' %}">
+                <a href="{% url 'parent_student_timetable' %}" {% if is_guest_parent %}class="locked" title="Complete your profile data first"{% endif %}>
                     <img src="https://img.icons8.com/color/24/clock.png" alt="Timetable Icon">
                     Timetable
                 </a>
-                <a href="{% url 'parent_student_progress_card' %}">
+                <a href="{% url 'parent_student_progress_card' %}" {% if is_guest_parent %}class="locked" title="Complete your profile data first"{% endif %}>
                     <img src="https://img.icons8.com/color/24/graph.png" alt="Progress Card Icon">
                     Progress Card
                 </a>
-                <a href="{% url 'fees_parent' %}">
+                <a href="{% url 'fees_parent' %}" {% if is_guest_parent %}class="locked" title="Complete your profile data first"{% endif %}>
                     <img src="https://img.icons8.com/color/24/money.png" alt="Fees Icon">
                     Fees Panel
                 </a>
@@ -781,6 +835,21 @@
                 <h2>Hello, {{ admin_name|default:"Guest" }}!</h2>
                 <p id="quote" class="quote"></p>
             </div>
+
+            {% if is_guest_parent %}
+            <div class="guest-warning-banner">
+                <div class="gw-icon">⚠️</div>
+                <div>
+                    <h3>Limited Access — Student Profile Incomplete</h3>
+                    <p>Your account is active, but your child's full profile has not been set up yet. Some sections are locked until the school updates the records.</p>
+                    <ul class="gw-steps">
+                        <li>Contact your <strong>class teacher</strong> or <strong>school admin</strong> to enter your child's data.</li>
+                        <li>Once the profile is complete, all sections will be unlocked automatically on next login.</li>
+                        <li>You can still view <strong>Attendance &amp; Leave, Circulars, Study Materials</strong> and <strong>Homework</strong> right now.</li>
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
 
             <!-- Assigned Teachers Card -->
             <div class="card-container" style="text-align: left; padding: 2.5rem;">

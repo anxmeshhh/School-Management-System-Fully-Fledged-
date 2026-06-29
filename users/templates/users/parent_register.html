@@ -1,40 +1,34 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Parent Registration - Manavargal SMS</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --primary-green: #00a651;
-            --secondary-green: #008c44;
-            --light-green: #e8f5e8;
+            --green: #00a651;
+            --green-dark: #008c44;
+            --green-light: #e8f5e8;
             --white: #ffffff;
-            --border-color: #d4edda;
-            --text-dark: #2c3e50;
-            --text-light: #7f8c8d;
-            --error-color: #e74c3c;
-            --success-color: #27ae60;
-            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --shadow-glow: 0 0 20px rgba(0, 166, 81, 0.2);
+            --border: #d4edda;
+            --text: #2c3e50;
+            --muted: #7f8c8d;
+            --error: #e74c3c;
+            --success: #27ae60;
+            --info: #3b82f6;
+            --shadow: 0 8px 32px rgba(0,0,0,0.1);
+            --glow: 0 0 20px rgba(0,166,81,0.2);
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
+            background: linear-gradient(135deg, var(--green-light) 0%, var(--white) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -45,16 +39,16 @@
         .main-container {
             display: flex;
             width: 100%;
-            max-width: 900px;
-            border-radius: 12px;
+            max-width: 960px;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: var(--shadow-md), var(--shadow-glow);
+            box-shadow: var(--shadow), var(--glow);
         }
 
-        /* Left Panel */
+        /* Left panel */
         .left-panel {
-            flex: 0 0 280px;
-            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            flex: 0 0 270px;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -64,7 +58,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .left-panel::before {
             content: '';
             position: absolute;
@@ -72,444 +65,457 @@
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="3" fill="rgba(255,255,255,0.2)"/></svg>') repeat;
             opacity: 0.3;
         }
-
         .project-logo {
-            width: 100%;
-            max-width: 240px;
-            height: auto;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-            margin-bottom: 18px;
-            position: relative;
-            z-index: 1;
-            background: #fff;
-            padding: 8px;
-            /* Optional padding so the logo doesn't touch edges */
+            width: 100%; max-width: 220px; height: auto;
+            border-radius: 12px; overflow: hidden;
+            border: 3px solid rgba(255,255,255,0.4);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            margin-bottom: 18px; position: relative; z-index: 1;
+            background: #fff; padding: 8px;
         }
-
-        .project-logo img {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-            display: block;
-        }
-
+        .project-logo img { width: 100%; height: auto; object-fit: contain; display: block; }
         .project-title {
             font-family: 'Montserrat', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            text-align: center;
-            line-height: 1.3;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-            position: relative;
-            z-index: 1;
-            margin-bottom: 10px;
+            font-size: 17px; font-weight: 700;
+            text-align: center; line-height: 1.3;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            position: relative; z-index: 1; margin-bottom: 10px;
         }
-
         .project-motto {
-            text-align: center;
-            font-size: 13px;
-            opacity: 0.92;
-            position: relative;
-            z-index: 1;
-            line-height: 1.6;
+            text-align: center; font-size: 13px; opacity: 0.92;
+            position: relative; z-index: 1; line-height: 1.6;
         }
-
-        .project-motto .english {
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: block;
-        }
-
-        .project-motto .tamil {
-            font-family: 'Noto Sans Tamil', sans-serif;
-            display: block;
-            font-size: 13px;
-        }
-
+        .project-motto .english { font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: block; }
+        .project-motto .tamil { font-family: 'Noto Sans Tamil', sans-serif; display: block; font-size: 13px; }
         .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 22px;
-            padding: 9px 20px;
-            background: rgba(255, 255, 255, 0.18);
-            color: #fff;
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            border-radius: 50px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-            position: relative;
-            z-index: 1;
+            display: inline-flex; align-items: center; gap: 6px;
+            margin-top: 22px; padding: 9px 20px;
+            background: rgba(255,255,255,0.18); color: #fff;
+            border: 2px solid rgba(255,255,255,0.6);
+            border-radius: 50px; font-size: 13px; font-weight: 600;
+            text-decoration: none; position: relative; z-index: 1;
             transition: background 0.3s, transform 0.3s;
         }
+        .back-link:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
 
-        .back-link:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* Right Panel */
+        /* Right panel */
         .right-panel {
-            flex: 1;
-            background: var(--white);
-            padding: 36px 32px;
-            overflow-y: auto;
-            max-height: 90vh;
+            flex: 1; background: var(--white);
+            padding: 36px 32px; overflow-y: auto; max-height: 92vh;
         }
-
         .form-title {
-            text-align: center;
-            color: var(--primary-green);
+            text-align: center; color: var(--green);
             font-family: 'Montserrat', sans-serif;
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 6px;
+            font-size: 22px; font-weight: 700; margin-bottom: 4px;
         }
-
         .form-subtitle {
-            text-align: center;
-            color: var(--text-light);
-            font-size: 13px;
-            margin-bottom: 24px;
+            text-align: center; color: var(--muted);
+            font-size: 13px; margin-bottom: 24px;
         }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .form-group label {
-            color: var(--secondary-green);
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-        }
-
-        .required-star {
-            color: var(--error-color);
-            margin-left: 2px;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 11px 14px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { color: var(--green-dark); font-size: 13px; font-weight: 600; }
+        .req { color: var(--error); margin-left: 2px; }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 11px 14px; border: 2px solid var(--border);
+            border-radius: 8px; font-size: 14px;
             font-family: 'Poppins', sans-serif;
-            outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            background: #fff;
-            color: var(--text-dark);
+            outline: none; transition: border-color 0.3s, box-shadow 0.3s;
+            background: #fff; color: var(--text);
         }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,166,81,0.1);
         }
+        .form-group input:read-only { background: #f8f9fa; color: var(--muted); cursor: default; }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: var(--primary-green);
-            box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.1);
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 13px;
-            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+        /* Generate button */
+        .btn-generate {
+            width: 100%; padding: 13px;
+            background: linear-gradient(135deg, var(--info), #2563eb);
+            color: #fff; border: none; border-radius: 8px;
+            font-size: 15px; font-weight: 600;
             font-family: 'Montserrat', sans-serif;
-            cursor: pointer;
-            margin-top: 20px;
+            cursor: pointer; margin-top: 20px;
+            letter-spacing: 0.3px;
+            transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+        }
+        .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59,130,246,0.45); }
+        .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* Admission preview card */
+        .admission-preview {
+            display: none;
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border: 2px solid #6ee7b7;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 16px;
+            animation: slideDown 0.4s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .admission-preview h4 {
+            font-family: 'Montserrat', sans-serif;
+            color: #065f46; font-size: 14px; font-weight: 700;
+            margin-bottom: 12px; letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .preview-row {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 8px; font-size: 14px;
+        }
+        .preview-label { color: #065f46; font-weight: 600; min-width: 140px; }
+        .preview-value {
+            color: #047857; font-weight: 700; font-size: 16px;
+            background: #fff; padding: 4px 12px; border-radius: 6px;
+            border: 1px solid #6ee7b7;
+        }
+        .preview-note { font-size: 12px; color: #065f46; margin-top: 8px; opacity: 0.8; }
+
+        /* Submit button */
+        .btn-submit {
+            display: none;
+            width: 100%; padding: 13px;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            color: #fff; border: none; border-radius: 8px;
+            font-size: 16px; font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer; margin-top: 14px;
             letter-spacing: 0.3px;
             transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 4px 14px rgba(0, 166, 81, 0.25);
+            box-shadow: 0 4px 14px rgba(0,166,81,0.25);
         }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,166,81,0.35); }
+        .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 166, 81, 0.35);
+        /* Error/info inline messages */
+        .inline-msg {
+            display: none; padding: 10px 14px; border-radius: 8px;
+            font-size: 13px; margin-top: 12px;
         }
-
-        .submit-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .inline-msg.error { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+        .inline-msg.info  { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
 
         /* Success overlay */
         .success-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.55);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 9999;
+            align-items: center; justify-content: center;
         }
-
-        .success-overlay.show {
-            display: flex;
-        }
-
+        .success-overlay.show { display: flex; }
         .success-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 48px 40px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-            max-width: 380px;
-            width: 90%;
-            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: #fff; border-radius: 16px;
+            padding: 48px 40px; text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            max-width: 400px; width: 90%;
+            animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
         }
-
         @keyframes popIn {
-            0% {
-                transform: scale(0.7);
-                opacity: 0;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            from { transform: scale(0.7); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
         }
-
-        .success-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-        }
-
-        .success-card h3 {
-            font-family: 'Montserrat', sans-serif;
-            color: var(--primary-green);
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .success-card p {
-            color: var(--text-light);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .countdown-text {
-            margin-top: 16px;
-            font-size: 13px;
-            color: var(--primary-green);
-            font-weight: 600;
-        }
+        .success-card .icon { font-size: 60px; margin-bottom: 16px; }
+        .success-card h3 { font-family: 'Montserrat', sans-serif; color: var(--green); font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+        .success-card p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+        .success-adm { font-size: 20px; font-weight: 700; color: var(--green-dark); margin: 10px 0; }
+        .countdown { margin-top: 14px; font-size: 13px; color: var(--green); font-weight: 600; }
 
         @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-            }
-
-            .left-panel {
-                flex: none;
-                padding: 24px;
-            }
-
-            .right-panel {
-                padding: 24px 20px;
-                max-height: none;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-group.full-width {
-                grid-column: auto;
-            }
+            .main-container { flex-direction: column; }
+            .left-panel { flex: none; padding: 24px; }
+            .right-panel { padding: 24px 20px; max-height: none; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: auto; }
         }
     </style>
 </head>
-
 <body>
-    <div class="main-container">
-        <!-- Left Panel -->
-        <div class="left-panel">
-            <div class="project-logo">
-                <img src="{% static 'users/images/cocomelon.jpeg' %}" alt="MANAVARGAL Logo">
-            </div>
-            <h1 class="project-title">MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
-            <p class="project-motto">
-                <span class="english">INFORMATION AT EASE</span>
-                <span class="tamil">| தகவல் உங்கள் கையில்</span>
-            </p>
-            <a href="{% url 'parent_login' %}" class="back-link">← Back to Login</a>
+<div class="main-container">
+    <!-- Left Panel -->
+    <div class="left-panel">
+        <div class="project-logo">
+            <img src="{% static 'users/images/cocomelon.jpeg' %}" alt="MANAVARGAL Logo">
         </div>
-
-        <!-- Right Panel -->
-        <div class="right-panel">
-            <h2 class="form-title">New Parent Registration</h2>
-            <p class="form-subtitle">Fill in the details below. Admin will verify and activate your account.</p>
-
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Parent / Guardian Name <span class="required-star">*</span></label>
-                    <input type="text" id="parent_name" placeholder="e.g. Rajesh Kumar" maxlength="200">
-                </div>
-                <div class="form-group">
-                    <label>Child's Full Name <span class="required-star">*</span></label>
-                    <input type="text" id="child_name" placeholder="e.g. Arjun Rajesh" maxlength="200">
-                </div>
-                <div class="form-group">
-                    <label>Admission Number <span class="required-star">*</span></label>
-                    <input type="text" id="admission_no" placeholder="e.g. H4962" maxlength="50">
-                </div>
-                <div class="form-group">
-                    <label>Primary Mobile Number <span class="required-star">*</span></label>
-                    <input type="tel" id="mobile" placeholder="e.g. 9876543210" maxlength="15">
-                </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" id="email" placeholder="e.g. rajesh@email.com" maxlength="200">
-                </div>
-                <div class="form-group">
-                    <label>Class</label>
-                    <select id="class_name">
-                        <option value="">-- Select Class --</option>
-                        {% for i in "123456789" %}
-                        <option value="{{ i }}">Class {{ i }}</option>
-                        {% endfor %}
-                        <option value="10">Class 10</option>
-                        <option value="11">Class 11</option>
-                        <option value="12">Class 12</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Section</label>
-                    <select id="section">
-                        <option value="">-- Select Section --</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                    </select>
-                </div>
-                <div class="form-group full-width">
-                    <label>Address</label>
-                    <textarea id="address" placeholder="Home address (optional)"></textarea>
-                </div>
-            </div>
-
-            <button class="submit-btn" id="submitBtn" onclick="submitRegistration()">
-                Submit Registration
-            </button>
-        </div>
+        <h1 class="project-title">MANAVARGAL SCHOOL MANAGEMENT SYSTEM</h1>
+        <p class="project-motto">
+            <span class="english">INFORMATION AT EASE</span>
+            <span class="tamil">| தகவல் உங்கள் கையில்</span>
+        </p>
+        <a href="{% url 'parent_login' %}" class="back-link">&#8592; Back to Login</a>
     </div>
 
-    <!-- Success Overlay -->
-    <div class="success-overlay" id="successOverlay">
-        <div class="success-card">
-            <div class="success-icon">🎉</div>
-            <h3>Registration Submitted!</h3>
-            <p>Your registration has been saved successfully.<br>The admin will review and activate your account.</p>
-            <div class="countdown-text" id="countdownText">Redirecting in 3s...</div>
+    <!-- Right Panel -->
+    <div class="right-panel">
+        <h2 class="form-title">New Parent Registration</h2>
+        <p class="form-subtitle">Fill in your details, select your child's class, then click <strong>Generate Admission Number</strong>.</p>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Parent / Guardian Name <span class="req">*</span></label>
+                <input type="text" id="parent_name" placeholder="e.g. Rajesh Kumar" maxlength="200">
+            </div>
+            <div class="form-group">
+                <label>Child's Full Name <span class="req">*</span></label>
+                <input type="text" id="child_name" placeholder="e.g. Arjun Rajesh" maxlength="200">
+            </div>
+            <div class="form-group">
+                <label>Primary Mobile Number <span class="req">*</span></label>
+                <input type="tel" id="mobile" placeholder="e.g. 9876543210" maxlength="10"
+                       oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)">
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="e.g. rajesh@email.com" maxlength="200">
+            </div>
+            <div class="form-group full-width">
+                <label>Class to Enroll <span class="req">*</span></label>
+                <select id="class_name" onchange="onClassChange()">
+                    <option value="">-- Loading available classes... --</option>
+                </select>
+            </div>
+            <div class="form-group full-width">
+                <label>Section <span id="sectionHint" style="color:var(--muted);font-weight:400;font-size:12px;">(select class first)</span></label>
+                <select id="section_name" disabled style="background:#f8f9fa;color:var(--muted);">
+                    <option value="">Not Applicable</option>
+                </select>
+            </div>
+            <div class="form-group full-width">
+                <label>Home Address (optional)</label>
+                <textarea id="address" placeholder="Street, City, Pincode..."></textarea>
+            </div>
         </div>
+
+        <!-- Hidden admission number field (populated by generate) -->
+        <input type="hidden" id="admission_no_hidden">
+
+        <!-- Inline message area -->
+        <div class="inline-msg" id="inlineMsg"></div>
+
+        <!-- Generate Button -->
+        <button class="btn-generate" id="generateBtn" onclick="handleGenerate()">
+            &#9889; Generate Enrollment &amp; Admission Number
+        </button>
+
+        <!-- Admission Preview Card (shown after generate) -->
+        <div class="admission-preview" id="admissionPreview">
+            <h4>&#10003; Your Enrollment Details</h4>
+            <div class="preview-row">
+                <span class="preview-label">Admission Number:</span>
+                <span class="preview-value" id="previewAdmNo">--</span>
+            </div>
+            <div class="preview-row">
+                <span class="preview-label">Class:</span>
+                <span class="preview-value" id="previewClass">--</span>
+            </div>
+            <div class="preview-row">
+                <span class="preview-label">Section:</span>
+                <span class="preview-value" id="previewSection">Not Applicable</span>
+            </div>
+            <p class="preview-note">Please review the above details before submitting.</p>
+        </div>
+
+        <!-- Submit Button (shown after generate) -->
+        <button class="btn-submit" id="submitBtn" onclick="submitRegistration()">
+            &#10003; Confirm &amp; Submit Registration
+        </button>
     </div>
+</div>
 
-    <script>
-        function submitRegistration() {
-            const parent_name = document.getElementById('parent_name').value.trim();
-            const child_name = document.getElementById('child_name').value.trim();
-            const admission_no = document.getElementById('admission_no').value.trim();
-            const mobile = document.getElementById('mobile').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const class_name = document.getElementById('class_name').value;
-            const section = document.getElementById('section').value;
-            const address = document.getElementById('address').value.trim();
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay">
+    <div class="success-card">
+        <div class="icon">&#127881;</div>
+        <h3>Registration Submitted!</h3>
+        <p>Your registration has been saved.<br>The admin will review and activate your account.</p>
+        <div class="success-adm" id="successAdmNo"></div>
+        <p style="font-size:13px;color:#047857;">Please note your Admission Number — you will need it to log in once activated.</p>
+        <div class="countdown" id="countdownText">Redirecting in 5s...</div>
+    </div>
+</div>
 
-            if (!parent_name || !child_name || !admission_no || !mobile) {
-                alert('Please fill in all required fields (marked with *).');
-                return;
-            }
+<script>
+    console.log('[ParentRegister] Page loaded.');
 
-            if (!/^\d{10}$/.test(mobile)) {
-                alert('Please enter a valid 10-digit mobile number.');
-                return;
-            }
-
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.textContent = 'Submitting...';
-
-            const csrfToken = getCookie('csrftoken');
-            const formData = new URLSearchParams();
-            formData.append('parent_name', parent_name);
-            formData.append('child_name', child_name);
-            formData.append('admission_no', admission_no);
-            formData.append('mobile', mobile);
-            formData.append('email', email);
-            formData.append('class_name', class_name);
-            formData.append('section', section);
-            formData.append('address', address);
-
-            fetch("{% url 'parent_register_submit' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrfToken
-                },
-                body: formData
-            })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        document.getElementById('successOverlay').classList.add('show');
-                        let secs = 3;
-                        const countdown = setInterval(() => {
-                            secs--;
-                            document.getElementById('countdownText').textContent = `Redirecting in ${secs}s...`;
-                            if (secs <= 0) {
-                                clearInterval(countdown);
-                                window.location.href = "{% url 'parent_login' %}";
-                            }
-                        }, 1000);
-                    } else {
-                        alert('Error: ' + (data.message || 'Something went wrong. Please try again.'));
-                        btn.disabled = false;
-                        btn.textContent = 'Submit Registration';
-                    }
-                })
-                .catch(() => {
-                    alert('Network error. Please check your connection and try again.');
-                    btn.disabled = false;
-                    btn.textContent = 'Submit Registration';
+    (async function loadClasses() {
+        try {
+            const res = await fetch("{% url 'get_available_classes' %}");
+            const data = await res.json();
+            const sel = document.getElementById('class_name');
+            sel.innerHTML = '<option value="">-- Select Class --</option>';
+            if (data.status === 'ok' && data.classes.length > 0) {
+                data.classes.forEach(cls => {
+                    const opt = document.createElement('option');
+                    opt.value = cls; opt.textContent = cls;
+                    sel.appendChild(opt);
                 });
+                console.log('[ParentRegister] Loaded', data.classes.length, 'classes');
+            } else {
+                sel.innerHTML = '<option value="">-- No classes found (contact admin) --</option>';
+            }
+        } catch (err) {
+            console.error('[ParentRegister] Error loading classes:', err);
+            document.getElementById('class_name').innerHTML = '<option value="">-- Error loading classes --</option>';
+        }
+    })();
+
+    async function onClassChange() {
+        const className = document.getElementById('class_name').value;
+        const sectionSel = document.getElementById('section_name');
+        const hint = document.getElementById('sectionHint');
+        sectionSel.innerHTML = '<option value="">Not Applicable</option>';
+        sectionSel.disabled = true;
+        sectionSel.style.background = '#f8f9fa';
+        sectionSel.style.color = 'var(--muted)';
+
+        // Reset admission preview when class changes
+        document.getElementById('admissionPreview').style.display = 'none';
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('admission_no_hidden').value = '';
+
+        if (!className) { hint.textContent = '(select class first)'; return; }
+
+        try {
+            const res = await fetch("{% url 'get_class_sections' %}?class=" + encodeURIComponent(className));
+            const data = await res.json();
+            console.log('[ParentRegister] Sections for', className, ':', data.sections);
+            if (data.sections && data.sections.length > 0) {
+                data.sections.forEach(sec => {
+                    const opt = document.createElement('option');
+                    opt.value = sec; opt.textContent = sec;
+                    sectionSel.appendChild(opt);
+                });
+                sectionSel.disabled = false;
+                sectionSel.style.background = '#fff';
+                sectionSel.style.color = 'var(--text)';
+                hint.textContent = '';
+            } else {
+                hint.textContent = '(no sections for this class)';
+            }
+        } catch (err) {
+            console.error('[ParentRegister] Error fetching sections:', err);
+            hint.textContent = '(error loading sections)';
+        }
+    }
+
+    function showMsg(text, type) {
+        const el = document.getElementById('inlineMsg');
+        el.textContent = text;
+        el.className = 'inline-msg ' + type;
+        el.style.display = 'block';
+    }
+    function clearMsg() { document.getElementById('inlineMsg').style.display = 'none'; }
+
+    async function handleGenerate() {
+        clearMsg();
+        const parentName = document.getElementById('parent_name').value.trim();
+        const childName  = document.getElementById('child_name').value.trim();
+        const mobile     = document.getElementById('mobile').value.trim();
+        const className  = document.getElementById('class_name').value;
+
+        if (!parentName) { showMsg('Please enter parent / guardian name.', 'error'); return; }
+        if (!childName)  { showMsg("Please enter the child's full name.", 'error'); return; }
+        if (!/^\d{10}$/.test(mobile)) { showMsg('Please enter a valid 10-digit mobile number.', 'error'); return; }
+        if (!className)  { showMsg('Please select a class to enroll.', 'error'); return; }
+
+        const btn = document.getElementById('generateBtn');
+        btn.disabled = true;
+        btn.textContent = 'Generating...';
+
+        try {
+            const url = "{% url 'generate_admission_number' %}?class=" + encodeURIComponent(className);
+            const res = await fetch(url);
+            const data = await res.json();
+            console.log('[ParentRegister] Generate response:', data);
+
+            if (data.status === 'ok') {
+                const sectionVal = document.getElementById('section_name').value;
+                document.getElementById('admission_no_hidden').value = data.admission_number;
+                document.getElementById('previewAdmNo').textContent = data.admission_number;
+                document.getElementById('previewClass').textContent = className;
+                document.getElementById('previewSection').textContent = sectionVal || 'Not Applicable';
+
+                document.getElementById('admissionPreview').style.display = 'block';
+                document.getElementById('submitBtn').style.display = 'block';
+
+                btn.innerHTML = '&#10003; Generated — Re-generate';
+                btn.disabled = false;
+                console.log('[ParentRegister] Admission number:', data.admission_number, '| Prefix:', data.prefix || 'sequential');
+            } else {
+                showMsg('Failed to generate: ' + (data.message || 'Unknown error'), 'error');
+                btn.innerHTML = '&#9889; Generate Enrollment &amp; Admission Number';
+                btn.disabled = false;
+            }
+        } catch (err) {
+            console.error('[ParentRegister] Generate error:', err);
+            showMsg('Network error — please check your connection.', 'error');
+            btn.innerHTML = '&#9889; Generate Enrollment &amp; Admission Number';
+            btn.disabled = false;
+        }
+    }
+
+    async function submitRegistration() {
+        clearMsg();
+        const admission_no = document.getElementById('admission_no_hidden').value.trim();
+        if (!admission_no) {
+            showMsg('Please click "Generate Enrollment & Admission Number" first.', 'error');
+            return;
         }
 
-        function getCookie(name) {
-            const match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
-            return match ? decodeURIComponent(match[1]) : '';
+        const sectionVal = document.getElementById('section_name').value;
+        const payload = {
+            parent_name:  document.getElementById('parent_name').value.trim(),
+            child_name:   document.getElementById('child_name').value.trim(),
+            mobile:       document.getElementById('mobile').value.trim(),
+            email:        document.getElementById('email').value.trim(),
+            class_name:   document.getElementById('class_name').value,
+            section:      sectionVal || '',
+            address:      document.getElementById('address').value.trim(),
+            admission_no: admission_no,
+        };
+        console.log('[ParentRegister] Submitting:', payload);
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+
+        const csrfToken = (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '';
+        const formData = new URLSearchParams(payload);
+
+        try {
+            const res = await fetch("{% url 'parent_register_submit' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrfToken },
+                body: formData,
+            });
+            const data = await res.json();
+            console.log('[ParentRegister] Submit response:', data);
+
+            if (data.status === 'success') {
+                document.getElementById('successAdmNo').textContent = 'Admission Number: ' + (data.admission_no || admission_no);
+                document.getElementById('successOverlay').classList.add('show');
+                let secs = 5;
+                const timer = setInterval(() => {
+                    secs--;
+                    document.getElementById('countdownText').textContent = 'Redirecting in ' + secs + 's...';
+                    if (secs <= 0) { clearInterval(timer); window.location.href = "{% url 'parent_login' %}"; }
+                }, 1000);
+            } else {
+                showMsg('Error: ' + (data.message || 'Something went wrong.'), 'error');
+                btn.disabled = false;
+                btn.textContent = '✓ Confirm & Submit Registration';
+            }
+        } catch (err) {
+            console.error('[ParentRegister] Submit error:', err);
+            showMsg('Network error — please check your connection.', 'error');
+            btn.disabled = false;
+            btn.textContent = '✓ Confirm & Submit Registration';
         }
-    </script>
+    }
+</script>
 </body>
-
 </html>

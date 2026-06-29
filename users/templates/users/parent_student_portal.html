@@ -636,11 +636,48 @@
 
             <main class="main-content">
                 <!-- Messages -->
-                
+
+                {% if student_info %}
+                <div style="background:var(--dull-highlighter);border:2px solid var(--sidebar-border);border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+                    <i class="fas fa-user-graduate" style="color:var(--primary-color);font-size:1.5rem;"></i>
+                    <div>
+                        <div style="font-weight:600;font-size:1.05rem;color:var(--primary-color);">{{ student_info.name }}</div>
+                        <div style="font-size:0.88rem;color:var(--text-light);">
+                            Admission: <strong>{{ student_info.admission_number }}</strong> &nbsp;|&nbsp;
+                            Class: <strong>{{ student_info.class }}</strong> &nbsp;|&nbsp;
+                            Section: <strong>{{ student_info.section }}</strong>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Overall Stats -->
+                <div class="stats-grid" style="margin-bottom:1.5rem;">
+                    <div class="stat-card present">
+                        <div class="icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="value">{{ total_present }}</div>
+                        <div class="label">Days Present</div>
+                    </div>
+                    <div class="stat-card absent">
+                        <div class="icon"><i class="fas fa-times-circle" style="color:#dc3545;"></i></div>
+                        <div class="value" style="color:#dc3545;">{{ total_absent }}</div>
+                        <div class="label">Days Absent</div>
+                    </div>
+                    <div class="stat-card leave">
+                        <div class="icon"><i class="fas fa-calendar-times" style="color:#ffc107;"></i></div>
+                        <div class="value" style="color:#ffc107;">{{ total_leave }}</div>
+                        <div class="label">Leave Days</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon"><i class="fas fa-calendar-alt" style="color:#6366f1;"></i></div>
+                        <div class="value" style="color:#6366f1;">{{ total_days }}</div>
+                        <div class="label">Total Records</div>
+                    </div>
+                </div>
 
                 <!-- View Attendance Section -->
                 <section class="section">
-                    <h2><i class="fas fa-search" style="color: #3b82f6;"></i> View Attendance</h2>
+                    <h2><i class="fas fa-search" style="color: #3b82f6;"></i> View Attendance by Date</h2>
                     <form id="dateSelectForm" action="{% url 'parent_student_portal' %}" method="get">
                         {% csrf_token %}
                         <div class="form-group">
@@ -650,23 +687,31 @@
                             </label>
                             <input type="date" name="date" id="date" value="{{ selected_date }}" required>
                         </div>
-                        <button type="submit" class="submit-btn">
-                            <i class="fas fa-search"></i> View Attendance
-                        </button>
+                        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-search"></i> View Attendance
+                            </button>
+                            <button type="button" class="submit-btn" style="background:#10b981;" onclick="goToToday()">
+                                <i class="fas fa-calendar-day"></i> Today
+                            </button>
+                        </div>
                     </form>
                 </section>
 
-                <!-- Attendance History Section -->
+                <!-- Attendance Records Section -->
                 <section class="section">
-                    <h2><i class="fas fa-history" style="color: #8b5cf6;"></i> Attendance History</h2>
-                    
+                    <h2><i class="fas fa-history" style="color: #8b5cf6;"></i>
+                        {% if selected_date %}Attendance on {{ selected_date }}{% else %}Attendance History{% endif %}
+                    </h2>
+
                     {% if attendance_records %}
                         <div class="table-container">
                             <table class="attendance-table">
                                 <thead>
                                     <tr>
                                         <th><i class="fas fa-calendar"></i> Date</th>
-                                        <th><i class="fas fa-id-card"></i> Admission Number</th>
+                                        <th><i class="fas fa-user"></i> Student Name</th>
+                                        <th><i class="fas fa-id-card"></i> Admission No.</th>
                                         <th><i class="fas fa-chalkboard"></i> Class</th>
                                         <th><i class="fas fa-layer-group"></i> Section</th>
                                         <th><i class="fas fa-check-circle"></i> Status</th>
@@ -676,6 +721,7 @@
                                     {% for record in attendance_records %}
                                         <tr>
                                             <td>{{ record.date }}</td>
+                                            <td>{{ record.name }}</td>
                                             <td>{{ record.admission_number }}</td>
                                             <td>{{ record.class }}</td>
                                             <td>{{ record.section|default:"N/A" }}</td>
@@ -699,7 +745,8 @@
                     {% else %}
                         <div class="no-records">
                             <i class="fas fa-inbox"></i>
-                            <p>No attendance records found for the selected date.</p>
+                            <p>No attendance record found{% if selected_date %} for {{ selected_date }}{% endif %}.</p>
+                            <p style="font-size:0.9rem;margin-top:0.5rem;color:var(--text-light);">Attendance may not have been marked yet for this date.</p>
                         </div>
                     {% endif %}
                 </section>
@@ -713,6 +760,12 @@
     </a>
 
     <script>
+        function goToToday() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+            document.getElementById('dateSelectForm').submit();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');

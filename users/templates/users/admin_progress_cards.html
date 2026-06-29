@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Cards - Admin Panel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #f8f9fa; min-height: 100vh; color: #495057; }
+        :root {
+            --primary: #00a676; --primary-hover: #00b88d;
+            --white: #fff; --border: #dee2e6;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .page-header {
+            background: linear-gradient(90deg, #00a676, #00b88d);
+            color: #fff; padding: 1.5rem 2rem;
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .page-header h1 { font-size: 1.5rem; font-weight: 700; }
+        .back-btn {
+            text-decoration: none; background: rgba(255,255,255,0.2);
+            color: #fff; padding: 0.5rem 1rem; border-radius: 8px;
+            font-size: 0.9rem; font-weight: 600; display: inline-flex;
+            align-items: center; gap: 6px; transition: background 0.2s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.35); }
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+        .card {
+            background: var(--white); border-radius: 12px;
+            border: 1px solid var(--border); box-shadow: var(--shadow);
+            padding: 1.5rem; margin-bottom: 2rem;
+        }
+        .card h2 {
+            font-size: 1.15rem; font-weight: 700; color: var(--primary);
+            margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;
+            padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+        }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.4rem; color: #495057; }
+        .form-group input {
+            width: 100%; padding: 0.65rem 0.9rem; border: 2px solid var(--border);
+            border-radius: 8px; font-size: 0.95rem; font-family: inherit; transition: border 0.2s;
+        }
+        .form-group input:focus { border-color: var(--primary); outline: none; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .btn-upload {
+            width: 100%; padding: 0.75rem; background: var(--primary); color: #fff;
+            border: none; border-radius: 8px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; font-family: inherit; transition: background 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 0.5rem;
+        }
+        .btn-upload:hover { background: var(--primary-hover); }
+        .alert {
+            padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.25rem;
+            font-size: 0.9rem; display: flex; align-items: center; gap: 8px;
+        }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { background: #f1f3f5; font-weight: 700; padding: 0.7rem 1rem; text-align: left; color: #495057; border-bottom: 2px solid var(--border); }
+        td { padding: 0.65rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:hover td { background: #f8f9fa; }
+        .view-link {
+            display: inline-flex; align-items: center; gap: 4px;
+            color: #2563eb; text-decoration: none; font-weight: 600; font-size: 0.85rem;
+        }
+        .view-link:hover { text-decoration: underline; }
+        .empty-state { text-align: center; padding: 2.5rem; color: #868e96; }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; }
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            .container { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <a href="{% url 'admin_page' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+        <h1><i class="fas fa-file-pdf"></i> &nbsp;Student Progress Cards</h1>
+    </div>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Upload Form -->
+        <div class="card">
+            <h2><i class="fas fa-cloud-upload-alt"></i> Upload Progress Card PDF</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="admission_number"><i class="fas fa-id-card"></i> Admission Number *</label>
+                        <input type="text" id="admission_number" name="admission_number" required placeholder="e.g. ADM2024001">
+                    </div>
+                    <div class="form-group">
+                        <label for="academic_year"><i class="fas fa-calendar"></i> Academic Year (optional)</label>
+                        <input type="text" id="academic_year" name="academic_year" placeholder="e.g. 2024-2025">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="progress_card_pdf"><i class="fas fa-file-pdf"></i> Progress Card PDF *</label>
+                    <input type="file" id="progress_card_pdf" name="progress_card_pdf" accept=".pdf" required>
+                </div>
+                <button type="submit" class="btn-upload">
+                    <i class="fas fa-upload"></i> Upload Progress Card
+                </button>
+            </form>
+        </div>
+
+        <!-- Uploaded Cards Table -->
+        <div class="card">
+            <h2><i class="fas fa-list"></i> Uploaded Progress Cards</h2>
+            {% if cards %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Admission No.</th>
+                        <th>Student Name</th>
+                        <th>Class</th>
+                        <th>Academic Year</th>
+                        <th>Uploaded At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in cards %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ card.admission_number }}</strong></td>
+                        <td>{{ card.student_name|default:"—" }}</td>
+                        <td>{{ card.class_name|default:"—" }}</td>
+                        <td>{{ card.academic_year|default:"—" }}</td>
+                        <td style="font-size:0.82rem;color:#868e96;">{{ card.uploaded_at }}</td>
+                        <td>
+                            <a href="/media/{{ card.file_path }}" target="_blank" class="view-link">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-folder-open"></i>
+                <p>No progress cards uploaded yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

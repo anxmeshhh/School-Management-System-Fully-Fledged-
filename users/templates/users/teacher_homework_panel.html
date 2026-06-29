@@ -571,6 +571,11 @@
             color: white;
         }
 
+        .badge-text-only {
+            background: #6c757d;
+            color: white;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .sidebar { width: 250px; }
@@ -699,7 +704,7 @@
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input type="hidden" name="upload_homework" value="1">
-                        
+
                         <div class="form-group">
                             <label for="homework_title">
                                 <i class="fas fa-heading" style="color: #ef4444; margin-right: 8px;"></i>
@@ -711,77 +716,34 @@
                         <div class="form-group">
                             <label for="homework_description">
                                 <i class="fas fa-align-left" style="color: #06b6d4; margin-right: 8px;"></i>
-                                Description:
+                                Description (optional):
                             </label>
-                            <textarea id="homework_description" name="homework_description" placeholder="Enter homework description (optional)"></textarea>
+                            <textarea id="homework_description" name="homework_description" placeholder="Enter homework description"></textarea>
                         </div>
 
-                        <div class="form-row-2">
-                            <div class="form-group">
-                                <label for="subject">
-                                    <i class="fas fa-book-open" style="color: #f59e0b; margin-right: 8px;"></i>
-                                    Subject:
-                                </label>
-                                <select id="subject" name="subject">
-                                    <option value="">Select Subject (Optional)</option>
-                                    {% for subject in subjects %}
-                                        <option value="{{ subject }}">{{ subject }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="due_date">
-                                    <i class="fas fa-calendar-alt" style="color: #dc3545; margin-right: 8px;"></i>
-                                    Due Date:
-                                </label>
-                                <input type="date" id="due_date" name="due_date">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="target">
-                                    <i class="fas fa-bullseye" style="color: #10b981; margin-right: 8px;"></i>
-                                    Target Audience:
-                                </label>
-                                <select id="target" name="target" onchange="toggleTargetFields()">
-                                    <option value="all">All Classes</option>
-                                    <option value="specific">Specific Class & Section</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group" id="classGroup" style="display: none;">
-                                <label for="class">
-                                    <i class="fas fa-graduation-cap" style="color: #3b82f6; margin-right: 8px;"></i>
-                                    Select Class:
-                                </label>
-                                <select id="class" name="class" onchange="updateUploadSections()">
-                                    <option value="">Select Class</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group" id="sectionGroup" style="display: none;">
-                                <label for="section">
-                                    <i class="fas fa-th-large" style="color: #8b5cf6; margin-right: 8px;"></i>
-                                    Select Section:
-                                </label>
-                                <select id="section" name="section">
-                                    <option value="all">All Sections / No Section</option>
-                                </select>
-                            </div>
+                        <div class="form-group">
+                            <label for="target_class">
+                                <i class="fas fa-users" style="color: #8b5cf6; margin-right: 8px;"></i>
+                                Assign to Class:
+                            </label>
+                            <select id="target_class" name="target_class" style="width:100%;padding:0.75rem;border-radius:8px;border:2px solid var(--border-color);font-size:1rem;font-family:inherit;">
+                                <option value="all">All Classes (Everyone)</option>
+                                {% for cls in available_classes %}
+                                <option value="{{ cls }}">Class {{ cls }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
 
                         <div class="form-group">
                             <label>
                                 <i class="fas fa-paperclip" style="color: #06b6d4; margin-right: 8px;"></i>
-                                Upload File (PDF, DOCX, XLSX, Images):
+                                Attach Document (PDF, DOCX, or Image) — <em style="font-weight:400;color:#868e96;">optional</em>
                             </label>
                             <div class="file-input-wrapper">
-                                <input type="file" id="homework_file" name="homework_file" accept=".pdf,.docx,.xlsx,.xls,.jpg,.jpeg,.png,.gif,.webp" required onchange="displayFileName(this)">
+                                <input type="file" id="homework_file" name="homework_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp" onchange="displayFileName(this)">
                                 <label for="homework_file" class="file-input-label">
                                     <i class="fas fa-cloud-upload-alt"></i>
-                                    <span>Choose File</span>
+                                    <span>Choose File (optional)</span>
                                 </label>
                             </div>
                             <div class="file-name-display" id="fileNameDisplay"></div>
@@ -796,42 +758,44 @@
                 <!-- View Uploaded Homework Section -->
                 <section class="section">
                     <h2><i class="fas fa-list-alt" style="color: #10b981;"></i> Your Uploaded Homework</h2>
-                    
+
                     <div class="homework-grid">
                         {% for hw in uploaded_homework %}
                         <div class="homework-card">
                             <h3>
-                                <i class="fas fa-file-alt"></i>
+                                <i class="fas fa-file-alt" style="color: #3b82f6; margin-right: 6px;"></i>
                                 {{ hw.title }}
-                                {% if hw.file_type == '.pdf' %}
+                                {% if not hw.file_type %}
+                                    <span class="file-type-badge badge-text-only">No File</span>
+                                {% elif hw.file_type == '.pdf' %}
                                     <span class="file-type-badge badge-pdf">PDF</span>
-                                {% elif hw.file_type == '.docx' %}
-                                    <span class="file-type-badge badge-doc">DOCX</span>
-                                {% elif hw.file_type in '.xlsx,.xls' %}
-                                    <span class="file-type-badge badge-excel">EXCEL</span>
+                                {% elif hw.file_type in '.doc .docx' %}
+                                    <span class="file-type-badge badge-doc">DOC</span>
                                 {% else %}
-                                    <span class="file-type-badge badge-image">IMAGE</span>
+                                    <span class="file-type-badge badge-image">Image</span>
                                 {% endif %}
                             </h3>
-                            {% if hw.description and hw.description != 'No description' %}
-                                <p><strong>Description:</strong> {{ hw.description }}</p>
+                            {% if hw.description %}
+                                <p><i class="fas fa-align-left" style="color:#06b6d4;margin-right:4px;"></i> <strong>Description:</strong> {{ hw.description }}</p>
                             {% endif %}
-                            {% if hw.subject %}
-                                <p><strong>Subject:</strong> {{ hw.subject }}</p>
-                            {% endif %}
-                            <p><strong>Target:</strong> {{ hw.target }}</p>
-                            {% if hw.due_date %}
-                                <p><strong>Due Date:</strong> {{ hw.due_date }}</p>
-                            {% endif %}
-                            <p><strong>Uploaded on:</strong> {{ hw.date }}</p>
+                            <p>
+                                <i class="fas fa-graduation-cap" style="color:#8b5cf6;margin-right:4px;"></i>
+                                <strong>Class:</strong> {{ hw.class_name|default:"All Classes" }}
+                            </p>
+                            <p>
+                                <i class="fas fa-clock" style="color:#94a3b8;margin-right:4px;"></i>
+                                <strong>Uploaded on:</strong> {{ hw.date }}
+                            </p>
+                            {% if hw.file_path %}
                             <div class="file-preview">
-    <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}" target="_blank" class="view-btn">
-        <i class="fas fa-eye"></i> View File
-    </a>
-    <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}?download=true" class="download-btn">
-        <i class="fas fa-download"></i> Download
-    </a>
-</div>
+                                <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}" target="_blank" class="view-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}?download=true" class="download-btn">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
+                            {% endif %}
                         </div>
                         {% empty %}
                         <p class="no-submissions">
@@ -841,94 +805,21 @@
                         {% endfor %}
                     </div>
                 </section>
-
-                <!-- Filter Student Submissions Section -->
-                <section class="section">
-                    <h2><i class="fas fa-filter" style="color: #06b6d4;"></i> Filter Student Submissions</h2>
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="filter_homework" value="1">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="filter_class">
-                                    <i class="fas fa-graduation-cap" style="color: #3b82f6; margin-right: 8px;"></i>
-                                    Select Class:
-                                </label>
-                                <select id="filter_class" name="class" onchange="updateFilterSections()">
-                                    <option value="">All Classes</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="filter_section">
-                                    <i class="fas fa-th-large" style="color: #8b5cf6; margin-right: 8px;"></i>
-                                    Select Section:
-                                </label>
-                                <select id="filter_section" name="section">
-                                    <option value="all">All Sections / No Section</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-info">
-                                <i class="fas fa-filter"></i> Filter
-                            </button>
-                        </div>
-                    </form>
-                </section>
-
-                <!-- Student Submissions Section -->
-                <section class="section">
-                    <h2><i class="fas fa-file-contract" style="color: #f59e0b;"></i> Student Homework Submissions</h2>
-
-                    <div class="homework-grid">
-                        {% for hw in homework_list %}
-                        <div class="homework-card">
-                            <h3>
-                                <i class="fas fa-user-graduate"></i>
-                                {{ hw.title }}
-                            </h3>
-                            <p><strong>Student Name:</strong> {{ hw.student_name }}</p>
-                            <p><strong>User ID:</strong> {{ hw.user_id }}</p>
-                            <p><strong>Class:</strong> {{ hw.class|capfirst }}</p>
-                            <p><strong>Section:</strong> {{ hw.section|capfirst }}</p>
-                            <p><strong>Submitted on:</strong> {{ hw.submission_date }}</p>
-                            <div class="file-preview">
-                                <a href="{% url 'serve_protected_file' 'submission' hw.file_path %}" target="_blank" class="view-btn">
-        <i class="fas fa-eye"></i> View File
-    </a>
-    <a href="{% url 'serve_protected_file' 'submission' hw.file_path %}?download=true" class="download-btn">
-        <i class="fas fa-download"></i> Download
-    </a>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <p class="no-submissions">
-                            <i class="fas fa-search" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
-                            {% if selected_class and selected_section %}
-                                No homework submissions available for Class: {{ selected_class|capfirst }}, Section: {{ selected_section|capfirst }}.
-                            {% else %}
-                                No homework submissions available yet.
-                            {% endif %}
-                        </p>
-                        {% endfor %}
-                    </div>
-                </section>
             </main>
         </div>
     </div>
 
     <script>
-        function toggleTargetFields() {
-            const target = document.getElementById('target').value;
-            const classGroup = document.getElementById('classGroup');
-            const sectionGroup = document.getElementById('sectionGroup');
-            
-            if (target === 'specific') {
-                classGroup.style.display = 'block';
-                sectionGroup.style.display = 'block';
-            } else {
-                classGroup.style.display = 'none';
-                sectionGroup.style.display = 'none';
-            }
-        }
+        // ── Console logging ON — open DevTools → Console (F12) to see errors ──
+        console.log('[TeacherHomework] Panel loaded.');
+
+        // Global error capture
+        window.onerror = function(msg, src, line, col, err) {
+            console.error('[TeacherHomework] Uncaught error:', msg, 'at', src + ':' + line + ':' + col, err);
+        };
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('[TeacherHomework] Unhandled promise rejection:', e.reason);
+        });
 
         function displayFileName(input) {
             const fileNameDisplay = document.getElementById('fileNameDisplay');
@@ -937,63 +828,29 @@
                 const fileSize = (input.files[0].size / 1024).toFixed(2);
                 fileNameDisplay.innerHTML = `<i class="fas fa-file"></i> ${fileName} (${fileSize} KB)`;
                 fileNameDisplay.classList.add('show');
+                console.log('[TeacherHomework] File selected:', fileName, '(' + fileSize + ' KB)');
             } else {
                 fileNameDisplay.classList.remove('show');
+                console.log('[TeacherHomework] File selection cleared.');
             }
-        }
-
-        const classMapData = {{ class_map_json|safe }};
-        const selectedFilterClass = "{{ selected_class|default:'' }}";
-        const selectedFilterSection = "{{ selected_section|default:'all' }}";
-
-        function populateClasses(selectElementId, addAllOption, selectedValue) {
-            const select = document.getElementById(selectElementId);
-            if (!select) return;
-            select.innerHTML = addAllOption ? '<option value="">All Classes</option>' : '<option value="">Select Class</option>';
-            Object.keys(classMapData).forEach(cls => {
-                const opt = document.createElement('option');
-                opt.value = cls;
-                opt.textContent = cls.charAt(0).toUpperCase() + cls.slice(1);
-                if (cls === selectedValue) opt.selected = true;
-                select.appendChild(opt);
-            });
-        }
-
-        function updateSections(classSelectId, sectionSelectId, selectedSectionVal) {
-            const classSelect = document.getElementById(classSelectId);
-            const sectionSelect = document.getElementById(sectionSelectId);
-            if (!classSelect || !sectionSelect) return;
-
-            const selectedClass = classSelect.value;
-            sectionSelect.innerHTML = '<option value="all">All Sections / No Section</option>';
-
-            if (selectedClass && classMapData[selectedClass] && classMapData[selectedClass].length > 0) {
-                classMapData[selectedClass].forEach(sec => {
-                    const opt = document.createElement('option');
-                    opt.value = sec;
-                    opt.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
-                    if (sec === selectedSectionVal) opt.selected = true;
-                    sectionSelect.appendChild(opt);
-                });
-            }
-        }
-
-        function updateUploadSections() {
-            updateSections('class', 'section', 'all');
-        }
-
-        function updateFilterSections() {
-            updateSections('filter_class', 'filter_section', selectedFilterSection);
-        }
-
-        function initDropdowns() {
-            populateClasses('class', false, '');
-            populateClasses('filter_class', true, selectedFilterClass);
-            updateFilterSections();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            initDropdowns();
+            console.log('[TeacherHomework] DOM ready.');
+
+            // Log form submission
+            const uploadForm = document.querySelector('form[enctype="multipart/form-data"]');
+            if (uploadForm) {
+                uploadForm.addEventListener('submit', function() {
+                    const title = document.getElementById('homework_title').value.trim();
+                    const hasFile = document.getElementById('homework_file').files.length > 0;
+                    console.log('[TeacherHomework] Submitting homework upload:', {
+                        title: title,
+                        hasFile: hasFile,
+                        fileName: hasFile ? document.getElementById('homework_file').files[0].name : 'none'
+                    });
+                });
+            }
 
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');

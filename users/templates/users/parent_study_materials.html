@@ -719,37 +719,33 @@
                         {% for material in study_materials %}
                         <div class="material-card">
                             <h3>
-                                <i class="fas fa-file-pdf" style="color: #e74c3c;"></i> 
+                                <i class="fas fa-book-open" style="color: #3498db;"></i>
                                 {{ material.title }}
                             </h3>
-                            <p>
-                                <strong>
-                                    <i class="fas fa-graduation-cap" style="color: #3498db; font-size: 0.9em;"></i> 
-                                    Class:
-                                </strong> 
-                                {{ material.class|capfirst }}
+                            {% if material.description %}
+                            <p style="color:#495057;font-size:0.9rem;line-height:1.5;">
+                                <i class="fas fa-align-left" style="color:#27ae60;font-size:0.85em;margin-right:4px;"></i>
+                                {{ material.description }}
                             </p>
+                            {% endif %}
                             <p>
                                 <strong>
-                                    <i class="fas fa-th-large" style="color: #f39c12; font-size: 0.9em;"></i> 
-                                    Section:
-                                </strong> 
-                                {{ material.section|capfirst }}
-                            </p>
-                            <p>
-                                <strong>
-                                    <i class="fas fa-calendar-alt" style="color: #27ae60; font-size: 0.9em;"></i> 
+                                    <i class="fas fa-calendar-alt" style="color: #27ae60; font-size: 0.9em;"></i>
                                     Uploaded:
-                                </strong> 
+                                </strong>
                                 {{ material.upload_date }}
                             </p>
                             <div class="file-preview">
-                                <a href="{% url 'serve_pdf' material.file_path %}" target="_blank" class="view-btn">
-                                    <i class="fas fa-eye"></i> View PDF
-                                </a>
-                                <a href="{% url 'serve_pdf' material.file_path %}?download=true" class="download-btn">
-                                    <i class="fas fa-download"></i> Download
-                                </a>
+                                {% if material.file_path %}
+                                    <a href="{% url 'serve_pdf' material.file_path %}" target="_blank" class="view-btn">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{% url 'serve_pdf' material.file_path %}?download=true" class="download-btn">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                {% else %}
+                                    <p style="color:#27ae60;font-size:0.85rem;"><i class="fas fa-comment-dots"></i> Text-only material — no file attached.</p>
+                                {% endif %}
                             </div>
                         </div>
                         {% empty %}

@@ -524,58 +524,52 @@
         color: #1e293b;
     }
 
-    .attendance-btn {
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 6px;
-        color: var(--white);
-        font-size: 0.85rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: var(--transition);
-        margin: 0 0.25rem;
-        min-width: 75px;
+    .radio-att-group {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .radio-att-lbl {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        gap: 0.4rem;
+        gap: 4px;
+        padding: 6px 14px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: all 0.18s;
+        opacity: 0.52;
+        border: 2px solid transparent;
+        user-select: none;
+        white-space: nowrap;
     }
 
-    .attendance-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
+    .radio-att-lbl input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+        height: 0;
     }
 
-    .present {
-        background: #16a34a;
+    .radio-att-lbl.selected,
+    .radio-att-lbl:has(input:checked) {
+        opacity: 1;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.22);
+        transform: scale(1.06);
+        font-weight: 700;
+        border-color: rgba(255,255,255,0.5);
     }
 
-    .present:hover {
-        background: #22c55e;
+    .radio-att-lbl:hover {
+        opacity: 0.82;
     }
 
-    .absent {
-        background: var(--primary-color);
-    }
-
-    .absent:hover {
-        background: var(--primary-hover);
-    }
-
-    .leave {
-        background: #eab308;
-    }
-
-    .leave:hover {
-        background: #facc15;
-        color: #000;
-    }
-
-    .selected {
-        border: 2px solid #fff;
-        box-shadow: 0 0 0 3px rgba(0, 166, 118, 0.4);
-        transform: scale(1.05);
-    }
+    .present-lbl { background: #16a34a; color: #fff; }
+    .absent-lbl  { background: #dc2626; color: #fff; }
 
     .no-sections,
     .no-requests {
@@ -859,12 +853,6 @@
                                 </div>
                             </div>
 
-                            <form id="attendanceForm" method="POST" action="{% url 'admin_mark_attendance' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="class" value="{{ selected_class }}">
-                                <input type="hidden" name="section" value="{{ selected_section }}">
-                                <input type="hidden" name="date" value="{{ selected_date }}">
-
                                 <div class="table-container">
                                     <table class="attendance-table">
                                         <thead>
@@ -879,35 +867,40 @@
                                         </thead>
                                         <tbody id="attendanceTableBody">
                                             {% for student in students %}
-                                                <tr data-student="{{ student.name }}" data-status="{{ student.status }}">
+                                                <tr data-student="{{ student.name }}" data-uid="{{ student.user_id }}" data-status="{{ student.status|default:'present' }}">
                                                     <td>{{ student.user_id }}</td>
                                                     <td class="student-name-cell">{{ student.name }}</td>
                                                     <td>{{ student.admission_number }}</td>
                                                     <td>{{ student.class }}</td>
                                                     <td>{{ student.section|default:"N/A" }}</td>
                                                     <td style="text-align: center;">
-                                                        <button type="submit" name="student_{{ student.user_id }}" value="present" 
-                                                                class="attendance-btn present {% if student.status == 'present' %}selected{% endif %}">
-                                                            <i class="fas fa-check-circle"></i> Present
-                                                        </button>
-                                                        <button type="submit" name="student_{{ student.user_id }}" value="absent" 
-                                                                class="attendance-btn absent {% if student.status == 'absent' %}selected{% endif %}">
-                                                            <i class="fas fa-times-circle"></i> Absent
-                                                        </button>
-                                                        <button type="submit" name="student_{{ student.user_id }}" value="leave" 
-                                                                class="attendance-btn leave {% if student.status == 'leave' %}selected{% endif %}">
-                                                            <i class="fas fa-calendar-times"></i> Leave
-                                                        </button>
+                                                        <div class="radio-att-group">
+                                                            <label class="radio-att-lbl present-lbl {% if not student.status or student.status == 'present' %}selected{% endif %}">
+                                                                <input type="radio" name="att_{{ student.user_id }}" value="present"
+                                                                       {% if not student.status or student.status == 'present' %}checked{% endif %}
+                                                                       onchange="setAdminStatus('{{ student.user_id }}', 'present')">
+                                                                <i class="fas fa-check-circle"></i> Present
+                                                            </label>
+                                                            <label class="radio-att-lbl absent-lbl {% if student.status == 'absent' %}selected{% endif %}">
+                                                                <input type="radio" name="att_{{ student.user_id }}" value="absent"
+                                                                       {% if student.status == 'absent' %}checked{% endif %}
+                                                                       onchange="setAdminStatus('{{ student.user_id }}', 'absent')">
+                                                                <i class="fas fa-times-circle"></i> Absent
+                                                            </label>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>
-                            </form>
 
-                            <div class="action-buttons">
-                                <a href="{% url 'admin_generate_attendance_pdf' %}?class={{ selected_class|urlencode }}&section={{ selected_section|urlencode }}&date={{ selected_date|urlencode }}" 
+                            <div class="action-buttons" style="margin-top:1.5rem;gap:12px;">
+                                <button type="button" id="adminSaveBtn" onclick="saveAdminAttendance()"
+                                        style="display:inline-flex;align-items:center;gap:8px;padding:0.75rem 1.75rem;background:#00a676;color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:background 0.2s;">
+                                    <i class="fas fa-save"></i> Save Attendance
+                                </button>
+                                <a href="{% url 'admin_generate_attendance_pdf' %}?class={{ selected_class|urlencode }}&section={{ selected_section|urlencode }}&date={{ selected_date|urlencode }}"
                                    class="pdf-button">
                                     <i class="fas fa-file-pdf"></i> Generate PDF Report
                                 </a>
@@ -925,7 +918,98 @@
     </div>
 
     <script>
+    // Admin attendance state (client-side, committed only on Save click)
+    let adminState = {};
+
+    function adminGetCookie(name) {
+        let val = null;
+        if (document.cookie) {
+            document.cookie.split(';').forEach(c => {
+                c = c.trim();
+                if (c.startsWith(name + '=')) val = decodeURIComponent(c.substring(name.length + 1));
+            });
+        }
+        return val;
+    }
+
+    window.setAdminStatus = function(uid, status) {
+        adminState[uid] = status;
+        const row = document.querySelector(`tr[data-uid="${uid}"]`);
+        if (row) {
+            row.querySelectorAll('.radio-att-lbl').forEach(lbl => {
+                const inp = lbl.querySelector('input[type="radio"]');
+                lbl.classList.toggle('selected', inp && inp.value === status);
+            });
+            row.dataset.status = status;
+        }
+        updateStatistics();
+    };
+
+    window.saveAdminAttendance = function() {
+        const classVal = '{{ selected_class|escapejs }}';
+        const sectionVal = '{{ selected_section|escapejs }}';
+        const dateVal = '{{ selected_date|escapejs }}';
+        const records = [];
+        document.querySelectorAll('#attendanceTableBody tr').forEach(row => {
+            const name = row.dataset.student;
+            const uid = row.dataset.uid;
+            const status = adminState[uid] || row.dataset.status || 'present';
+            if (name) records.push({ name, status });
+        });
+        if (!records.length) { alert('No students to save.'); return; }
+        const btn = document.getElementById('adminSaveBtn');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
+        fetch('/admin/save-attendance/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': adminGetCookie('csrftoken') },
+            body: JSON.stringify({ class: classVal, section: sectionVal, date: dateVal, records })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> Saved!'; }
+                alert('✓ ' + data.message);
+            } else {
+                alert('Error: ' + data.message);
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save Attendance'; }
+            }
+        })
+        .catch(err => {
+            alert('Network error: ' + err);
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save Attendance'; }
+        });
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
+        // Init adminState from rendered rows
+        document.querySelectorAll('#attendanceTableBody tr').forEach(row => {
+            const uid = row.dataset.uid;
+            const status = row.dataset.status || 'present';
+            if (uid) adminState[uid] = status;
+        });
+
+        // Fetch approved leaves and show badges
+        const selClass = '{{ selected_class|escapejs }}';
+        const selDate = '{{ selected_date|escapejs }}';
+        if (selClass && selDate) {
+            fetch('/teacher/get-approved-leaves/?class=' + encodeURIComponent(selClass) + '&date=' + encodeURIComponent(selDate))
+                .then(r => r.json())
+                .then(data => {
+                    (data.students || []).forEach(name => {
+                        document.querySelectorAll('#attendanceTableBody tr').forEach(row => {
+                            if (row.dataset.student === name) {
+                                const cell = row.querySelector('.student-name-cell');
+                                if (cell && !cell.querySelector('.leave-tag')) {
+                                    cell.insertAdjacentHTML('beforeend',
+                                        '<span class="leave-tag" style="background:#fef3c7;color:#92400e;border:1px solid #fbbf24;border-radius:4px;padding:1px 6px;font-size:11px;margin-left:6px;font-weight:600;">On Leave</span>');
+                                }
+                            }
+                        });
+                    });
+                })
+                .catch(() => {});
+        }
+
         // Sidebar toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');

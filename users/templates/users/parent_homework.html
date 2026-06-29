@@ -479,6 +479,59 @@
             color: white;
         }
 
+        .badge-text-only {
+            background: #6c757d;
+            color: white;
+        }
+
+        .date-filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .date-filter-bar input[type="date"] {
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .date-filter-bar input[type="date"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .date-filter-bar button {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .btn-filter { background: var(--primary-color); color: #fff; }
+        .btn-filter:hover { background: var(--primary-hover); }
+        .btn-clear  { background: #e9ecef; color: var(--text-color); }
+        .btn-clear:hover  { background: #dee2e6; }
+
+        .text-only-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #6c757d;
+            font-size: 0.85rem;
+            font-style: italic;
+            padding: 0.4rem 0;
+        }
+
         .file-links {
             display: flex;
             gap: 0.75rem;
@@ -837,157 +890,100 @@
                     {% endif %}
                 </div>
 
-                <!-- Tab Navigation -->
-                <div class="tab-navigation">
-                    <button class="tab-btn active" onclick="switchTab('teacher')" id="teacherTab">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                        Homework from Teachers
-                    </button>
-                    <button class="tab-btn" onclick="switchTab('submit')" id="submitTab">
-                        <i class="fas fa-upload"></i>
-                        Submit Homework
-                    </button>
-                    <button class="tab-btn" onclick="switchTab('submissions')" id="submissionsTab">
-                        <i class="fas fa-folder-open"></i>
-                        Your Submissions
-                    </button>
-                </div>
-
-                <!-- SECTION 1: Teacher Assigned Homework -->
-                <div id="teacherContent" class="tab-content active">
-                    <div class="section">
-                        <h2>
-                            <i class="fas fa-chalkboard-teacher"></i> 
-                            Homework from Teachers
-                        </h2>
-                        <div class="homework-grid">
-                            {% for hw in teacher_homework %}
-                            <div class="homework-card">
-                                <h3>
-                                    <i class="fas fa-file-alt"></i>
-                                    {{ hw.title }}
-                                    {% if hw.file_type == '.pdf' %}
-                                        <span class="file-type-badge badge-pdf">PDF</span>
-                                    {% elif hw.file_type == '.docx' %}
-                                        <span class="file-type-badge badge-doc">DOCX</span>
-                                    {% elif hw.file_type in '.xlsx,.xls' %}
-                                        <span class="file-type-badge badge-excel">EXCEL</span>
-                                    {% else %}
-                                        <span class="file-type-badge badge-image">IMAGE</span>
-                                    {% endif %}
-                                </h3>
-                                {% if hw.description %}
-                                    <p>
-                                        <i class="fas fa-align-left" style="color: #9333ea;"></i>
-                                        <span><strong>Description:</strong> {{ hw.description }}</span>
-                                    </p>
-                                {% endif %}
-                                {% if hw.subject %}
-                                    <p>
-                                        <i class="fas fa-book-open" style="color: #3b82f6;"></i>
-                                        <span><strong>Subject:</strong> {{ hw.subject }}</span>
-                                    </p>
-                                {% endif %}
-                                {% if hw.due_date %}
-                                    <p>
-                                        <i class="fas fa-calendar-alt" style="color: #ef4444;"></i>
-                                        <span><strong>Due Date:</strong> {{ hw.due_date }}</span>
-                                    </p>
-                                {% endif %}
-                                <p>
-                                    <i class="fas fa-clock" style="color: #10b981;"></i>
-                                    <span><strong>Uploaded:</strong> {{ hw.date }}</span>
-                                </p>
-                                <div class="file-links">
-                                    <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}" target="_blank" class="view-btn">
-                                        <i class="fas fa-eye"></i> View
-                                    </a>
-                                    <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}?download=true" class="download-btn">
-                                        <i class="fas fa-download"></i> Download
-                                    </a>
-                                </div>
+                <!-- Student Information -->
+                <div class="section" style="margin-bottom:1.5rem;">
+                    <h2><i class="fas fa-user-graduate"></i> Student Information</h2>
+                    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                        <div style="display:flex;align-items:center;gap:0.75rem;background:var(--white);border:2px solid var(--border-color);border-radius:10px;padding:0.9rem 1.2rem;flex:1;min-width:140px;">
+                            <i class="fas fa-school" style="color:var(--primary-color);font-size:1.4rem;"></i>
+                            <div>
+                                <div style="font-size:0.78rem;color:var(--text-light);font-weight:500;">Class</div>
+                                <div style="font-size:1rem;font-weight:700;color:var(--text-color);">{{ student_class|capfirst|default:"—" }}</div>
                             </div>
-                            {% empty %}
-                            <div class="no-homework">
-                                <i class="fas fa-inbox"></i>
-                                <p>No homework assigned by teachers yet.</p>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.75rem;background:var(--white);border:2px solid var(--border-color);border-radius:10px;padding:0.9rem 1.2rem;flex:1;min-width:140px;">
+                            <i class="fas fa-th-large" style="color:#8b5cf6;font-size:1.4rem;"></i>
+                            <div>
+                                <div style="font-size:0.78rem;color:var(--text-light);font-weight:500;">Section</div>
+                                <div style="font-size:1rem;font-weight:700;color:var(--text-color);">{{ student_section|capfirst|default:"None" }}</div>
                             </div>
-                            {% endfor %}
                         </div>
                     </div>
                 </div>
 
-                <!-- SECTION 2: Submit Homework -->
-                <div id="submitContent" class="tab-content">
-                    <div class="section">
-                        <h2>
-                            <i class="fas fa-upload"></i> 
-                            Submit Homework
-                        </h2>
-                        <form method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label for="title">
-                                    <i class="fas fa-heading" style="color: #9b59b6;"></i> 
-                                    Title
-                                </label>
-                                <input type="text" name="title" id="title" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="submission_date">
-                                    <i class="fas fa-calendar" style="color: #f59e0b;"></i> 
-                                    Submission Date
-                                </label>
-                                <input type="date" name="submission_date" id="submission_date" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="file">
-                                    <i class="fas fa-file-pdf" style="color: #e74c3c;"></i> 
-                                    Upload File (PDF only)
-                                </label>
-                                <input type="file" name="file" id="file" accept="application/pdf" required>
-                            </div>
-                            <button type="submit" class="submit-btn">
-                                <i class="fas fa-upload"></i> Submit Homework
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <!-- Homework from Teachers -->
+                <div class="section">
+                    <h2><i class="fas fa-chalkboard-teacher"></i> Homework from Teachers</h2>
 
-                <!-- SECTION 3: Your Submissions -->
-                <div id="submissionsContent" class="tab-content">
-                    <div class="section">
-                        <h2>
-                            <i class="fas fa-folder-open"></i> 
-                            Your Homework Submissions
-                        </h2>
-                        <div class="homework-grid">
-                            {% for hw in homework_list %}
-                            <div class="homework-card">
-                                <h3>
-                                    <i class="fas fa-file-pdf" style="color: #e74c3c;"></i>
-                                    {{ hw.title }}
-                                </h3>
+                    <!-- Date Filter -->
+                    <form method="GET" class="date-filter-bar" id="dateFilterForm">
+                        <label for="dateInput" style="font-weight:600;font-size:0.9rem;white-space:nowrap;">
+                            <i class="fas fa-calendar-alt" style="color:var(--primary-color);"></i> Filter by Date:
+                        </label>
+                        <input type="date" name="date" id="dateInput" value="{{ filter_date }}">
+                        <button type="submit" class="btn-filter"><i class="fas fa-filter"></i> Apply</button>
+                        {% if filter_date %}
+                        <a href="?" class="btn-clear" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:0.5rem 1rem;border-radius:8px;font-size:0.9rem;font-weight:600;background:#e9ecef;color:var(--text-color);">
+                            <i class="fas fa-times"></i> Clear
+                        </a>
+                        {% endif %}
+                    </form>
+
+                    <div class="homework-grid">
+                        {% for hw in teacher_homework %}
+                        <div class="homework-card">
+                            <h3>
+                                <i class="fas fa-file-alt"></i>
+                                {{ hw.title }}
+                                {% if not hw.file_type %}
+                                    <span class="file-type-badge badge-text-only">Text Only</span>
+                                {% elif hw.file_type == '.pdf' %}
+                                    <span class="file-type-badge badge-pdf">PDF</span>
+                                {% elif hw.file_type in '.doc .docx' %}
+                                    <span class="file-type-badge badge-doc">DOC</span>
+                                {% else %}
+                                    <span class="file-type-badge badge-image">Image</span>
+                                {% endif %}
+                            </h3>
+                            {% if hw.description %}
                                 <p>
-                                    <i class="fas fa-calendar-check" style="color: #10b981;"></i>
-                                    <span><strong>Submitted on:</strong> {{ hw.submission_date }}</span>
+                                    <i class="fas fa-align-left" style="color: #9333ea;"></i>
+                                    <span>{{ hw.description }}</span>
                                 </p>
-                                <div class="file-links">
-                                    <a href="{% url 'serve_pdf' hw.file_path %}" target="_blank" class="view-btn">
-                                        <i class="fas fa-eye"></i> View PDF
-                                    </a>
-                                    <a href="{% url 'serve_pdf' hw.file_path %}?download=true" class="download-btn">
-                                        <i class="fas fa-download"></i> Download
-                                    </a>
-                                </div>
+                            {% endif %}
+                            <p>
+                                <i class="fas fa-school" style="color: #3b82f6;"></i>
+                                <span><strong>Class:</strong> {{ hw.class_name }}</span>
+                            </p>
+                            <p>
+                                <i class="fas fa-th-large" style="color: #8b5cf6;"></i>
+                                <span><strong>Section:</strong> {{ hw.section }}</span>
+                            </p>
+                            <p>
+                                <i class="fas fa-calendar-alt" style="color: #10b981;"></i>
+                                <span><strong>Uploaded on:</strong> {{ hw.date }}</span>
+                            </p>
+                            {% if hw.file_path %}
+                            <div class="file-links">
+                                <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}" target="_blank" class="view-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}?download=true" class="download-btn">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
                             </div>
-                            {% empty %}
-                            <div class="no-homework">
-                                <i class="fas fa-inbox"></i>
-                                <p>No homework uploaded yet.</p>
-                            </div>
-                            {% endfor %}
+                            {% else %}
+                            <p style="color:#27ae60;font-size:0.85rem;margin-top:auto;">
+                                <i class="fas fa-comment-dots"></i> Text-only material — no file attached.
+                            </p>
+                            {% endif %}
                         </div>
+                        {% empty %}
+                        <div class="no-homework">
+                            <i class="fas fa-inbox"></i>
+                            <p>{% if filter_date %}No homework found for {{ filter_date }}.{% else %}No homework posted by teachers yet.{% endif %}</p>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -1014,109 +1010,29 @@
             const navLinks = document.querySelectorAll('.sidebar-nav a');
             const scrollTopBtn = document.getElementById('scrollTopBtn');
 
-            function openSidebar() {
-                sidebar.classList.add('active');
-                sidebarOverlay.classList.add('active');
-            }
+            function openSidebar() { sidebar.classList.add('active'); sidebarOverlay.classList.add('active'); }
+            function closeSidebar() { sidebar.classList.remove('active'); sidebarOverlay.classList.remove('active'); }
 
-            function closeSidebar() {
-                sidebar.classList.remove('active');
-                sidebarOverlay.classList.remove('active');
-            }
-
-            if (menuToggle) {
-                menuToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
-                });
-            }
-
-            if (sidebarOverlay) {
-                sidebarOverlay.addEventListener('click', closeSidebar);
-            }
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    if (window.innerWidth <= 768) {
-                        closeSidebar();
-                    }
-                });
+            if (menuToggle) menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                sidebar.classList.contains('active') ? closeSidebar() : openSidebar();
             });
+            if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
-            let resizeTimer;
-            window.addEventListener('resize', function() {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(function() {
-                    if (window.innerWidth > 768) {
-                        closeSidebar();
-                    }
-                }, 250);
-            });
+            navLinks.forEach(link => link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) closeSidebar();
+            }));
 
-            if (window.innerWidth > 768) {
-                navLinks.forEach(item => {
-                    item.addEventListener('mouseenter', function() {
-                        const icon = this.querySelector('img');
-                        if (icon) {
-                            icon.style.transform = 'scale(1.1) rotate(5deg)';
-                        }
-                    });
-                    item.addEventListener('mouseleave', function() {
-                        const icon = this.querySelector('img');
-                        if (icon) {
-                            icon.style.transform = 'none';
-                        }
-                    });
-                });
-            }
-
-            // Scroll to top functionality
             const pageWrapper = document.querySelector('.page-wrapper');
-            
-            if (pageWrapper) {
+            if (pageWrapper && scrollTopBtn) {
                 pageWrapper.addEventListener('scroll', function() {
-                    if (pageWrapper.scrollTop > 300) {
-                        scrollTopBtn.classList.add('show');
-                    } else {
-                        scrollTopBtn.classList.remove('show');
-                    }
+                    scrollTopBtn.classList.toggle('show', pageWrapper.scrollTop > 300);
                 });
-            }
-
-            if (scrollTopBtn) {
                 scrollTopBtn.addEventListener('click', function() {
-                    pageWrapper.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
+                    pageWrapper.scrollTo({ top: 0, behavior: 'smooth' });
                 });
             }
         });
-
-        // Tab Switching Function
-        function switchTab(tab) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-
-            // Remove active class from all tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Show selected tab content
-            if (tab === 'teacher') {
-                document.getElementById('teacherContent').classList.add('active');
-                document.getElementById('teacherTab').classList.add('active');
-            } else if (tab === 'submit') {
-                document.getElementById('submitContent').classList.add('active');
-                document.getElementById('submitTab').classList.add('active');
-            } else if (tab === 'submissions') {
-                document.getElementById('submissionsContent').classList.add('active');
-                document.getElementById('submissionsTab').classList.add('active');
-            }
-        }
     </script>
 </body>
 </html>

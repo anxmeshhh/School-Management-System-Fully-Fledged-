@@ -623,8 +623,18 @@
             </header>
 
             <main class="main-content">
-                <!-- Messages -->
-                
+                {% if messages %}
+                <div class="messages" style="margin-bottom:1rem;">
+                    {% for message in messages %}
+                    <div class="{{ message.tags }}" style="padding:.75rem 1rem;border-radius:8px;margin-bottom:.5rem;font-weight:500;
+                        background:{% if message.tags == 'error' %}#fee2e2{% elif message.tags == 'success' %}#dcfce7{% else %}#fef9c3{% endif %};
+                        color:{% if message.tags == 'error' %}#991b1b{% elif message.tags == 'success' %}#166534{% else %}#854d0e{% endif %};
+                        border-left:4px solid {% if message.tags == 'error' %}#ef4444{% elif message.tags == 'success' %}#22c55e{% else %}#eab308{% endif %};">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
 
                 <!-- Submit Leave Request Section -->
                 <section class="section">

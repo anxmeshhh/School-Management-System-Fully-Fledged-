@@ -341,6 +341,57 @@
         appearance: none;
     }
 
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input-wrapper input[type="file"] {
+        position: absolute;
+        left: -9999px;
+    }
+
+    .file-input-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--white);
+        border: 2px dashed var(--border-color);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--transition);
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .file-input-label:hover {
+        background: var(--light-bg);
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .file-input-label i {
+        font-size: 1.5rem;
+    }
+
+    .file-name-display {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        background: var(--light-bg);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        color: var(--text-color);
+        display: none;
+    }
+
+    .file-name-display.show {
+        display: block;
+    }
+
     .form-row {
         display: flex;
         align-items: flex-end;
@@ -642,78 +693,110 @@
                     </div>
                 {% endif %}
 
+                <!-- ── Upload Homework ──────────────────────────────────────────── -->
                 <section class="section">
-                    <h2><i class="fas fa-filter" style="color: #06b6d4;"></i> Filters</h2>
-                    <form method="post">
+                    <h2><i class="fas fa-cloud-upload-alt" style="color: #10b981;"></i> Post Homework / Assignment</h2>
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
+                        <input type="hidden" name="upload_homework" value="1">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="class">
-                                    <span style="color: #3b82f6; margin-right: 8px;">
-                                        <i class="fas fa-graduation-cap"></i>
-                                    </span>
-                                    Select Class:
+                                <label for="homework_title">
+                                    <span style="color: #3b82f6; margin-right: 6px;"><i class="fas fa-heading"></i></span>
+                                    Title <span style="color:red;">*</span>
                                 </label>
-                                <select id="class" name="class">
-                                    <option value="">All Classes</option>
-                                </select>
+                                <input type="text" id="homework_title" name="homework_title" placeholder="e.g. Chapter 5 Assignment" required style="width:100%;padding:0.55rem 0.8rem;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:0.95rem;">
                             </div>
                             <div class="form-group">
-                                <label for="section">
-                                    <span style="color: #8b5cf6; margin-right: 8px;">
-                                        <i class="fas fa-th-large"></i>
-                                    </span>
-                                    Select Section:
+                                <label for="target_class">
+                                    <span style="color: #8b5cf6; margin-right: 6px;"><i class="fas fa-graduation-cap"></i></span>
+                                    Target Class
                                 </label>
-                                <select id="section" name="section">
-                                    <option value="">All Sections</option>
+                                <select id="target_class" name="target_class" style="width:100%;padding:0.55rem 0.8rem;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:0.95rem;background:#fff;">
+                                    <option value="all">All Classes (Everyone)</option>
+                                    {% for cls in available_classes %}
+                                    <option value="{{ cls }}">Class {{ cls }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
-                            <button type="submit" class="filter-btn">
-                                <i class="fas fa-filter"></i> Filter
-                            </button>
                         </div>
+                        <div class="form-group">
+                            <label for="homework_description">
+                                <span style="color: #f59e0b; margin-right: 6px;"><i class="fas fa-align-left"></i></span>
+                                Description / Instructions
+                            </label>
+                            <textarea id="homework_description" name="homework_description" rows="3" placeholder="Describe the assignment or add instructions..." style="width:100%;padding:0.55rem 0.8rem;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:0.95rem;resize:vertical;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <span style="color: #ef4444; margin-right: 6px;"><i class="fas fa-paperclip"></i></span>
+                                Attach File <span style="color:#94a3b8;font-weight:400;">(optional — PDF, DOC, image, max 10 MB)</span>
+                            </label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="homework_file" name="homework_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp" onchange="displayFileName(this)">
+                                <label for="homework_file" class="file-input-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Choose File (optional)</span>
+                                </label>
+                            </div>
+                            <div class="file-name-display" id="fileNameDisplay"></div>
+                        </div>
+                        <button type="submit" class="filter-btn" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;padding:0.65rem 1.75rem;border-radius:8px;font-size:0.95rem;cursor:pointer;">
+                            <i class="fas fa-paper-plane"></i> Post Homework
+                        </button>
                     </form>
                 </section>
 
+                <!-- ── Admin-Posted Homework ────────────────────────────────── -->
                 <section class="section">
-                    <h2><i class="fas fa-file-contract" style="color: #f59e0b;"></i> All Homework Submissions</h2>
-
+                    <h2><i class="fas fa-chalkboard-teacher" style="color: #3b82f6;"></i> Posted by Admin</h2>
+                    {% if admin_uploaded %}
                     <div class="homework-grid">
-                        {% for hw in homework_list %}
+                        {% for hw in admin_uploaded %}
                         <div class="homework-card">
                             <h3>
-                                <span style="color: #ef4444; margin-right: 8px;">
-                                    <i class="fas fa-file-alt"></i>
-                                </span>
+                                <i class="fas fa-file-alt" style="color: #3b82f6; margin-right: 6px;"></i>
                                 {{ hw.title }}
+                                {% if not hw.file_type %}
+                                    <span class="file-type-badge badge-text-only">No File</span>
+                                {% elif hw.file_type == '.pdf' %}
+                                    <span class="file-type-badge badge-pdf">PDF</span>
+                                {% elif '.doc' in hw.file_type|lower %}
+                                    <span class="file-type-badge badge-doc">DOC</span>
+                                {% else %}
+                                    <span class="file-type-badge badge-image">Image</span>
+                                {% endif %}
                             </h3>
-                            <p><strong>Student Name:</strong> {{ hw.student_name }}</p>
-                            <p><strong>User ID:</strong> {{ hw.user_id }}</p>
-                            <p><strong>Class:</strong> {{ hw.class|capfirst }}</p>
-                            <p><strong>Section:</strong> {{ hw.section|capfirst }}</p>
-                            <p><strong>Submitted on:</strong> {{ hw.submission_date }}</p>
+                            {% if hw.description %}
+                                <p><i class="fas fa-align-left" style="color:#06b6d4;margin-right:4px;"></i> <strong>Description:</strong> {{ hw.description }}</p>
+                            {% endif %}
+                            <p>
+                                <i class="fas fa-graduation-cap" style="color:#8b5cf6;margin-right:4px;"></i>
+                                <strong>Class:</strong> {{ hw.class_name|default:"All Classes" }}
+                            </p>
+                            <p>
+                                <i class="fas fa-clock" style="color:#94a3b8;margin-right:4px;"></i>
+                                <strong>Uploaded on:</strong> {{ hw.date }}
+                            </p>
+                            {% if hw.file_path %}
                             <div class="file-preview">
-                                <a href="{% url 'serve_pdf' hw.file_path %}" target="_blank" class="view-btn">
-                                    <i class="fas fa-eye"></i> View PDF
+                                <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}" target="_blank" class="view-btn">
+                                    <i class="fas fa-eye"></i> View
                                 </a>
-                                <a href="{% url 'serve_pdf' hw.file_path %}?download=true" class="download-btn">
-                                    <i class="fas fa-download"></i> Download PDF
+                                <a href="{% url 'serve_protected_file' 'homework' hw.file_path %}?download=true" class="download-btn">
+                                    <i class="fas fa-download"></i> Download
                                 </a>
                             </div>
-                        </div>
-                        {% empty %}
-                        <p class="no-submissions">
-                            <i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i>
-                            {% if selected_class and selected_section %}
-                                No homework submissions available for Class: {{ selected_class|capfirst }}, Section: {{ selected_section|capfirst }}.
-                            {% else %}
-                                No homework submissions available.
                             {% endif %}
-                        </p>
+                        </div>
                         {% endfor %}
                     </div>
+                    {% else %}
+                    <p class="no-submissions"><i class="fas fa-inbox" style="color:#94a3b8;margin-right:8px;"></i> No homework posted by admin yet.</p>
+                    {% endif %}
                 </section>
+
+
             </main>
         </div>
     </div>
@@ -723,6 +806,19 @@
     </a>
 
     <script>
+        function displayFileName(input) {
+            const display = document.getElementById('fileNameDisplay');
+            if (!display) return;
+            if (input.files && input.files[0]) {
+                const f = input.files[0];
+                display.textContent = f.name + ' (' + (f.size / 1024).toFixed(1) + ' KB)';
+                display.classList.add('show');
+            } else {
+                display.textContent = '';
+                display.classList.remove('show');
+            }
+        }
+
         // Sidebar functionality (unchanged)
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('menuToggle');
@@ -786,50 +882,6 @@
             });
         });
 
-        // Dynamic Class and Section Dropdowns
-        document.addEventListener('DOMContentLoaded', () => {
-            const classMapData = {{ class_map_json|safe|default:'{}' }};
-            const selectedClassFilter = "{{ selected_class|default:''|escapejs }}";
-            const selectedSectionFilter = "{{ selected_section|default:''|escapejs }}";
-
-            const classSelect = document.getElementById('class');
-            const sectionSelect = document.getElementById('section');
-
-            if (!classSelect || !sectionSelect || !classMapData) return;
-
-            // Populate class dropdown
-            Object.keys(classMapData).forEach(cls => {
-                const opt = document.createElement('option');
-                opt.value = cls;
-                opt.textContent = cls.charAt(0).toUpperCase() + cls.slice(1);
-                if (cls === selectedClassFilter) opt.selected = true;
-                classSelect.appendChild(opt);
-            });
-
-            // Function to update section based on selected class
-            const updateSections = (selectedCls, preSelSec) => {
-                sectionSelect.innerHTML = '<option value="">All Sections</option>';
-                if (selectedCls && classMapData[selectedCls] && classMapData[selectedCls].length > 0) {
-                    classMapData[selectedCls].forEach(sec => {
-                        const opt = document.createElement('option');
-                        opt.value = sec;
-                        opt.textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
-                        if (sec === preSelSec) opt.selected = true;
-                        sectionSelect.appendChild(opt);
-                    });
-                }
-            };
-
-            // Initial load
-            if (selectedClassFilter) {
-                updateSections(selectedClassFilter, selectedSectionFilter);
-            }
-
-            // Handle class change
-            classSelect.addEventListener('change', () => {
-                updateSections(classSelect.value, '');
-            });
-        });
     </script>
 </body>
 </html>

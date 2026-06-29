@@ -319,9 +319,19 @@ def profile_view(request):
                     emis = request.POST.get("emis")
 
                     # Only process if we have actual form data
-                    if name or admission_number:
+                    if name or admission_number or student_class:
+                        # Auto-generate admission number if not provided
+                        if not admission_number or admission_number.lower() in ['none', 'n/a', 'not-provided', '']:
+                            with connection.cursor() as _cur:
+                                _cur.execute(
+                                    "SELECT MAX(CAST(admission_number AS UNSIGNED)) FROM student_page1 "
+                                    "WHERE admission_number REGEXP '^[0-9]+$'"
+                                )
+                                _max = _cur.fetchone()[0]
+                                admission_number = str((_max or 0) + 1)
+
                         # Validate required fields for Page 1
-                        if not all([name, admission_number, student_class]):
+                        if not all([name, student_class]):
                             messages.error(request, "Please fill in all required fields.")
                             return redirect('profile_view')
 
@@ -1436,8 +1446,8 @@ def admin_circular_upload(request):
         rows = cursor.fetchall()
         class_map = {}
         for c, s in rows:
-            c = normalize_value(c) if c else None
-            s = normalize_value(s) if s else ''
+            c = c.strip() if c else None
+            s = s.strip() if s else ''
             if not c: continue
             if c not in class_map:
                 class_map[c] = []
@@ -1708,10 +1718,19 @@ def student_leave(request):
     
     if request.method == "POST":
         try:
+            # Fetch section from DB so it's always included regardless of form field
+            student_section = None
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT section FROM student_page1 WHERE user_id = %s", [user_id])
+                sec_row = cursor.fetchone()
+                if sec_row:
+                    student_section = sec_row[0]
+
             form_data = {
                 "student_name": request.POST.get("student_name", "").strip(),
                 "reg_number": request.POST.get("reg_number", "").strip(),
                 "class_number": request.POST.get("class", "").strip(),
+                "section": student_section,
                 "leave_reason": request.POST.get("leave_reason", "").strip(),
                 "leave_start_date": request.POST.get("leave_start_date", ""),
                 "leave_end_date": request.POST.get("leave_end_date", ""),
@@ -1719,18 +1738,17 @@ def student_leave(request):
                 "half_day_type": request.POST.get("half_day_type", "")
             }
 
-
-            required_fields = ["student_name", "class_number", "leave_reason", 
-                             "leave_start_date", "leave_end_date", "leave_duration"]
+            required_fields = ["student_name", "class_number", "leave_reason",
+                                "leave_start_date", "leave_end_date", "leave_duration"]
             missing_fields = [field for field in required_fields if not form_data[field]]
             if missing_fields:
                 messages.error(request, f"Missing required fields: {', '.join(missing_fields)}")
                 return redirect("student_leave")
-            
+
             if form_data["leave_duration"] not in ["full", "half"]:
                 messages.error(request, "Invalid leave duration.")
                 return redirect("student_leave")
-                
+
             if form_data["leave_duration"] == "half" and not form_data["half_day_type"]:
                 messages.error(request, "Please select half day type for half-day leave.")
                 return redirect("student_leave")
@@ -1747,14 +1765,15 @@ def student_leave(request):
 
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    INSERT INTO student_leave_requests 
-                    (user_id, student_name, reg_number, class_number, leave_reason,
-                    leave_start_date, leave_end_date, leave_duration, half_day_type, status)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, [user_id, form_data["student_name"], form_data["reg_number"], 
-                      form_data["class_number"], form_data["leave_reason"], 
+                    INSERT INTO student_leave_requests
+                    (user_id, student_name, reg_number, class_number, section, leave_reason,
+                     leave_start_date, leave_end_date, leave_duration, half_day_type, status)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, [user_id, form_data["student_name"], form_data["reg_number"],
+                      form_data["class_number"], form_data["section"],
+                      form_data["leave_reason"],
                       form_data["leave_start_date"], form_data["leave_end_date"],
-                      form_data["leave_duration"], 
+                      form_data["leave_duration"],
                       form_data["half_day_type"] if form_data["leave_duration"] == "half" else None,
                       "Pending"])
                 connection.commit()
@@ -2002,18 +2021,19 @@ def admin_accept_portal(request):
     classes = []
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
+            cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class, section")
             rows = cursor.fetchall()
             class_map = {}
             for c, s in rows:
-                c = normalize_value(c) if c else None
-                s = normalize_value(s) if s else ''
-                if not c: continue
+                if not c:
+                    continue
+                c = c.strip()
+                s = s.strip() if s else ''
                 if c not in class_map:
                     class_map[c] = []
                 if s and s not in class_map[c]:
                     class_map[c].append(s)
-            
+
             import json
             class_map_json = json.dumps(class_map)
             classes = list(class_map.keys())
@@ -2132,24 +2152,13 @@ def teacher_accept_portal(request):
 
         return redirect('teacher_accept_portal')
 
-    # GET request - Fetch leave requests separated into two sections
-    
-    # SECTION 1: Fetch PENDING leave requests only
+    # GET request – fetch all pending and history leave requests
     pending_requests = []
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT 
-                    id, 
-                    student_name, 
-                    reg_number, 
-                    class_number, 
-                    section,
-                    leave_reason, 
-                    leave_start_date, 
-                    leave_end_date, 
-                    leave_duration, 
-                    status
+                SELECT id, student_name, reg_number, class_number, section,
+                       leave_reason, leave_start_date, leave_end_date, leave_duration, status
                 FROM student_leave_requests
                 WHERE status = 'Pending'
                 ORDER BY leave_start_date DESC, id DESC
@@ -2158,24 +2167,14 @@ def teacher_accept_portal(request):
     except Exception as e:
         print(f"Error fetching pending requests: {str(e)}")
         messages.error(request, 'Error fetching pending leave requests.')
-    
-    # SECTION 2: Fetch APPROVED and REJECTED leave requests (History)
+
     history_requests = []
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT 
-                    id, 
-                    student_name, 
-                    reg_number, 
-                    class_number, 
-                    section,
-                    leave_reason, 
-                    leave_start_date, 
-                    leave_end_date, 
-                    leave_duration, 
-                    status,
-                    NULL as processed_date
+                SELECT id, student_name, reg_number, class_number, section,
+                       leave_reason, leave_start_date, leave_end_date, leave_duration, status,
+                       NULL as processed_date
                 FROM student_leave_requests
                 WHERE status IN ('Approved', 'Rejected')
                 ORDER BY id DESC
@@ -2184,35 +2183,23 @@ def teacher_accept_portal(request):
     except Exception as e:
         print(f"Error fetching history requests: {str(e)}")
         messages.error(request, 'Error fetching leave request history.')
-    
-    # Calculate statistics
+
     pending_count = len(pending_requests)
-    
-    # Count approved and rejected requests
     approved_count = 0
     rejected_count = 0
     try:
         with connection.cursor() as cursor:
-            # Count all approved requests
             cursor.execute("""
-                SELECT COUNT(*) 
+                SELECT SUM(status = 'Approved'), SUM(status = 'Rejected')
                 FROM student_leave_requests
-                WHERE status = 'Approved'
             """)
-            result = cursor.fetchone()
-            approved_count = result[0] if result else 0
-            
-            # Count all rejected requests
-            cursor.execute("""
-                SELECT COUNT(*) 
-                FROM student_leave_requests
-                WHERE status = 'Rejected'
-            """)
-            result = cursor.fetchone()
-            rejected_count = result[0] if result else 0
+            row = cursor.fetchone()
+            if row:
+                approved_count = row[0] or 0
+                rejected_count = row[1] or 0
     except Exception as e:
         print(f"Error calculating stats: {str(e)}")
-    
+
     classes = []
     try:
         with connection.cursor() as cursor:
@@ -2292,12 +2279,38 @@ from django.core.validators import FileExtensionValidator
 from django.core.exceptions import ValidationError
 from django.core.files.storage import FileSystemStorage
 
+_study_materials_migrated = False
+
+def _ensure_study_materials_schema():
+    global _study_materials_migrated
+    if _study_materials_migrated:
+        return
+    try:
+        with connection.cursor() as c:
+            # Add description column if missing
+            c.execute("SHOW COLUMNS FROM study_materials LIKE 'description'")
+            if not c.fetchone():
+                c.execute("ALTER TABLE study_materials ADD COLUMN description TEXT DEFAULT NULL AFTER title")
+                connection.commit()
+            # Make file_path nullable so text-only uploads work
+            c.execute("SHOW COLUMNS FROM study_materials LIKE 'file_path'")
+            col = c.fetchone()
+            if col:
+                # col[2] is the Null field ('YES' or 'NO')
+                if col[2] == 'NO':
+                    c.execute("ALTER TABLE study_materials MODIFY COLUMN file_path VARCHAR(500) DEFAULT NULL")
+                    connection.commit()
+    except Exception:
+        pass
+    _study_materials_migrated = True
+
 # Admin uploads study material
-@csrf_exempt
 def admin_study_materials_upload(request):
     if not request.session.get('admin_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
+
+    _ensure_study_materials_schema()
 
     # Fetch distinct classes and sections for dropdowns
     class_map_json = "{}"
@@ -2308,14 +2321,14 @@ def admin_study_materials_upload(request):
             rows = cursor.fetchall()
             class_map = {}
             for c, s in rows:
-                c = normalize_value(c) if c else None
-                s = normalize_value(s) if s else ''
+                c = c.strip() if c else None
+                s = s.strip() if s else ''
                 if not c: continue
                 if c not in class_map:
                     class_map[c] = []
                 if s and s not in class_map[c]:
                     class_map[c].append(s)
-            
+
             import json
             class_map_json = json.dumps(class_map)
             classes = list(class_map.keys())
@@ -2323,35 +2336,36 @@ def admin_study_materials_upload(request):
         messages.error(request, f"Error fetching classes/sections: {str(e)}")
 
     if request.method == 'POST':
-        title = request.POST.get("title")
+        title = request.POST.get("title", "").strip()
+        description = request.POST.get("description", "").strip()
         uploaded_file = request.FILES.get("file")
         selected_class = request.POST.get("class")
         selected_section = request.POST.get("section")
 
-        # Allow 'all' as a valid section choice (uploads to every section of the selected class)
-        if not title or not uploaded_file or not selected_class or selected_section is None:
-            messages.error(request, "Title, file, and class are required; choose a section or 'All Sections'.")
+        if not title or not selected_class or selected_section is None:
+            messages.error(request, "Title and class are required.")
             return redirect("admin_study_materials_upload")
 
-        validator = FileExtensionValidator(allowed_extensions=['pdf'])
-        try:
-            validator(uploaded_file)
-        except ValidationError:
-            messages.error(request, "Only PDF files are allowed.")
-            return redirect("admin_study_materials_upload")
+        file_db_path = None
+        if uploaded_file:
+            validator = FileExtensionValidator(allowed_extensions=['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif', 'webp'])
+            try:
+                validator(uploaded_file)
+            except ValidationError:
+                messages.error(request, "Only PDF, Word (doc/docx), or image files are allowed.")
+                return redirect("admin_study_materials_upload")
 
-        filename = f"{uuid.uuid4().hex}_{uploaded_file.name}"
-        file_path = os.path.join(settings.MEDIA_ROOT, 'study_materials', filename)
-
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
-        try:
-            with open(file_path, 'wb+') as f:
-                for chunk in uploaded_file.chunks():
-                    f.write(chunk)
-        except Exception as e:
-            messages.error(request, f"Error saving file: {str(e)}")
-            return redirect("admin_study_materials_upload")
+            filename = f"{uuid.uuid4().hex}_{uploaded_file.name}"
+            _disk_path = os.path.join(settings.MEDIA_ROOT, 'study_materials', filename)
+            os.makedirs(os.path.dirname(_disk_path), exist_ok=True)
+            try:
+                with open(_disk_path, 'wb+') as f:
+                    for chunk in uploaded_file.chunks():
+                        f.write(chunk)
+            except Exception as e:
+                messages.error(request, f"Error saving file: {str(e)}")
+                return redirect("admin_study_materials_upload")
+            file_db_path = f"study_materials/{filename}"
 
         try:
             with connection.cursor() as cursor:
@@ -2363,45 +2377,33 @@ def admin_study_materials_upload(request):
                     if sections_for_class:
                         for sec in sections_for_class:
                             cursor.execute(
-                                """
-                                INSERT INTO study_materials (title, file_path, upload_date, class, section)
-                                VALUES (%s, %s, %s, %s, %s)
-                                """,
-                                [title, f"study_materials/{filename}", datetime.now(), selected_class, sec]
+                                "INSERT INTO study_materials (title, description, file_path, upload_date, class, section) VALUES (%s, %s, %s, %s, %s, %s)",
+                                [title, description or None, file_db_path, datetime.now(), selected_class, sec]
                             )
                     else:
-                        # No sections found for this class - insert a single record with empty section
                         cursor.execute(
-                            """
-                            INSERT INTO study_materials (title, file_path, upload_date, class, section)
-                            VALUES (%s, %s, %s, %s, %s)
-                            """,
-                            [title, f"study_materials/{filename}", datetime.now(), selected_class, '']
+                            "INSERT INTO study_materials (title, description, file_path, upload_date, class, section) VALUES (%s, %s, %s, %s, %s, %s)",
+                            [title, description or None, file_db_path, datetime.now(), selected_class, None]
                         )
                     messages.success(request, "Study material uploaded to all sections successfully!")
 
-                    # ?????? Notification: Study material for all sections ??????
                     for sec in sections_for_class:
                         notify_class_students(selected_class, sec, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{sec}', '/study_materials/')
                         notify_class_parents(selected_class, sec, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{sec}', '/parent-study-materials/')
 
                 else:
                     cursor.execute(
-                        """
-                        INSERT INTO study_materials (title, file_path, upload_date, class, section)
-                        VALUES (%s, %s, %s, %s, %s)
-                        """,
-                        [title, f"study_materials/{filename}", datetime.now(), selected_class, selected_section]
+                        "INSERT INTO study_materials (title, description, file_path, upload_date, class, section) VALUES (%s, %s, %s, %s, %s, %s)",
+                        [title, description or None, file_db_path, datetime.now(), selected_class, selected_section or None]
                     )
                     messages.success(request, "Study material uploaded successfully!")
 
-                    # ?????? Notification: Study material for specific section ??????
                     notify_class_students(selected_class, selected_section, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{selected_section}', '/study_materials/')
                     notify_class_parents(selected_class, selected_section, 'study_material', 'New Study Material', f'New study material: {title} for class {selected_class}-{selected_section}', '/parent-study-materials/')
         except Exception as e:
             messages.error(request, f"Error saving to database: {str(e)}")
-            if os.path.exists(file_path):
-                os.remove(file_path)
+            if file_db_path and os.path.exists(os.path.join(settings.MEDIA_ROOT, file_db_path)):
+                os.remove(os.path.join(settings.MEDIA_ROOT, file_db_path))
             return redirect("admin_study_materials_upload")
 
         return redirect("admin_study_materials_upload")
@@ -2412,27 +2414,26 @@ def admin_study_materials_upload(request):
 
     try:
         with connection.cursor() as cursor:
-            query = """
-                SELECT title, file_path, upload_date, class, section
-                FROM study_materials
-                {where_clause}
-                ORDER BY upload_date DESC
-            """
+            query = "SELECT title, description, file_path, upload_date, class, section FROM study_materials {where_clause} ORDER BY upload_date DESC"
             params = []
             where_clause = ""
-            if selected_class and selected_section:
-                section_query_val = None if selected_section == 'all' else selected_section
-                where_clause = "WHERE class = %s AND section <=> %s"
-                params = [selected_class, section_query_val]
+            if selected_class:
+                if selected_section and selected_section not in ('', 'all'):
+                    where_clause = "WHERE `class` = %s AND (section <=> %s OR section = %s)"
+                    params = [selected_class, selected_section, selected_section]
+                else:
+                    where_clause = "WHERE `class` = %s"
+                    params = [selected_class]
 
             cursor.execute(query.format(where_clause=where_clause), params)
             study_materials = [
                 {
                     "title": r[0],
-                    "file_path": r[1],
-                    "upload_date": r[2],
-                    "class": r[3],
-                    "section": r[4]
+                    "description": r[1] or "",
+                    "file_path": r[2],
+                    "upload_date": r[3],
+                    "class": r[4],
+                    "section": r[5]
                 } for r in cursor.fetchall()
             ]
     except Exception as e:
@@ -2449,11 +2450,12 @@ def admin_study_materials_upload(request):
     })
 
 # Teacher uploads study material
-@csrf_exempt
 def teacher_study_materials_upload(request):
     if not request.session.get('teacher_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('teacher_login')
+
+    _ensure_study_materials_schema()
 
     # Fetch classes and sections to build class_map_json
     class_map_json = '{}'
@@ -2461,62 +2463,61 @@ def teacher_study_materials_upload(request):
         with connection.cursor() as cursor:
             cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class, section")
             class_sections = [(row[0], row[1] if row[1] else '') for row in cursor.fetchall()]
-            
+
             class_map = {}
             for cls, sec in class_sections:
                 if cls not in class_map:
                     class_map[cls] = []
                 if sec and sec not in class_map[cls]:
                     class_map[cls].append(sec)
-                    
+
             class_map_json = json.dumps(class_map)
     except Exception as e:
         messages.error(request, f"Error fetching classes/sections: {str(e)}")
 
     if request.method == 'POST':
-        title = request.POST.get("title")
+        title = request.POST.get("title", "").strip()
+        description = request.POST.get("description", "").strip()
         uploaded_file = request.FILES.get("file")
         selected_class = request.POST.get("class")
         selected_section = request.POST.get("section")
 
-        if not all([title, uploaded_file, selected_class, selected_section]):
-            messages.error(request, "Title, file, class, and section are required.")
+        if not title or not selected_class:
+            messages.error(request, "Title and class are required.")
             return redirect("teacher_study_materials_upload")
 
-        validator = FileExtensionValidator(allowed_extensions=['pdf'])
-        try:
-            validator(uploaded_file)
-        except ValidationError:
-            messages.error(request, "Only PDF files are allowed.")
-            return redirect("teacher_study_materials_upload")
+        file_db_path = None
+        if uploaded_file:
+            validator = FileExtensionValidator(allowed_extensions=['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif', 'webp'])
+            try:
+                validator(uploaded_file)
+            except ValidationError:
+                messages.error(request, "Only PDF, Word (doc/docx), or image files are allowed.")
+                return redirect("teacher_study_materials_upload")
 
-        filename = f"{uuid.uuid4().hex}_{uploaded_file.name}"
-        file_path = os.path.join(settings.MEDIA_ROOT, 'study_materials', filename)
-
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
-        try:
-            with open(file_path, 'wb+') as f:
-                for chunk in uploaded_file.chunks():
-                    f.write(chunk)
-        except Exception as e:
-            messages.error(request, f"Error saving file: {str(e)}")
-            return redirect("teacher_study_materials_upload")
+            filename = f"{uuid.uuid4().hex}_{uploaded_file.name}"
+            _disk_path = os.path.join(settings.MEDIA_ROOT, 'study_materials', filename)
+            os.makedirs(os.path.dirname(_disk_path), exist_ok=True)
+            try:
+                with open(_disk_path, 'wb+') as f:
+                    for chunk in uploaded_file.chunks():
+                        f.write(chunk)
+            except Exception as e:
+                messages.error(request, f"Error saving file: {str(e)}")
+                return redirect("teacher_study_materials_upload")
+            file_db_path = f"study_materials/{filename}"
 
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    """
-                    INSERT INTO study_materials (title, file_path, upload_date, class, section)
-                    VALUES (%s, %s, %s, %s, %s)
-                    """,
-                    [title, f"study_materials/{filename}", datetime.now(), selected_class, selected_section]
+                    "INSERT INTO study_materials (title, description, file_path, upload_date, class, section) VALUES (%s, %s, %s, %s, %s, %s)",
+                    [title, description or None, file_db_path, datetime.now(), selected_class, selected_section or None]
                 )
-            messages.success(request, "Study material uploaded successfully!")
+            messages.success(request, "Study material saved successfully!")
         except Exception as e:
             messages.error(request, f"Error saving to database: {str(e)}")
-            if os.path.exists(file_path):
-                os.remove(file_path)
+            if file_db_path and os.path.exists(os.path.join(settings.MEDIA_ROOT, file_db_path)):
+                os.remove(os.path.join(settings.MEDIA_ROOT, file_db_path))
             return redirect("teacher_study_materials_upload")
 
         return redirect("teacher_study_materials_upload")
@@ -2528,7 +2529,7 @@ def teacher_study_materials_upload(request):
     try:
         with connection.cursor() as cursor:
             query = """
-                SELECT title, file_path, upload_date, class, section
+                SELECT title, description, file_path, upload_date, class, section
                 FROM study_materials
                 {where_clause}
                 ORDER BY upload_date DESC
@@ -2547,10 +2548,11 @@ def teacher_study_materials_upload(request):
             study_materials = [
                 {
                     "title": r[0],
-                    "file_path": r[1],
-                    "upload_date": r[2],
-                    "class": r[3],
-                    "section": r[4]
+                    "description": r[1] or "",
+                    "file_path": r[2],
+                    "upload_date": r[3],
+                    "class": r[4],
+                    "section": r[5]
                 } for r in cursor.fetchall()
             ]
     except Exception as e:
@@ -2592,22 +2594,21 @@ def study_materials(request):
         messages.error(request, f"Error fetching class/section: {str(e)}")
         return redirect("/homework/")
 
+    _ensure_study_materials_schema()
     try:
         with connection.cursor() as cursor:
-            query = """
-                SELECT title, file_path, upload_date, class, section
-                FROM study_materials
-                WHERE class = %s AND section <=> %s
-                ORDER BY upload_date DESC
-            """
-            cursor.execute(query, [student_class, student_section if student_section else None])
+            cursor.execute(
+                "SELECT title, description, file_path, upload_date, `class`, section FROM study_materials WHERE `class` = %s AND (section <=> %s OR section IS NULL OR section = '') ORDER BY upload_date DESC",
+                [student_class, student_section if student_section else None]
+            )
             study_materials = [
                 {
                     "title": r[0],
-                    "file_path": r[1],
-                    "upload_date": r[2],
-                    "class": r[3],
-                    "section": r[4]
+                    "description": r[1] or "",
+                    "file_path": r[2],
+                    "upload_date": r[3],
+                    "class": r[4],
+                    "section": r[5]
                 } for r in cursor.fetchall()
             ]
     except Exception as e:
@@ -2647,7 +2648,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.validators import FileExtensionValidator
 from django.core.exceptions import ValidationError
 
-# Student homework submission view
+# Student homework view — read-only notice board from teachers
 def homework_view(request):
     if "user_id" not in request.session:
         messages.error(request, "Please log in to access the student portal.")
@@ -2657,7 +2658,6 @@ def homework_view(request):
     student_class = None
     student_section = None
 
-    # Fetch student's class and section
     try:
         with connection.cursor() as cursor:
             cursor.execute(
@@ -2667,77 +2667,56 @@ def homework_view(request):
             result = cursor.fetchone()
             if result:
                 student_class, student_section = result
-            else:
-                messages.error(request, "No class or section found for your account. Please contact the admin.")
-                return redirect("/homework/")
     except Exception as e:
         messages.error(request, f"Error fetching class/section: {str(e)}")
-        return redirect("/homework/")
 
-    if request.method == "POST":
-        title = request.POST.get("title")
-        submission_date = request.POST.get("submission_date")
-        uploaded_file = request.FILES.get("file")
-
-        if not all([title, submission_date, uploaded_file]):
-            messages.error(request, "All fields are required.")
-            return redirect("/homework/")
-
-        # Validate file is a PDF
-        validator = FileExtensionValidator(allowed_extensions=['pdf'])
-        try:
-            validator(uploaded_file)
-        except ValidationError:
-            messages.error(request, "Only PDF files are allowed.")
-            return redirect("/homework/")
-
-        try:
-            # Save file with unique filename
-            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'uploads'))
-            filename = f"{uuid.uuid4().hex}_{uploaded_file.name}"
-            filename = fs.save(filename, uploaded_file)
-            file_path = f"uploads/{filename}"
-
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    """
-                    INSERT INTO homework (user_id, title, submission_date, file_path, class, section)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                    """,
-                    [user_id, title, submission_date, file_path, student_class, student_section]
-                )
-            messages.success(request, "Homework submitted successfully!")
-
-            # ?????? Notification: Student homework submitted ??????
-            notify_all_admins('homework', 'Homework Submitted', f'Homework submitted by student: {title}', '/teacher_homework_panel/', 'student', user_id)
-            if student_class and student_section:
-                notify_class_teacher(student_class, student_section, 'homework', 'Homework Submitted', f'Homework submitted by student: {title}', '/teacher_homework_panel/', 'student', user_id)
-
-        except Exception as e:
-            messages.error(request, f"Error submitting homework: {str(e)}")
-        return redirect("/homework/")
-
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT h.title, h.submission_date, h.file_path
-                FROM homework h
-                WHERE h.user_id = %s
-                ORDER BY h.submission_date DESC
-                """,
-                [user_id]
-            )
-            homework_list = [
-                {"title": r[0], "submission_date": r[1], "file_path": r[2]}
-                for r in cursor.fetchall()
-            ]
-    except Exception as e:
-        messages.error(request, f"Error retrieving homework: {str(e)}")
-        homework_list = []
+    teacher_homework = []
+    HOMEWORK_DIR = os.path.join(settings.MEDIA_ROOT, 'teacher_homework')
+    if os.path.exists(HOMEWORK_DIR) and student_class:
+        norm_class = normalize_value(student_class)
+        norm_section = normalize_value(student_section) if student_section else ''
+        for file in os.listdir(HOMEWORK_DIR):
+            if file.endswith('.txt'):
+                continue
+            if not any(file.lower().endswith(ext) for ext in ['.pdf', '.docx', '.jpg', '.jpeg', '.png', '.gif', '.webp']):
+                continue
+            full_path = os.path.join(HOMEWORK_DIR, file)
+            if not os.path.exists(full_path):
+                continue
+            metadata_path = os.path.join(HOMEWORK_DIR, f"{file}.txt")
+            if not os.path.exists(metadata_path):
+                continue
+            try:
+                with open(metadata_path, 'r', encoding='utf-8') as f:
+                    lines = f.readlines()
+                if len(lines) < 6:
+                    continue
+                title = lines[0].strip() or "Untitled"
+                description = lines[1].strip()
+                target_type = lines[4].strip() if len(lines) > 4 else 'all'
+                show = False
+                if target_type == 'all':
+                    show = True
+                elif target_type == 'specific' and len(lines) >= 8:
+                    if normalize_value(lines[6].strip()) == norm_class and normalize_value(lines[7].strip()) == norm_section:
+                        show = True
+                if not show:
+                    continue
+                file_ext = os.path.splitext(file)[1].lower()
+                upload_date = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%B %d, %Y at %I:%M %p')
+                teacher_homework.append({
+                    'title': title,
+                    'description': description if description else None,
+                    'file_path': file,
+                    'file_type': file_ext,
+                    'date': upload_date,
+                })
+            except Exception:
+                continue
+    teacher_homework = sorted(teacher_homework, key=lambda x: x['date'], reverse=True)
 
     return render(request, "users/homework.html", {
-        "homework_list": homework_list,
+        "teacher_homework": teacher_homework,
         "student_class": student_class,
         "student_section": student_section
     })
@@ -2749,32 +2728,130 @@ def admin_homework_panel(request):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
 
-    # Fetch distinct classes and sections
-    class_map_json = "{}"
-    classes = []
+    admin_id = request.session.get('admin_id')
+    HOMEWORK_DIR = os.path.join(settings.MEDIA_ROOT, 'teacher_homework')
+    if not os.path.exists(HOMEWORK_DIR):
+        os.makedirs(HOMEWORK_DIR)
+
+    # Fetch distinct classes
+    available_classes = []
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT class, section FROM student_page1 ORDER BY class, section")
-            rows = cursor.fetchall()
-            class_map = {}
-            for c, s in rows:
-                c = normalize_value(c) if c else None
-                s = normalize_value(s) if s else ''
-                if not c: continue
-                if c not in class_map:
-                    class_map[c] = []
-                if s and s not in class_map[c]:
-                    class_map[c].append(s)
-            
-            import json
-            class_map_json = json.dumps(class_map)
-            classes = list(class_map.keys())
-    except Exception as e:
-        messages.error(request, f"Error fetching classes/sections: {str(e)}")
+            cursor.execute("SELECT DISTINCT class FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class")
+            available_classes = [row[0] for row in cursor.fetchall()]
+    except Exception:
+        pass
 
-    # Get filter values
-    selected_class = request.POST.get('class', '')
-    selected_section = request.POST.get('section', '')
+    # ── Handle Admin Homework Upload ────────────────────────────────────────
+    if request.method == 'POST' and request.POST.get('upload_homework'):
+        title = request.POST.get('homework_title', '').strip()
+        description = request.POST.get('homework_description', '').strip()
+        target_class = request.POST.get('target_class', 'all').strip()
+        homework_file = request.FILES.get('homework_file')
+
+        if not title:
+            messages.error(request, 'Homework title is required.')
+            return redirect('admin_homework_panel')
+
+        # teacher_id marker for admin uploads
+        uploader_id = f"admin_{admin_id}"
+
+        if target_class and target_class != 'all':
+            meta_target_lines = f"specific\n{target_class}\n"
+        else:
+            meta_target_lines = "all\n"
+
+        if homework_file:
+            allowed_extensions = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.gif', '.webp']
+            file_ext = os.path.splitext(homework_file.name)[1].lower()
+            if file_ext not in allowed_extensions:
+                messages.error(request, 'Invalid file type. Allowed: PDF, DOC, DOCX, and images.')
+                return redirect('admin_homework_panel')
+            if homework_file.size > 10 * 1024 * 1024:
+                messages.error(request, 'File size must be under 10 MB.')
+                return redirect('admin_homework_panel')
+
+            filename = f"{uuid.uuid4().hex}_{homework_file.name}"
+            fs = FileSystemStorage(location=HOMEWORK_DIR, base_url='/media/teacher_homework/')
+            try:
+                filename = fs.save(filename, homework_file)
+            except Exception as e:
+                messages.error(request, f'Error saving file: {e}')
+                return redirect('admin_homework_panel')
+
+            meta_path = os.path.join(HOMEWORK_DIR, f"{filename}.txt")
+            try:
+                with open(meta_path, 'w', encoding='utf-8') as f:
+                    f.write(f"{title}\n{description}\n\n\n{meta_target_lines}{uploader_id}\n")
+            except Exception as e:
+                messages.error(request, f'Error saving metadata: {e}')
+                return redirect('admin_homework_panel')
+        else:
+            meta_filename = f"{uuid.uuid4().hex}_TEXTONLY.meta"
+            meta_path = os.path.join(HOMEWORK_DIR, meta_filename)
+            try:
+                with open(meta_path, 'w', encoding='utf-8') as f:
+                    f.write(f"{title}\n{description}\n{meta_target_lines}{uploader_id}\n")
+            except Exception as e:
+                messages.error(request, f'Error saving entry: {e}')
+                return redirect('admin_homework_panel')
+
+        messages.success(request, f'Homework "{title}" posted successfully!')
+        return redirect('admin_homework_panel')
+
+    # ── Read Admin-Uploaded Homework (from filesystem) ───────────────────────
+    admin_uploaded = []
+    if os.path.exists(HOMEWORK_DIR):
+        for file in os.listdir(HOMEWORK_DIR):
+            full_path = os.path.join(HOMEWORK_DIR, file)
+            if not os.path.isfile(full_path):
+                continue
+
+            if file.endswith('_TEXTONLY.meta'):
+                try:
+                    with open(full_path, 'r', encoding='utf-8') as fh:
+                        lines = fh.readlines()
+                    non_empty = [l.strip() for l in lines if l.strip()]
+                    entry_uploader = non_empty[-1] if non_empty else ''
+                    if not entry_uploader.startswith('admin_'):
+                        continue
+                    title = lines[0].strip() if lines else "Untitled"
+                    desc = lines[1].strip() if len(lines) > 1 else ""
+                    upload_date = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%B %d, %Y at %I:%M %p')
+                    admin_uploaded.append({'title': title, 'description': desc or None, 'file_path': None, 'file_type': None, 'date': upload_date})
+                except Exception:
+                    pass
+                continue
+
+            if file.endswith('.txt') or file.endswith('.meta'):
+                continue
+            if not any(file.lower().endswith(ext) for ext in ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.gif', '.webp']):
+                continue
+
+            meta_path = os.path.join(HOMEWORK_DIR, f"{file}.txt")
+            if not os.path.exists(meta_path):
+                continue
+            try:
+                with open(meta_path, 'r', encoding='utf-8') as fh:
+                    lines = fh.readlines()
+                non_empty = [l.strip() for l in lines if l.strip()]
+                entry_uploader = non_empty[-1] if non_empty else ''
+                if not entry_uploader.startswith('admin_'):
+                    continue
+                title = lines[0].strip() if lines else "Untitled"
+                desc = lines[1].strip() if len(lines) > 1 else ""
+                file_ext = os.path.splitext(file)[1].lower()
+                upload_date = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%B %d, %Y at %I:%M %p')
+                admin_uploaded.append({'title': title, 'description': desc or None, 'file_path': file, 'file_type': file_ext, 'date': upload_date})
+            except Exception:
+                pass
+
+    admin_uploaded = sorted(admin_uploaded, key=lambda x: x['date'], reverse=True)
+
+    # ── Student Homework Submissions (from DB) ───────────────────────────────
+    selected_class = request.GET.get('class', '')
+    selected_section = request.GET.get('section', '')
+    homework_list = []
 
     try:
         with connection.cursor() as cursor:
@@ -2787,35 +2864,30 @@ def admin_homework_panel(request):
             """
             params = []
             where_clause = ""
-            
-            if selected_class and selected_section:
-                section_query_val = None if selected_section == 'all' else selected_section
-                where_clause = "WHERE h.class = %s AND h.section <=> %s"
-                params = [selected_class, section_query_val]
-
+            if selected_class:
+                section_query_val = None if selected_section in ('', 'all') else selected_section
+                if selected_section and selected_section != 'all':
+                    where_clause = "WHERE h.class = %s AND h.section <=> %s"
+                    params = [selected_class, section_query_val]
+                else:
+                    where_clause = "WHERE h.class = %s"
+                    params = [selected_class]
             cursor.execute(query.format(where_clause=where_clause), params)
             homework_list = [
-                {
-                    "user_id": r[0],
-                    "title": r[1],
-                    "submission_date": r[2],
-                    "file_path": r[3],
-                    "class": r[4],
-                    "section": r[5],
-                    "student_name": r[6]
-                } for r in cursor.fetchall()
+                {"user_id": r[0], "title": r[1], "submission_date": r[2],
+                 "file_path": r[3], "class": r[4], "section": r[5], "student_name": r[6]}
+                for r in cursor.fetchall()
             ]
     except Exception as e:
-        messages.error(request, f"Error retrieving homework submissions: {str(e)}")
-        homework_list = []
+        messages.error(request, f"Error retrieving submissions: {str(e)}")
 
     return render(request, "users/admin_homework_panel.html", {
+        "admin_uploaded": admin_uploaded,
         "homework_list": homework_list,
+        "available_classes": available_classes,
         "media_url": settings.MEDIA_URL,
-        "classes": classes,
-        "class_map_json": class_map_json,
         "selected_class": selected_class,
-        "selected_section": selected_section
+        "selected_section": selected_section,
     })
 
 # Teacher homework panel
@@ -2849,15 +2921,20 @@ def serve_protected_file(request, file_path, file_type='homework'):
     """
     Generic protected file serving view that handles both teacher uploads and student submissions.
     Detects file type and serves appropriately with view/download options.
-    
+
     Args:
         file_path: Relative path to the file
         file_type: Type of file ('homework' for teacher uploads, 'submission' for student submissions)
     """
-    # Check if teacher is logged in
-    if not request.session.get('teacher_id'):
+    # Allow any authenticated user (teacher, admin, student, parent)
+    is_authenticated = (
+        request.session.get('teacher_id') or
+        request.session.get('admin_id') or
+        request.session.get('user_id')
+    )
+    if not is_authenticated:
         messages.error(request, 'You must be logged in to access this file.')
-        return redirect('teacher_login')
+        return redirect('login')
 
     # Security: Normalize path to prevent directory traversal
     file_path = os.path.normpath(file_path).lstrip('/')
@@ -2954,241 +3031,180 @@ def teacher_homework_panel(request):
     if request.method == 'POST' and request.POST.get('upload_homework'):
         title = request.POST.get('homework_title', '').strip()
         description = request.POST.get('homework_description', '').strip()
-        subject = request.POST.get('subject', '').strip()
-        due_date = request.POST.get('due_date', '')
-        target = request.POST.get('target', 'all')
-        class_name = request.POST.get('class') if target == 'specific' else None
-        section = request.POST.get('section') if target == 'specific' else None
+        target_class = request.POST.get('target_class', 'all').strip()
         homework_file = request.FILES.get('homework_file')
 
-        # Validation
         if not title:
             messages.error(request, 'Homework title is required.')
             return redirect('teacher_homework_panel')
-        
-        if not homework_file:
-            messages.error(request, 'Please upload a file.')
-            return redirect('teacher_homework_panel')
 
-        # Validate class and section if specific
-        if target == 'specific' and (not class_name or not section):
-            messages.error(request, 'Please select both class and section for specific target.')
-            return redirect('teacher_homework_panel')
+        # Build metadata target lines
+        # target_type line: 'all' or 'specific', followed by class line if specific
+        if target_class and target_class != 'all':
+            meta_target_lines = f"specific\n{target_class}\n"
+        else:
+            meta_target_lines = "all\n"
 
-        # Normalize class and section
-        class_name = normalize_value(class_name)
-        section = normalize_value(section)
-
-        # Validate file type
-        allowed_extensions = ['.pdf', '.docx', '.xlsx', '.xls', '.jpg', '.jpeg', '.png', '.gif', '.webp']
-        file_ext = os.path.splitext(homework_file.name)[1].lower()
-        
-        if file_ext not in allowed_extensions:
-            messages.error(request, 'Invalid file type. Allowed: PDF, DOCX, XLSX, XLS, and images.')
-            return redirect('teacher_homework_panel')
-
-        # Validate file size (max 10MB)
-        if homework_file.size > 10 * 1024 * 1024:
-            messages.error(request, 'File size must be less than 10MB.')
-            return redirect('teacher_homework_panel')
-
-        # Generate unique filename
-        filename = f"{uuid.uuid4().hex}_{homework_file.name}"
-        fs = FileSystemStorage(location=HOMEWORK_DIR, base_url='/media/teacher_homework/')
-        
-        try:
-            filename = fs.save(filename, homework_file)
-            full_path = os.path.join(HOMEWORK_DIR, filename)
-            
-            if not os.path.exists(full_path):
-                messages.error(request, 'Failed to save the file.')
+        if homework_file:
+            allowed_extensions = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.gif', '.webp']
+            file_ext = os.path.splitext(homework_file.name)[1].lower()
+            if file_ext not in allowed_extensions:
+                messages.error(request, 'Invalid file type. Allowed: PDF, DOC, DOCX, and images.')
                 return redirect('teacher_homework_panel')
-            
-            file_url = f"/media/teacher_homework/{filename}"
-        except Exception as e:
-            messages.error(request, f'Error saving the file: {str(e)}')
-            return redirect('teacher_homework_panel')
+            if homework_file.size > 10 * 1024 * 1024:
+                messages.error(request, 'File size must be less than 10MB.')
+                return redirect('teacher_homework_panel')
 
-        # Save homework metadata in a unique file
-        metadata_file_path = os.path.join(HOMEWORK_DIR, f"{filename}.txt")
-        try:
-            with open(metadata_file_path, 'w', encoding='utf-8') as f:
-                f.write(f"{title}\n")
-                f.write(f"{description}\n")
-                f.write(f"{subject}\n")
-                f.write(f"{due_date}\n")
-                f.write(f"{target}\n")
-                f.write(f"{teacher_id}\n")
-                if target == 'specific':
-                    f.write(f"{class_name}\n")
-                    f.write(f"{section}\n")
-        except Exception as e:
-            messages.error(request, f'Error saving homework metadata: {str(e)}')
-            return redirect('teacher_homework_panel')
+            filename = f"{uuid.uuid4().hex}_{homework_file.name}"
+            fs = FileSystemStorage(location=HOMEWORK_DIR, base_url='/media/teacher_homework/')
+            try:
+                filename = fs.save(filename, homework_file)
+                full_path = os.path.join(HOMEWORK_DIR, filename)
+                if not os.path.exists(full_path):
+                    messages.error(request, 'Failed to save the file.')
+                    return redirect('teacher_homework_panel')
+            except Exception as e:
+                messages.error(request, f'Error saving the file: {str(e)}')
+                return redirect('teacher_homework_panel')
+
+            # Metadata format: title / description / (blank) / (blank) / target_type / teacher_id [/ class if specific]
+            metadata_file_path = os.path.join(HOMEWORK_DIR, f"{filename}.txt")
+            try:
+                with open(metadata_file_path, 'w', encoding='utf-8') as f:
+                    f.write(f"{title}\n{description}\n\n\n{meta_target_lines}{teacher_id}\n")
+            except Exception as e:
+                messages.error(request, f'Error saving homework metadata: {str(e)}')
+                return redirect('teacher_homework_panel')
+        else:
+            # Text-only post
+            meta_filename = f"{uuid.uuid4().hex}_TEXTONLY.meta"
+            meta_path = os.path.join(HOMEWORK_DIR, meta_filename)
+            try:
+                with open(meta_path, 'w', encoding='utf-8') as f:
+                    f.write(f"{title}\n{description}\n{meta_target_lines}{teacher_id}\n")
+            except Exception as e:
+                messages.error(request, f'Error saving homework entry: {str(e)}')
+                return redirect('teacher_homework_panel')
 
         messages.success(request, f'Homework "{title}" uploaded successfully!')
 
-        # ?????? Notification: Teacher assigned homework ??????
-        if target == 'specific' and class_name and section:
-            notify_class_students(class_name, section, 'homework', 'New Homework', f'New homework assigned: {title}' + (f' (Due: {due_date})' if due_date else ''), '/homework/')
-            notify_class_parents(class_name, section, 'homework', 'New Homework', f'New homework assigned: {title}' + (f' (Due: {due_date})' if due_date else ''), '/parent-homework/')
-        else:
-            try:
-                with connection.cursor() as c:
+        # Notify students in the target class (or all students if 'all')
+        try:
+            with connection.cursor() as c:
+                if target_class and target_class != 'all':
+                    c.execute("SELECT user_id FROM student_page1 WHERE class = %s", [target_class])
+                else:
                     c.execute("SELECT user_id FROM student_page1")
-                    for row in c.fetchall():
-                        notify('student', row[0], 'homework', 'New Homework', f'New homework assigned: {title}' + (f' (Due: {due_date})' if due_date else ''), '/homework/')
-            except Exception:
-                pass
+                for row in c.fetchall():
+                    notify('student', row[0], 'homework', 'New Homework', f'New homework assigned: {title}', '/homework/')
+        except Exception:
+            pass
 
         return redirect('teacher_homework_panel')
 
     # Prepare uploaded homework list for display
     uploaded_homework = []
     if os.path.exists(HOMEWORK_DIR):
-        print(f"DEBUG: Checking homework directory: {HOMEWORK_DIR}")
-        print(f"DEBUG: Current teacher_id: {teacher_id}")
-        
         for file in os.listdir(HOMEWORK_DIR):
-            # Skip metadata files
-            if file.endswith('.txt'):
-                continue
-            
-            print(f"DEBUG: Processing file: {file}")
-            
-            # Check for valid file extensions
-            if not any(file.lower().endswith(ext) for ext in ['.pdf', '.docx', '.xlsx', '.xls', '.jpg', '.jpeg', '.png', '.gif', '.webp']):
-                print(f"DEBUG: Skipping {file} - invalid extension")
-                continue
-            
             full_path = os.path.join(HOMEWORK_DIR, file)
             if not os.path.exists(full_path):
-                print(f"DEBUG: Skipping {file} - file doesn't exist")
                 continue
 
-            metadata_file = f"{file}.txt"
-            metadata_path = os.path.join(HOMEWORK_DIR, metadata_file)
-            
-            title = "Untitled"
-            description = ""
-            subject = ""
-            due_date = ""
-            target = "All Classes"
-            file_teacher_id = ""
-            
+            # Text-only notice (no attached file)
+            if file.endswith('_TEXTONLY.meta'):
+                try:
+                    with open(full_path, 'r', encoding='utf-8') as fh:
+                        lines = fh.readlines()
+                    entry_title = lines[0].strip() if lines else "Untitled"
+                    entry_desc = lines[1].strip() if len(lines) > 1 else ""
+                    # teacher_id is always the last non-empty line
+                    non_empty = [l.strip() for l in lines if l.strip()]
+                    entry_teacher = non_empty[-1] if non_empty else ""
+                    if entry_teacher != str(teacher_id):
+                        continue
+                    # Parse target class from lines[2] ('all'/'specific') and lines[3] (class if specific)
+                    entry_class = 'All Classes'
+                    if len(lines) > 2:
+                        t = lines[2].strip()
+                        if t == 'specific' and len(lines) > 3:
+                            c = lines[3].strip()
+                            if c and c != entry_teacher:
+                                entry_class = f'Class {c.capitalize()}'
+                    upload_date = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%B %d, %Y at %I:%M %p')
+                    uploaded_homework.append({
+                        'title': entry_title,
+                        'description': entry_desc if entry_desc else None,
+                        'file_path': None,
+                        'file_type': None,
+                        'date': upload_date,
+                        'class_name': entry_class,
+                    })
+                except Exception:
+                    pass
+                continue
+
+            # Skip metadata sidecars and non-document files
+            if file.endswith('.txt') or file.endswith('.meta'):
+                continue
+            if not any(file.lower().endswith(ext) for ext in ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.gif', '.webp']):
+                continue
+
+            metadata_path = os.path.join(HOMEWORK_DIR, f"{file}.txt")
+            entry_title = "Untitled"
+            entry_desc = ""
+            entry_teacher = ""
+            entry_class = 'All Classes'
             if os.path.exists(metadata_path):
                 try:
-                    with open(metadata_path, 'r', encoding='utf-8') as f:
-                        lines = f.readlines()
-                        title = lines[0].strip() if len(lines) > 0 else "Untitled"
-                        description = lines[1].strip() if len(lines) > 1 else ""
-                        subject = lines[2].strip() if len(lines) > 2 else ""
-                        due_date = lines[3].strip() if len(lines) > 3 else ""
-                        target_type = lines[4].strip() if len(lines) > 4 else "all"
-                        file_teacher_id = lines[5].strip() if len(lines) > 5 else ""
-                        
-                        print(f"DEBUG: File {file} - teacher_id from metadata: {file_teacher_id}")
-                        
-                        if target_type == 'specific' and len(lines) >= 8:
-                            class_name = lines[6].strip()
-                            section = lines[7].strip()
-                            target = f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
-                        else:
-                            target = "All Classes"
-                except Exception as e:
-                    print(f"Error reading metadata from {metadata_path}: {e}")
-            else:
-                print(f"DEBUG: No metadata file found for {file}")
-            
-            # Only show homework uploaded by this teacher
-            if file_teacher_id != str(teacher_id):
-                print(f"DEBUG: Skipping {file} - teacher mismatch ({file_teacher_id} != {teacher_id})")
-                continue
+                    with open(metadata_path, 'r', encoding='utf-8') as fh:
+                        lines = fh.readlines()
+                    entry_title = lines[0].strip() if lines else "Untitled"
+                    entry_desc = lines[1].strip() if len(lines) > 1 else ""
+                    # teacher_id is always the last non-empty line
+                    non_empty = [l.strip() for l in lines if l.strip()]
+                    entry_teacher = non_empty[-1] if non_empty else ""
+                    # Metadata format (file upload): title/desc/blank/blank/target_type[/class]/teacher_id
+                    # Find 'all' or 'specific' line
+                    for i, line in enumerate(lines):
+                        t = line.strip()
+                        if t == 'specific':
+                            for j in range(i + 1, len(lines)):
+                                c = lines[j].strip()
+                                if c and c != entry_teacher:
+                                    entry_class = f'Class {c.capitalize()}'
+                                    break
+                            break
+                        elif t == 'all':
+                            entry_class = 'All Classes'
+                            break
+                except Exception:
+                    pass
 
-            print(f"DEBUG: Adding {file} to uploaded_homework list")
+            if entry_teacher != str(teacher_id):
+                continue
 
             try:
                 file_ext = os.path.splitext(file)[1].lower()
                 upload_date = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%B %d, %Y at %I:%M %p')
-                
-                # Use protected file serving URL
-                file_url = f"/serve-file/homework/{file}"
-                
-                # Format due date if exists
-                formatted_due_date = None
-                if due_date:
-                    try:
-                        formatted_due_date = datetime.strptime(due_date, '%Y-%m-%d').strftime('%B %d, %Y')
-                    except:
-                        formatted_due_date = due_date
-                
                 uploaded_homework.append({
-                    'title': title,
-                    'description': description if description else None,
-                    'subject': subject if subject else None,
-                    'due_date': formatted_due_date,
-                    'target': target,
+                    'title': entry_title,
+                    'description': entry_desc if entry_desc else None,
                     'file_path': file,
                     'file_type': file_ext,
                     'date': upload_date,
-                    'file_url': file_url
+                    'class_name': entry_class,
                 })
-            except Exception as e:
-                print(f"Error processing file {file}: {e}")
-        
-        print(f"DEBUG: Total uploaded_homework items: {len(uploaded_homework)}")
+            except Exception:
+                pass
 
     # Sort by newest first
     uploaded_homework = sorted(uploaded_homework, key=lambda x: x['date'], reverse=True)
 
-    # Get filter values for student submissions
-    selected_class = ''
-    selected_section = ''
-    
-    if request.method == 'POST' and request.POST.get('filter_homework'):
-        selected_class = normalize_value(request.POST.get('class', ''))
-        selected_section = normalize_value(request.POST.get('section', ''))
-
-    # Fetch student homework submissions
+    # (Student submissions section removed — homework is now a one-way notice board)
     homework_list = []
     try:
         with connection.cursor() as cursor:
-            query = """
-                SELECT h.user_id, h.title, h.submission_date, h.file_path, 
-                       h.class, h.section, s.name
-                FROM homework h
-                JOIN student_page1 s ON h.user_id = s.user_id
-                {where_clause}
-                ORDER BY h.submission_date DESC
-            """
-            params = []
-            where_clause = ""
-            
-            if selected_class and selected_section:
-                where_clause = "WHERE h.class = %s AND h.section <=> %s"
-                params = [selected_class, selected_section if selected_section else None]
-            elif selected_class:
-                where_clause = "WHERE h.class = %s"
-                params = [selected_class]
-            elif selected_section:
-                where_clause = "WHERE h.section <=> %s"
-                params = [selected_section if selected_section else None]
-
-            cursor.execute(query.format(where_clause=where_clause), params)
-            homework_list = [
-                {
-                    "user_id": r[0],
-                    "title": r[1],
-                    "submission_date": r[2].strftime('%B %d, %Y at %I:%M %p') if r[2] else 'N/A',
-                    "file_path": r[3],
-                    "class": r[4],
-                    "section": r[5],
-                    "student_name": r[6],
-                    # Add protected URLs for student submissions
-                    "view_url": f"/serve-file/submission/{r[3]}",
-                    "download_url": f"/serve-file/submission/{r[3]}?download=true"
-                } for r in cursor.fetchall()
-            ]
+            pass
     except Exception as e:
         messages.error(request, f"Error retrieving homework submissions: {str(e)}")
 
@@ -3210,19 +3226,19 @@ def teacher_homework_panel(request):
     except Exception as e:
         messages.error(request, f"Error fetching classes/sections: {str(e)}")
 
-    # Default subjects list (can be customized)
-    subjects = ['Mathematics', 'English', 'Science', 'Social Studies', 'Hindi', 
-                'Computer Science', 'Physics', 'Chemistry', 'Biology', 'History', 
-                'Geography', 'Economics', 'Accountancy']
+    # Fetch distinct classes for the target-class dropdown
+    available_classes = []
+    try:
+        with connection.cursor() as c:
+            c.execute("SELECT DISTINCT class FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class")
+            available_classes = [row[0] for row in c.fetchall()]
+    except Exception:
+        pass
 
     return render(request, "users/teacher_homework_panel.html", {
-        "homework_list": homework_list,
         "uploaded_homework": uploaded_homework,
         "media_url": settings.MEDIA_URL,
-        "class_map_json": class_map_json,
-        "subjects": subjects,
-        "selected_class": selected_class,
-        "selected_section": selected_section
+        "available_classes": available_classes,
     })
 
 
@@ -3247,25 +3263,52 @@ def fees_admin(request):
 def fees_parent(request):
     if 'user_id' not in request.session:
         messages.error(request, 'Please log in.')
-        return redirect('login')  # or parent_login
-    
-    # Optional: verify it's a parent (if you have role check)
-    # ...
-    
+        return redirect('parent_login')
+
+    user_id = request.session['user_id']
+    student_info = {}
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT name, admission_number, class FROM student_page1 WHERE user_id = %s",
+                [user_id]
+            )
+            row = cursor.fetchone()
+            if row:
+                student_info = {'name': row[0], 'admission_number': row[1], 'class': row[2]}
+    except Exception:
+        pass
+
     return render(request, 'users/fees_parent.html', {
         'user_type': 'parent',
-        'user_id': request.session['user_id']
+        'user_id': user_id,
+        'student_info': student_info,
     })
 
 # Student Fees Panel
 def fees_student(request):
     if 'user_id' not in request.session:
         messages.error(request, 'Please log in.')
-        return redirect('login')  # or student_login
-    
+        return redirect('student_login')
+
+    user_id = request.session['user_id']
+    student_info = {}
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT name, admission_number, class FROM student_page1 WHERE user_id = %s",
+                [user_id]
+            )
+            row = cursor.fetchone()
+            if row:
+                student_info = {'name': row[0], 'admission_number': row[1], 'class': row[2]}
+    except Exception:
+        pass
+
     return render(request, 'users/fees_student.html', {
         'user_type': 'student',
-        'user_id': request.session['user_id']
+        'user_id': user_id,
+        'student_info': student_info,
     })
 
 
@@ -3719,9 +3762,15 @@ def add_student(request):
             emis = request.POST.get('emis', '').strip()
             email = request.POST.get('email', '').strip()
 
-            # Clean optional fields
+            # Auto-generate sequential admission number if not provided
             if admission_number.lower() in ['none', 'n/a', 'not-provided', '']:
-                admission_number = None
+                with connection.cursor() as _cur:
+                    _cur.execute(
+                        "SELECT MAX(CAST(admission_number AS UNSIGNED)) FROM student_page1 "
+                        "WHERE admission_number REGEXP '^[0-9]+$'"
+                    )
+                    _max = _cur.fetchone()[0]
+                    admission_number = str((_max or 0) + 1)
 
             # Validate required fields
             if not all([name, class_name, roll_number, emis, email]):
@@ -3769,14 +3818,10 @@ def add_student(request):
                             'sports_quota_options': ['yes', 'no']
                         })
 
-                # Create a user account
+                # Create user account using admission number (always set at this point)
                 import uuid
-                if admission_number:
-                    username = f"student_{admission_number}"
-                    password = admission_number
-                else:
-                    username = f"student_{uuid.uuid4().hex[:8]}"
-                    password = "password123"
+                username = f"student_{admission_number}"
+                password = admission_number
 
                 cursor.execute("""
                     INSERT INTO users (username, email, password)
@@ -5229,10 +5274,74 @@ from django.shortcuts import render, redirect
 def admin_page(request):
     admin_name = request.session.get('admin_name')
     if not admin_name:
-        return redirect('admin_login')  # If not logged in, redirect to login
+        return redirect('admin_login')
 
     return render(request, 'users/admin_page.html', {'admin_name': admin_name})
 
+
+from django.core.mail import send_mail
+from django.conf import settings as django_settings
+
+def send_student_credentials(request):
+    """Send login credentials (username + password) to all enrolled students via email."""
+    if not request.session.get('admin_id'):
+        messages.error(request, 'Admin login required.')
+        return redirect('admin_login')
+
+    if request.method != 'POST':
+        return redirect('admin_page')
+
+    sent_count = 0
+    failed_count = 0
+    errors = []
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT u.username, u.password, u.email, s.name, s.class, s.section
+                FROM users u
+                JOIN student_page1 s ON s.user_id = u.id
+                WHERE u.email IS NOT NULL AND u.email != ''
+                ORDER BY s.name
+            """)
+            students = cursor.fetchall()
+    except Exception as e:
+        messages.error(request, f'Error fetching student data: {str(e)}')
+        return redirect('admin_page')
+
+    for username, password, email, name, cls, section in students:
+        try:
+            subject = 'Your Manavargal SMS Login Credentials'
+            body = (
+                f"Dear {name},\n\n"
+                f"Here are your login credentials for the Manavargal School Management System:\n\n"
+                f"  Student Portal: https://manavargalsms.com/student/\n"
+                f"  Username: {username}\n"
+                f"  Password: {password}\n\n"
+                f"Class: {cls or 'N/A'}  |  Section: {section or 'N/A'}\n\n"
+                f"Please keep this information confidential.\n\n"
+                f"Regards,\nManavargal School Administration"
+            )
+            send_mail(
+                subject,
+                body,
+                'no-reply@manavargalsms.com',
+                [email],
+                fail_silently=False,
+            )
+            sent_count += 1
+        except Exception as e:
+            failed_count += 1
+            errors.append(f"{name} ({email}): {str(e)}")
+
+    if sent_count:
+        messages.success(request, f'Successfully sent credentials to {sent_count} student(s).')
+    if failed_count:
+        messages.warning(request, f'{failed_count} email(s) failed. First error: {errors[0] if errors else "unknown"}')
+    if not sent_count and not failed_count:
+        messages.info(request, 'No students with email addresses found.')
+
+    return redirect('admin_page')
 
 
 from django.shortcuts import render, redirect
@@ -7125,8 +7234,8 @@ def submit_attendance_batch(request):
             total_count = cursor.fetchone()[0]
 
             cursor.execute("""
-                SELECT COUNT(*) FROM attendance 
-                WHERE class = %s AND section = %s AND date = %s
+                SELECT COUNT(*) FROM attendance
+                WHERE class = %s AND section <=> %s AND date = %s
             """, [selected_class, selected_section, selected_date])
             marked_count = cursor.fetchone()[0]
 
@@ -7165,25 +7274,50 @@ def admin_attendance_portal(request):
         messages.error(request, 'Please log in to access this page.')
         return redirect('admin_login')
 
+    # Ensure admin_attendance table exists
+    try:
+        with connection.cursor() as c:
+            c.execute("""
+                CREATE TABLE IF NOT EXISTS admin_attendance (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    student_id INT,
+                    name VARCHAR(200),
+                    admission_number VARCHAR(100),
+                    class VARCHAR(50),
+                    section VARCHAR(50),
+                    date DATE,
+                    status VARCHAR(20) DEFAULT 'present',
+                    INDEX idx_class_date (class, date)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """)
+            connection.commit()
+    except Exception:
+        pass
+
     today_date = datetime.now().date().strftime('%Y-%m-%d')
     selected_date = request.GET.get('date', today_date)
-    
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class, section")
-        rows = cursor.fetchall()
-        class_map = {}
-        for c, s in rows:
-            c = normalize_value(c) if c else None
-            s = normalize_value(s) if s else ''
-            if not c: continue
-            if c not in class_map:
-                class_map[c] = []
-            if s and s not in class_map[c]:
-                class_map[c].append(s)
-        
-        import json
-        class_map_json = json.dumps(class_map)
-        classes = list(class_map.keys())
+
+    class_map_json = '{}'
+    classes = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT class, section FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class, section")
+            rows = cursor.fetchall()
+            class_map = {}
+            for c, s in rows:
+                c = c.strip() if c else None
+                s = s.strip() if s else ''
+                if not c: continue
+                if c not in class_map:
+                    class_map[c] = []
+                if s and s not in class_map[c]:
+                    class_map[c].append(s)
+
+            import json
+            class_map_json = json.dumps(class_map)
+            classes = list(class_map.keys())
+    except Exception as e:
+        messages.error(request, f'Error loading class list: {e}')
 
     selected_class = request.GET.get('class', '')
     selected_section = request.GET.get('section', '')
@@ -7191,59 +7325,48 @@ def admin_attendance_portal(request):
     
     if selected_class and 'section' in request.GET:
         section_val = None if selected_section in ('', 'None', 'N/A') else selected_section
-        with connection.cursor() as cursor:
-            if section_val == 'all':
-                cursor.execute(
-                    """
-                    SELECT user_id, name, admission_number, class, section
-                    FROM student_page1 
-                    WHERE class = %s 
-                    ORDER BY name, admission_number
-                    """, 
-                    [selected_class]
-                )
-            else:
-                cursor.execute(
-                    """
-                    SELECT user_id, name, admission_number, class, section
-                    FROM student_page1 
-                    WHERE class = %s AND section <=> %s 
-                    ORDER BY name, admission_number
-                    """, 
-                    [selected_class, section_val]
-                )
-            students = [
-                {
-                    'user_id': row[0],
-                    'name': row[1],
-                    'admission_number': row[2],
-                    'class': row[3],
-                    'section': row[4] if row[4] else 'N/A'
-                } for row in cursor.fetchall()
-            ]
-            
-            if section_val == 'all':
-                cursor.execute(
-                    """
-                    SELECT student_id, status 
-                    FROM admin_attendance 
-                    WHERE class = %s AND date = %s
-                    """, 
-                    [selected_class, selected_date]
-                )
-            else:
-                cursor.execute(
-                    """
-                    SELECT student_id, status 
-                    FROM admin_attendance 
-                    WHERE class = %s AND section <=> %s AND date = %s
-                    """, 
-                    [selected_class, section_val, selected_date]
-                )
-            attendance_records = {row[0]: row[1] for row in cursor.fetchall()}
-            
-            for student in students:
-                student['status'] = attendance_records.get(student['user_id'], '')
+        try:
+            with connection.cursor() as cursor:
+                if section_val == 'all':
+                    cursor.execute(
+                        "SELECT user_id, name, admission_number, class, section FROM student_page1 WHERE class = %s ORDER BY name, admission_number",
+                        [selected_class]
+                    )
+                else:
+                    cursor.execute(
+                        "SELECT user_id, name, admission_number, class, section FROM student_page1 WHERE class = %s AND section <=> %s ORDER BY name, admission_number",
+                        [selected_class, section_val]
+                    )
+                students = [
+                    {
+                        'user_id': row[0],
+                        'name': row[1],
+                        'admission_number': row[2],
+                        'class': row[3],
+                        'section': row[4] if row[4] else 'N/A'
+                    } for row in cursor.fetchall()
+                ]
+
+                attendance_records = {}
+                try:
+                    if section_val == 'all':
+                        cursor.execute(
+                            "SELECT student_id, status FROM admin_attendance WHERE class = %s AND date = %s",
+                            [selected_class, selected_date]
+                        )
+                    else:
+                        cursor.execute(
+                            "SELECT student_id, status FROM admin_attendance WHERE class = %s AND section <=> %s AND date = %s",
+                            [selected_class, section_val, selected_date]
+                        )
+                    attendance_records = {row[0]: row[1] for row in cursor.fetchall()}
+                except Exception:
+                    pass
+
+                for student in students:
+                    student['status'] = attendance_records.get(student['user_id'], '')
+        except Exception as e:
+            messages.error(request, f'Error loading students: {e}')
 
     return render(request, 'users/admin_attendance.html', {
         'classes': classes,
@@ -7579,7 +7702,6 @@ import re
 
 def parent_signup(request):
     if request.method == 'POST':
-        admission_number = request.POST.get('admission_number')
         contact = request.POST.get('contact')
         email = request.POST.get('email')
         class_grade = request.POST.get('class')
@@ -7590,14 +7712,9 @@ def parent_signup(request):
         if not section or section.lower() in ['none', 'n/a', 'not-provided']:
             section = None
 
-        # Validate required inputs (section is optional)
-        if not all([admission_number, contact, email, class_grade, roll_number]):
+        # Validate required inputs (section and admission_number are auto-handled)
+        if not all([contact, email, class_grade, roll_number]):
             messages.error(request, 'All fields except Section are required')
-            return render(request, 'users/parent_signup.html')
-
-        # Strictly validate admission number
-        if admission_number.lower() in ['none', 'n/a', 'not-provided']:
-            messages.error(request, 'A valid Admission Number is required to sign up. Contact Administrator if yours is missing.')
             return render(request, 'users/parent_signup.html')
 
         # Validate email format
@@ -7619,17 +7736,21 @@ def parent_signup(request):
             messages.error(request, 'Roll number must be a positive integer')
             return render(request, 'users/parent_signup.html')
 
-        # Check if admission_number or email already exists
+        # Check if email already exists
         with connection.cursor() as cursor:
-            cursor.execute("SELECT COUNT(*) FROM student_page1 WHERE admission_number = %s", [admission_number])
-            if cursor.fetchone()[0] > 0:
-                messages.error(request, 'Admission number already exists')
-                return render(request, 'users/parent_signup.html')
-
             cursor.execute("SELECT COUNT(*) FROM users WHERE email = %s", [email])
             if cursor.fetchone()[0] > 0:
                 messages.error(request, 'Email already exists')
                 return render(request, 'users/parent_signup.html')
+
+        # Auto-generate the next sequential admission number
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT MAX(CAST(admission_number AS UNSIGNED)) FROM student_page1 "
+                "WHERE admission_number REGEXP '^[0-9]+$'"
+            )
+            max_num = cursor.fetchone()[0]
+            admission_number = str((max_num or 0) + 1)
 
         # Insert new user and related data
         try:
@@ -7641,7 +7762,7 @@ def parent_signup(request):
                 )
                 user_id = cursor.lastrowid
 
-                # Insert into student_page1 (using placeholder for name)
+                # Insert into student_page1
                 cursor.execute(
                     "INSERT INTO student_page1 (user_id, name, admission_number, class, section, roll_number) VALUES (%s, %s, %s, %s, %s, %s)",
                     [user_id, 'Placeholder Name', admission_number, class_grade, section, roll_number]
@@ -7655,10 +7776,9 @@ def parent_signup(request):
 
                 connection.commit()
 
-                # ?????? Notification: New parent registered ??????
                 notify_all_admins('auth', 'New Parent Registered', f'New parent registered for admission: {admission_number}')
 
-                messages.success(request, 'Account created successfully! Please log in.')
+                messages.success(request, f'Account created successfully! Your Admission Number is: {admission_number}. Use this and your contact number to log in.')
                 return redirect('parent_login')
         except Exception as e:
             connection.rollback()
@@ -7680,7 +7800,7 @@ def parent_login(request):
             messages.error(request, "Invalid Admission Number. Contact Administration.")
             return redirect('parent_login')
 
-        # Check user credentials in MySQL
+        # Path 1: parent_signup accounts — student_page3.contact == parent's own contact
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT u.id, sp1.admission_number
@@ -7692,14 +7812,77 @@ def parent_login(request):
             user = cursor.fetchone()
 
         if user:
-            request.session["user_id"] = user[0]  # Store user ID in session
-            request.session["parent_id"] = user[0]  # Store parent ID in session
-            request.session["username"] = user[1]  # Store admission number in session
-            
-            return HttpResponse("Success") 
+            # Block if a parent_registrations record exists but is not yet activated/approved
+            try:
+                with connection.cursor() as c:
+                    c.execute(
+                        "SELECT status FROM parent_registrations WHERE admission_no = %s ORDER BY created_at DESC LIMIT 1",
+                        [admission_number]
+                    )
+                    reg = c.fetchone()
+            except Exception:
+                reg = None
 
-        # If credentials are invalid, send error message
-        return HttpResponse("Invalid credentials!")  
+            if reg is not None and reg[0] not in ('activated', 'approved'):
+                return HttpResponse("Account not yet activated. Please contact the school administration.")
+
+            request.session["user_id"] = user[0]
+            request.session["parent_id"] = user[0]
+            request.session["username"] = user[1]
+            return HttpResponse("Success")
+
+        # Path 2: admin-activated parent_registrations.
+        # Step 1 — verify credentials in parent_registrations only (no JOIN).
+        # The JOIN to student_page1 was silently failing when admission_no had
+        # whitespace/case differences or the student row didn't exist yet.
+        pr_row = None
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT TRIM(pr.admission_no)
+                    FROM parent_registrations pr
+                    WHERE TRIM(pr.admission_no) = %s AND TRIM(pr.mobile) = %s
+                      AND pr.status = 'activated'
+                    ORDER BY pr.id DESC
+                    LIMIT 1
+                """, (admission_number.strip(), contact.strip()))
+                pr_row = cursor.fetchone()
+                print(f"[PARENT LOGIN Path2] admission={admission_number!r} mobile={contact!r} pr_row={pr_row}")
+        except Exception as e:
+            print(f"[PARENT LOGIN Path2] query error: {e}")
+            pr_row = None
+
+        if pr_row:
+            # Step 2 — find the student's user_id from student_page1
+            verified_admission = pr_row[0]
+            student_row = None
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT user_id, admission_number FROM student_page1 WHERE TRIM(admission_number) = %s LIMIT 1",
+                        [verified_admission]
+                    )
+                    student_row = cursor.fetchone()
+                    print(f"[PARENT LOGIN Path2] student_row={student_row}")
+            except Exception as e:
+                print(f"[PARENT LOGIN Path2] student lookup error: {e}")
+
+            if student_row:
+                request.session["user_id"] = student_row[0]
+                request.session["parent_id"] = student_row[0]
+                request.session["username"] = student_row[1]
+                request.session["is_guest_parent"] = True
+                return HttpResponse("Success")
+            else:
+                # Credentials are valid but student not yet in student_page1 —
+                # still let them in; the portal will show no data until student is added.
+                request.session["user_id"] = 0
+                request.session["parent_id"] = 0
+                request.session["username"] = verified_admission
+                request.session["is_guest_parent"] = True
+                return HttpResponse("Success")
+
+        return HttpResponse("Invalid credentials!")
 
     return render(request, "users/parent_login.html")
 
@@ -7822,6 +8005,7 @@ def parent_dashboard(request):
         'notification_user_id': user_id,
         'class_teacher_name': class_teacher_name,
         'subject_teachers': subject_teachers,
+        'is_guest_parent': request.session.get('is_guest_parent', False),
     })
 
 
@@ -8933,8 +9117,8 @@ def admin_timetable_view(request):
         rows = cursor.fetchall()
         class_map = {}
         for c, s in rows:
-            c = normalize_value(c) if c else None
-            s = normalize_value(s) if s else ''
+            c = c.strip() if c else None
+            s = s.strip() if s else ''
             if not c: continue
             if c not in class_map:
                 class_map[c] = []
@@ -9042,8 +9226,8 @@ def admin_exam_filter(request):
         rows = cursor.fetchall()
         class_map = {}
         for c, s in rows:
-            c = normalize_value(c) if c else None
-            s = normalize_value(s) if s else ''
+            c = c.strip() if c else None
+            s = s.strip() if s else ''
             if not c: continue
             if c not in class_map:
                 class_map[c] = []
@@ -9142,8 +9326,8 @@ def admin_timetable_filter(request):
         rows = cursor.fetchall()
         class_map = {}
         for c, s in rows:
-            c = normalize_value(c) if c else None
-            s = normalize_value(s) if s else ''
+            c = c.strip() if c else None
+            s = s.strip() if s else ''
             if not c: continue
             if c not in class_map:
                 class_map[c] = []
@@ -9234,8 +9418,8 @@ def admin_timetable_add(request):
         rows = cursor.fetchall()
         class_map = {}
         for c, s in rows:
-            c = normalize_value(c) if c else None
-            s = normalize_value(s) if s else ''
+            c = c.strip() if c else None
+            s = s.strip() if s else ''
             if not c: continue
             if c not in class_map:
                 class_map[c] = []
@@ -9346,8 +9530,8 @@ def admin_timetable_edit(request, id):
         rows = cursor.fetchall()
         class_map = {}
         for c, s in rows:
-            c = normalize_value(c) if c else None
-            s = normalize_value(s) if s else ''
+            c = c.strip() if c else None
+            s = s.strip() if s else ''
             if not c: continue
             if c not in class_map:
                 class_map[c] = []
@@ -10709,47 +10893,128 @@ def parent_profile_view(request):
 def parent_student_portal(request):
     if "user_id" not in request.session:
         return redirect("/")
-    
+
+    from datetime import date as _d
     user_id = request.session['user_id']
-    selected_date = request.GET.get('date', '')
-    
+    selected_date = request.GET.get('date', _d.today().strftime('%Y-%m-%d'))
+
+    attendance_records = []
+    student_info = {}
+
     with connection.cursor() as cursor:
+        # Parent signup creates a ghost student_page1 entry (name='Placeholder Name').
+        # Resolve the actual student by matching class + section + roll_number.
+        cursor.execute(
+            "SELECT class, section, roll_number, name, admission_number FROM student_page1 WHERE user_id = %s",
+            [user_id]
+        )
+        parent_row = cursor.fetchone()
+
+        student_id = user_id  # default
+        if parent_row:
+            p_class, p_section, p_roll, p_name, p_adm = parent_row
+
+            # Ghost accounts created by parent_signup have name='Placeholder Name'.
+            # If the session user already has a real name or has direct attendance records,
+            # they ARE the actual student — use their user_id directly without searching.
+            cursor.execute("SELECT 1 FROM attendance WHERE student_id = %s LIMIT 1", [user_id])
+            already_has_attendance = cursor.fetchone() is not None
+            is_real_student = already_has_attendance or (p_name and p_name.strip() != 'Placeholder Name')
+
+            if is_real_student:
+                student_id = user_id
+                student_info = {
+                    'name': p_name,
+                    'admission_number': p_adm,
+                    'class': p_class,
+                    'section': p_section or 'N/A',
+                }
+            else:
+                # Ghost account — find the real student by admission_number first
+                cursor.execute(
+                    """SELECT user_id, name, admission_number, section
+                       FROM student_page1
+                       WHERE admission_number = %s AND user_id != %s
+                       LIMIT 1""",
+                    [p_adm, user_id]
+                )
+                real_student = cursor.fetchone()
+                
+                if not real_student and p_class and p_roll:
+                    # Fallback to class + roll_number
+                    cursor.execute(
+                        """SELECT user_id, name, admission_number, section
+                           FROM student_page1
+                           WHERE class = %s AND roll_number = %s AND user_id != %s
+                           ORDER BY CASE WHEN section <=> %s THEN 0 ELSE 1 END
+                           LIMIT 1""",
+                        [p_class, p_roll, user_id, p_section]
+                    )
+                    real_student = cursor.fetchone()
+                if real_student:
+                    student_id = real_student[0]
+                    student_info = {
+                        'name': real_student[1],
+                        'admission_number': real_student[2],
+                        'class': p_class,
+                        'section': real_student[3] or p_section or 'N/A',
+                    }
+                else:
+                    student_id = user_id
+                    student_info = {
+                        'name': p_name,
+                        'admission_number': p_adm,
+                        'class': p_class,
+                        'section': p_section or 'N/A',
+                    }
+
+        # Query attendance directly by student_id (no JOIN — avoids issues for bulk-uploaded students)
         if selected_date:
             cursor.execute(
-                """
-                SELECT a.date, s.admission_number, s.name, a.class, a.section, a.status 
-                FROM attendance a
-                JOIN student_page1 s ON a.student_id = s.user_id
-                WHERE s.user_id = %s AND a.date = %s
-                ORDER BY a.date DESC
-                """,
-                [user_id, selected_date]
+                "SELECT date, class, section, status FROM attendance WHERE student_id = %s AND date = %s ORDER BY date DESC",
+                [student_id, selected_date]
             )
         else:
             cursor.execute(
-                """
-                SELECT a.date, s.admission_number, s.name, a.class, a.section, a.status
-                FROM attendance a
-                JOIN student_page1 s ON a.student_id = s.user_id
-                WHERE s.user_id = %s
-                ORDER BY a.date DESC
-                """,
-                [user_id]
+                "SELECT date, class, section, status FROM attendance WHERE student_id = %s ORDER BY date DESC",
+                [student_id]
             )
         attendance_records = [
             {
-                'date': row[0],
-                'admission_number': row[1],
-                'name': row[2],
-                'class': row[3],
-                'section': row[4] if row[4] else 'N/A',
-                'status': row[5]
+                'date': row[0].strftime('%Y-%m-%d') if hasattr(row[0], 'strftime') else row[0],
+                'admission_number': student_info.get('admission_number', ''),
+                'name': student_info.get('name', ''),
+                'class': row[1],
+                'section': row[2] if row[2] else 'N/A',
+                'status': row[3]
             } for row in cursor.fetchall()
         ]
 
+        # Overall summary counts (all dates, not just selected)
+        cursor.execute(
+            """
+            SELECT
+                SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END),
+                SUM(CASE WHEN a.status = 'absent'  THEN 1 ELSE 0 END),
+                SUM(CASE WHEN a.status NOT IN ('present','absent') THEN 1 ELSE 0 END)
+            FROM attendance a WHERE a.student_id = %s
+            """,
+            [student_id]
+        )
+        counts = cursor.fetchone()
+        total_present = int(counts[0] or 0) if counts else 0
+        total_absent  = int(counts[1] or 0) if counts else 0
+        total_leave   = int(counts[2] or 0) if counts else 0
+        total_days    = total_present + total_absent + total_leave
+
     return render(request, 'users/parent_student_portal.html', {
         'attendance_records': attendance_records,
-        'selected_date': selected_date
+        'selected_date': selected_date,
+        'student_info': student_info,
+        'total_present': total_present,
+        'total_absent': total_absent,
+        'total_leave': total_leave,
+        'total_days': total_days,
     })
 
 
@@ -10799,9 +11064,9 @@ def parent_student_leave(request):
                 "half_day_type": request.POST.get("half_day_type", "")
             }
 
-            # Validate required fields
-            required_fields = ["student_name", "reg_number", "class_number", "section", 
-                             "leave_reason", "leave_start_date", "leave_end_date", "leave_duration"]
+            # Validate required fields (section is optional – students may not have one)
+            required_fields = ["student_name", "class_number",
+                               "leave_reason", "leave_start_date", "leave_end_date", "leave_duration"]
             missing_fields = [field for field in required_fields if not form_data[field]]
             if missing_fields:
                 messages.error(request, f"Missing required fields: {', '.join(missing_fields)}")
@@ -11011,22 +11276,21 @@ def parent_study_materials(request):
         messages.error(request, f"Error fetching class/section: {str(e)}")
         return redirect("/parent-study-materials/")
 
+    _ensure_study_materials_schema()
     try:
         with connection.cursor() as cursor:
-            query = """
-                SELECT title, file_path, upload_date, class, section
-                FROM study_materials
-                WHERE class = %s AND section = %s
-                ORDER BY upload_date DESC
-            """
-            cursor.execute(query, [student_class, student_section])
+            cursor.execute(
+                "SELECT title, description, file_path, upload_date, `class`, section FROM study_materials WHERE `class` = %s AND (section <=> %s OR section IS NULL OR section = '') ORDER BY upload_date DESC",
+                [student_class, student_section if student_section else None]
+            )
             study_materials = [
                 {
                     "title": r[0],
-                    "file_path": r[1],
-                    "upload_date": r[2],
-                    "class": r[3],
-                    "section": r[4]
+                    "description": r[1] or "",
+                    "file_path": r[2],
+                    "upload_date": r[3],
+                    "class": r[4],
+                    "section": r[5]
                 } for r in cursor.fetchall()
             ]
     except Exception as e:
@@ -11051,7 +11315,6 @@ def parent_homework(request):
     student_class = None
     student_section = None
 
-    # Fetch student's class and section
     try:
         with connection.cursor() as cursor:
             cursor.execute(
@@ -11061,159 +11324,120 @@ def parent_homework(request):
             result = cursor.fetchone()
             if result:
                 student_class, student_section = result
-            else:
-                messages.error(request, "No class or section found for your account. Please contact the admin.")
-                return redirect("/parent-homework/")
     except Exception as e:
         messages.error(request, f"Error fetching class/section: {str(e)}")
-        return redirect("/parent-homework/")
 
-    if request.method == "POST":
-        title = request.POST.get("title")
-        submission_date = request.POST.get("submission_date")
-        uploaded_file = request.FILES.get("file")
+    filter_date = request.GET.get('date', '').strip()
 
-        if not all([title, submission_date, uploaded_file]):
-            messages.error(request, "All fields are required.")
-            return redirect("/parent-homework/")
-
-        # Validate file is a PDF
-        validator = FileExtensionValidator(allowed_extensions=['pdf'])
-        try:
-            validator(uploaded_file)
-        except ValidationError:
-            messages.error(request, "Only PDF files are allowed.")
-            return redirect("/parent-homework/")
-
-        try:
-            # Save file with unique filename
-            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'Uploads'))
-            filename = f"{uuid.uuid4().hex}_{uploaded_file.name}"
-            filename = fs.save(filename, uploaded_file)
-            file_path = f"Uploads/{filename}"
-
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    """
-                    INSERT INTO homework (user_id, title, submission_date, file_path, class, section)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                    """,
-                    [user_id, title, submission_date, file_path, student_class, student_section]
-                )
-            messages.success(request, "Homework submitted successfully!")
-        except Exception as e:
-            messages.error(request, f"Error submitting homework: {str(e)}")
-        return redirect("/parent-homework/")
-
-    # Fetch student's submitted homework
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT h.title, h.submission_date, h.file_path
-                FROM homework h
-                WHERE h.user_id = %s
-                ORDER BY h.submission_date DESC
-                """,
-                [user_id]
-            )
-            homework_list = [
-                {"title": r[0], "submission_date": r[1], "file_path": r[2]}
-                for r in cursor.fetchall()
-            ]
-    except Exception as e:
-        messages.error(request, f"Error retrieving homework: {str(e)}")
-        homework_list = []
-
-    # Fetch teacher-uploaded homework for this student's class/section
     teacher_homework = []
     HOMEWORK_DIR = os.path.join(settings.MEDIA_ROOT, 'teacher_homework')
-    
-    if os.path.exists(HOMEWORK_DIR) and student_class and student_section:
-        # Normalize student's class and section for comparison
-        normalized_student_class = normalize_value(student_class)
-        normalized_student_section = normalize_value(student_section)
-        
-        for file in os.listdir(HOMEWORK_DIR):
-            # Skip metadata files
-            if file.endswith('.txt'):
-                continue
-            
-            # Check for valid file extensions
-            if not any(file.lower().endswith(ext) for ext in ['.pdf', '.docx', '.xlsx', '.xls', '.jpg', '.jpeg', '.png', '.gif', '.webp']):
-                continue
-            
+
+    if os.path.exists(HOMEWORK_DIR) and student_class:
+        norm_class = normalize_value(student_class)
+        norm_section = normalize_value(student_section) if student_section else ''
+
+        for file in sorted(os.listdir(HOMEWORK_DIR)):
             full_path = os.path.join(HOMEWORK_DIR, file)
-            if not os.path.exists(full_path):
+            if not os.path.isfile(full_path):
                 continue
 
-            metadata_file = f"{file}.txt"
-            metadata_path = os.path.join(HOMEWORK_DIR, metadata_file)
-            
-            # Read metadata
-            if os.path.exists(metadata_path):
+            # ── Text-only posts (_TEXTONLY.meta) ──────────────────────────
+            if file.endswith('_TEXTONLY.meta'):
                 try:
-                    with open(metadata_path, 'r', encoding='utf-8') as f:
-                        lines = f.readlines()
-                        
-                        if len(lines) < 6:
-                            continue
-                        
-                        title = lines[0].strip() if len(lines) > 0 else "Untitled"
-                        description = lines[1].strip() if len(lines) > 1 else ""
-                        subject = lines[2].strip() if len(lines) > 2 else ""
-                        due_date = lines[3].strip() if len(lines) > 3 else ""
-                        target_type = lines[4].strip() if len(lines) > 4 else "all"
-                        teacher_id = lines[5].strip() if len(lines) > 5 else ""
-                        
-                        # Check if homework is for this student
-                        homework_for_student = False
-                        
-                        if target_type == 'all':
-                            # Homework is for all classes
-                            homework_for_student = True
-                        elif target_type == 'specific' and len(lines) >= 8:
-                            # Check if homework matches student's class and section
-                            hw_class = normalize_value(lines[6].strip())
-                            hw_section = normalize_value(lines[7].strip())
-                            
-                            if hw_class == normalized_student_class and hw_section == normalized_student_section:
-                                homework_for_student = True
-                        
-                        # If homework is for this student, add to list
-                        if homework_for_student:
-                            file_ext = os.path.splitext(file)[1].lower()
-                            upload_date = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%B %d, %Y at %I:%M %p')
-                            
-                            # Format due date if exists
-                            formatted_due_date = None
-                            if due_date:
-                                try:
-                                    formatted_due_date = datetime.strptime(due_date, '%Y-%m-%d').strftime('%B %d, %Y')
-                                except:
-                                    formatted_due_date = due_date
-                            
-                            teacher_homework.append({
-                                'title': title,
-                                'description': description if description else None,
-                                'subject': subject if subject else None,
-                                'due_date': formatted_due_date,
-                                'file_path': file,
-                                'file_type': file_ext,
-                                'date': upload_date,
-                            })
-                except Exception as e:
-                    print(f"Error reading metadata from {metadata_path}: {e}")
+                    with open(full_path, 'r', encoding='utf-8') as fh:
+                        lines = fh.readlines()
+                    entry_title = lines[0].strip() if lines else "Untitled"
+                    entry_desc  = lines[1].strip() if len(lines) > 1 else ""
+                    # Determine class targeting from lines[2]:
+                    #   Old format:  lines[2] = teacher_id (numeric) → treat as 'all'
+                    #   New 'all':   lines[2] = 'all'
+                    #   New 'specific': lines[2]='specific', lines[3]=class
+                    show = False
+                    raw_line2 = lines[2].strip() if len(lines) > 2 else ''
+                    if raw_line2 == 'specific':
+                        target_class_val = lines[3].strip() if len(lines) > 3 else ''
+                        if normalize_value(target_class_val) == norm_class:
+                            show = True
+                    else:
+                        # 'all' or old numeric teacher_id → show to all
+                        show = True
+                    if not show:
+                        continue
+                    upload_date_raw = datetime.fromtimestamp(os.path.getctime(full_path))
+                    if filter_date and upload_date_raw.strftime('%Y-%m-%d') != filter_date:
+                        continue
+                    upload_date = upload_date_raw.strftime('%B %d, %Y, %I:%M %p')
+                    # Resolve target class label for display
+                    if raw_line2 == 'specific':
+                        target_class_label = (lines[3].strip() if len(lines) > 3 else '').title() or 'All Classes'
+                    else:
+                        target_class_label = 'All Classes'
+                    teacher_homework.append({
+                        'title': entry_title,
+                        'description': entry_desc or None,
+                        'file_path': None,
+                        'file_type': None,
+                        'date': upload_date,
+                        'date_raw': upload_date_raw,
+                        'class_name': target_class_label,
+                        'section': student_section or 'None',
+                    })
+                except Exception:
                     continue
-    
-    # Sort teacher homework by newest first
-    teacher_homework = sorted(teacher_homework, key=lambda x: x['date'], reverse=True)
+                continue
+
+            # ── Sidecar-metadata files (regular file uploads) ──────────────
+            if file.endswith('.txt') or file.endswith('.meta'):
+                continue
+            if not any(file.lower().endswith(ext) for ext in ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.gif', '.webp']):
+                continue
+            metadata_path = os.path.join(HOMEWORK_DIR, f"{file}.txt")
+            if not os.path.exists(metadata_path):
+                continue
+            try:
+                with open(metadata_path, 'r', encoding='utf-8') as f:
+                    lines = f.readlines()
+                if len(lines) < 2:
+                    continue
+                title = lines[0].strip() or "Untitled"
+                description = lines[1].strip()
+                # Format: title / desc / (blank) / (blank) / target_type / [class /] teacher_id
+                target_type = lines[4].strip() if len(lines) > 4 else 'all'
+                show = False
+                target_class_label = 'All Classes'
+                if target_type == 'all' or target_type not in ('all', 'specific'):
+                    show = True
+                elif target_type == 'specific' and len(lines) > 5:
+                    if normalize_value(lines[5].strip()) == norm_class:
+                        show = True
+                        target_class_label = lines[5].strip().title()
+                if not show:
+                    continue
+                upload_date_raw = datetime.fromtimestamp(os.path.getctime(full_path))
+                if filter_date and upload_date_raw.strftime('%Y-%m-%d') != filter_date:
+                    continue
+                file_ext = os.path.splitext(file)[1].lower()
+                upload_date = upload_date_raw.strftime('%B %d, %Y, %I:%M %p')
+                teacher_homework.append({
+                    'title': title,
+                    'description': description if description else None,
+                    'file_path': file,
+                    'file_type': file_ext,
+                    'date': upload_date,
+                    'date_raw': upload_date_raw,
+                    'class_name': target_class_label,
+                    'section': student_section or 'None',
+                })
+            except Exception:
+                continue
+
+    teacher_homework = sorted(teacher_homework, key=lambda x: x.get('date_raw', datetime.min), reverse=True)
 
     return render(request, "users/parent_homework.html", {
-        "homework_list": homework_list,
         "teacher_homework": teacher_homework,
         "student_class": student_class,
-        "student_section": student_section
+        "student_section": student_section,
+        "filter_date": filter_date,
     })
 
 
@@ -11328,7 +11552,7 @@ from django.db import connection
 def parent_student_progress_card(request):
     if 'user_id' not in request.session:
         messages.error(request, 'Please log in to access the parent student portal.')
-        return redirect('/login/')
+        return redirect('/parent_login/')
     
     user_id = request.session['user_id']
     
@@ -11376,10 +11600,40 @@ def parent_student_progress_card(request):
             name, roll_number, class_name, section, image_path = student_row
             admission_number = ''
         
-        if not class_name or not section:
-            messages.error(request, 'Invalid class or section information.')
+        if not class_name:
+            messages.error(request, 'Invalid class information.')
             return redirect('parent_dashboard')
-        
+
+        # === Check for a published progress card PDF ===
+        _ensure_progress_cards_schema()
+        pdf_path = None
+        if admission_number:
+            try:
+                with connection.cursor() as pc:
+                    pc.execute(
+                        "SELECT file_path FROM progress_card_pdfs WHERE admission_number = %s ORDER BY uploaded_at DESC LIMIT 1",
+                        [admission_number]
+                    )
+                    pdf_row = pc.fetchone()
+                    if pdf_row:
+                        pdf_path = pdf_row[0]
+            except Exception:
+                pass
+
+        if pdf_path:
+            return render(request, 'users/parent_student_progress_card.html', {
+                'pdf_path': pdf_path,
+                'media_url': settings.MEDIA_URL,
+                'student': {'name': name, 'class': class_name, 'admission_number': admission_number},
+                'results_pending': False,
+            })
+        else:
+            # No PDF published yet — show "results not out" page
+            return render(request, 'users/parent_student_progress_card.html', {
+                'results_pending': True,
+                'student': {'name': name, 'class': class_name, 'admission_number': admission_number},
+            })
+
         # === Fetch ALL Subjects and Marks ===
         cursor.execute("""
             SELECT 
@@ -12188,8 +12442,8 @@ def admin_exam_add(request):
         rows = cursor.fetchall()
         class_map = {}
         for c, s in rows:
-            c = normalize_value(c) if c else None
-            s = normalize_value(s) if s else ''
+            c = c.strip() if c else None
+            s = s.strip() if s else ''
             if not c: continue
             if c not in class_map:
                 class_map[c] = []
@@ -12281,8 +12535,8 @@ def admin_exam_schedule(request):
         rows = cursor.fetchall()
         class_map = {}
         for c, s in rows:
-            c = normalize_value(c) if c else None
-            s = normalize_value(s) if s else ''
+            c = c.strip() if c else None
+            s = s.strip() if s else ''
             if not c: continue
             if c not in class_map:
                 class_map[c] = []
@@ -12474,8 +12728,8 @@ def admin_exam_edit(request, exam_id):
         rows = cursor.fetchall()
         class_map = {}
         for c, s in rows:
-            c = normalize_value(c) if c else None
-            s = normalize_value(s) if s else ''
+            c = c.strip() if c else None
+            s = s.strip() if s else ''
             if not c: continue
             if c not in class_map:
                 class_map[c] = []
@@ -13023,7 +13277,7 @@ def fetch_students_by_class_section(request):
                 s3.contact
             FROM student_page1 s1
             LEFT JOIN student_page3 s3 ON s1.user_id = s3.user_id
-            WHERE s1.class = %s AND s1.section = %s
+            WHERE s1.class = %s AND s1.section <=> %s
             ORDER BY s1.name
         """, [student_class, section])
 
@@ -13368,6 +13622,57 @@ def api_push_subscribe(request):
 
 
 
+def generate_admission_number(request):
+    """AJAX: return next admission number, optionally with class-specific prefix."""
+    import re as _re
+    class_name = (request.GET.get('class') or '').strip()
+    try:
+        with connection.cursor() as c:
+            if class_name:
+                c.execute("""
+                    SELECT admission_number FROM student_page1
+                    WHERE class = %s AND admission_number REGEXP '^[A-Za-z]+'
+                    ORDER BY CHAR_LENGTH(admission_number) DESC, admission_number DESC
+                    LIMIT 1
+                """, [class_name])
+                row = c.fetchone()
+                if row:
+                    m = _re.match(r'^([A-Za-z]+)(\d+)$', row[0])
+                    if m:
+                        prefix = m.group(1)
+                        c.execute("""
+                            SELECT MAX(CAST(REGEXP_SUBSTR(admission_number, '[0-9]+$') AS UNSIGNED))
+                            FROM student_page1
+                            WHERE class = %s AND admission_number REGEXP CONCAT('^', %s, '[0-9]+$')
+                        """, [class_name, prefix])
+                        max_num = c.fetchone()[0] or 0
+                        return JsonResponse({'status': 'ok', 'admission_number': prefix + str(max_num + 1).zfill(2), 'prefix': prefix})
+            # Fallback: sequential integer
+            c.execute(
+                "SELECT MAX(CAST(admission_number AS UNSIGNED)) FROM student_page1 "
+                "WHERE admission_number REGEXP '^[0-9]+$'"
+            )
+            max_num = c.fetchone()[0]
+            return JsonResponse({'status': 'ok', 'admission_number': str((max_num or 0) + 1)})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+def get_available_classes(request):
+    """AJAX: return available class names from admin_student_classes."""
+    try:
+        with connection.cursor() as c:
+            c.execute("""
+                SELECT DISTINCT class FROM admin_student_classes
+                WHERE class IS NOT NULL AND class != ''
+                ORDER BY class
+            """)
+            classes = [row[0] for row in c.fetchall()]
+        return JsonResponse({'status': 'ok', 'classes': classes})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
 def parent_register(request):
     return render(request, 'users/parent_register.html')
 
@@ -13382,11 +13687,24 @@ def parent_register_submit(request):
     mobile       = request.POST.get('mobile', '').strip()
     email        = request.POST.get('email', '').strip()
     class_name   = request.POST.get('class_name', '').strip()
-    section      = request.POST.get('section', '').strip()
+    section      = request.POST.get('section', '').strip() or None
     address      = request.POST.get('address', '').strip()
 
-    if not all([parent_name, child_name, admission_no, mobile]):
+    if not all([parent_name, child_name, mobile]):
         return JsonResponse({'status': 'error', 'message': 'Please fill all required fields.'})
+
+    # Server-side auto-generate if frontend didn't send one
+    if not admission_no:
+        try:
+            with connection.cursor() as c:
+                c.execute(
+                    "SELECT MAX(CAST(admission_number AS UNSIGNED)) FROM student_page1 "
+                    "WHERE admission_number REGEXP '^[0-9]+$'"
+                )
+                max_num = c.fetchone()[0]
+                admission_no = str((max_num or 0) + 1)
+        except Exception:
+            admission_no = 'AUTO'
 
     try:
         with connection.cursor() as cursor:
@@ -13398,8 +13716,8 @@ def parent_register_submit(request):
                     admission_no VARCHAR(50) NOT NULL,
                     mobile      VARCHAR(20)  NOT NULL,
                     email       VARCHAR(200),
-                    class_name  VARCHAR(20),
-                    section     VARCHAR(10),
+                    class_name  VARCHAR(100),
+                    section     VARCHAR(100),
                     address     TEXT,
                     status      VARCHAR(20) DEFAULT 'pending',
                     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -13409,19 +13727,21 @@ def parent_register_submit(request):
                 INSERT INTO parent_registrations
                 (parent_name, child_name, admission_no, mobile, email, class_name, section, address)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, [parent_name, child_name, admission_no, mobile,
-                  email, class_name, section, address])
+            """, [parent_name, child_name, admission_no, mobile, email, class_name, section, address])
             connection.commit()
-        return JsonResponse({'status': 'success'})
+        return JsonResponse({'status': 'success', 'admission_no': admission_no})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
 
 def admin_parent_registrations(request):
-    if not request.session.get('admin_id'):   # same guard you use everywhere
+    if not request.session.get('admin_id'):
         return redirect('admin_login')
 
     registrations = []
+    guest_accounts = []
+    classes = []
+    class_map = {}
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
@@ -13432,8 +13752,8 @@ def admin_parent_registrations(request):
                     admission_no VARCHAR(50),
                     mobile      VARCHAR(20),
                     email       VARCHAR(200),
-                    class_name  VARCHAR(20),
-                    section     VARCHAR(10),
+                    class_name  VARCHAR(100),
+                    section     VARCHAR(100),
                     address     TEXT,
                     status      VARCHAR(20) DEFAULT 'pending',
                     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -13442,8 +13762,422 @@ def admin_parent_registrations(request):
             cursor.execute("SELECT * FROM parent_registrations ORDER BY created_at DESC")
             cols = [col[0] for col in cursor.description]
             registrations = [dict(zip(cols, row)) for row in cursor.fetchall()]
+
+            # Guest accounts: activated but student not yet in student_page1
+            cursor.execute("""
+                SELECT pr.id, pr.parent_name, pr.child_name, pr.admission_no,
+                       pr.mobile, pr.email, pr.class_name, pr.section, pr.address,
+                       sp1.user_id AS student_user_id
+                FROM parent_registrations pr
+                LEFT JOIN student_page1 sp1
+                    ON TRIM(sp1.admission_number) = TRIM(pr.admission_no)
+                WHERE pr.status = 'activated'
+                ORDER BY pr.id DESC
+            """)
+            gcols = [col[0] for col in cursor.description]
+            for row in cursor.fetchall():
+                d = dict(zip(gcols, row))
+                d['has_student'] = d['student_user_id'] is not None
+                guest_accounts.append(d)
+
+            # Classes & sections for the dropdown
+            try:
+                cursor.execute("SELECT DISTINCT class, section FROM admin_student_classes ORDER BY class, section")
+                for r in cursor.fetchall():
+                    cls, sec = r[0], r[1]
+                    if cls not in class_map:
+                        class_map[cls] = []
+                        classes.append(cls)
+                    if sec and sec not in class_map[cls]:
+                        class_map[cls].append(sec)
+            except Exception:
+                pass
+
     except Exception as e:
         print(f"[Admin Registrations Error] {e}")
 
-    return render(request, 'users/admin_parent_registrations.html',
-                  {'registrations': registrations})
+    import json as _json
+    return render(request, 'users/admin_parent_registrations.html', {
+        'registrations': registrations,
+        'guest_accounts': guest_accounts,
+        'classes': classes,
+        'class_map_json': _json.dumps(class_map),
+    })
+
+
+def admin_fill_guest_student(request):
+    """AJAX POST: create/update student_page1 entry for a guest parent account."""
+    if not request.session.get('admin_id'):
+        return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'POST required'})
+
+    reg_id      = request.POST.get('reg_id', '').strip()
+    student_name = request.POST.get('student_name', '').strip()
+    class_name  = request.POST.get('class_name', '').strip()
+    section     = request.POST.get('section', '').strip()
+    roll_number = request.POST.get('roll_number', '').strip()
+    gender      = request.POST.get('gender', '').strip()
+    dob         = request.POST.get('dob', '').strip() or None
+
+    if not reg_id or not student_name or not class_name:
+        return JsonResponse({'status': 'error', 'message': 'reg_id, student_name and class_name are required'})
+
+    try:
+        with connection.cursor() as cursor:
+            # Get admission_no from the registration
+            cursor.execute("SELECT admission_no, mobile FROM parent_registrations WHERE id = %s AND status = 'activated'", [reg_id])
+            pr = cursor.fetchone()
+            if not pr:
+                return JsonResponse({'status': 'error', 'message': 'Registration not found or not activated'})
+            admission_no, mobile = pr[0].strip(), pr[1].strip()
+
+            # Check if student already exists
+            cursor.execute("SELECT user_id FROM student_page1 WHERE TRIM(admission_number) = %s LIMIT 1", [admission_no])
+            existing = cursor.fetchone()
+
+            if existing:
+                user_id = existing[0]
+                # Update existing record
+                cursor.execute("""
+                    UPDATE student_page1
+                    SET name = %s, class = %s, section = %s, roll_number = %s
+                    WHERE user_id = %s
+                """, [student_name, class_name, section or None, roll_number or None, user_id])
+            else:
+                # Generate new user_id
+                cursor.execute("SELECT MAX(id) FROM users")
+                max_id = cursor.fetchone()[0] or 0
+                user_id = max_id + 1
+
+                # Create minimal users entry
+                import uuid as _uuid
+                unique_id = str(_uuid.uuid4())[:8]
+                email_auto = f"{student_name.lower().replace(' ', '.')}_{user_id}_{unique_id}@example.com"[:255]
+                cursor.execute(
+                    "INSERT INTO users (id, username, email, password) VALUES (%s, %s, %s, %s)",
+                    [user_id, student_name[:150], email_auto, mobile]
+                )
+
+                # Insert student_page1
+                cursor.execute("""
+                    INSERT INTO student_page1 (user_id, name, admission_number, class, section, roll_number)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """, [user_id, student_name, admission_no, class_name, section or None, roll_number or None])
+
+            # Upsert student_page2 with gender/dob if provided
+            if gender or dob:
+                cursor.execute("""
+                    INSERT INTO student_page2 (user_id, gender, dob)
+                    VALUES (%s, %s, %s)
+                    ON DUPLICATE KEY UPDATE
+                        gender = COALESCE(VALUES(gender), gender),
+                        dob    = COALESCE(VALUES(dob), dob)
+                """, [user_id, gender or None, dob])
+
+            # Upsert student_page3 with contact (parent mobile)
+            cursor.execute("""
+                INSERT INTO student_page3 (user_id, contact)
+                VALUES (%s, %s)
+                ON DUPLICATE KEY UPDATE contact = COALESCE(VALUES(contact), contact)
+            """, [user_id, mobile])
+
+            connection.commit()
+        return JsonResponse({'status': 'success', 'user_id': user_id})
+    except Exception as e:
+        print(f"[fill_guest_student] {e}")
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+def get_class_sections(request):
+    """AJAX: return distinct sections for a given class from admin_student_classes."""
+    class_name = (request.GET.get('class') or '').strip()
+    if not class_name:
+        return JsonResponse({'sections': []})
+    try:
+        with connection.cursor() as c:
+            c.execute("""
+                SELECT DISTINCT section FROM admin_student_classes
+                WHERE class = %s AND section IS NOT NULL AND section != ''
+                ORDER BY section
+            """, [class_name])
+            sections = [r[0] for r in c.fetchall()]
+        return JsonResponse({'sections': sections})
+    except Exception as e:
+        return JsonResponse({'sections': [], 'error': str(e)})
+
+
+def get_approved_leaves(request):
+    """AJAX: return names of students on approved leave for a class on a specific date."""
+    class_name = (request.GET.get('class') or '').strip()
+    date_str = (request.GET.get('date') or '').strip()
+    if not class_name or not date_str:
+        return JsonResponse({'students': []})
+    try:
+        with connection.cursor() as c:
+            c.execute("""
+                SELECT DISTINCT student_name
+                FROM student_leave_requests
+                WHERE class_number = %s
+                  AND %s BETWEEN leave_start_date AND leave_end_date
+                  AND status = 'Approved'
+            """, [class_name, date_str])
+            students = [r[0] for r in c.fetchall() if r[0]]
+        return JsonResponse({'students': students})
+    except Exception as e:
+        return JsonResponse({'students': [], 'error': str(e)})
+
+
+def save_attendance_batch(request):
+    """Unified batch attendance save. Teachers INSERT-only (immutable); Admins INSERT-or-UPDATE."""
+    import json as _json
+    is_teacher = bool(request.session.get('teacher_id'))
+    is_admin = bool(request.session.get('admin_id'))
+    if not is_teacher and not is_admin:
+        return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=401)
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'POST required'}, status=405)
+    try:
+        data = _json.loads(request.body)
+    except Exception:
+        return JsonResponse({'success': False, 'message': 'Invalid JSON body'}, status=400)
+
+    class_name = (data.get('class') or '').strip()
+    section = data.get('section', '')
+    date_str = (data.get('date') or '').strip()
+    records = data.get('records', [])
+
+    if not class_name or not date_str or not records:
+        return JsonResponse({'success': False, 'message': 'Missing required fields'}, status=400)
+
+    if not section or str(section).lower() in ('none', 'n/a', 'all', 'not-provided', ''):
+        section = None
+
+    with connection.cursor() as cursor:
+        if is_teacher:
+            cursor.execute(
+                "SELECT COUNT(*) FROM attendance WHERE class=%s AND section<=>%s AND date=%s",
+                [class_name, section, date_str]
+            )
+            if cursor.fetchone()[0] > 0:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Attendance already saved for this date.',
+                    'locked': True
+                })
+
+        saved = 0
+        for rec in records:
+            name = (rec.get('name') or '').strip()
+            status = (rec.get('status') or 'present').lower()
+            if status not in ('present', 'absent', 'leave'):
+                status = 'present'
+            if not name:
+                continue
+
+            cursor.execute(
+                "SELECT user_id, admission_number, section FROM student_page1 WHERE TRIM(name)=%s AND class=%s LIMIT 1",
+                [name, class_name]
+            )
+            row = cursor.fetchone()
+            if not row:
+                continue
+            student_id, admission_number, std_section = row
+
+            if is_admin:
+                cursor.execute(
+                    "SELECT id FROM attendance WHERE student_id=%s AND class=%s AND section<=>%s AND date=%s",
+                    [student_id, class_name, section, date_str]
+                )
+                if cursor.fetchone():
+                    cursor.execute(
+                        "UPDATE attendance SET status=%s WHERE student_id=%s AND class=%s AND section<=>%s AND date=%s",
+                        [status, student_id, class_name, section, date_str]
+                    )
+                else:
+                    cursor.execute(
+                        "INSERT INTO attendance (student_id, class, section, date, status) VALUES (%s,%s,%s,%s,%s)",
+                        [student_id, class_name, section, date_str, status]
+                    )
+                cursor.execute(
+                    "SELECT id FROM admin_attendance WHERE student_id=%s AND class=%s AND section<=>%s AND date=%s",
+                    [student_id, class_name, section, date_str]
+                )
+                if cursor.fetchone():
+                    cursor.execute(
+                        "UPDATE admin_attendance SET status=%s WHERE student_id=%s AND class=%s AND section<=>%s AND date=%s",
+                        [status, student_id, class_name, section, date_str]
+                    )
+                else:
+                    cursor.execute(
+                        "INSERT INTO admin_attendance (student_id, name, admission_number, class, section, date, status) VALUES (%s,%s,%s,%s,%s,%s,%s)",
+                        [student_id, name, admission_number, class_name, std_section, date_str, status]
+                    )
+            else:
+                cursor.execute(
+                    "INSERT INTO attendance (student_id, class, section, date, status) VALUES (%s,%s,%s,%s,%s)",
+                    [student_id, class_name, section, date_str, status]
+                )
+                cursor.execute(
+                    "INSERT INTO admin_attendance (student_id, name, admission_number, class, section, date, status) VALUES (%s,%s,%s,%s,%s,%s,%s)",
+                    [student_id, name, admission_number, class_name, std_section, date_str, status]
+                )
+            saved += 1
+
+        connection.commit()
+
+    return JsonResponse({'success': True, 'message': f'Attendance saved for {saved} students.', 'saved': saved})
+
+
+def approve_parent_registration(request, pk):
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
+    if request.method == 'POST':
+        try:
+            with connection.cursor() as c:
+                c.execute("UPDATE parent_registrations SET status='approved' WHERE id=%s", [pk])
+                connection.commit()
+            messages.success(request, 'Registration approved successfully.')
+        except Exception as e:
+            messages.error(request, f'Error approving registration: {e}')
+    return redirect('admin_parent_registrations')
+
+
+def reject_parent_registration(request, pk):
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
+    if request.method == 'POST':
+        try:
+            with connection.cursor() as c:
+                c.execute("UPDATE parent_registrations SET status='rejected' WHERE id=%s", [pk])
+                connection.commit()
+            messages.success(request, 'Registration rejected.')
+        except Exception as e:
+            messages.error(request, f'Error rejecting registration: {e}')
+    return redirect('admin_parent_registrations')
+
+
+def activate_parent_registration(request, pk):
+    """Activates a parent account so they can log in."""
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
+    if request.method == 'POST':
+        try:
+            with connection.cursor() as c:
+                c.execute("UPDATE parent_registrations SET status='activated' WHERE id=%s", [pk])
+                connection.commit()
+            messages.success(request, 'Parent account activated. They can now log in using their admission number and contact.')
+        except Exception as e:
+            messages.error(request, f'Error activating account: {e}')
+    return redirect('admin_parent_registrations')
+
+
+def _ensure_progress_cards_schema():
+    """Create progress_card_pdfs table if it doesn't exist."""
+    try:
+        with connection.cursor() as c:
+            c.execute("""
+                CREATE TABLE IF NOT EXISTS progress_card_pdfs (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    admission_number VARCHAR(100) NOT NULL,
+                    student_name VARCHAR(200),
+                    class_name VARCHAR(50),
+                    file_path VARCHAR(500) NOT NULL,
+                    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    academic_year VARCHAR(20),
+                    INDEX idx_admission (admission_number)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """)
+            connection.commit()
+    except Exception:
+        pass
+
+
+def admin_progress_cards(request):
+    """Admin panel to upload/manage progress card PDFs per student."""
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
+
+    _ensure_progress_cards_schema()
+
+    PROGRESS_CARD_DIR = os.path.join(settings.MEDIA_ROOT, 'progress_cards')
+    if not os.path.exists(PROGRESS_CARD_DIR):
+        os.makedirs(PROGRESS_CARD_DIR)
+
+    if request.method == 'POST':
+        admission_number = request.POST.get('admission_number', '').strip()
+        academic_year = request.POST.get('academic_year', '').strip()
+        pdf_file = request.FILES.get('progress_card_pdf')
+
+        if not admission_number:
+            messages.error(request, 'Admission number is required.')
+            return redirect('admin_progress_cards')
+        if not pdf_file:
+            messages.error(request, 'A PDF file is required.')
+            return redirect('admin_progress_cards')
+        if not pdf_file.name.lower().endswith('.pdf'):
+            messages.error(request, 'Only PDF files are allowed.')
+            return redirect('admin_progress_cards')
+        if pdf_file.size > 20 * 1024 * 1024:
+            messages.error(request, 'File size must be under 20 MB.')
+            return redirect('admin_progress_cards')
+
+        # Fetch student info
+        student_name = ''
+        class_name = ''
+        try:
+            with connection.cursor() as c:
+                c.execute("SELECT name, class FROM student_page1 WHERE admission_number = %s LIMIT 1", [admission_number])
+                row = c.fetchone()
+                if row:
+                    student_name, class_name = row[0] or '', row[1] or ''
+        except Exception:
+            pass
+
+        filename = f"{uuid.uuid4().hex}_{admission_number}.pdf"
+        fs = FileSystemStorage(location=PROGRESS_CARD_DIR)
+        try:
+            filename = fs.save(filename, pdf_file)
+        except Exception as e:
+            messages.error(request, f'Error saving file: {e}')
+            return redirect('admin_progress_cards')
+
+        file_db_path = f"progress_cards/{filename}"
+        try:
+            with connection.cursor() as c:
+                # Replace existing card for same admission_number + academic_year
+                c.execute(
+                    "DELETE FROM progress_card_pdfs WHERE admission_number = %s AND academic_year = %s",
+                    [admission_number, academic_year or None]
+                )
+                c.execute(
+                    "INSERT INTO progress_card_pdfs (admission_number, student_name, class_name, file_path, academic_year) VALUES (%s, %s, %s, %s, %s)",
+                    [admission_number, student_name, class_name, file_db_path, academic_year or None]
+                )
+                connection.commit()
+        except Exception as e:
+            messages.error(request, f'Error saving record: {e}')
+            return redirect('admin_progress_cards')
+
+        messages.success(request, f'Progress card uploaded for admission no. {admission_number}.')
+        return redirect('admin_progress_cards')
+
+    # GET — list uploaded progress cards
+    cards = []
+    try:
+        with connection.cursor() as c:
+            c.execute("SELECT id, admission_number, student_name, class_name, file_path, uploaded_at, academic_year FROM progress_card_pdfs ORDER BY uploaded_at DESC")
+            for row in c.fetchall():
+                cards.append({
+                    'id': row[0],
+                    'admission_number': row[1],
+                    'student_name': row[2] or '',
+                    'class_name': row[3] or '',
+                    'file_path': row[4],
+                    'uploaded_at': row[5],
+                    'academic_year': row[6] or '',
+                })
+    except Exception:
+        pass
+
+    return render(request, 'users/admin_progress_cards.html', {'cards': cards})
