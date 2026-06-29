@@ -1,0 +1,466 @@
+{% extends 'users/admin_base.html' %}
+{% load static %}
+
+{% block page_title %}WhatsApp Bulk Announcement{% endblock %}
+
+{% block content %}
+<style>
+    .announce-panel {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    .announce-header {
+        background: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        border-top: 6px solid #25D366;
+    }
+    .stats-row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+    .stat-card {
+        flex: 1;
+        min-width: 120px;
+        background: var(--light-bg);
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        text-align: center;
+        border: 1px solid var(--border-color);
+    }
+    .stat-num { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); }
+    .stat-label { font-size: 0.8rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; }
+    .message-box {
+        background: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .message-box textarea {
+        width: 100%;
+        min-height: 160px;
+        padding: 0.9rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        resize: vertical;
+        box-sizing: border-box;
+    }
+    .message-box textarea:focus {
+        outline: none;
+        border-color: #25D366;
+    }
+    .action-row {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+    .btn-wa {
+        background: #25D366;
+        color: white;
+        border: none;
+        padding: 0.7rem 1.4rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+    }
+    .btn-wa:hover { background: #128C7E; }
+    .btn-copy {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.7rem 1.4rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+    }
+    .btn-copy:hover { opacity: 0.85; }
+    .btn-csv {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 0.7rem 1.4rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+    }
+    .btn-csv:hover { background: #2563eb; }
+    .table-wrap {
+        background: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+    .table-toolbar {
+        padding: 1rem 1.5rem;
+        background: var(--light-bg);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .filter-input {
+        padding: 0.5rem 0.9rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        min-width: 200px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+    th { background: var(--light-bg); font-weight: 600; white-space: nowrap; }
+    tr:hover { background: #f8fcf9; }
+    .badge-ok { background: #dcfce7; color: #16a34a; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; }
+    .badge-no { background: #fee2e2; color: #dc2626; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; }
+    .badge-dup { background: #fef9c3; color: #b45309; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; }
+    .btn-send-one {
+        background: #25D366;
+        color: white;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-send-one:disabled { background: #a3c9a8; cursor: not-allowed; }
+    #loadingRow td { text-align: center; padding: 2rem; color: var(--text-light); }
+    .copied-toast {
+        position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+        background: #16a34a; color: white; padding: 0.75rem 2rem;
+        border-radius: 8px; font-weight: 600; font-size: 0.95rem;
+        display: none; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+</style>
+
+<div class="announce-panel">
+    <div class="announce-header">
+        <h2 style="margin: 0 0 0.5rem;">
+            <img src="https://img.icons8.com/color/28/whatsapp.png" alt="" style="vertical-align: bottom;">
+            Bulk WhatsApp Announcement
+        </h2>
+        <p style="margin: 0; color: var(--text-light); font-size: 0.95rem;">
+            Send the school portal announcement to all parents at once. Use <strong>Copy All Numbers</strong> for WhatsApp Broadcast on your phone, or send individual messages below.
+        </p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow">
+        <div class="stat-card"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total Students</div></div>
+        <div class="stat-card"><div class="stat-num" id="statWith" style="color:#16a34a;">—</div><div class="stat-label">Have Number</div></div>
+        <div class="stat-card"><div class="stat-num" id="statUnique" style="color:#2563eb;">—</div><div class="stat-label">Unique Numbers</div></div>
+        <div class="stat-card"><div class="stat-num" id="statMissing" style="color:#dc2626;">—</div><div class="stat-label">Missing Number</div></div>
+    </div>
+
+    <!-- Message Box -->
+    <div class="message-box">
+        <div style="display:flex;gap:1rem;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;">
+            <label style="font-weight:600;">Message Template</label>
+            <select id="msgTypeSelect" onchange="switchTemplate()" style="padding:0.45rem 0.9rem;border:2px solid var(--border-color);border-radius:8px;font-size:0.9rem;font-family:inherit;">
+                <option value="announcement">General Announcement</option>
+                <option value="credentials">Credentials Share</option>
+            </select>
+        </div>
+        <textarea id="announcementMsg">Dear Parent,
+
+We are pleased to inform you that {{ school_name }} has launched an online School Management Portal.
+
+You can now:
+- View your child's attendance
+- Check homework & study materials
+- Track progress cards
+- Apply for leave requests
+
+To get started, please visit:
+{{ portal_url }}
+
+For login credentials or registration, please contact the school office.
+
+Regards,
+{{ school_name }} Administration</textarea>
+        <p id="msgHint" style="margin: 0.5rem 0 0; font-size: 0.82rem; color: var(--text-light);">
+            You can edit this message. For Credentials Share, placeholders <code>{NAME}</code>, <code>{ADMISSION}</code>, <code>{PHONE}</code> are replaced per student automatically.
+        </p>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-row">
+        <button class="btn-copy" onclick="copyAllNumbers()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy All Numbers
+        </button>
+        <button class="btn-csv" onclick="downloadCSV()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download CSV
+        </button>
+        <button class="btn-copy" style="background:#6366f1;" onclick="copySelectedNumbers()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Copy Selected Numbers
+        </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+        <div class="table-toolbar">
+            <strong id="tableTitle">Loading parents...</strong>
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+                <input type="text" class="filter-input" id="filterInput" placeholder="Search student or parent..." oninput="filterTable()">
+                <label style="font-size:0.85rem;white-space:nowrap;">
+                    <input type="checkbox" id="showMissingOnly" onchange="filterTable()"> Show missing numbers only
+                </label>
+            </div>
+        </div>
+        <div style="overflow-x:auto;">
+            <table id="parentsTable">
+                <thead>
+                    <tr>
+                        <th style="width:36px;"><input type="checkbox" id="selectAll" onchange="toggleAll(this)"></th>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Adm. No</th>
+                        <th>Parent</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="parentsBody">
+                    <tr id="loadingRow"><td colspan="8">Loading contacts...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="copied-toast" id="copiedToast">Copied to clipboard!</div>
+
+<script>
+let allParents = [];
+
+document.addEventListener('DOMContentLoaded', loadParents);
+
+function loadParents() {
+    fetch("{% url 'whatsapp_all_parents' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) { alert(data.error); return; }
+            allParents = data.parents || [];
+            const s = data.stats || {};
+            document.getElementById('statTotal').textContent = s.total || 0;
+            document.getElementById('statWith').textContent = s.with_number || 0;
+            document.getElementById('statUnique').textContent = s.unique_numbers || 0;
+            document.getElementById('statMissing').textContent = s.missing_number || 0;
+            document.getElementById('tableTitle').textContent = `${s.total || 0} Parents`;
+            renderTable(allParents);
+        })
+        .catch(() => {
+            document.getElementById('parentsBody').innerHTML =
+                '<tr><td colspan="8" style="text-align:center;color:red;">Error loading contacts</td></tr>';
+        });
+}
+
+function renderTable(parents) {
+    const tbody = document.getElementById('parentsBody');
+    if (!parents.length) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#777;">No students found</td></tr>';
+        return;
+    }
+    tbody.innerHTML = parents.map((p, i) => {
+        const badge = !p.has_number
+            ? '<span class="badge-no">No Number</span>'
+            : (p.is_duplicate ? '<span class="badge-dup">Duplicate</span>' : '<span class="badge-ok">Ready</span>');
+        const sendBtn = p.has_number
+            ? `<button class="btn-send-one" onclick="sendOne(${i})">Send</button>`
+            : `<button class="btn-send-one" disabled>Send</button>`;
+        const classSection = p.section ? `${escHtml(p.class)} - ${escHtml(p.section)}` : escHtml(p.class);
+        return `<tr data-idx="${i}" data-has-number="${p.has_number}">
+            <td><input type="checkbox" class="row-check" data-idx="${i}" ${!p.has_number ? 'disabled' : ''}></td>
+            <td style="font-weight:500;">${escHtml(p.student_name)}</td>
+            <td>${classSection}</td>
+            <td>${escHtml(p.admission_number)}</td>
+            <td>${escHtml(p.parent_name || '—')}</td>
+            <td>${escHtml(p.contact || '—')}</td>
+            <td>${badge}</td>
+            <td>${sendBtn}</td>
+        </tr>`;
+    }).join('');
+}
+
+function filterTable() {
+    const query = document.getElementById('filterInput').value.toLowerCase();
+    const missingOnly = document.getElementById('showMissingOnly').checked;
+    const filtered = allParents.filter((p, i) => {
+        const matches = (p.student_name + p.parent_name + p.admission_number + p.class).toLowerCase().includes(query);
+        const missFilter = missingOnly ? !p.has_number : true;
+        return matches && missFilter;
+    });
+    document.getElementById('tableTitle').textContent = `${filtered.length} of ${allParents.length} Parents`;
+    renderTable(filtered);
+}
+
+function toggleAll(cb) {
+    document.querySelectorAll('.row-check:not(:disabled)').forEach(c => c.checked = cb.checked);
+}
+
+function getSelectedParents() {
+    const checked = document.querySelectorAll('.row-check:checked');
+    return Array.from(checked).map(c => allParents[parseInt(c.dataset.idx)]).filter(p => p && p.has_number);
+}
+
+function copyAllNumbers() {
+    const nums = allParents.filter(p => p.has_number && !p.is_duplicate).map(p => p.normalized_phone);
+    if (!nums.length) { alert('No valid numbers to copy.'); return; }
+    copyToClipboard(nums.join('\n'));
+    showToast(`Copied ${nums.length} unique numbers!`);
+}
+
+function copySelectedNumbers() {
+    const selected = getSelectedParents();
+    if (!selected.length) { alert('Please select at least one parent.'); return; }
+    const nums = [...new Set(selected.map(p => p.normalized_phone))];
+    copyToClipboard(nums.join('\n'));
+    showToast(`Copied ${nums.length} numbers!`);
+}
+
+function downloadCSV() {
+    const rows = [['Student Name','Admission No','Class','Section','Parent Name','Contact','Normalized Phone']];
+    allParents.forEach(p => {
+        rows.push([p.student_name, p.admission_number, p.class, p.section, p.parent_name, p.contact, p.normalized_phone || '']);
+    });
+    const csv = rows.map(r => r.map(v => `"${(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'parent_contacts.csv';
+    a.click();
+}
+
+const CREDENTIALS_TEMPLATE = `Dear Parent,
+
+Welcome to Manavargal School Management System!
+
+Your parent account has been set up for your child *{NAME}*.
+
+Here are your login credentials:
+
+*Login Portal:*
+{{ portal_url }}
+
+*Your Credentials:*
+Registered Phone: {PHONE}
+Admission Number: {ADMISSION}
+
+Please use your registered phone number and the password you set to log in.
+For help, contact the school office.
+
+Regards,
+Manavargal SMS Administration`;
+
+const ANNOUNCEMENT_TEMPLATE = `Dear Parent,
+
+We are pleased to inform you that {{ school_name }} has launched an online School Management Portal.
+
+You can now:
+- View your child's attendance
+- Check homework & study materials
+- Track progress cards
+- Apply for leave requests
+
+To get started, please visit:
+{{ portal_url }}
+
+For login credentials or registration, please contact the school office.
+
+Regards,
+{{ school_name }} Administration`;
+
+function switchTemplate() {
+    const type = document.getElementById('msgTypeSelect').value;
+    const ta = document.getElementById('announcementMsg');
+    if (type === 'credentials') {
+        ta.value = CREDENTIALS_TEMPLATE;
+        ta.readOnly = false;
+    } else {
+        ta.value = ANNOUNCEMENT_TEMPLATE;
+        ta.readOnly = false;
+    }
+}
+
+function buildMessage(p) {
+    let msg = document.getElementById('announcementMsg').value.trim();
+    if (!msg) return '';
+    const type = document.getElementById('msgTypeSelect').value;
+    if (type === 'credentials') {
+        msg = msg
+            .replace(/\{NAME\}/g, p.student_name || '')
+            .replace(/\{ADMISSION\}/g, p.admission_number || '')
+            .replace(/\{PHONE\}/g, p.contact || p.normalized_phone || '');
+    }
+    return msg;
+}
+
+function sendOne(idx) {
+    const p = allParents[idx];
+    if (!p || !p.has_number) return;
+    const msg = buildMessage(p);
+    if (!msg) { alert('Please write a message first.'); return; }
+    const url = `https://wa.me/${p.normalized_phone}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+    } else {
+        fallbackCopy(text);
+    }
+}
+
+function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+}
+
+function showToast(msg) {
+    const t = document.getElementById('copiedToast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2500);
+}
+
+function escHtml(s) {
+    if (!s) return '';
+    return s.toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+{% endblock %}

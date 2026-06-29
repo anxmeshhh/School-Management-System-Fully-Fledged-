@@ -2280,9 +2280,39 @@ from django.core.exceptions import ValidationError
 from django.core.files.storage import FileSystemStorage
 
 _study_materials_migrated = False
+_study_materials_cols_expanded = False
+_class_columns_expanded = False
+
+def _ensure_class_columns():
+    """Expand VARCHAR(10) class/section columns across all affected tables."""
+    global _class_columns_expanded
+    if _class_columns_expanded:
+        return
+    try:
+        with connection.cursor() as c:
+            c.execute("ALTER TABLE admin_student_classes MODIFY COLUMN `class` VARCHAR(100) NOT NULL")
+            c.execute("ALTER TABLE admin_student_classes MODIFY COLUMN section VARCHAR(50) NULL")
+            c.execute("ALTER TABLE student_page1 MODIFY COLUMN `class` VARCHAR(100) NOT NULL")
+            c.execute("ALTER TABLE homework MODIFY COLUMN `class` VARCHAR(100)")
+            c.execute("ALTER TABLE homework MODIFY COLUMN section VARCHAR(50)")
+            connection.commit()
+    except Exception:
+        pass
+    _class_columns_expanded = True
 
 def _ensure_study_materials_schema():
-    global _study_materials_migrated
+    global _study_materials_migrated, _study_materials_cols_expanded
+    # Expand narrow class/section columns — runs once per process, safe to repeat
+    if not _study_materials_cols_expanded:
+        try:
+            with connection.cursor() as c:
+                c.execute("ALTER TABLE study_materials MODIFY COLUMN `class` VARCHAR(100) DEFAULT NULL")
+                c.execute("ALTER TABLE study_materials MODIFY COLUMN section VARCHAR(50) DEFAULT NULL")
+                connection.commit()
+        except Exception:
+            pass
+        _study_materials_cols_expanded = True
+
     if _study_materials_migrated:
         return
     try:
@@ -3321,13 +3351,15 @@ def view_edit_class(request):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
 
+    _ensure_class_columns()
+
     admin_id = request.session['admin_id']
 
     # Fetch all class-section pairs from admin_student_classes for current admin
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT id, class, section 
-            FROM admin_student_classes 
+            SELECT id, class, section
+            FROM admin_student_classes
             ORDER BY class DESC, section DESC
         """)
         classes = cursor.fetchall()
@@ -3344,6 +3376,8 @@ def add_class(request):
     if not request.session.get('admin_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
+
+    _ensure_class_columns()
 
     admin_id = request.session['admin_id']
 
@@ -5353,13 +5387,15 @@ def view_edit_class(request):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
 
+    _ensure_class_columns()
+
     admin_id = request.session['admin_id']
 
     # Fetch all class-section pairs from admin_student_classes for current admin
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT id, class, section 
-            FROM admin_student_classes 
+            SELECT id, class, section
+            FROM admin_student_classes
             ORDER BY class DESC, section DESC
         """)
         classes = cursor.fetchall()
@@ -5376,6 +5412,8 @@ def add_class(request):
     if not request.session.get('admin_id'):
         messages.error(request, 'You must be logged in to access this page.')
         return redirect('admin_login')
+
+    _ensure_class_columns()
 
     admin_id = request.session['admin_id']
 
@@ -7283,8 +7321,8 @@ def admin_attendance_portal(request):
                     student_id INT,
                     name VARCHAR(200),
                     admission_number VARCHAR(100),
-                    class VARCHAR(50),
-                    section VARCHAR(50),
+                    class VARCHAR(100),
+                    section VARCHAR(100),
                     date DATE,
                     status VARCHAR(20) DEFAULT 'present',
                     INDEX idx_class_date (class, date)
@@ -14081,7 +14119,7 @@ def _ensure_progress_cards_schema():
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     admission_number VARCHAR(100) NOT NULL,
                     student_name VARCHAR(200),
-                    class_name VARCHAR(50),
+                    class_name VARCHAR(100),
                     file_path VARCHAR(500) NOT NULL,
                     uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     academic_year VARCHAR(20),

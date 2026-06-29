@@ -246,6 +246,7 @@
                 <option value="late" {% if not features.send_late_messages %}disabled{% endif %}>Late Reminder</option>
                 <option value="leave" {% if not features.send_leave_messages %}disabled{% endif %}>Leave Update</option>
                 <option value="notification" {% if not features.send_notifications %}disabled{% endif %}>Custom Notification</option>
+                <option value="credentials_share" {% if not features.send_notifications %}disabled{% endif %}>Credentials Share</option>
             </select>
         </div>
         <div class="form-group">
@@ -489,6 +490,26 @@ function updateDynamicFields() {
             <div class="form-group" style="grid-column: 1 / -1;">
                 <label>Custom Message *</label>
                 <textarea id="tpl_message" class="form-control" rows="3" placeholder="Enter your custom notification here..." required></textarea>
+            </div>
+        `;
+    } else if (type === "credentials_share") {
+        html += `
+            <div class="form-group">
+                <label>School Name *</label>
+                <input type="text" id="tpl_school_name" class="form-control"
+                    value="Manavargal SMS"
+                    placeholder="e.g. Manavargal School" required>
+            </div>
+            <div class="form-group">
+                <label>Parent Login Portal URL *</label>
+                <input type="url" id="tpl_portal_url" class="form-control"
+                    value="${window.location.origin}/parent/"
+                    placeholder="https://yourdomain.com/parent/" required>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <small style="color:var(--text-light);font-size:0.85rem;">
+                    The message will automatically include the student's name, admission number, and their registered phone number as login credentials.
+                </small>
             </div>
         `;
     }

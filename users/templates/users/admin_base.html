@@ -719,7 +719,11 @@
                 </a>
                 <a href="{% url 'admin_send_student_pdf' %}" class="{% if request.resolver_match.url_name == 'admin_send_student_pdf' %}active{% endif %}">
                     <img src="https://img.icons8.com/color/24/000000/whatsapp.png" alt="WhatsApp">
-                    <span>WHATSAPP BETA TESTING</span>
+                    <span>WhatsApp Messages</span>
+                </a>
+                <a href="{% url 'whatsapp_bulk_announce' %}" class="{% if request.resolver_match.url_name == 'whatsapp_bulk_announce' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/whatsapp.png" alt="WhatsApp Bulk">
+                    <span>Bulk Announcement</span>
                 </a>
             </nav>
         </div>

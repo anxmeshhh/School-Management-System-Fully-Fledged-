@@ -29,10 +29,13 @@ self.addEventListener('fetch', function (event) {
         return;
     }
 
-    // Pass-through strategy for now. Caching can be expanded later.
+    // Pass-through with safe cache fallback.
+    // caches.match() can return undefined (no cache hit) — always return a valid Response.
     event.respondWith(
-        fetch(event.request).catch(function() {
-            return caches.match(event.request);
+        fetch(event.request).catch(function () {
+            return caches.match(event.request).then(function (cached) {
+                return cached || new Response('', { status: 503, statusText: 'Service Unavailable' });
+            });
         })
     );
 });

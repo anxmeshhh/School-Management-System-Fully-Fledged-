@@ -241,6 +241,16 @@ urlpatterns = [
         name="whatsapp_beta_send"
     ),
     path(
+        "admin/whatsapp-bulk-announce/",
+        whatsapp_beta_views.admin_bulk_announce,
+        name="whatsapp_bulk_announce"
+    ),
+    path(
+        "admin/whatsapp-all-parents/",
+        whatsapp_beta_views.api_all_parent_contacts,
+        name="whatsapp_all_parents"
+    ),
+    path(
         "admin/whatsapp-beta-dashboard/",
         whatsapp_beta_admin_views.admin_whatsapp_beta_dashboard,
         name="whatsapp_beta_dashboard"

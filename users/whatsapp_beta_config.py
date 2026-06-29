@@ -30,7 +30,8 @@ class WhatsAppBetaConfig:
         "send_birthday_messages": True,
         "send_late_messages": True,
         "send_leave_messages": True,
-        "bulk_messaging": False,  # Disabled for beta
+        "bulk_messaging": True,
+        "bulk_announcement": True,
         "scheduled_messages": False,  # Coming soon
     }
     
@@ -62,6 +63,14 @@ class WhatsAppBetaConfig:
         "notification": {
             "subject": "Important Notification from {school_name}",
             "template": "Dear Parent,\n\n{message}\n\nRegards,\n{school_name}"
+        },
+        "system_announcement": {
+            "subject": "Welcome to {school_name} Online Portal",
+            "template": "Dear Parent,\n\nWe are pleased to inform you that {school_name} has launched an online School Management Portal.\n\nYou can now:\n- View your child's attendance\n- Check homework & study materials\n- Track progress cards\n- Apply for leave requests\n\nTo get started, please visit:\n{portal_url}\n\nFor login credentials or registration, please contact the school office.\n\nRegards,\n{school_name} Administration"
+        },
+        "credentials_share": {
+            "subject": "Login Credentials from {school_name}",
+            "template": "Dear Parent,\n\nWelcome to {school_name} School Management System!\n\nYour parent account has been created for your child *{student_name}*.\n\nHere are your login credentials:\n\n*Login Portal:*\n{portal_url}\n\n*Your Credentials:*\nRegistered Phone: {mobile}\nAdmission Number: {admission_number}\n\nPlease use your registered phone number and the password you set (or contact the school office for your password) to log in.\n\nRegards,\n{school_name} Administration"
         }
     }
 
@@ -72,6 +81,8 @@ class WhatsAppBetaConfig:
         "late": "send_late_messages",
         "leave": "send_leave_messages",
         "notification": "send_notifications",
+        "system_announcement": "bulk_announcement",
+        "credentials_share": "send_notifications",
     }
 
     REQUIRED_TEMPLATE_FIELDS = {
@@ -81,6 +92,8 @@ class WhatsAppBetaConfig:
         "late": ["student_name", "date"],
         "leave": ["student_name", "status"],
         "notification": ["message"],
+        "system_announcement": ["portal_url"],
+        "credentials_share": ["student_name", "admission_number", "portal_url"],
     }
     
     # Logging configuration

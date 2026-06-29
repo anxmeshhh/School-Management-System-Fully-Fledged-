@@ -168,6 +168,8 @@ def build_message_payload(request, template_type):
     merged["end_date"] = payload.get("end_date") or payload.get("leave_end_date") or "N/A"
     merged["circular_url"] = payload.get("circular_url") or payload.get("file_url") or "N/A"
     merged["message"] = WhatsAppBetaConfig.safe_display_value(merged.get("message"))
+    merged["portal_url"] = WhatsAppBetaConfig.safe_display_value(merged.get("portal_url"))
+    merged["mobile"] = WhatsAppBetaConfig.safe_display_value(merged.get("mobile"))
 
     return merged
 
@@ -530,6 +532,115 @@ def serve_student_pdf_regulated(request, filename):
 
 
 # ─── Dynamic Data APIs for WhatsApp Frontend ─────────────────────────────
+
+
+def admin_bulk_announce(request):
+    """Bulk announcement page — message all parents about the school portal."""
+    actor = get_request_actor(request)
+    if not actor:
+        return render(request, "users/error.html", {"error": "Please log in first.", "title": "Access Denied"})
+
+    user_id = actor["user_id"]
+    WhatsAppBetaRegulator.ensure_beta_tester(user_id, actor["email"], actor["role"], actor["auto_approve"])
+    is_allowed, reason = WhatsAppBetaRegulator.validate_user_access(user_id)
+    if not is_allowed:
+        return render(request, "users/error.html", {"error": reason, "title": "Access Denied"})
+
+    admin_name = request.session.get("admin_name", actor.get("email", "Admin"))
+    school_name = request.session.get("school_name", "School Administration")
+    portal_url = request.build_absolute_uri("/parent/")
+
+    return render(request, "users/bulk_announce_whatsapp.html", {
+        "admin_name": admin_name,
+        "school_name": school_name,
+        "portal_url": portal_url,
+        "notification_user_id": user_id,
+    })
+
+
+def api_all_parent_contacts(request):
+    """Return all unique parent contacts for bulk announcement."""
+    actor = get_request_actor(request)
+    if not actor:
+        return JsonResponse({"error": "Unauthorized"}, status=401)
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    s1.id,
+                    s1.name,
+                    s1.admission_number,
+                    s1.class,
+                    s1.section,
+                    COALESCE(s4.father_name, s4.mother_name, s4.guardian_name, '') AS parent_name,
+                    COALESCE(s4.father_contact, s4.mother_contact, s4.guardian_contact, s3.contact, '') AS contact,
+                    s4.father_contact,
+                    s4.mother_contact,
+                    s4.guardian_contact
+                FROM student_page1 s1
+                LEFT JOIN student_page3 s3 ON s1.user_id = s3.user_id
+                LEFT JOIN student_page4 s4 ON s1.user_id = s4.user_id
+                ORDER BY s1.class, s1.name
+            """)
+            rows = cursor.fetchall()
+
+        seen_phones = set()
+        parents = []
+        for r in rows:
+            contact = r[6] or ""
+            phone, err = WhatsAppBetaConfig.normalize_phone_number(contact)
+            if err or not phone:
+                # No valid number — still include so admin sees missing data
+                parents.append({
+                    "student_id": r[0],
+                    "student_name": r[1] or "",
+                    "admission_number": r[2] or "",
+                    "class": r[3] or "",
+                    "section": r[4] or "",
+                    "parent_name": r[5] or "",
+                    "contact": contact,
+                    "normalized_phone": "",
+                    "has_number": False,
+                    "father_contact": r[7] or "",
+                    "mother_contact": r[8] or "",
+                    "guardian_contact": r[9] or "",
+                })
+            else:
+                is_duplicate = phone in seen_phones
+                seen_phones.add(phone)
+                parents.append({
+                    "student_id": r[0],
+                    "student_name": r[1] or "",
+                    "admission_number": r[2] or "",
+                    "class": r[3] or "",
+                    "section": r[4] or "",
+                    "parent_name": r[5] or "",
+                    "contact": contact,
+                    "normalized_phone": phone,
+                    "has_number": True,
+                    "is_duplicate": is_duplicate,
+                    "father_contact": r[7] or "",
+                    "mother_contact": r[8] or "",
+                    "guardian_contact": r[9] or "",
+                })
+
+        total = len(parents)
+        with_number = sum(1 for p in parents if p["has_number"])
+        unique_numbers = len(seen_phones)
+
+        return JsonResponse({
+            "parents": parents,
+            "stats": {
+                "total": total,
+                "with_number": with_number,
+                "unique_numbers": unique_numbers,
+                "missing_number": total - with_number,
+            }
+        })
+    except Exception as exc:
+        logger.error("Error fetching parent contacts: %s", exc)
+        return JsonResponse({"error": "Failed to load contacts"}, status=500)
 
 
 def api_whatsapp_classes(request):

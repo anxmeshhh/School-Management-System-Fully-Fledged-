@@ -233,9 +233,6 @@ class WhatsAppBetaRegulator:
             return False, f"Feature '{feature_name}' is not enabled in beta"
         
         # Feature-specific validation
-        if feature_name == "bulk_messaging":
-            return False, "Bulk messaging is not yet available in beta"
-        
         if feature_name == "scheduled_messages":
             return False, "Scheduled messages are coming soon"
         
