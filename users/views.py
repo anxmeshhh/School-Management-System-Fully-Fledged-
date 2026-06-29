@@ -14232,85 +14232,217 @@ def download_bulk_credentials_pdf(request):
     if not request.session.get('admin_id'):
         return redirect('admin_login')
 
+    from reportlab.lib import colors as rl_colors
+    from reportlab.lib.pagesizes import A4
+
+    portal_url = request.build_absolute_uri('/parent/')
+    class_filter = request.GET.get('class', '').strip()
+
     students = []
     try:
         with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT sp1.name, sp1.class, sp1.section, sp1.admission_number, sp1.roll_number, sp3.contact 
-                FROM student_page1 sp1
-                LEFT JOIN student_page3 sp3 ON sp1.user_id = sp3.user_id
-                ORDER BY sp1.class, sp1.section, CAST(sp1.roll_number AS UNSIGNED), sp1.name
-            """)
+            sql = """
+                SELECT
+                    s1.name,
+                    s1.class,
+                    s1.section,
+                    s1.admission_number,
+                    s1.roll_number,
+                    COALESCE(s4.father_name, s4.mother_name, s4.guardian_name, '') AS parent_name,
+                    COALESCE(s4.father_contact, s4.mother_contact, s4.guardian_contact, s3.contact, '') AS primary_contact,
+                    CASE
+                        WHEN s4.father_contact  IS NOT NULL AND s4.father_contact  != '' THEN 'Father'
+                        WHEN s4.mother_contact  IS NOT NULL AND s4.mother_contact  != '' THEN 'Mother'
+                        WHEN s4.guardian_contact IS NOT NULL AND s4.guardian_contact != '' THEN 'Guardian'
+                        WHEN s3.contact         IS NOT NULL AND s3.contact         != '' THEN 'Student'
+                        ELSE ''
+                    END AS contact_type
+                FROM student_page1 s1
+                LEFT JOIN student_page3 s3 ON s1.user_id = s3.user_id
+                LEFT JOIN student_page4 s4 ON s1.user_id = s4.user_id
+            """
+            params = []
+            if class_filter:
+                sql += " WHERE s1.class = %s"
+                params.append(class_filter)
+            sql += " ORDER BY s1.class, s1.section, CAST(s1.roll_number AS UNSIGNED), s1.name"
+            cursor.execute(sql, params)
             cols = [col[0] for col in cursor.description]
             students = [dict(zip(cols, row)) for row in cursor.fetchall()]
     except Exception as e:
         print(f"[Bulk Credentials PDF Error] {e}")
 
-    # Create PDF buffer
+    # ── Page setup ──────────────────────────────────────────────
     pdf_buffer = BytesIO()
-    c = canvas.Canvas(pdf_buffer, pagesize=letter)
-    width, height = letter
+    page_w, page_h = A4          # 595 × 842 pts
+    c = canvas.Canvas(pdf_buffer, pagesize=A4)
 
-    # Card configuration
-    cards_per_page = 4
-    card_margin = 40
-    card_width = width - (2 * card_margin)
-    card_height = (height - (2 * card_margin)) / cards_per_page
-    
-    current_card = 0
+    MARGIN      = 36             # 0.5 inch margin all sides
+    CARDS       = 3              # cards per page
+    GAP         = 10             # gap between cards
+    card_w      = page_w - 2 * MARGIN
+    card_h      = (page_h - 2 * MARGIN - (CARDS - 1) * GAP) / CARDS  # ≈ 247 pts
+
+    # ── Colour palette ──────────────────────────────────────────
+    COL_GREEN      = rl_colors.HexColor('#00a676')
+    COL_GREEN_LITE = rl_colors.HexColor('#e8f5f1')
+    COL_DARK       = rl_colors.HexColor('#1a1a2e')
+    COL_GRAY       = rl_colors.HexColor('#6c757d')
+    COL_CRED_BG    = rl_colors.HexColor('#f0f4f8')
+    COL_CRED_BDR   = rl_colors.HexColor('#ced4da')
+    COL_DASH       = rl_colors.HexColor('#adb5bd')
+    COL_RED        = rl_colors.HexColor('#dc2626')
+    COL_WHITE      = rl_colors.white
+
+    def draw_card(c, st, x, y_top):
+        """Draw one credential card. y_top is the top-left corner Y."""
+
+        # ── Outer card rect (white fill, light border) ──────────
+        c.setFillColor(COL_WHITE)
+        c.setStrokeColor(rl_colors.HexColor('#dee2e6'))
+        c.setLineWidth(1)
+        c.roundRect(x, y_top - card_h, card_w, card_h, radius=6, stroke=1, fill=1)
+
+        # ── Green header strip ───────────────────────────────────
+        hdr_h = 22
+        c.setFillColor(COL_GREEN)
+        c.setStrokeColor(COL_GREEN)
+        c.setLineWidth(0)
+        # Full rounded rect for header (we'll paint over bottom corners)
+        c.roundRect(x, y_top - hdr_h, card_w, hdr_h, radius=6, stroke=0, fill=1)
+        # Flat-bottom patch so only top corners are rounded
+        c.rect(x, y_top - hdr_h, card_w, hdr_h / 2, stroke=0, fill=1)
+
+        c.setFillColor(COL_WHITE)
+        c.setFont("Helvetica-Bold", 8)
+        c.drawString(x + 10, y_top - 15, "MANAVARGAL SMS  ·  PARENT PORTAL LOGIN CREDENTIALS")
+        c.setFont("Helvetica", 7)
+        url_w = c.stringWidth(portal_url, "Helvetica", 7)
+        c.drawString(x + card_w - url_w - 10, y_top - 15, portal_url)
+
+        # ── Student name ─────────────────────────────────────────
+        name_y = y_top - hdr_h - 18
+        c.setFillColor(COL_DARK)
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(x + 14, name_y, st['name'] or 'Unknown Student')
+
+        # ── Class / roll / parent ────────────────────────────────
+        info_y = name_y - 17
+        c.setFillColor(COL_GRAY)
+        c.setFont("Helvetica", 9)
+        cls_str = st['class'] or '—'
+        roll_str = f"  ·  Roll No: {st['roll_number']}" if st['roll_number'] else ''
+        c.drawString(x + 14, info_y, f"Class: {cls_str}{roll_str}")
+
+        parent_y = info_y - 14
+        parent_str = st['parent_name'] or 'Parent'
+        c.drawString(x + 14, parent_y, f"Parent / Guardian: {parent_str}")
+
+        # ── Divider ──────────────────────────────────────────────
+        div_y = parent_y - 11
+        c.setStrokeColor(COL_CRED_BDR)
+        c.setLineWidth(0.5)
+        c.setDash(3, 3)
+        c.line(x + 14, div_y, x + card_w - 14, div_y)
+        c.setDash()
+
+        # ── Credentials box (two columns) ───────────────────────
+        box_top  = div_y - 8
+        box_h    = 58
+        box_mid  = x + card_w / 2
+
+        c.setFillColor(COL_CRED_BG)
+        c.setStrokeColor(COL_CRED_BDR)
+        c.setLineWidth(0.6)
+        c.roundRect(x + 14, box_top - box_h, card_w - 28, box_h, radius=5, stroke=1, fill=1)
+
+        # Vertical divider inside box
+        c.setStrokeColor(COL_CRED_BDR)
+        c.line(box_mid, box_top - 6, box_mid, box_top - box_h + 6)
+
+        # Left column: Username (Admission Number)
+        lbl_y  = box_top - 16
+        val_y  = box_top - 36
+        note_y = box_top - 50
+
+        c.setFillColor(COL_GRAY)
+        c.setFont("Helvetica", 7.5)
+        c.drawString(x + 22, lbl_y, "USERNAME  (Admission No.)")
+
+        c.setFillColor(COL_DARK)
+        c.setFont("Helvetica-Bold", 13)
+        adm = st['admission_number'] or '—'
+        c.drawString(x + 22, val_y, adm)
+
+        c.setFillColor(COL_GRAY)
+        c.setFont("Helvetica-Oblique", 7)
+        c.drawString(x + 22, note_y, "Use this as your login username")
+
+        # Right column: Password (primary phone)
+        contact_type = st['contact_type'] or 'Registered'
+        pwd_phone    = (st['primary_contact'] or '').strip()
+        has_phone    = bool(pwd_phone)
+
+        pwd_label = f"PASSWORD  ({contact_type} Phone No.)"
+        c.setFillColor(COL_GRAY)
+        c.setFont("Helvetica", 7.5)
+        c.drawString(box_mid + 8, lbl_y, pwd_label)
+
+        if has_phone:
+            c.setFillColor(COL_DARK)
+            c.setFont("Helvetica-Bold", 13)
+            c.drawString(box_mid + 8, val_y, pwd_phone)
+            c.setFillColor(COL_GRAY)
+            c.setFont("Helvetica-Oblique", 7)
+            c.drawString(box_mid + 8, note_y, "Use this as your login password")
+        else:
+            c.setFillColor(COL_RED)
+            c.setFont("Helvetica-Bold", 10)
+            c.drawString(box_mid + 8, val_y, "NOT REGISTERED")
+            c.setFillColor(COL_GRAY)
+            c.setFont("Helvetica-Oblique", 7)
+            c.drawString(box_mid + 8, note_y, "Contact school to register a number")
+
+        # ── Footer note ──────────────────────────────────────────
+        footer_y = box_top - box_h - 12
+        c.setFillColor(COL_GRAY)
+        c.setFont("Helvetica-Oblique", 7.5)
+        c.drawString(x + 14, footer_y,
+                     "Keep this card safe. Use your admission number + phone number to log in at the portal above.")
+
+    # ── Render all cards ────────────────────────────────────────
+    current_class = None
+    card_idx = 0
 
     for st in students:
-        if current_card >= cards_per_page:
+        # New page if needed
+        if card_idx >= CARDS:
             c.showPage()
-            current_card = 0
+            card_idx = 0
 
-        # Calculate Y position (top to bottom)
-        y_pos = height - card_margin - (current_card * card_height)
+        # Class label divider: reset page when class changes and card_idx > 0
+        if st['class'] != current_class and card_idx > 0:
+            c.showPage()
+            card_idx = 0
+        current_class = st['class']
 
-        # Draw card border
-        c.setStrokeColorRGB(0.8, 0.8, 0.8)
-        c.setLineWidth(1.5)
-        c.rect(card_margin, y_pos - card_height + 25, card_width, card_height - 35)
+        y_top = page_h - MARGIN - card_idx * (card_h + GAP)
+        draw_card(c, st, MARGIN, y_top)
 
-        # Card Title
-        c.setFont("Helvetica-Bold", 15)
-        c.setFillColorRGB(0.0, 0.65, 0.46) # Primary color #00a676
-        c.drawString(card_margin + 20, y_pos - 15, "Manavargal SMS - Parent Portal Credentials")
+        # Dashed cut line between cards (not after last card on page)
+        if card_idx < CARDS - 1:
+            cut_y = y_top - card_h - GAP / 2
+            c.setStrokeColor(COL_DASH)
+            c.setLineWidth(0.5)
+            c.setDash(5, 5)
+            c.line(MARGIN, cut_y, MARGIN + card_w, cut_y)
+            c.setDash()
 
-        # Student Name & Class
-        c.setFont("Helvetica-Bold", 12)
-        c.setFillColorRGB(0, 0, 0)
-        c.drawString(card_margin + 20, y_pos - 45, f"Student Name: {st['name'] or 'N/A'}")
-        
-        c.setFont("Helvetica", 11)
-        cls_sec = f"{st['class'] or 'N/A'}"
-        if st['section']:
-            cls_sec += f" - {st['section']}"
-        if st['roll_number']:
-            cls_sec += f" (Roll: {st['roll_number']})"
-        c.drawString(card_margin + 20, y_pos - 65, f"Class & Section: {cls_sec}")
-
-        # Credentials Box
-        c.setStrokeColorRGB(0.9, 0.9, 0.9)
-        c.setFillColorRGB(0.97, 0.97, 0.97)
-        c.rect(card_margin + 20, y_pos - 125, card_width - 40, 50, fill=1)
-
-        c.setFont("Helvetica-Bold", 12)
-        c.setFillColorRGB(0.2, 0.2, 0.2)
-        c.drawString(card_margin + 35, y_pos - 95, f"Username (Admission No):  {st['admission_number'] or 'N/A'}")
-        
-        pwd = st['contact'] or "No Mobile Registered"
-        c.drawString(card_margin + 35, y_pos - 115, f"Password (Mobile No):  {pwd}")
-
-        # Instructions
-        c.setFont("Helvetica-Oblique", 10)
-        c.setFillColorRGB(0.4, 0.4, 0.4)
-        c.drawString(card_margin + 20, y_pos - 150, "Keep this card safe. Visit the parent portal to track attendance, homework, and more.")
-
-        current_card += 1
+        card_idx += 1
 
     c.save()
     pdf_buffer.seek(0)
+    filename = f"Credentials_{class_filter.replace(' ', '_')}.pdf" if class_filter else "Bulk_Parent_Credentials.pdf"
     response = HttpResponse(pdf_buffer, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="Bulk_Parent_Credentials.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response

@@ -262,16 +262,24 @@ Regards,
 </div>
 
 <!-- Bulk Queue Widget -->
-<div id="queueWidget" style="display:none;position:fixed;bottom:2rem;right:2rem;background:var(--white);border:2px solid #25D366;border-radius:14px;padding:1.5rem;box-shadow:0 8px 30px rgba(0,0,0,0.15);z-index:1000;min-width:320px;max-width:380px;">
+<div id="queueWidget" style="display:none;position:fixed;bottom:2rem;right:2rem;background:var(--white);border:2px solid #25D366;border-radius:14px;padding:1.5rem;box-shadow:0 8px 30px rgba(0,0,0,0.18);z-index:1000;min-width:320px;max-width:390px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
-        <h4 style="margin:0;color:#128C7E;font-size:1rem;">Sending Queue</h4>
+        <h4 style="margin:0;color:#128C7E;font-size:1rem;">
+            <img src="https://img.icons8.com/color/20/whatsapp.png" alt="" style="vertical-align:middle;margin-right:4px;">
+            Sending Queue
+        </h4>
         <span id="queueCounter" style="background:#25D366;color:white;padding:3px 10px;border-radius:12px;font-size:0.85rem;font-weight:700;"></span>
     </div>
-    <p id="queueStatus" style="margin:0 0 1rem;font-size:0.95rem;font-weight:500;color:var(--text-color);"></p>
-    <p style="margin:0 0 1rem;font-size:0.8rem;color:var(--text-light);">WhatsApp will open. Send the message, come back, then click <strong>Next</strong>.</p>
-    <div style="display:flex;gap:0.75rem;">
-        <button id="queueNextBtn" onclick="queueNext()" style="flex:1;background:#25D366;color:white;border:none;padding:0.65rem;border-radius:8px;font-size:0.95rem;font-weight:700;cursor:pointer;">Next →</button>
-        <button onclick="queueCancel()" style="background:#ef4444;color:white;border:none;padding:0.65rem 1rem;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;">Cancel</button>
+    <p id="queueStatus" style="margin:0 0 0.25rem;font-size:0.95rem;font-weight:600;color:var(--text-color);"></p>
+    <p id="queueStatusSub" style="margin:0 0 0.85rem;font-size:0.82rem;color:var(--text-light);"></p>
+    <p style="margin:0 0 0.85rem;font-size:0.8rem;color:#6b7280;background:#f9fafb;border-radius:6px;padding:0.5rem 0.75rem;">
+        Send the message in WhatsApp, come back here, then click <strong>Sent → Next</strong>.
+        If WhatsApp says "not on WhatsApp", click <strong>Skip</strong>.
+    </p>
+    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+        <button id="queueNextBtn" onclick="queueNext()" style="flex:1;background:#25D366;color:white;border:none;padding:0.65rem;border-radius:8px;font-size:0.92rem;font-weight:700;cursor:pointer;min-width:120px;">Sent → Next</button>
+        <button id="queueSkipBtn" onclick="queueSkipOne()" style="background:#f59e0b;color:white;border:none;padding:0.65rem 0.9rem;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;">Skip</button>
+        <button onclick="queueCancel()" style="background:#ef4444;color:white;border:none;padding:0.65rem 0.75rem;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;">✕</button>
     </div>
 </div>
 
@@ -283,6 +291,7 @@ let visibleIndexes = [];
 let bulkQueue = [];
 let queuePos = 0;
 let currentQueueTab = null;
+let queueSkipped = [];
 
 document.addEventListener('DOMContentLoaded', loadParents);
 
@@ -408,31 +417,60 @@ function startBulkQueue() {
 
     bulkQueue = list;
     queuePos = 0;
+    queueSkipped = [];
     document.getElementById('queueWidget').style.display = 'block';
+    advanceToNextSendable(false);
+}
+
+function isValidPhone(phone) {
+    if (!phone) return false;
+    const digits = phone.replace(/\D/g, '');
+    return digits.length >= 10 && digits.length <= 15;
+}
+
+function advanceToNextSendable(closePrevious) {
+    if (closePrevious && currentQueueTab && !currentQueueTab.closed) {
+        try { currentQueueTab.close(); } catch(e) {}
+        currentQueueTab = null;
+    }
+    // Auto-skip entries with no valid phone
+    while (queuePos < bulkQueue.length && !isValidPhone(bulkQueue[queuePos].normalized_phone)) {
+        const p = bulkQueue[queuePos];
+        queueSkipped.push({ name: p.student_name, reason: 'No valid number' });
+        queuePos++;
+    }
     updateQueueWidget();
-    openCurrentInQueue();
+    if (queuePos < bulkQueue.length) openCurrentInQueue();
 }
 
 function updateQueueWidget() {
     const total = bulkQueue.length;
+
     if (queuePos >= total) {
-        document.getElementById('queueStatus').textContent = 'All done! Every selected parent has been messaged.';
+        const sent = total - queueSkipped.length;
+        document.getElementById('queueStatus').textContent = `All done! Sent: ${sent} of ${total}`;
+        document.getElementById('queueStatusSub').textContent =
+            queueSkipped.length
+                ? `Skipped (${queueSkipped.length}): ` + queueSkipped.map(s => s.name).join(', ')
+                : 'Every parent was messaged successfully.';
         document.getElementById('queueCounter').textContent = `${total} / ${total}`;
         document.getElementById('queueNextBtn').textContent = 'Close ✓';
+        document.getElementById('queueSkipBtn').style.display = 'none';
         return;
     }
+
     const p = bulkQueue[queuePos];
     document.getElementById('queueStatus').textContent =
-        `Sending to: ${p.student_name}'s parent${p.parent_name ? ' (' + p.parent_name + ')' : ''}`;
+        `${p.student_name}${p.parent_name ? ' — ' + p.parent_name : ''}`;
+    document.getElementById('queueStatusSub').textContent =
+        `📱 ${p.contact || p.normalized_phone || '—'}  ·  ${total - queuePos} remaining`;
     document.getElementById('queueCounter').textContent = `${queuePos + 1} / ${total}`;
-    document.getElementById('queueNextBtn').textContent = queuePos < total - 1 ? 'Next →' : 'Finish ✓';
+    document.getElementById('queueNextBtn').textContent = queuePos < total - 1 ? 'Sent → Next' : 'Sent → Finish';
+    document.getElementById('queueSkipBtn').style.display = 'inline-block';
 }
 
 function openCurrentInQueue() {
     if (queuePos >= bulkQueue.length) return;
-    if (currentQueueTab && !currentQueueTab.closed) {
-        try { currentQueueTab.close(); } catch(e) {}
-    }
     const p = bulkQueue[queuePos];
     const msg = buildMessage(p);
     currentQueueTab = window.open(`https://wa.me/${p.normalized_phone}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -441,16 +479,22 @@ function openCurrentInQueue() {
 function queueNext() {
     if (queuePos >= bulkQueue.length) { queueCancel(); return; }
     queuePos++;
-    if (queuePos >= bulkQueue.length) { updateQueueWidget(); return; }
-    updateQueueWidget();
-    openCurrentInQueue();
+    advanceToNextSendable(true);
+}
+
+function queueSkipOne() {
+    if (queuePos >= bulkQueue.length) return;
+    const p = bulkQueue[queuePos];
+    queueSkipped.push({ name: p.student_name, reason: 'Skipped by admin' });
+    queuePos++;
+    advanceToNextSendable(true);
 }
 
 function queueCancel() {
     if (currentQueueTab && !currentQueueTab.closed) {
         try { currentQueueTab.close(); } catch(e) {}
     }
-    bulkQueue = []; queuePos = 0; currentQueueTab = null;
+    bulkQueue = []; queuePos = 0; currentQueueTab = null; queueSkipped = [];
     document.getElementById('queueWidget').style.display = 'none';
 }
 
