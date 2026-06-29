@@ -168,6 +168,15 @@
         </p>
     </div>
 
+    <!-- Class Selector -->
+    <div style="background:var(--white);border-radius:var(--border-radius);box-shadow:var(--shadow-md);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+        <label style="font-weight:600;white-space:nowrap;">Select Class</label>
+        <select id="classSelect" onchange="onClassChange()" style="padding:0.55rem 1rem;border:2px solid var(--border-color);border-radius:8px;font-size:1rem;font-family:inherit;min-width:220px;">
+            <option value="">— All Classes —</option>
+        </select>
+        <span id="selectionBadge" style="background:#dcfce7;color:#16a34a;padding:4px 14px;border-radius:20px;font-weight:700;font-size:0.9rem;display:none;"></span>
+    </div>
+
     <!-- Stats -->
     <div class="stats-row" id="statsRow">
         <div class="stat-card"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total Students</div></div>
@@ -209,17 +218,17 @@ Regards,
 
     <!-- Actions -->
     <div class="action-row">
-        <button class="btn-copy" onclick="copyAllNumbers()">
+        <button class="btn-wa" id="bulkSendBtn" onclick="startBulkQueue()" style="font-size:1rem;padding:0.75rem 1.6rem;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            Send to Selected
+        </button>
+        <button class="btn-copy" onclick="copySelectedNumbers()">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copy All Numbers
+            Copy Selected Numbers
         </button>
         <button class="btn-csv" onclick="downloadCSV()">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download CSV
-        </button>
-        <button class="btn-copy" style="background:#6366f1;" onclick="copySelectedNumbers()">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            Copy Selected Numbers
         </button>
     </div>
 
@@ -228,10 +237,7 @@ Regards,
         <div class="table-toolbar">
             <strong id="tableTitle">Loading parents...</strong>
             <div style="display:flex;gap:0.5rem;align-items:center;">
-                <input type="text" class="filter-input" id="filterInput" placeholder="Search student or parent..." oninput="filterTable()">
-                <label style="font-size:0.85rem;white-space:nowrap;">
-                    <input type="checkbox" id="showMissingOnly" onchange="filterTable()"> Show missing numbers only
-                </label>
+                <input type="text" class="filter-input" id="filterInput" placeholder="Search name or admission no..." oninput="applyFilters()">
             </div>
         </div>
         <div style="overflow-x:auto;">
@@ -245,14 +251,27 @@ Regards,
                         <th>Parent</th>
                         <th>Contact</th>
                         <th>Status</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="parentsBody">
-                    <tr id="loadingRow"><td colspan="8">Loading contacts...</td></tr>
+                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-light);">Loading contacts...</td></tr>
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
+
+<!-- Bulk Queue Widget -->
+<div id="queueWidget" style="display:none;position:fixed;bottom:2rem;right:2rem;background:var(--white);border:2px solid #25D366;border-radius:14px;padding:1.5rem;box-shadow:0 8px 30px rgba(0,0,0,0.15);z-index:1000;min-width:320px;max-width:380px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+        <h4 style="margin:0;color:#128C7E;font-size:1rem;">Sending Queue</h4>
+        <span id="queueCounter" style="background:#25D366;color:white;padding:3px 10px;border-radius:12px;font-size:0.85rem;font-weight:700;"></span>
+    </div>
+    <p id="queueStatus" style="margin:0 0 1rem;font-size:0.95rem;font-weight:500;color:var(--text-color);"></p>
+    <p style="margin:0 0 1rem;font-size:0.8rem;color:var(--text-light);">WhatsApp will open. Send the message, come back, then click <strong>Next</strong>.</p>
+    <div style="display:flex;gap:0.75rem;">
+        <button id="queueNextBtn" onclick="queueNext()" style="flex:1;background:#25D366;color:white;border:none;padding:0.65rem;border-radius:8px;font-size:0.95rem;font-weight:700;cursor:pointer;">Next →</button>
+        <button onclick="queueCancel()" style="background:#ef4444;color:white;border:none;padding:0.65rem 1rem;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;">Cancel</button>
     </div>
 </div>
 
@@ -260,6 +279,10 @@ Regards,
 
 <script>
 let allParents = [];
+let visibleIndexes = [];
+let bulkQueue = [];
+let queuePos = 0;
+let currentQueueTab = null;
 
 document.addEventListener('DOMContentLoaded', loadParents);
 
@@ -274,68 +297,155 @@ function loadParents() {
             document.getElementById('statWith').textContent = s.with_number || 0;
             document.getElementById('statUnique').textContent = s.unique_numbers || 0;
             document.getElementById('statMissing').textContent = s.missing_number || 0;
-            document.getElementById('tableTitle').textContent = `${s.total || 0} Parents`;
-            renderTable(allParents);
+            populateClassDropdown();
+            applyFilters();
         })
         .catch(() => {
             document.getElementById('parentsBody').innerHTML =
-                '<tr><td colspan="8" style="text-align:center;color:red;">Error loading contacts</td></tr>';
+                '<tr><td colspan="7" style="text-align:center;color:red;padding:2rem;">Error loading contacts</td></tr>';
         });
 }
 
-function renderTable(parents) {
+// ── Class Selector ─────────────────────────────────────────────
+
+function populateClassDropdown() {
+    const classes = [...new Set(allParents.map(p => p.class).filter(Boolean))].sort();
+    const sel = document.getElementById('classSelect');
+    sel.innerHTML = '<option value="">— All Classes —</option>';
+    classes.forEach(c => {
+        sel.innerHTML += `<option value="${escHtml(c)}">${escHtml(c)}</option>`;
+    });
+}
+
+function onClassChange() {
+    applyFilters();
+}
+
+// ── Filter + Render ───────────────────────────────────────────
+
+function applyFilters() {
+    const cls   = (document.getElementById('classSelect').value || '').toLowerCase();
+    const query = (document.getElementById('filterInput').value  || '').toLowerCase();
+
+    visibleIndexes = [];
+    allParents.forEach((p, i) => {
+        const matchClass = !cls || (p.class || '').toLowerCase() === cls;
+        const matchQuery = !query || (p.student_name + p.admission_number + (p.parent_name || '')).toLowerCase().includes(query);
+        if (matchClass && matchQuery) visibleIndexes.push(i);
+    });
+
+    renderTable();
+    autoSelectAll();
+}
+
+function autoSelectAll() {
+    document.querySelectorAll('.row-check:not(:disabled)').forEach(cb => { cb.checked = true; });
+    const allCb = document.getElementById('selectAll');
+    if (allCb) allCb.checked = true;
+    updateSelectionBadge();
+}
+
+function renderTable() {
     const tbody = document.getElementById('parentsBody');
-    if (!parents.length) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#777;">No students found</td></tr>';
+    if (!visibleIndexes.length) {
+        const msg = allParents.length ? 'No students match this filter.' : 'No students found.';
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-light);">${msg}</td></tr>`;
+        document.getElementById('tableTitle').textContent = '0 Parents';
+        updateSelectionBadge();
         return;
     }
-    tbody.innerHTML = parents.map((p, i) => {
+    tbody.innerHTML = visibleIndexes.map(i => {
+        const p = allParents[i];
         const badge = !p.has_number
             ? '<span class="badge-no">No Number</span>'
             : (p.is_duplicate ? '<span class="badge-dup">Duplicate</span>' : '<span class="badge-ok">Ready</span>');
-        const sendBtn = p.has_number
-            ? `<button class="btn-send-one" onclick="sendOne(${i})">Send</button>`
-            : `<button class="btn-send-one" disabled>Send</button>`;
-        const classSection = p.section ? `${escHtml(p.class)} - ${escHtml(p.section)}` : escHtml(p.class);
-        return `<tr data-idx="${i}" data-has-number="${p.has_number}">
-            <td><input type="checkbox" class="row-check" data-idx="${i}" ${!p.has_number ? 'disabled' : ''}></td>
+        return `<tr>
+            <td><input type="checkbox" class="row-check" data-idx="${i}" onchange="updateSelectionBadge()" ${!p.has_number ? 'disabled' : ''}></td>
             <td style="font-weight:500;">${escHtml(p.student_name)}</td>
-            <td>${classSection}</td>
+            <td>${escHtml(p.class)}</td>
             <td>${escHtml(p.admission_number)}</td>
             <td>${escHtml(p.parent_name || '—')}</td>
             <td>${escHtml(p.contact || '—')}</td>
             <td>${badge}</td>
-            <td>${sendBtn}</td>
         </tr>`;
     }).join('');
-}
-
-function filterTable() {
-    const query = document.getElementById('filterInput').value.toLowerCase();
-    const missingOnly = document.getElementById('showMissingOnly').checked;
-    const filtered = allParents.filter((p, i) => {
-        const matches = (p.student_name + p.parent_name + p.admission_number + p.class).toLowerCase().includes(query);
-        const missFilter = missingOnly ? !p.has_number : true;
-        return matches && missFilter;
-    });
-    document.getElementById('tableTitle').textContent = `${filtered.length} of ${allParents.length} Parents`;
-    renderTable(filtered);
+    document.getElementById('tableTitle').textContent =
+        `${visibleIndexes.length} of ${allParents.length} Parents`;
 }
 
 function toggleAll(cb) {
     document.querySelectorAll('.row-check:not(:disabled)').forEach(c => c.checked = cb.checked);
+    updateSelectionBadge();
+}
+
+function updateSelectionBadge() {
+    const count = document.querySelectorAll('.row-check:checked').length;
+    const badge = document.getElementById('selectionBadge');
+    if (count > 0) {
+        badge.textContent = `${count} selected`;
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
+    }
 }
 
 function getSelectedParents() {
-    const checked = document.querySelectorAll('.row-check:checked');
-    return Array.from(checked).map(c => allParents[parseInt(c.dataset.idx)]).filter(p => p && p.has_number);
+    return Array.from(document.querySelectorAll('.row-check:checked'))
+        .map(cb => allParents[parseInt(cb.dataset.idx)])
+        .filter(p => p && p.has_number);
 }
 
-function copyAllNumbers() {
-    const nums = allParents.filter(p => p.has_number && !p.is_duplicate).map(p => p.normalized_phone);
-    if (!nums.length) { alert('No valid numbers to copy.'); return; }
-    copyToClipboard(nums.join('\n'));
-    showToast(`Copied ${nums.length} unique numbers!`);
+// ── Bulk Send Queue ───────────────────────────────────────────
+
+function startBulkQueue() {
+    const list = getSelectedParents();
+    if (!list.length) {
+        alert('No parents selected. Pick a class from the dropdown first.');
+        return;
+    }
+    const msg = document.getElementById('announcementMsg').value.trim();
+    if (!msg) { alert('Please write or choose a message template first.'); return; }
+
+    bulkQueue = list;
+    queuePos = 0;
+    document.getElementById('queueWidget').style.display = 'block';
+    updateQueueWidget();
+    openCurrentInQueue();
+}
+
+function updateQueueWidget() {
+    const total = bulkQueue.length;
+    if (queuePos >= total) {
+        document.getElementById('queueStatus').textContent = 'All done! Every selected parent has been messaged.';
+        document.getElementById('queueCounter').textContent = `${total} / ${total}`;
+        document.getElementById('queueNextBtn').textContent = 'Close ✓';
+        return;
+    }
+    const p = bulkQueue[queuePos];
+    document.getElementById('queueStatus').textContent =
+        `Sending to: ${p.student_name}'s parent${p.parent_name ? ' (' + p.parent_name + ')' : ''}`;
+    document.getElementById('queueCounter').textContent = `${queuePos + 1} / ${total}`;
+    document.getElementById('queueNextBtn').textContent = queuePos < total - 1 ? 'Next →' : 'Finish ✓';
+}
+
+function openCurrentInQueue() {
+    if (queuePos >= bulkQueue.length) return;
+    const p = bulkQueue[queuePos];
+    const msg = buildMessage(p);
+    window.open(`https://wa.me/${p.normalized_phone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function queueNext() {
+    if (queuePos >= bulkQueue.length) { queueCancel(); return; }
+    queuePos++;
+    if (queuePos >= bulkQueue.length) { updateQueueWidget(); return; }
+    updateQueueWidget();
+    openCurrentInQueue();
+}
+
+function queueCancel() {
+    bulkQueue = []; queuePos = 0;
+    document.getElementById('queueWidget').style.display = 'none';
 }
 
 function copySelectedNumbers() {
@@ -347,16 +457,14 @@ function copySelectedNumbers() {
 }
 
 function downloadCSV() {
-    const rows = [['Student Name','Admission No','Class','Section','Parent Name','Contact','Normalized Phone']];
+    const rows = [['Student Name','Admission No','Class','Parent Name','Contact','Phone']];
     allParents.forEach(p => {
-        rows.push([p.student_name, p.admission_number, p.class, p.section, p.parent_name, p.contact, p.normalized_phone || '']);
+        rows.push([p.student_name, p.admission_number, p.class, p.parent_name, p.contact, p.normalized_phone || '']);
     });
     const csv = rows.map(r => r.map(v => `"${(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'parent_contacts.csv';
-    a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'parent_contacts.csv'; a.click();
 }
 
 const CREDENTIALS_TEMPLATE = `Dear Parent,
@@ -421,15 +529,6 @@ function buildMessage(p) {
             .replace(/\{PHONE\}/g, p.contact || p.normalized_phone || '');
     }
     return msg;
-}
-
-function sendOne(idx) {
-    const p = allParents[idx];
-    if (!p || !p.has_number) return;
-    const msg = buildMessage(p);
-    if (!msg) { alert('Please write a message first.'); return; }
-    const url = `https://wa.me/${p.normalized_phone}?text=${encodeURIComponent(msg)}`;
-    window.open(url, '_blank');
 }
 
 function copyToClipboard(text) {
