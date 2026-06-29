@@ -430,9 +430,12 @@ function updateQueueWidget() {
 
 function openCurrentInQueue() {
     if (queuePos >= bulkQueue.length) return;
+    if (currentQueueTab && !currentQueueTab.closed) {
+        try { currentQueueTab.close(); } catch(e) {}
+    }
     const p = bulkQueue[queuePos];
     const msg = buildMessage(p);
-    window.open(`https://wa.me/${p.normalized_phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    currentQueueTab = window.open(`https://wa.me/${p.normalized_phone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 function queueNext() {
@@ -444,7 +447,10 @@ function queueNext() {
 }
 
 function queueCancel() {
-    bulkQueue = []; queuePos = 0;
+    if (currentQueueTab && !currentQueueTab.closed) {
+        try { currentQueueTab.close(); } catch(e) {}
+    }
+    bulkQueue = []; queuePos = 0; currentQueueTab = null;
     document.getElementById('queueWidget').style.display = 'none';
 }
 
