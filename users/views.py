@@ -1925,7 +1925,7 @@ def admin_accept_portal(request):
                             lr = cursor.fetchone()
                             if lr:
                                 status_emoji = '???' if new_status == 'Approved' else '???'
-                                notify('student', lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} {status_emoji}', '/student-portal/leave/')
+                                notify_student_and_parents(lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} {status_emoji}', '/student-portal/leave/')
                         except Exception:
                             pass
                         messages.success(request, f'Leave request {new_status.lower()} successfully.')
@@ -2139,7 +2139,7 @@ def teacher_accept_portal(request):
                             lr = cursor.fetchone()
                             if lr:
                                 status_emoji = '???' if new_status == 'Approved' else '???'
-                                notify('student', lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} by teacher {status_emoji}', '/student-portal/leave/')
+                                notify_student_and_parents(lr[0], 'leave', f'Leave {new_status}', f'Your leave request has been {new_status.lower()} by teacher {status_emoji}', '/student-portal/leave/')
                         except Exception:
                             pass
                         action_text = 'approved' if action == 'approve' else 'rejected'
@@ -14008,7 +14008,7 @@ def save_attendance_batch(request):
         for rec in records:
             name = (rec.get('name') or '').strip()
             status = (rec.get('status') or 'present').lower()
-            if status not in ('present', 'absent', 'leave'):
+            if status not in ('present', 'absent', 'late', 'leave'):
                 status = 'present'
             if not name:
                 continue
@@ -14060,6 +14060,19 @@ def save_attendance_batch(request):
                     "INSERT INTO admin_attendance (student_id, name, admission_number, class, section, date, status) VALUES (%s,%s,%s,%s,%s,%s,%s)",
                     [student_id, name, admission_number, class_name, std_section, date_str, status]
                 )
+            
+            try:
+                # Individual notification to student and parent
+                notify_student_and_parents(
+                    student_id,
+                    'attendance',
+                    f'Attendance Update: {status.capitalize()}',
+                    f'Your child was marked {status.capitalize()} on {date_str}.',
+                    '/parent-student-portal/'
+                )
+            except Exception as e:
+                print(f"Error sending attendance notification for {student_id}: {e}")
+
             saved += 1
 
         connection.commit()

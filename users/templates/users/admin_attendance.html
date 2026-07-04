@@ -453,6 +453,12 @@
         color: #92400e;
     }
 
+    .stat-badge.late {
+        background: #ffedd5;
+        border-color: #f97316;
+        color: #c2410c;
+    }
+
     .stat-badge.leave {
         background: #fce7f3;
         border-color: #ec4899;
@@ -570,6 +576,7 @@
 
     .present-lbl { background: #16a34a; color: #fff; }
     .absent-lbl  { background: #dc2626; color: #fff; }
+    .late-lbl    { background: #f97316; color: #fff; }
 
     .no-sections,
     .no-requests {
@@ -849,6 +856,9 @@
                                     <span class="stat-badge absent">
                                         <i class="fas fa-times"></i> Absent: <span id="absentCount">0</span>
                                     </span>
+                                    <span class="stat-badge late">
+                                        <i class="fas fa-clock"></i> Late: <span id="lateCount">0</span>
+                                    </span>
                                     <span class="stat-badge leave">
                                         <i class="fas fa-calendar-times"></i> Leave: <span id="leaveCount">0</span>
                                     </span>
@@ -888,6 +898,12 @@
                                                                        {% if student.status == 'absent' %}checked{% endif %}
                                                                        onchange="setAdminStatus('{{ student.user_id }}', 'absent')">
                                                                 <i class="fas fa-times-circle"></i> Absent
+                                                            </label>
+                                                            <label class="radio-att-lbl late-lbl {% if student.status == 'late' %}selected{% endif %}">
+                                                                <input type="radio" name="att_{{ student.user_id }}" value="late"
+                                                                       {% if student.status == 'late' %}checked{% endif %}
+                                                                       onchange="setAdminStatus('{{ student.user_id }}', 'late')">
+                                                                <i class="fas fa-clock"></i> Late
                                                             </label>
                                                         </div>
                                                     </td>
@@ -1161,23 +1177,27 @@
             const rows = document.querySelectorAll('.attendance-table tbody tr:not(.hidden-row)');
             let presentCount = 0;
             let absentCount = 0;
+            let lateCount = 0;
             let leaveCount = 0;
 
             rows.forEach(row => {
                 const status = row.getAttribute('data-status');
                 if (status === 'present') presentCount++;
                 else if (status === 'absent') absentCount++;
+                else if (status === 'late') lateCount++;
                 else if (status === 'leave') leaveCount++;
             });
 
             const totalCountElem = document.getElementById('totalCount');
             const presentCountElem = document.getElementById('presentCount');
             const absentCountElem = document.getElementById('absentCount');
+            const lateCountElem = document.getElementById('lateCount');
             const leaveCountElem = document.getElementById('leaveCount');
 
             if (totalCountElem) totalCountElem.textContent = rows.length;
             if (presentCountElem) presentCountElem.textContent = presentCount;
             if (absentCountElem) absentCountElem.textContent = absentCount;
+            if (lateCountElem) lateCountElem.textContent = lateCount;
             if (leaveCountElem) leaveCountElem.textContent = leaveCount;
         }
 

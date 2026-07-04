@@ -460,6 +460,11 @@
         color: #fff;
     }
 
+    .late-radio-lbl {
+        background: #f59e0b;
+        color: #fff;
+    }
+
     .no-students {
         text-align: center;
         color: var(--primary-color);
@@ -952,7 +957,7 @@
         const safeName = name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
         const card = document.querySelector(`[data-student="${safeName}"]`);
         if (!card) return;
-        const colors = { present: '#16a34a', absent: '#dc2626' };
+        const colors = { present: '#16a34a', absent: '#dc2626', late: '#f59e0b' };
         const statusEl = document.getElementById(`status-${safeName}`);
         if (statusEl) {
             statusEl.innerHTML = `<i class="fas fa-clipboard-check" style="color:#8b5cf6;margin-right:8px;"></i><strong>Status:</strong> <span style="text-transform:uppercase;font-weight:700;color:${colors[status] || '#555'};">${status}</span>`;
@@ -967,7 +972,7 @@
     function renderAttendanceCards() {
         const container = document.getElementById('attendanceCards');
         if (!allStudents.length) return;
-        const colors = { present: '#16a34a', absent: '#dc2626' };
+        const colors = { present: '#16a34a', absent: '#dc2626', late: '#f59e0b' };
         let html = '';
         allStudents.forEach(name => {
             const safeName = name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
@@ -1000,6 +1005,13 @@
                                onchange="setStudentStatus('${name}', 'absent')">
                         <i class="fas fa-times-circle"></i> Absent
                     </label>
+                    <label class="radio-att-label late-radio-lbl ${status === 'late' ? 'selected' : ''} ${isLocked ? 'locked-radio' : ''}">
+                        <input type="radio" name="att_${safeName}" value="late"
+                               ${status === 'late' ? 'checked' : ''}
+                               ${isLocked ? 'disabled' : ''}
+                               onchange="setStudentStatus('${name}', 'late')">
+                        <i class="fas fa-clock"></i> Late
+                    </label>
                 </div>
             </div>`;
         });
@@ -1015,7 +1027,7 @@
         if (!allStudents.length) return;
         submitContainer.classList.add('visible');
 
-        const counts = { present: 0, absent: 0, leave: 0 };
+        const counts = { present: 0, absent: 0, late: 0, leave: 0 };
         allStudents.forEach(name => {
             const s = attendanceStatus[name] || 'present';
             if (counts[s] !== undefined) counts[s]++;
