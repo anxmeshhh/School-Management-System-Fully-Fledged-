@@ -1006,6 +1006,16 @@
             if (uid) adminState[uid] = status;
         });
 
+        // Date constraints
+        const dateInput = document.getElementById('date');
+        if (dateInput) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const minDateObj = new Date();
+            minDateObj.setDate(minDateObj.getDate() - 2);
+            dateInput.max = todayStr;
+            dateInput.min = minDateObj.toISOString().split('T')[0];
+        }
+
         // Fetch approved leaves and show badges
         const selClass = '{{ selected_class|escapejs }}';
         const selDate = '{{ selected_date|escapejs }}';
@@ -1021,6 +1031,21 @@
                                     cell.insertAdjacentHTML('beforeend',
                                         '<span class="leave-tag" style="background:#fef3c7;color:#92400e;border:1px solid #fbbf24;border-radius:4px;padding:1px 6px;font-size:11px;margin-left:6px;font-weight:600;">On Leave</span>');
                                 }
+                                
+                                // Lock attendance modification for this student
+                                row.dataset.status = 'leave';
+                                const uid = row.dataset.uid;
+                                if (uid) adminState[uid] = 'leave';
+                                row.querySelectorAll('.radio-att-lbl').forEach(lbl => {
+                                    lbl.style.opacity = '0.5';
+                                    lbl.style.pointerEvents = 'none';
+                                    lbl.classList.remove('selected');
+                                    const inp = lbl.querySelector('input[type="radio"]');
+                                    if (inp) {
+                                        inp.disabled = true;
+                                        inp.checked = false;
+                                    }
+                                });
                             }
                         });
                     });

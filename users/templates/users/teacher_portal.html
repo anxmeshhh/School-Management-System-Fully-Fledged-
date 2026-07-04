@@ -869,7 +869,16 @@
         }
 
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('filter_date').value = today;
+        const minDateObj = new Date();
+        minDateObj.setDate(minDateObj.getDate() - 2);
+        const minDate = minDateObj.toISOString().split('T')[0];
+        
+        const dateInput = document.getElementById('filter_date');
+        if (dateInput) {
+            dateInput.value = today;
+            dateInput.max = today;
+            dateInput.min = minDate;
+        }
     });
 
     window.loadSections = function() {
@@ -957,7 +966,7 @@
         const safeName = name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
         const card = document.querySelector(`[data-student="${safeName}"]`);
         if (!card) return;
-        const colors = { present: '#16a34a', absent: '#dc2626', late: '#f59e0b' };
+        const colors = { present: '#16a34a', absent: '#dc2626', late: '#f59e0b', leave: '#92400e' };
         const statusEl = document.getElementById(`status-${safeName}`);
         if (statusEl) {
             statusEl.innerHTML = `<i class="fas fa-clipboard-check" style="color:#8b5cf6;margin-right:8px;"></i><strong>Status:</strong> <span style="text-transform:uppercase;font-weight:700;color:${colors[status] || '#555'};">${status}</span>`;
@@ -972,7 +981,7 @@
     function renderAttendanceCards() {
         const container = document.getElementById('attendanceCards');
         if (!allStudents.length) return;
-        const colors = { present: '#16a34a', absent: '#dc2626', late: '#f59e0b' };
+        const colors = { present: '#16a34a', absent: '#dc2626', late: '#f59e0b', leave: '#92400e' };
         let html = '';
         allStudents.forEach(name => {
             const safeName = name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
@@ -991,24 +1000,24 @@
                     <span style="text-transform:uppercase;font-weight:700;color:${colors[status] || '#555'};">${status}</span>
                 </p>
                 <div class="radio-attendance-group">
-                    <label class="radio-att-label present-radio-lbl ${status === 'present' ? 'selected' : ''} ${isLocked ? 'locked-radio' : ''}">
+                    <label class="radio-att-label present-radio-lbl ${status === 'present' ? 'selected' : ''} ${(isLocked || onLeave) ? 'locked-radio' : ''}" style="${onLeave ? 'opacity:0.5' : ''}">
                         <input type="radio" name="att_${safeName}" value="present"
                                ${status === 'present' ? 'checked' : ''}
-                               ${isLocked ? 'disabled' : ''}
+                               ${(isLocked || onLeave) ? 'disabled' : ''}
                                onchange="setStudentStatus('${name}', 'present')">
                         <i class="fas fa-check-circle"></i> Present
                     </label>
-                    <label class="radio-att-label absent-radio-lbl ${status === 'absent' ? 'selected' : ''} ${isLocked ? 'locked-radio' : ''}">
+                    <label class="radio-att-label absent-radio-lbl ${status === 'absent' ? 'selected' : ''} ${(isLocked || onLeave) ? 'locked-radio' : ''}" style="${onLeave ? 'opacity:0.5' : ''}">
                         <input type="radio" name="att_${safeName}" value="absent"
                                ${status === 'absent' ? 'checked' : ''}
-                               ${isLocked ? 'disabled' : ''}
+                               ${(isLocked || onLeave) ? 'disabled' : ''}
                                onchange="setStudentStatus('${name}', 'absent')">
                         <i class="fas fa-times-circle"></i> Absent
                     </label>
-                    <label class="radio-att-label late-radio-lbl ${status === 'late' ? 'selected' : ''} ${isLocked ? 'locked-radio' : ''}">
+                    <label class="radio-att-label late-radio-lbl ${status === 'late' ? 'selected' : ''} ${(isLocked || onLeave) ? 'locked-radio' : ''}" style="${onLeave ? 'opacity:0.5' : ''}">
                         <input type="radio" name="att_${safeName}" value="late"
                                ${status === 'late' ? 'checked' : ''}
-                               ${isLocked ? 'disabled' : ''}
+                               ${(isLocked || onLeave) ? 'disabled' : ''}
                                onchange="setStudentStatus('${name}', 'late')">
                         <i class="fas fa-clock"></i> Late
                     </label>
@@ -1097,7 +1106,13 @@
                 if (isLocked) {
                     attendanceStatus = { ...existingRecords };
                 } else {
-                    allStudents.forEach(name => { attendanceStatus[name] = 'present'; });
+                    allStudents.forEach(name => {
+                        if (approvedLeaveSet.has(name)) {
+                            attendanceStatus[name] = 'leave';
+                        } else {
+                            attendanceStatus[name] = 'present';
+                        }
+                    });
                 }
 
                 renderAttendanceCards();

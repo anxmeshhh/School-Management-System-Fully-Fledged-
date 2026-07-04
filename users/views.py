@@ -13988,6 +13988,15 @@ def save_attendance_batch(request):
     if not class_name or not date_str or not records:
         return JsonResponse({'success': False, 'message': 'Missing required fields'}, status=400)
 
+    import datetime
+    try:
+        att_date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+        today_date = datetime.date.today()
+        if att_date > today_date or att_date < today_date - datetime.timedelta(days=2):
+            return JsonResponse({'success': False, 'message': 'You can only mark attendance for today and the previous 2 days.'}, status=400)
+    except ValueError:
+        return JsonResponse({'success': False, 'message': 'Invalid date format.'}, status=400)
+
     if not section or str(section).lower() in ('none', 'n/a', 'all', 'not-provided', ''):
         section = None
 
@@ -14004,14 +14013,28 @@ def save_attendance_batch(request):
                     'locked': True
                 })
 
+        cursor.execute("""
+            SELECT DISTINCT student_name
+            FROM student_leave_requests
+            WHERE class_number = %s
+              AND %s BETWEEN leave_start_date AND leave_end_date
+              AND status = 'Approved'
+        """, [class_name, date_str])
+        approved_leave_students = {r[0].strip() for r in cursor.fetchall() if r[0]}
+
         saved = 0
+        notifications_to_send = []
         for rec in records:
             name = (rec.get('name') or '').strip()
-            status = (rec.get('status') or 'present').lower()
-            if status not in ('present', 'absent', 'late', 'leave'):
-                status = 'present'
             if not name:
                 continue
+
+            if name in approved_leave_students:
+                status = 'leave'
+            else:
+                status = (rec.get('status') or 'present').lower()
+                if status not in ('present', 'absent', 'late', 'leave'):
+                    status = 'present'
 
             cursor.execute(
                 "SELECT user_id, admission_number, section FROM student_page1 WHERE TRIM(name)=%s AND class=%s LIMIT 1",
@@ -14061,21 +14084,39 @@ def save_attendance_batch(request):
                     [student_id, name, admission_number, class_name, std_section, date_str, status]
                 )
             
-            try:
-                # Individual notification to student and parent
-                notify_student_and_parents(
-                    student_id,
-                    'attendance',
-                    f'Attendance Update: {status.capitalize()}',
-                    f'Your child was marked {status.capitalize()} on {date_str}.',
-                    '/parent-student-portal/'
-                )
-            except Exception as e:
-                print(f"Error sending attendance notification for {student_id}: {e}")
+            # Accumulate notifications
+            notifications_to_send.extend([
+                {
+                    'recipient_type': 'student',
+                    'recipient_id': student_id,
+                    'category': 'attendance',
+                    'title': f'Attendance Update: {status.capitalize()}',
+                    'message': f'You were marked {status.capitalize()} on {date_str}.',
+                    'action_url': '/student-portal/attendance/',
+                    'sender_type': 'system',
+                    'sender_id': None,
+                },
+                {
+                    'recipient_type': 'parent',
+                    'recipient_id': student_id,
+                    'category': 'attendance',
+                    'title': f'Attendance Update: {status.capitalize()}',
+                    'message': f'Your child was marked {status.capitalize()} on {date_str}.',
+                    'action_url': '/parent-student-portal/',
+                    'sender_type': 'system',
+                    'sender_id': None,
+                }
+            ])
 
             saved += 1
 
         connection.commit()
+
+    try:
+        if notifications_to_send:
+            create_bulk_notifications(notifications_to_send)
+    except Exception as e:
+        print(f"Error bulk sending attendance notifications: {e}")
 
     return JsonResponse({'success': True, 'message': f'Attendance saved for {saved} students.', 'saved': saved})
 
