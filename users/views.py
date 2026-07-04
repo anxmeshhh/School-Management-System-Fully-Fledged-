@@ -14606,7 +14606,7 @@ def teacher_bulk_upload(request):
                                 teacher_id = cursor.lastrowid
                                 
                                 # Generate password
-                                password = f"{teacher_id}{mobile}"
+                                password = f"{mobile}"
                                 
                                 # Update password in teachers
                                 cursor.execute("UPDATE teachers SET password = %s WHERE id = %s", [password, teacher_id])
