@@ -113,6 +113,7 @@ urlpatterns = [
 
 
     path('teachers/', views.manage_teachers, name='manage_teachers'),
+    path('teachers/bulk-upload/', views.teacher_bulk_upload, name='teacher_bulk_upload'),
     path('teachers/add/', views.add_teacher, name='add_teacher'),
     path('teachers/update/', views.update_teacher, name='update_teacher'),
     path('teachers/delete/<int:teacher_id>/', views.delete_teacher, name='delete_teacher'),

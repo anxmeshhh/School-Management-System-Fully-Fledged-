@@ -14500,3 +14500,156 @@ def download_bulk_credentials_pdf(request):
     response = HttpResponse(pdf_buffer, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
+
+
+def teacher_bulk_upload(request):
+    import pandas as pd
+    import uuid
+    import os
+    from django.conf import settings
+    from django.core.files.storage import FileSystemStorage
+    from django.db import transaction, IntegrityError, connection
+    from django.contrib import messages
+    from django.shortcuts import redirect
+
+    if 'admin_id' not in request.session:
+        messages.error(request, 'Please log in to access this page.')
+        return redirect('admin_login')
+
+    if request.method == 'POST':
+        if 'excel_file' in request.FILES:
+            excel_file = request.FILES['excel_file']
+            if not excel_file.name.endswith(('.xlsx', '.xls')):
+                messages.error(request, 'Please upload a valid Excel file (.xlsx or .xls).')
+                return redirect('manage_teachers')
+
+            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'temp'))
+            filename = f"temp_teacher_{uuid.uuid4()}_{excel_file.name}"
+            fs.save(filename, excel_file)
+
+            try:
+                df = pd.read_excel(fs.path(filename))
+                
+                # Check for two NUMBER columns (Primary and Alternate)
+                # pandas usually names duplicate columns as NUMBER and NUMBER.1
+                # If they used MOBILE NUMBER and ALTERNATE NUMBER, we handle that too.
+                # Standardize columns to uppercase and strip whitespace
+                df.columns = [str(c).strip().upper() for c in df.columns]
+
+                # Map logic for phone numbers
+                mobile_col = 'NUMBER' if 'NUMBER' in df.columns else 'MOBILE NUMBER'
+                alt_mobile_col = 'NUMBER.1' if 'NUMBER.1' in df.columns else 'ALTERNATE NUMBER'
+
+                success_count = 0
+                error_count = 0
+
+                with transaction.atomic():
+                    with connection.cursor() as cursor:
+                        for index, row in df.iterrows():
+                            try:
+                                name = str(row.get('NAME', '')).strip()
+                                if not name or name == 'nan':
+                                    continue
+                                
+                                qualification = str(row.get('QUALIFICATION', '')).strip()
+                                if qualification == 'nan': qualification = ''
+                                
+                                mobile = str(row.get(mobile_col, '')).strip()
+                                if mobile == 'nan': mobile = ''
+                                # clean .0 if interpreted as float
+                                if mobile.endswith('.0'): mobile = mobile[:-2]
+                                
+                                dob = str(row.get('DOB', '')).strip()
+                                if dob == 'nan' or dob == 'NaT': dob = None
+                                else:
+                                    try:
+                                        dob = pd.to_datetime(dob).strftime('%Y-%m-%d')
+                                    except:
+                                        dob = None
+                                        
+                                doj = str(row.get('DOJ', '')).strip()
+                                if doj == 'nan' or doj == 'NaT': doj = None
+                                else:
+                                    try:
+                                        doj = pd.to_datetime(doj).strftime('%Y-%m-%d')
+                                    except:
+                                        doj = None
+                                        
+                                designation = str(row.get('DESIGNATION', '')).strip()
+                                if designation == 'nan': designation = ''
+                                
+                                blood_group = str(row.get('BLOOD GROUP', '')).strip()
+                                if blood_group == 'nan': blood_group = ''
+                                
+                                father_name = str(row.get('FATHER NAME', '')).strip()
+                                if father_name == 'nan': father_name = ''
+                                
+                                alt_mobile = str(row.get(alt_mobile_col, '')).strip()
+                                if alt_mobile == 'nan': alt_mobile = ''
+                                if alt_mobile.endswith('.0'): alt_mobile = alt_mobile[:-2]
+                                
+                                address = str(row.get('ADDRESS', '')).strip()
+                                if address == 'nan': address = ''
+                                
+                                # Auto-generate email and subject
+                                safe_name = name.lower().replace(' ', '')
+                                email = f"{safe_name}{mobile}@school.local"
+                                subject = "General"
+                                
+                                # Insert into teachers table first to get ID
+                                # We set password to empty temporarily, then update it
+                                cursor.execute("""
+                                    INSERT INTO teachers (name, email, subject, class_teacher_of, password)
+                                    VALUES (%s, %s, %s, %s, %s)
+                                """, [name, email, subject, None, ''])
+                                
+                                teacher_id = cursor.lastrowid
+                                
+                                # Generate password
+                                password = f"{teacher_id}{mobile}"
+                                
+                                # Update password in teachers
+                                cursor.execute("UPDATE teachers SET password = %s WHERE id = %s", [password, teacher_id])
+                                
+                                # Insert into admin_manage_users
+                                username = f"{safe_name}_{teacher_id}"
+                                cursor.execute("""
+                                    INSERT INTO admin_manage_users 
+                                    (name, email, username, password, role, created_at, updated_at)
+                                    VALUES (%s, %s, %s, %s, 'teacher', NOW(), NOW())
+                                """, [name, email, username, password])
+                                
+                                # Insert into teacher_profiles
+                                cursor.execute("""
+                                    INSERT INTO teacher_profiles (
+                                        teacher_id, full_name, date_of_birth, blood_group,
+                                        mobile_number, alternate_contact, residential_address,
+                                        emergency_contact_name, designation, joining_date,
+                                        qualification, official_email
+                                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                """, [
+                                    teacher_id, name, dob, blood_group,
+                                    mobile, alt_mobile, address,
+                                    father_name, designation, doj,
+                                    qualification, email
+                                ])
+                                
+                                success_count += 1
+                            except Exception as row_err:
+                                print(f"Error on row {index}: {row_err}")
+                                error_count += 1
+
+                if success_count > 0:
+                    messages.success(request, f'Successfully uploaded {success_count} teachers.')
+                    from users.notifications import notify_all_admins
+                    notify_all_admins('user', 'Bulk Upload Teachers', f'{success_count} teachers were added via bulk upload.', '/teachers/')
+                if error_count > 0:
+                    messages.warning(request, f'Failed to process {error_count} records. Check data formats.')
+
+            except Exception as e:
+                messages.error(request, f'Error parsing Excel file: {str(e)}')
+            finally:
+                if fs.exists(filename):
+                    fs.delete(filename)
+
+    return redirect('manage_teachers')

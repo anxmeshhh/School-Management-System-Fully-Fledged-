@@ -1202,7 +1202,13 @@
                 {% endif %}
 
                 <section class="section">
-                    <h2><i class="fas fa-user-plus" style="color: #00a676;"></i> Add New Teacher</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                        <h2 style="margin-bottom: 0;"><i class="fas fa-user-plus" style="color: #00a676;"></i> Add New Teacher</h2>
+                        <button type="button" class="add-btn" style="width: auto; margin-top: 0; background-color: #3b82f6; border-color: #2563eb;" onclick="document.getElementById('bulkUploadModal').classList.add('active')">
+                            <i class="fas fa-file-excel"></i> Bulk Upload Teachers
+                        </button>
+                    </div>
+
 
                     <!-- Quick Add Toggle -->
                     <div class="quick-add-toggle">
@@ -1567,6 +1573,42 @@
                     </div>
                 </section>
             </main>
+        </div>
+    </div>
+
+    <!-- Bulk Upload Teachers Modal -->
+    <div id="bulkUploadModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-excel" style="color: #00a676;"></i> Bulk Upload Teachers</h3>
+                <button class="close" onclick="document.getElementById('bulkUploadModal').classList.remove('active')">&times;</button>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem; padding: 1rem; background: #e0f2fe; border-left: 4px solid #0284c7; border-radius: 4px; color: #0369a1; font-size: 0.95rem;">
+                <strong><i class="fas fa-info-circle"></i> Instructions:</strong>
+                <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                    <li>Upload an Excel file (.xlsx or .xls) with teacher details.</li>
+                    <li>Required columns: NAME, QUALIFICATION, NUMBER, DOB, DOJ, DESIGNATION, BLOOD GROUP, FATHER NAME, ADDRESS.</li>
+                    <li>Login credentials will be automatically generated. The username will be formatted automatically. The password will be the teacher's unique system ID combined with their primary mobile number.</li>
+                </ul>
+            </div>
+
+            <form method="POST" action="{% url 'teacher_bulk_upload' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label><i class="fas fa-upload" style="color: #3b82f6;"></i> Select Excel File *</label>
+                    <input type="file" name="excel_file" accept=".xlsx, .xls" required style="padding: 1rem; border: 2px dashed var(--border-color); cursor: pointer;">
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="add-btn" style="background-color: var(--light-bg); color: var(--text-color); border-color: var(--border-color);" onclick="document.getElementById('bulkUploadModal').classList.remove('active')">
+                        Cancel
+                    </button>
+                    <button type="submit" class="submit-btn" style="width: auto;">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload & Process
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
