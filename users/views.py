@@ -11185,9 +11185,68 @@ def parent_student_leave(request):
 from django.conf import settings
 import os
 
+def get_parent_student_info(user_id):
+    """
+    Given a parent's user_id, resolve the actual student's class and section.
+    Handles ghost accounts created by parent_signup.
+    Returns (student_class, student_section) or (None, None).
+    """
+    try:
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT class, section, roll_number, name, admission_number FROM student_page1 WHERE user_id = %s",
+                [user_id]
+            )
+            parent_row = cursor.fetchone()
+            
+            if not parent_row:
+                return None, None
+                
+            p_class, p_section, p_roll, p_name, p_adm = parent_row
+            
+            # Check if this user_id is the real student
+            cursor.execute("SELECT 1 FROM attendance WHERE student_id = %s LIMIT 1", [user_id])
+            already_has_attendance = cursor.fetchone() is not None
+            is_real_student = already_has_attendance or (p_name and p_name.strip() != 'Placeholder Name')
+            
+            if is_real_student:
+                return p_class, p_section
+                
+            # Ghost account - find real student by admission number
+            if p_adm:
+                cursor.execute(
+                    """SELECT class, section
+                       FROM student_page1
+                       WHERE admission_number = %s AND user_id != %s
+                       LIMIT 1""",
+                    [p_adm, user_id]
+                )
+                real_student = cursor.fetchone()
+                if real_student:
+                    return real_student[0], real_student[1]
+                    
+            # Fallback to class + roll_number
+            if p_class and p_roll:
+                cursor.execute(
+                    """SELECT class, section
+                       FROM student_page1
+                       WHERE class = %s AND roll_number = %s AND user_id != %s
+                       ORDER BY CASE WHEN section <=> %s THEN 0 ELSE 1 END
+                       LIMIT 1""",
+                    [p_class, p_roll, user_id, p_section]
+                )
+                real_student = cursor.fetchone()
+                if real_student:
+                    return real_student[0], real_student[1]
+                    
+            return p_class, p_section
+    except Exception as e:
+        print(f"Error resolving parent student info for user_id={user_id}: {e}")
+        return None, None
+
 def parent_student_circular(request):
     CIRCULARS_DIR = os.path.join(settings.MEDIA_ROOT, 'circulars')
-    # Get the logged-in user's user_id from session and fetch class/section from student_page1
     student_class = None
     student_section = None
     error_message = None
@@ -11198,22 +11257,15 @@ def parent_student_circular(request):
     else:
         user_id = request.session['user_id']
         print(f"Session user_id: {user_id}")
-        try:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT class, section FROM student_page1 WHERE user_id = %s",
-                    [user_id]
-                )
-                result = cursor.fetchone()
-                if result:
-                    student_class, student_section = [normalize_value(r) for r in result]
-                    print(f"Parent student user_id={user_id}: class={student_class}, section={student_section}")
-                else:
-                    error_message = "No class or section found for your account. Please contact the admin."
-                    print(f"No student record found for user_id: {user_id}")
-        except Exception as e:
-            error_message = "Error fetching your class/section. Please try again later."
-            print(f"Error fetching parent student class/section for user_id={user_id}: {e}")
+        
+        student_class, student_section = get_parent_student_info(user_id)
+        if student_class is not None:
+            student_class = normalize_value(student_class)
+            student_section = normalize_value(student_section) if student_section else ""
+            print(f"Parent student resolved user_id={user_id}: class={student_class}, section={student_section}")
+        else:
+            error_message = "No class or section found for your account. Please contact the admin."
+            print(f"No student record found for user_id: {user_id}")
 
     # Get filter type from POST request (default to 'all')
     filter_type = request.POST.get('filter_type', 'all')
@@ -11250,15 +11302,18 @@ def parent_student_circular(request):
 
             # Filter circulars based on filter_type
             include_circular = False
+            
+            section_matches = (section == "all" or section == student_section)
+            
             if filter_type == 'all':
                 if target == "all" or (
                     target == "specific" and
-                    student_class and student_section and
-                    class_name == student_class and section == student_section
+                    student_class and
+                    class_name == student_class and section_matches
                 ):
                     include_circular = True
             elif filter_type == 'specific':
-                if target == "specific" and student_class and student_section and class_name == student_class and section == student_section:
+                if target == "specific" and student_class and class_name == student_class and section_matches:
                     include_circular = True
 
             if include_circular:
@@ -11298,27 +11353,16 @@ def parent_study_materials(request):
     student_section = None
 
     # Fetch student's class and section
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT class, section FROM student_page1 WHERE user_id = %s",
-                [user_id]
-            )
-            result = cursor.fetchone()
-            if result:
-                student_class, student_section = result
-            else:
-                messages.error(request, "No class or section found for your account. Please contact the admin.")
-                return redirect("/parent-study-materials/")
-    except Exception as e:
-        messages.error(request, f"Error fetching class/section: {str(e)}")
+    student_class, student_section = get_parent_student_info(user_id)
+    if student_class is None:
+        messages.error(request, "No class or section found for your account. Please contact the admin.")
         return redirect("/parent-study-materials/")
 
     _ensure_study_materials_schema()
     try:
         with connection.cursor() as cursor:
             cursor.execute(
-                "SELECT title, description, file_path, upload_date, `class`, section FROM study_materials WHERE `class` = %s AND (section <=> %s OR section IS NULL OR section = '') ORDER BY upload_date DESC",
+                "SELECT title, description, file_path, upload_date, `class`, section FROM study_materials WHERE `class` = %s AND (section <=> %s OR section = 'all' OR section IS NULL OR section = '') ORDER BY upload_date DESC",
                 [student_class, student_section if student_section else None]
             )
             study_materials = [
@@ -11350,20 +11394,8 @@ def parent_homework(request):
         return redirect("/parent_login/")
 
     user_id = request.session["user_id"]
-    student_class = None
-    student_section = None
-
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT class, section FROM student_page1 WHERE user_id = %s",
-                [user_id]
-            )
-            result = cursor.fetchone()
-            if result:
-                student_class, student_section = result
-    except Exception as e:
-        messages.error(request, f"Error fetching class/section: {str(e)}")
+    
+    student_class, student_section = get_parent_student_info(user_id)
 
     filter_date = request.GET.get('date', '').strip()
 
@@ -11486,18 +11518,13 @@ def parent_student_timetable(request):
         return redirect('/parent_login/')
     
     user_id = request.session['user_id']
+    
+    class_name, section = get_parent_student_info(user_id)
+    if not class_name:
+        messages.error(request, 'Student class information not found or invalid.')
+        return redirect('parent_student_timetable')
+
     with connection.cursor() as cursor:
-        # Fetch class and section for the student
-        cursor.execute("SELECT class, section FROM student_page1 WHERE user_id = %s", [user_id])
-        student = cursor.fetchone()
-        if not student:
-            messages.error(request, 'Student class information not found.')
-            return redirect('parent_student_timetable')
-        
-        class_name, section = student
-        if not class_name:
-            messages.error(request, 'Invalid class information for the student.')
-            return redirect('parent_student_timetable')
         
         # Construct class_id
         class_id = f"{class_name}{section}" if section else class_name
