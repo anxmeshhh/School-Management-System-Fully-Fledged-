@@ -713,6 +713,10 @@
                     <img src="https://img.icons8.com/color/24/000000/user-group-man-woman.png" alt="Progress Card">
                     <span>Progress Card</span>
                 </a>
+                <a href="{% url 'admin_progress_cards' %}" class="{% if request.resolver_match.url_name == 'admin_progress_cards' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/graph.png" alt="Progress Card PDFs">
+                    <span>Progress Card PDFs</span>
+                </a>
                 <a href="{% url 'fees_admin' %}" class="{% if request.resolver_match.url_name == 'fees_admin' %}active{% endif %}">
                     <img src="https://img.icons8.com/color/24/000000/edit--v1.png" alt="Fees">
                     <span>Fees Collection</span>
@@ -720,6 +724,18 @@
                 <a href="{% url 'manage_teachers' %}" class="{% if request.resolver_match.url_name == 'manage_teachers' %}active{% endif %}">
                     <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="Teachers">
                     <span>Teacher Management</span>
+                </a>
+                <a href="{% url 'admin_parent_registrations' %}" class="{% if request.resolver_match.url_name == 'admin_parent_registrations' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/24/000000/add-user-male.png" alt="Parent Registrations">
+                    <span>Parent Registrations</span>
+                </a>
+                <a href="{% url 'admin_parent_registration_status' %}" class="{% if request.resolver_match.url_name == 'admin_parent_registration_status' %}active{% endif %}">
+                    <img src="https://img.icons8.com/color/70/000000/checked-user-male.png" alt="Parent Registration Status">
+                    <span>Parent Registration Status</span>
+                </a>
+                <a href="{% url 'admin_bulk_credentials' %}" class="{% if request.resolver_match.url_name == 'admin_bulk_credentials' %}active{% endif %}">
+                    <img src="https://img.icons8.com/fluency/24/pdf.png" alt="Bulk Credentials">
+                    <span>Bulk Credentials Download</span>
                 </a>
                 <a href="{% url 'admin_send_student_pdf' %}" class="{% if request.resolver_match.url_name == 'admin_send_student_pdf' %}active{% endif %}">
                     <img src="https://img.icons8.com/color/24/000000/whatsapp.png" alt="WhatsApp">

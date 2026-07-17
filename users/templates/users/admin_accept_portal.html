@@ -703,7 +703,7 @@
             </a>
             <span>Manavargal SMS</span>
         </div>
-        <nav class="sidebar-nav">
+                <nav class="sidebar-nav">
             <a href="{% url 'admin_master' %}">
                 <img src="https://img.icons8.com/fluency/24/home.png" alt="Master Data">
                 <span>Master Data</span>
@@ -715,6 +715,10 @@
             <a href="{% url 'admin_attendance_portal' %}">
                 <img src="https://img.icons8.com/color/48/todo-list.png" alt="Attendance">
                 <span>Students Attendance Reports</span>
+            </a>
+            <a href="{% url 'admin_teacher_attendance_portal' %}">
+                <img src="https://img.icons8.com/color/48/todo-list.png" alt="Teacher Attendance">
+                <span>Teacher Attendance</span>
             </a>
             <a href="{% url 'admin_circular_upload' %}">
                 <img src="https://img.icons8.com/color/24/000000/classroom.png" alt="Circulars">
@@ -736,6 +740,10 @@
                 <img src="https://img.icons8.com/color/24/000000/user-group-man-woman.png" alt="Progress Card">
                 <span>Progress Card</span>
             </a>
+            <a href="{% url 'admin_progress_cards' %}">
+                <img src="https://img.icons8.com/color/24/000000/graph.png" alt="Progress Card PDFs">
+                <span>Progress Card PDFs</span>
+            </a>
             <a href="{% url 'fees_admin' %}">
                 <img src="https://img.icons8.com/color/24/000000/edit--v1.png" alt="Fees">
                 <span>Fees Collection</span>
@@ -744,9 +752,25 @@
                 <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="Teachers">
                 <span>Teacher Management</span>
             </a>
+            <a href="{% url 'admin_parent_registrations' %}">
+                <img src="https://img.icons8.com/color/24/000000/add-user-male.png" alt="Parent Registrations">
+                <span>Parent Registrations</span>
+            </a>
+            <a href="{% url 'admin_parent_registration_status' %}">
+                <img src="https://img.icons8.com/color/70/000000/checked-user-male.png" alt="Parent Registration Status">
+                <span>Parent Registration Status</span>
+            </a>
+            <a href="{% url 'admin_bulk_credentials' %}">
+                <img src="https://img.icons8.com/fluency/24/pdf.png" alt="Bulk Credentials">
+                <span>Bulk Credentials Download</span>
+            </a>
             <a href="{% url 'admin_send_student_pdf' %}">
                 <img src="https://img.icons8.com/color/24/000000/whatsapp.png" alt="WhatsApp">
                 <span>WHATSAPP BETA TESTING</span>
+            </a>
+            <a href="{% url 'whatsapp_bulk_announce' %}">
+                <img src="https://img.icons8.com/color/24/000000/whatsapp.png" alt="WhatsApp Bulk">
+                <span>WhatsApp Bulk Announce</span>
             </a>
         </nav>
     </aside>
