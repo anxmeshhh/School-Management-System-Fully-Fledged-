@@ -770,9 +770,9 @@
                 {% csrf_token %}
 
                 <div class="form-group">
-                    <label for="teacher_id">Username (Teacher ID)</label>
+                    <label for="teacher_id">Username (Facilitator ID)</label>
                     <input type="number" id="teacher_id" name="id" min="1" required oninput="restrictToNumbers(this)"
-                        placeholder="Enter Teacher ID" autocomplete="username">
+                        placeholder="Enter Facilitator ID" autocomplete="username">
                 </div>
 
                 <div class="form-group">
@@ -898,6 +898,7 @@
             }
         });
     </script>
+    <script src="{% static 'users/js/pwa-install.js' %}"></script>
 </body>
 
 </html>

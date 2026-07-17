@@ -781,9 +781,9 @@
                                 <span style="color: #ef4444; margin-right: 8px;">
                                     <i class="fas fa-file-image"></i>
                                 </span>
-                                Image (Max File Size: 25MB):
+                                Image (Optional, Max File Size: 25MB):
                             </label>
-                            <input type="file" name="image" accept="image/*" required>
+                            <input type="file" name="image" accept="image/*">
                         </div>
 
                         <button type="submit" class="upload-btn">
@@ -808,6 +808,7 @@
                             </h3>
                             <small><i class="fas fa-calendar"></i> Posted on: {{ circular.date }}</small>
                             <small><i class="fas fa-bullseye"></i> Target: {{ circular.target }}</small>
+                            {% if circular.image_url %}
                             <img src="{{ circular.image_url }}" alt="{{ circular.title }}" onclick="openModal('{{ circular.image_url }}', '{{ circular.title }}')">
 
                             <div class="circular-actions">
@@ -818,6 +819,11 @@
                                     <i class="fas fa-download"></i> Download
                                 </a>
                             </div>
+                            {% else %}
+                            <p class="no-circulars" style="margin: 8px 0 0;">
+                                <i class="fas fa-file-alt" style="color: #94a3b8; margin-right: 6px;"></i> Text notice — no attachment.
+                            </p>
+                            {% endif %}
                         </div>
                         {% empty %}
                         <p class="no-circulars">

@@ -1304,6 +1304,58 @@ def normalize_value(value):
         return ''
     return str(value).strip().lower()
 
+_CIRCULAR_IMAGE_EXTS = ('.jpg', '.jpeg', '.png', '.webp', '.gif')
+
+def _list_circulars(directory, url_prefix):
+    """Scan a circulars directory for metadata (.txt) files and return raw circular
+    records. A circular's identity is its metadata file, not its image — the image
+    attachment is optional (uploads sometimes fail on the VPS), so a circular can be
+    a title/text-only notice with no attachment at all."""
+    circulars = []
+    for file in os.listdir(directory):
+        if not file.endswith('.txt'):
+            continue
+        key = file[:-4]  # metadata filename minus '.txt' -> the circular's key
+        meta_path = os.path.join(directory, file)
+        title = "Untitled"
+        target = "all"
+        class_name = ""
+        section = ""
+        try:
+            with open(meta_path, 'r') as f:
+                lines = f.readlines()
+                title = lines[0].strip() if lines else "Untitled"
+                target = lines[1].strip().lower() if len(lines) > 1 else "all"
+                if target == 'specific' and len(lines) >= 4:
+                    class_name = normalize_value(lines[2])
+                    section = normalize_value(lines[3])
+        except Exception as e:
+            print(f"Error reading circular metadata {meta_path}: {e}")
+            continue
+
+        key_path = os.path.join(directory, key)
+        if key.lower().endswith(_CIRCULAR_IMAGE_EXTS) and os.path.exists(key_path):
+            image_url = f"{url_prefix}/{key}"
+            date_source = key_path
+        else:
+            image_url = None
+            date_source = meta_path
+
+        try:
+            created_at = datetime.fromtimestamp(os.path.getctime(date_source)).strftime('%Y-%m-%d %H:%M:%S')
+        except Exception:
+            created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        circulars.append({
+            'title': title,
+            'image_url': image_url,
+            'date': created_at,
+            'target': target,
+            'class_name': class_name,
+            'section': section,
+        })
+    return circulars
+
 # Admin uploads circular
 from django.conf import settings
 import os
@@ -1317,109 +1369,76 @@ def admin_circular_upload(request):
         class_name = request.POST.get('class') if target == 'specific' else None
         section = request.POST.get('section') if target == 'specific' else None
 
-        if title and image:
-            # Validate class and section if specific
-            if target == 'specific' and (not class_name or section is None):
-                messages.error(request, 'Please select a class for specific target.')
-                return redirect('admin_circular_upload')
+        if not title:
+            messages.error(request, 'Please provide a title for the circular.')
+            return redirect('admin_circular_upload')
 
-            # Normalize class and section
-            class_name = normalize_value(class_name)
-            section = normalize_value(section)
+        # Validate class and section if specific
+        if target == 'specific' and (not class_name or section is None):
+            messages.error(request, 'Please select a class for specific target.')
+            return redirect('admin_circular_upload')
 
-            # Generate a unique filename to avoid conflicts
+        # Normalize class and section
+        class_name = normalize_value(class_name)
+        section = normalize_value(section)
+
+        # Attachment is optional — uploads sometimes fail on the VPS, so a
+        # circular can be posted as a title/text-only notice with no image.
+        if image:
             filename = f"{uuid.uuid4().hex}_{image.name}"
             fs = FileSystemStorage(location=CIRCULARS_DIR, base_url='/media/circulars/')
             try:
                 filename = fs.save(filename, image)
                 full_path = os.path.join(CIRCULARS_DIR, filename)
-                if os.path.exists(full_path):
-                    print(f"Image saved successfully: {full_path}")
-                else:
-                    print(f"Image save failed: {full_path}")
+                if not os.path.exists(full_path):
                     messages.error(request, 'Failed to save the image.')
                     return redirect('admin_circular_upload')
-                image_url = f"/media/circulars/{filename}"  # Use consistent path
-                print(f"Generated image_url: {image_url}")
             except Exception as e:
                 print(f"Error saving image {filename}: {e}")
                 messages.error(request, 'Error saving the image.')
                 return redirect('admin_circular_upload')
+        else:
+            filename = uuid.uuid4().hex
 
-            # Save circular metadata (title and target) in a unique file
-            metadata_file_path = os.path.join(CIRCULARS_DIR, f"{filename}.txt")
-            try:
-                with open(metadata_file_path, 'w') as f:
-                    f.write(f"{title}\n{target}")
-                    if target == 'specific':
-                        f.write(f"\n{class_name}\n{section}")
-                print(f"Saved metadata for {filename}: title={title}, target={target}, class={class_name}, section={section}")
-            except Exception as e:
-                print(f"Error saving metadata for {filename}: {e}")
-                messages.error(request, 'Error saving circular metadata.')
-                return redirect('admin_circular_upload')
-
-            # ?????? Notification: Circular uploaded ??????
-            if target == 'specific' and class_name and section:
-                notify_class_students(class_name, section, 'circular', 'New Circular', f'New circular: {title}', '/student_circular/')
-                notify_class_parents(class_name, section, 'circular', 'New Circular', f'New circular: {title}', '/parent-student-circular/')
-            else:
-                # Broadcast to all students and parents
-                try:
-                    with connection.cursor() as c:
-                        c.execute("SELECT user_id FROM student_page1")
-                        for row in c.fetchall():
-                            notify('student', row[0], 'circular', 'New Circular', f'New circular: {title}', '/student_circular/')
-                        c.execute("SELECT user_id FROM student_page1")
-                        for row in c.fetchall():
-                            notify('parent', row[0], 'circular', 'New Circular', f'New circular: {title}', '/parent-student-circular/')
-                except Exception:
-                    pass
-
-            messages.success(request, 'Circular uploaded successfully.')
+        # Save circular metadata (title and target) in a unique file
+        metadata_file_path = os.path.join(CIRCULARS_DIR, f"{filename}.txt")
+        try:
+            with open(metadata_file_path, 'w') as f:
+                f.write(f"{title}\n{target}")
+                if target == 'specific':
+                    f.write(f"\n{class_name}\n{section}")
+        except Exception as e:
+            print(f"Error saving metadata for {filename}: {e}")
+            messages.error(request, 'Error saving circular metadata.')
             return redirect('admin_circular_upload')
 
-    # Prepare circulars list for display
-    circulars = []
-    for file in os.listdir(CIRCULARS_DIR):
-        if file.endswith(('.jpg', '.png', '.jpeg', '.webp', '.gif')):
-            full_path = os.path.join(CIRCULARS_DIR, file)
-            if not os.path.exists(full_path):
-                print(f"Image file missing: {full_path}")
-                continue
-
-            title_file = f"{file}.txt"
-            title_path = os.path.join(CIRCULARS_DIR, title_file)
-            title = "Untitled"
-            target = "All"
-            class_name = ""
-            section = ""
-
-            if os.path.exists(title_path):
-                try:
-                    with open(title_path, 'r') as f:
-                        lines = f.readlines()
-                        title = lines[0].strip() if lines else "Untitled"
-                        target = lines[1].strip() if len(lines) > 1 else "All"
-                        if target == 'specific' and len(lines) >= 4:
-                            class_name = normalize_value(lines[2])
-                            section = normalize_value(lines[3])
-                            target = f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
-                except Exception as e:
-                    print(f"Error reading metadata from {title_path}: {e}")
-
+        # ?????? Notification: Circular uploaded ??????
+        if target == 'specific' and class_name and section:
+            notify_class_students(class_name, section, 'circular', 'New Circular', f'New circular: {title}', '/student_circular/')
+            notify_class_parents(class_name, section, 'circular', 'New Circular', f'New circular: {title}', '/parent-student-circular/')
+        else:
+            # Broadcast to all students and parents
             try:
-                created_at = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
-                image_url = f"/media/circulars/{file}"  # Consistent path
-                print(f"Listing circular: {file}, image_url: {image_url}, full_path: {full_path}")
-                circulars.append({
-                    'title': title,
-                    'image_url': image_url,
-                    'date': created_at,
-                    'target': target
-                })
-            except Exception as e:
-                print(f"Error processing file {file}: {e}")
+                with connection.cursor() as c:
+                    c.execute("SELECT user_id FROM student_page1")
+                    for row in c.fetchall():
+                        notify('student', row[0], 'circular', 'New Circular', f'New circular: {title}', '/student_circular/')
+                    c.execute("SELECT user_id FROM student_page1")
+                    for row in c.fetchall():
+                        notify('parent', row[0], 'circular', 'New Circular', f'New circular: {title}', '/parent-student-circular/')
+            except Exception:
+                pass
+
+        messages.success(request, 'Circular uploaded successfully.')
+        return redirect('admin_circular_upload')
+
+    # Prepare circulars list for display
+    circulars = _list_circulars(CIRCULARS_DIR, '/media/circulars')
+    for circ in circulars:
+        if circ['target'] == 'specific' and circ['class_name']:
+            circ['target'] = f"Class: {circ['class_name'].capitalize()}, Section: {circ['section'].capitalize()}"
+        else:
+            circ['target'] = 'All'
 
     # Filter by date if parameter provided
     date_str = request.GET.get('date')
@@ -1498,62 +1517,36 @@ def student_circular(request):
     filter_type = request.POST.get('filter_type', 'all')
     print(f"Filter type: {filter_type}")
 
+    # Circulars are uploaded to MEDIA_ROOT/circulars (see admin/teacher upload
+    # views), not the static uploads folder — reading from CIRCULARS_DIR here.
+    CIRCULARS_DIR = os.path.join(settings.MEDIA_ROOT, 'circulars')
     circulars = []
-    for file in os.listdir(UPLOAD_DIR):
-        if file.endswith(('.jpg', '.png', '.jpeg', '.webp', '.gif')):
-            full_path = os.path.join(UPLOAD_DIR, file)
-            if not os.path.exists(full_path):
-                print(f"Image file missing in student view: {full_path}")
-                continue
+    for circ in _list_circulars(CIRCULARS_DIR, '/media/circulars'):
+        target = circ['target']
+        class_name = circ['class_name']
+        section = circ['section']
 
-            title_file = f"{file}.txt"
-            title_path = os.path.join(UPLOAD_DIR, title_file)
-            title = "Untitled"
-            target = "all"
-            class_name = ""
-            section = ""
+        # Filter circulars based on filter_type
+        include_circular = False
+        if filter_type == 'all':
+            if target == "all" or (
+                target == "specific" and
+                student_class and student_section and
+                class_name == student_class and section == student_section
+            ):
+                include_circular = True
+        elif filter_type == 'specific':
+            if target == "specific" and student_class and student_section and class_name == student_class and section == student_section:
+                include_circular = True
 
-            if os.path.exists(title_path):
-                try:
-                    with open(title_path, 'r') as f:
-                        lines = f.readlines()
-                        title = lines[0].strip() if lines else "Untitled"
-                        target = lines[1].strip().lower() if len(lines) > 1 else "all"
-                        if target == 'specific' and len(lines) >= 4:
-                            class_name = normalize_value(lines[2])
-                            section = normalize_value(lines[3])
-                        print(f"Circular {file}: title={title}, target={target}, class={class_name}, section={section}")
-                except Exception as e:
-                    print(f"Error reading metadata from {title_path}: {e}")
-                    continue
-
-            # Filter circulars based on filter_type
-            include_circular = False
-            if filter_type == 'all':
-                if target == "all" or (
-                    target == "specific" and
-                    student_class and student_section and
-                    class_name == student_class and section == student_section
-                ):
-                    include_circular = True
-            elif filter_type == 'specific':
-                if target == "specific" and student_class and student_section and class_name == student_class and section == student_section:
-                    include_circular = True
-
-            if include_circular:
-                try:
-                    created_at = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
-                    image_url = f"/static/uploads/{file}"  # Consistent path
-                    print(f"Included circular: {file}, image_url: {image_url}, full_path: {full_path}")
-                    display_target = "All" if target == "all" else f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
-                    circulars.append({
-                        'title': title,
-                        'image_url': image_url,
-                        'date': created_at,
-                        'target': display_target
-                    })
-                except Exception as e:
-                    print(f"Error processing file {file}: {e}")
+        if include_circular:
+            display_target = "All" if target == "all" else f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
+            circulars.append({
+                'title': circ['title'],
+                'image_url': circ['image_url'],
+                'date': circ['date'],
+                'target': display_target
+            })
 
     # Sort by newest first
     circulars = sorted(circulars, key=lambda x: x['date'], reverse=True)
@@ -1579,40 +1572,37 @@ def teacher_circular_upload(request):
         class_name = request.POST.get('class')
         section = request.POST.get('section')
 
-        # Validate inputs
-        if not title or not image or not class_name or not section:
-            messages.error(request, 'Please provide title, image, class, and section.')
+        # Validate inputs — the attachment is optional (uploads sometimes fail on
+        # the VPS), so a circular can be posted as a title/text-only notice.
+        if not title or not class_name or not section:
+            messages.error(request, 'Please provide title, class, and section.')
             return redirect('teacher_circular_upload')
 
         # Normalize class and section
         class_name = normalize_value(class_name)
         section = normalize_value(section)
 
-        # Generate a unique filename to avoid conflicts
-        filename = f"{uuid.uuid4().hex}_{image.name}"
-        fs = FileSystemStorage(location=CIRCULARS_DIR, base_url='/media/circulars/')
-        try:
-            filename = fs.save(filename, image)
-            full_path = os.path.join(CIRCULARS_DIR, filename)
-            if os.path.exists(full_path):
-                print(f"Image saved successfully: {full_path}")
-            else:
-                print(f"Image save failed: {full_path}")
-                messages.error(request, 'Failed to save the image.')
+        if image:
+            filename = f"{uuid.uuid4().hex}_{image.name}"
+            fs = FileSystemStorage(location=CIRCULARS_DIR, base_url='/media/circulars/')
+            try:
+                filename = fs.save(filename, image)
+                full_path = os.path.join(CIRCULARS_DIR, filename)
+                if not os.path.exists(full_path):
+                    messages.error(request, 'Failed to save the image.')
+                    return redirect('teacher_circular_upload')
+            except Exception as e:
+                print(f"Error saving image {filename}: {e}")
+                messages.error(request, 'Error saving the image.')
                 return redirect('teacher_circular_upload')
-            image_url = f"/media/circulars/{filename}"  # Consistent path
-            print(f"Generated image_url: {image_url}")
-        except Exception as e:
-            print(f"Error saving image {filename}: {e}")
-            messages.error(request, 'Error saving the image.')
-            return redirect('teacher_circular_upload')
+        else:
+            filename = uuid.uuid4().hex
 
         # Save circular metadata (title, target, class, section) in a unique file
         metadata_file_path = os.path.join(CIRCULARS_DIR, f"{filename}.txt")
         try:
             with open(metadata_file_path, 'w') as f:
                 f.write(f"{title}\nspecific\n{class_name}\n{section}")
-            print(f"Saved metadata for {filename}: title={title}, target=specific, class={class_name}, section={section}")
         except Exception as e:
             print(f"Error saving metadata for {filename}: {e}")
             messages.error(request, 'Error saving circular metadata.')
@@ -1627,46 +1617,12 @@ def teacher_circular_upload(request):
         return redirect('teacher_circular_upload')
 
     # Prepare circulars list for display
-    circulars = []
-    for file in os.listdir(CIRCULARS_DIR):
-        if file.endswith(('.jpg', '.png', '.jpeg', '.webp', '.gif')):
-            full_path = os.path.join(CIRCULARS_DIR, file)
-            if not os.path.exists(full_path):
-                print(f"Image file missing: {full_path}")
-                continue
-
-            title_file = f"{file}.txt"
-            title_path = os.path.join(CIRCULARS_DIR, title_file)
-            title = "Untitled"
-            target = "All"
-            class_name = ""
-            section = ""
-
-            if os.path.exists(title_path):
-                try:
-                    with open(title_path, 'r') as f:
-                        lines = f.readlines()
-                        title = lines[0].strip() if lines else "Untitled"
-                        target = lines[1].strip() if len(lines) > 1 else "All"
-                        if target == 'specific' and len(lines) >= 4:
-                            class_name = normalize_value(lines[2])
-                            section = normalize_value(lines[3])
-                            target = f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
-                except Exception as e:
-                    print(f"Error reading title from {title_path}: {e}")
-
-            try:
-                created_at = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
-                image_url = f"/media/circulars/{file}"  # Consistent path
-                print(f"Listing circular: {file}, image_url: {image_url}, full_path: {full_path}")
-                circulars.append({
-                    'title': title,
-                    'image_url': image_url,
-                    'date': created_at,
-                    'target': target
-                })
-            except Exception as e:
-                print(f"Error processing file {file}: {e}")
+    circulars = _list_circulars(CIRCULARS_DIR, '/media/circulars')
+    for circ in circulars:
+        if circ['target'] == 'specific' and circ['class_name']:
+            circ['target'] = f"Class: {circ['class_name'].capitalize()}, Section: {circ['section'].capitalize()}"
+        else:
+            circ['target'] = 'All'
 
     # Sort by newest first
     circulars = sorted(circulars, key=lambda x: x['date'], reverse=True)
@@ -6905,46 +6861,34 @@ def teacher_login(request):
         teacher_id = request.POST.get("id", "").strip()  # Trim user input
         password = request.POST.get("password", "").strip()  # Trim user input
 
-        # Optional: Temp debug logs (remove after fixing)
-        print(f"DEBUG: Input - Teacher ID: '{repr(teacher_id)}' (len: {len(teacher_id)})")
-        print(f"DEBUG: Input - Password: '{repr(password)}' (len: {len(password)})")
-
-        # Check user credentials in MySQL with TRIM for exact match
+        # Login is by Teacher/Facilitator ID + registered mobile number.
+        # The registered number lives in teacher_profiles.mobile_number (set via
+        # admin add-teacher form / bulk upload); fall back to teachers.password
+        # for accounts that never got a teacher_profiles row (e.g. self-signup,
+        # where the numeric password field is itself the mobile number).
         with connection.cursor() as cursor:
-            # Optional: Temp debug - find similar teachers (remove after)
             cursor.execute(
-                "SELECT id, name, LENGTH(id), LENGTH(password) FROM teachers WHERE id LIKE %s OR TRIM(password) LIKE %s", 
-                (f"%{teacher_id}%", f"%{password}%")
-            )
-            similar_teachers = cursor.fetchall()
-            if similar_teachers:
-                print("DEBUG: Similar teachers found:")
-                for t in similar_teachers:
-                    print(f"  ID: {t[0]}, Name: '{t[1]}', ID len: {t[2]}, Pass len: {t[3]}")
-
-            # Exact match query with TRIM (id likely numeric, but safe)
-            cursor.execute(
-                "SELECT id, name, password FROM teachers WHERE id = %s AND TRIM(password) = %s", 
-                (teacher_id, password)
+                """
+                SELECT t.id, t.name, TRIM(t.password), TRIM(tp.mobile_number)
+                FROM teachers t
+                LEFT JOIN teacher_profiles tp ON tp.teacher_id = t.id
+                WHERE t.id = %s
+                """,
+                (teacher_id,)
             )
             user = cursor.fetchone()
 
         if user:
-            # Store trimmed values in session
-            clean_name = user[1].strip()
-            request.session["teacher_id"] = user[0]
-            request.session["username"] = clean_name
-            
-            # Optional: Temp success log (remove after)
-            print(f"DEBUG: SUCCESS for Teacher '{clean_name}' (ID: {user[0]})")
-            
-            return HttpResponse("Success")
+            db_id, name, stored_password, mobile_number = user
+            valid_passwords = {p for p in (stored_password, mobile_number) if p}
+            if password in valid_passwords:
+                clean_name = name.strip()
+                request.session["teacher_id"] = db_id
+                request.session["username"] = clean_name
+                return HttpResponse("Success")
 
-        # Optional: Temp failure log (remove after)
-        print("DEBUG: No exact match found")
-        
         # If credentials are invalid, send error message
-        return HttpResponse("Invalid credentials!")  
+        return HttpResponse("Invalid credentials!")
 
     return render(request, "users/teacher_login.html")
 
@@ -7678,6 +7622,177 @@ def admin_generate_attendance_pdf(request):
     return response
 
 
+def _ensure_teacher_attendance_table():
+    try:
+        with connection.cursor() as c:
+            c.execute("""
+                CREATE TABLE IF NOT EXISTS teacher_attendance (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    teacher_id INT NOT NULL,
+                    name VARCHAR(200),
+                    date DATE NOT NULL,
+                    status VARCHAR(20) DEFAULT 'present',
+                    marked_by VARCHAR(20) DEFAULT 'admin',
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    UNIQUE KEY uq_teacher_date (teacher_id, date),
+                    INDEX idx_date (date)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """)
+            connection.commit()
+    except Exception:
+        pass
+
+
+def admin_teacher_attendance_portal(request):
+    """Admin portal to mark/view every teacher's attendance for a given date.
+    Admin marking always has final say — it overwrites any self-marked record
+    for the same teacher/date (see admin_mark_teacher_attendance)."""
+    if not request.session.get('admin_id'):
+        messages.error(request, 'Please log in to access this page.')
+        return redirect('admin_login')
+
+    _ensure_teacher_attendance_table()
+
+    today_date = datetime.now().date().strftime('%Y-%m-%d')
+    selected_date = request.GET.get('date', today_date)
+
+    teachers = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT t.id, t.name, t.subject, ta.status, ta.marked_by
+                FROM teachers t
+                LEFT JOIN teacher_attendance ta ON ta.teacher_id = t.id AND ta.date = %s
+                ORDER BY t.name
+            """, [selected_date])
+            teachers = [
+                {
+                    'id': row[0],
+                    'name': row[1],
+                    'subject': row[2] or 'N/A',
+                    'status': row[3] or '',
+                    'marked_by': row[4] or ''
+                } for row in cursor.fetchall()
+            ]
+    except Exception as e:
+        messages.error(request, f'Error loading teachers: {e}')
+
+    return render(request, 'users/admin_teacher_attendance.html', {
+        'teachers': teachers,
+        'selected_date': selected_date,
+    })
+
+
+def admin_mark_teacher_attendance(request):
+    if not request.session.get('admin_id'):
+        messages.error(request, 'Please log in to access this page.')
+        return redirect('admin_login')
+
+    if request.method != 'POST':
+        return redirect('admin_teacher_attendance_portal')
+
+    _ensure_teacher_attendance_table()
+
+    selected_date = request.POST.get('date')
+    if not selected_date:
+        messages.error(request, 'Please select a date.')
+        return redirect('admin_teacher_attendance_portal')
+
+    with connection.cursor() as cursor:
+        for key, value in request.POST.items():
+            if not key.startswith('teacher_'):
+                continue
+            teacher_id = key.split('_', 1)[1]
+            status = value
+
+            cursor.execute("SELECT name FROM teachers WHERE id = %s", [teacher_id])
+            row = cursor.fetchone()
+            if not row:
+                continue
+            name = row[0]
+
+            cursor.execute(
+                """
+                INSERT INTO teacher_attendance (teacher_id, name, date, status, marked_by)
+                VALUES (%s, %s, %s, %s, 'admin')
+                ON DUPLICATE KEY UPDATE status = VALUES(status), name = VALUES(name), marked_by = 'admin'
+                """,
+                [teacher_id, name, selected_date, status]
+            )
+
+    messages.success(request, f'Teacher attendance updated for {selected_date}.')
+    return redirect(f"/admin_teacher_attendance/?date={selected_date}")
+
+
+def teacher_mark_own_attendance(request):
+    """Teacher self-check-in, restricted to today's date only. Admin can still
+    override this at any time via admin_mark_teacher_attendance (full control)."""
+    teacher_id = request.session.get('teacher_id')
+    if not teacher_id:
+        return JsonResponse({'success': False, 'message': 'Please log in.'}, status=401)
+
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'POST required'}, status=405)
+
+    status = request.POST.get('status', 'present').lower()
+    if status not in ('present', 'absent', 'late'):
+        return JsonResponse({'success': False, 'message': 'Invalid status'}, status=400)
+
+    _ensure_teacher_attendance_table()
+
+    today_str = datetime.now().date().strftime('%Y-%m-%d')
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT name FROM teachers WHERE id = %s", [teacher_id])
+        row = cursor.fetchone()
+        name = row[0] if row else ''
+
+        cursor.execute(
+            """
+            INSERT INTO teacher_attendance (teacher_id, name, date, status, marked_by)
+            VALUES (%s, %s, %s, %s, 'self')
+            ON DUPLICATE KEY UPDATE status = VALUES(status), name = VALUES(name), marked_by = 'self'
+            """,
+            [teacher_id, name, today_str, status]
+        )
+
+    return JsonResponse({'success': True, 'status': status, 'date': today_str})
+
+
+def get_teacher_own_attendance(request):
+    """Returns the logged-in teacher's attendance status for today, plus recent history."""
+    teacher_id = request.session.get('teacher_id')
+    if not teacher_id:
+        return JsonResponse({'success': False, 'message': 'Please log in.'}, status=401)
+
+    _ensure_teacher_attendance_table()
+
+    today_str = datetime.now().date().strftime('%Y-%m-%d')
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT status, marked_by FROM teacher_attendance WHERE teacher_id = %s AND date = %s",
+            [teacher_id, today_str]
+        )
+        today_row = cursor.fetchone()
+
+        cursor.execute(
+            """
+            SELECT date, status, marked_by FROM teacher_attendance
+            WHERE teacher_id = %s ORDER BY date DESC LIMIT 30
+            """,
+            [teacher_id]
+        )
+        history = [
+            {'date': r[0].strftime('%Y-%m-%d'), 'status': r[1], 'marked_by': r[2]}
+            for r in cursor.fetchall()
+        ]
+
+    return JsonResponse({
+        'success': True,
+        'today_status': today_row[0] if today_row else None,
+        'today_marked_by': today_row[1] if today_row else None,
+        'history': history,
+    })
+
 
 def student_portal(request):
     if "user_id" not in request.session:
@@ -7829,6 +7944,38 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import connection
 
+def _ensure_parent_login_activity_table():
+    try:
+        with connection.cursor() as c:
+            c.execute("""
+                CREATE TABLE IF NOT EXISTS parent_login_activity (
+                    user_id INT PRIMARY KEY,
+                    last_login DATETIME,
+                    login_count INT DEFAULT 0
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            """)
+            connection.commit()
+    except Exception:
+        pass
+
+
+def _record_parent_login(user_id):
+    """Tracks when a parent account actually logs in, so admin can see real
+    adoption (not just whether the account is capable of logging in)."""
+    if not user_id:
+        return
+    try:
+        _ensure_parent_login_activity_table()
+        with connection.cursor() as c:
+            c.execute("""
+                INSERT INTO parent_login_activity (user_id, last_login, login_count)
+                VALUES (%s, NOW(), 1)
+                ON DUPLICATE KEY UPDATE last_login = NOW(), login_count = login_count + 1
+            """, [user_id])
+    except Exception:
+        pass
+
+
 def parent_login(request):
     if request.method == "POST":
         admission_number = request.POST.get("username", "").strip()
@@ -7838,15 +7985,18 @@ def parent_login(request):
             messages.error(request, "Invalid Admission Number. Contact Administration.")
             return redirect('parent_login')
 
-        # Path 1: parent_signup accounts — student_page3.contact == parent's own contact
+        # Path 1: parent_signup accounts — student_page3.contact == parent's own contact,
+        # or either parent's registered mobile from student_page4 (father_contact / mother_contact)
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT u.id, sp1.admission_number
                 FROM users u
                 JOIN student_page1 sp1 ON u.id = sp1.user_id
                 JOIN student_page3 sp3 ON u.id = sp3.user_id
-                WHERE sp1.admission_number = %s AND sp3.contact = %s
-            """, (admission_number, contact))
+                LEFT JOIN student_page4 sp4 ON u.id = sp4.user_id
+                WHERE sp1.admission_number = %s
+                  AND (sp3.contact = %s OR sp4.father_contact = %s OR sp4.mother_contact = %s)
+            """, (admission_number, contact, contact, contact))
             user = cursor.fetchone()
 
         if user:
@@ -7867,6 +8017,7 @@ def parent_login(request):
             request.session["user_id"] = user[0]
             request.session["parent_id"] = user[0]
             request.session["username"] = user[1]
+            _record_parent_login(user[0])
             return HttpResponse("Success")
 
         # Path 2: admin-activated parent_registrations.
@@ -7910,6 +8061,7 @@ def parent_login(request):
                 request.session["parent_id"] = student_row[0]
                 request.session["username"] = student_row[1]
                 request.session["is_guest_parent"] = True
+                _record_parent_login(student_row[0])
                 return HttpResponse("Success")
             else:
                 # Credentials are valid but student not yet in student_page1 —
@@ -11272,64 +11424,35 @@ def parent_student_circular(request):
     print(f"Filter type: {filter_type}")
 
     circulars = []
-    for file in os.listdir(CIRCULARS_DIR):
-        if file.endswith(('.jpg', '.png', '.jpeg', '.webp', '.gif')):
-            full_path = os.path.join(CIRCULARS_DIR, file)
-            if not os.path.exists(full_path):
-                print(f"Image file missing in parent student view: {full_path}")
-                continue
+    for circ in _list_circulars(CIRCULARS_DIR, '/media/circulars'):
+        target = circ['target']
+        class_name = circ['class_name']
+        section = circ['section']
 
-            title_file = f"{file}.txt"
-            title_path = os.path.join(CIRCULARS_DIR, title_file)
-            title = "Untitled"
-            target = "all"
-            class_name = ""
-            section = ""
+        # Filter circulars based on filter_type
+        include_circular = False
 
-            if os.path.exists(title_path):
-                try:
-                    with open(title_path, 'r') as f:
-                        lines = f.readlines()
-                        title = lines[0].strip() if lines else "Untitled"
-                        target = lines[1].strip().lower() if len(lines) > 1 else "all"
-                        if target == 'specific' and len(lines) >= 4:
-                            class_name = normalize_value(lines[2])
-                            section = normalize_value(lines[3])
-                        print(f"Circular {file}: title={title}, target={target}, class={class_name}, section={section}")
-                except Exception as e:
-                    print(f"Error reading metadata from {title_path}: {e}")
-                    continue
+        section_matches = (section == "all" or section == student_section)
 
-            # Filter circulars based on filter_type
-            include_circular = False
-            
-            section_matches = (section == "all" or section == student_section)
-            
-            if filter_type == 'all':
-                if target == "all" or (
-                    target == "specific" and
-                    student_class and
-                    class_name == student_class and section_matches
-                ):
-                    include_circular = True
-            elif filter_type == 'specific':
-                if target == "specific" and student_class and class_name == student_class and section_matches:
-                    include_circular = True
+        if filter_type == 'all':
+            if target == "all" or (
+                target == "specific" and
+                student_class and
+                class_name == student_class and section_matches
+            ):
+                include_circular = True
+        elif filter_type == 'specific':
+            if target == "specific" and student_class and class_name == student_class and section_matches:
+                include_circular = True
 
-            if include_circular:
-                try:
-                    created_at = datetime.fromtimestamp(os.path.getctime(full_path)).strftime('%Y-%m-%d %H:%M:%S')
-                    image_url = f"/media/circulars/{file}"  # Consistent path
-                    print(f"Included circular: {file}, image_url: {image_url}, full_path: {full_path}")
-                    display_target = "All" if target == "all" else f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
-                    circulars.append({
-                        'title': title,
-                        'image_url': image_url,
-                        'date': created_at,
-                        'target': display_target
-                    })
-                except Exception as e:
-                    print(f"Error processing file {file}: {e}")
+        if include_circular:
+            display_target = "All" if target == "all" else f"Class: {class_name.capitalize()}, Section: {section.capitalize()}"
+            circulars.append({
+                'title': circ['title'],
+                'image_url': circ['image_url'],
+                'date': circ['date'],
+                'target': display_target
+            })
 
     # Sort by newest first
     circulars = sorted(circulars, key=lambda x: x['date'], reverse=True)
@@ -13867,6 +13990,92 @@ def admin_parent_registrations(request):
         'guest_accounts': guest_accounts,
         'classes': classes,
         'class_map_json': _json.dumps(class_map),
+    })
+
+
+def admin_parent_registration_status(request):
+    """Master Data report: for every admitted student, shows whether the parent
+    account is actually usable (a contact number is on file, so login can
+    succeed) vs the student entry is incomplete/newly-added (no contact yet,
+    so the parent can't log in). Also shows real adoption — whether that
+    parent has actually logged in — using parent_login_activity, which is
+    recorded by parent_login()."""
+    if not request.session.get('admin_id'):
+        messages.error(request, 'Please log in to access this page.')
+        return redirect('admin_login')
+
+    _ensure_parent_login_activity_table()
+
+    selected_class = request.GET.get('class', '')
+    status_filter = request.GET.get('status', '')  # '', 'registered', 'not_registered', 'active', 'inactive'
+
+    rows = []
+    classes = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT class FROM student_page1 WHERE class IS NOT NULL AND class != '' ORDER BY class")
+            classes = [r[0] for r in cursor.fetchall()]
+
+            query = """
+                SELECT sp1.user_id, sp1.name, sp1.admission_number, sp1.class, sp1.section,
+                       sp3.contact, sp4.father_contact, sp4.mother_contact,
+                       pla.last_login, pla.login_count
+                FROM student_page1 sp1
+                LEFT JOIN student_page3 sp3 ON sp1.user_id = sp3.user_id
+                LEFT JOIN student_page4 sp4 ON sp1.user_id = sp4.user_id
+                LEFT JOIN parent_login_activity pla ON sp1.user_id = pla.user_id
+            """
+            params = []
+            if selected_class:
+                query += " WHERE sp1.class = %s"
+                params.append(selected_class)
+            query += " ORDER BY sp1.class, sp1.name"
+
+            cursor.execute(query, params)
+            for r in cursor.fetchall():
+                (user_id, name, admission_number, cls, section,
+                 contact, father_contact, mother_contact, last_login, login_count) = r
+
+                is_registered = bool(contact or father_contact or mother_contact)
+                has_logged_in = last_login is not None
+
+                rows.append({
+                    'user_id': user_id,
+                    'name': name,
+                    'admission_number': admission_number,
+                    'class': cls,
+                    'section': section or 'N/A',
+                    'is_registered': is_registered,
+                    'has_logged_in': has_logged_in,
+                    'last_login': last_login.strftime('%Y-%m-%d %H:%M') if last_login else None,
+                    'login_count': login_count or 0,
+                })
+    except Exception as e:
+        messages.error(request, f'Error loading parent registration status: {e}')
+
+    if status_filter == 'registered':
+        rows = [r for r in rows if r['is_registered']]
+    elif status_filter == 'not_registered':
+        rows = [r for r in rows if not r['is_registered']]
+    elif status_filter == 'active':
+        rows = [r for r in rows if r['has_logged_in']]
+    elif status_filter == 'inactive':
+        rows = [r for r in rows if r['is_registered'] and not r['has_logged_in']]
+
+    total_count = len(rows)
+    registered_count = sum(1 for r in rows if r['is_registered'])
+    not_registered_count = total_count - registered_count
+    active_count = sum(1 for r in rows if r['has_logged_in'])
+
+    return render(request, 'users/admin_parent_registration_status.html', {
+        'rows': rows,
+        'classes': classes,
+        'selected_class': selected_class,
+        'status_filter': status_filter,
+        'total_count': total_count,
+        'registered_count': registered_count,
+        'not_registered_count': not_registered_count,
+        'active_count': active_count,
     })
 
 

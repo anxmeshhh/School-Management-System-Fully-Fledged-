@@ -782,6 +782,16 @@
                 <p id="quote" class="quote"></p>
             </div>
 
+            <!-- My Attendance Today Card -->
+            <div class="card-container" style="text-align: left; padding: 2rem 2.5rem;">
+                <h2 style="margin-bottom: 1rem; font-size: 1.4rem;">
+                    My Attendance Today
+                </h2>
+                <div id="attendanceWidget">
+                    <p style="color: var(--text-light);">Loading...</p>
+                </div>
+            </div>
+
             <!-- Assigned Roles Card -->
             <div class="card-container" style="text-align: left; padding: 2.5rem;">
                 <h2 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; font-size: 1.5rem;">
@@ -845,6 +855,73 @@
 
         updateQuote();
         setInterval(updateQuote, 120000);
+
+        function getCookie(name) {
+            let val = null;
+            if (document.cookie) {
+                document.cookie.split(';').forEach(c => {
+                    c = c.trim();
+                    if (c.startsWith(name + '=')) val = decodeURIComponent(c.substring(name.length + 1));
+                });
+            }
+            return val;
+        }
+
+        function renderAttendanceWidget(data) {
+            const el = document.getElementById('attendanceWidget');
+            const status = data.today_status;
+            const markedBy = data.today_marked_by;
+            if (status) {
+                const label = status.charAt(0).toUpperCase() + status.slice(1);
+                const badgeColor = status === 'present' ? '#16a34a' : (status === 'late' ? '#f97316' : '#dc2626');
+                const byText = markedBy === 'admin' ? ' (set by admin)' : '';
+                el.innerHTML = `
+                    <p style="font-size: 1.05rem;">You are marked <strong style="color:${badgeColor};">${label}</strong> today${byText}.</p>
+                    <div style="display:flex; gap:0.75rem; margin-top:1rem; flex-wrap:wrap;">
+                        <button type="button" onclick="markMyAttendance('present')" style="padding:0.6rem 1.25rem;border-radius:8px;border:2px solid #16a34a;background:#fff;color:#16a34a;font-weight:600;cursor:pointer;">Present</button>
+                        <button type="button" onclick="markMyAttendance('late')" style="padding:0.6rem 1.25rem;border-radius:8px;border:2px solid #f97316;background:#fff;color:#f97316;font-weight:600;cursor:pointer;">Late</button>
+                        <button type="button" onclick="markMyAttendance('absent')" style="padding:0.6rem 1.25rem;border-radius:8px;border:2px solid #dc2626;background:#fff;color:#dc2626;font-weight:600;cursor:pointer;">Absent</button>
+                    </div>`;
+            } else {
+                el.innerHTML = `
+                    <p style="color: var(--text-light);">You haven't marked your attendance for today yet.</p>
+                    <div style="display:flex; gap:0.75rem; margin-top:1rem; flex-wrap:wrap;">
+                        <button type="button" onclick="markMyAttendance('present')" style="padding:0.6rem 1.25rem;border-radius:8px;border:none;background:#16a34a;color:#fff;font-weight:600;cursor:pointer;">Present</button>
+                        <button type="button" onclick="markMyAttendance('late')" style="padding:0.6rem 1.25rem;border-radius:8px;border:none;background:#f97316;color:#fff;font-weight:600;cursor:pointer;">Late</button>
+                        <button type="button" onclick="markMyAttendance('absent')" style="padding:0.6rem 1.25rem;border-radius:8px;border:none;background:#dc2626;color:#fff;font-weight:600;cursor:pointer;">Absent</button>
+                    </div>`;
+            }
+        }
+
+        function loadAttendanceWidget() {
+            fetch('/teacher/get-own-attendance/')
+                .then(r => r.json())
+                .then(data => { if (data.success) renderAttendanceWidget(data); })
+                .catch(() => {
+                    document.getElementById('attendanceWidget').innerHTML = '<p style="color:#dc2626;">Could not load attendance status.</p>';
+                });
+        }
+
+        window.markMyAttendance = function (status) {
+            const fd = new URLSearchParams();
+            fd.append('status', status);
+            fetch('/teacher/mark-own-attendance/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': getCookie('csrftoken') },
+                body: fd
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        renderAttendanceWidget({ today_status: data.status, today_marked_by: 'self' });
+                    } else {
+                        alert(data.message || 'Could not mark attendance.');
+                    }
+                })
+                .catch(() => alert('Network error while marking attendance.'));
+        };
+
+        loadAttendanceWidget();
 
         document.addEventListener('DOMContentLoaded', () => {
             // Pulse cards

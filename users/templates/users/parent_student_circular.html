@@ -718,6 +718,7 @@
                                     Target: {{ circular.target }}
                                 </small>
                             </div>
+                            {% if circular.image_url %}
                             <img src="{{ circular.image_url }}" alt="{{ circular.title }}" onclick="openModal('{{ circular.image_url }}', '{{ circular.title }}')">
 
                             <div class="circular-actions">
@@ -728,6 +729,12 @@
                                     <i class="fas fa-download"></i> Download
                                 </a>
                             </div>
+                            {% else %}
+                            <div class="no-circulars" style="padding: 8px 0 0; text-align: left;">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Text notice — no attachment.</span>
+                            </div>
+                            {% endif %}
                         </div>
                         {% empty %}
                         <div class="no-circulars">

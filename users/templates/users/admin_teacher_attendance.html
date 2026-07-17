@@ -1,0 +1,554 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manavargal School Management System - Teacher Attendance Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        background: var(--white);
+        min-height: 100vh;
+        color: var(--text-color);
+        overflow: hidden;
+    }
+
+    h1, h2, h3 {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    :root {
+        --primary-color: #00a676;
+        --primary-hover: #00b88d;
+        --sidebar-bg: #f0f9f4;
+        --sidebar-border: #a8d5c2;
+        --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --border-color: #adb5bd;
+        --text-color: #495057;
+        --text-light: #868e96;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --border-radius: 16px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --dull-highlighter: #d4edda;
+    }
+
+    html {
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+    }
+
+    .sidebar {
+        width: 280px;
+        height: 100vh;
+        background: var(--sidebar-bg);
+        color: var(--text-color);
+        overflow-y: auto;
+        box-shadow: var(--shadow-md);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        transition: var(--transition);
+        border-right: 2px solid var(--sidebar-border);
+    }
+
+    .sidebar-header {
+        padding: 2rem 1.5rem;
+        background: var(--white);
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 2px solid var(--sidebar-border);
+    }
+
+    .logo-container {
+        width: 100px;
+        height: 80px;
+        background: var(--white);
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--sidebar-border);
+    }
+
+    .logo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .sidebar-nav {
+        padding: 1rem 0;
+    }
+
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: var(--transition);
+        font-size: 1.05rem;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+    }
+
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+        background: var(--dull-highlighter);
+        border-left: 3px solid var(--primary-color);
+        color: var(--primary-color);
+        transform: translateX(4px);
+    }
+
+    .sidebar-nav a img {
+        margin-right: 1rem;
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .menu-toggle {
+        display: none;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        background: var(--white);
+        border: 2px solid var(--sidebar-border);
+        cursor: pointer;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1001;
+        padding: 0.75rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        width: 50px;
+        height: 50px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: var(--transition);
+        pointer-events: none;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .page-wrapper {
+        margin-left: 280px;
+        min-height: 100vh;
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 20px;
+    }
+
+    .header {
+        background: var(--white);
+        padding: 1.5rem;
+        border: 2px solid #495057;
+        box-shadow: var(--shadow-md);
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+    }
+
+    .header-text {
+        display: block;
+        text-align: center;
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 1.15rem;
+    }
+
+    .main-content {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        padding: 2rem;
+    }
+
+    .alert-message { margin-bottom: 1.5rem; }
+
+    .alert-message .error {
+        background: #fee2e2; color: #991b1b; padding: 0.75rem; border-radius: 8px;
+        border: 2px solid #ef4444; margin-bottom: 1rem;
+    }
+
+    .alert-message .success {
+        background: #d4edda; color: var(--primary-color); padding: 0.75rem; border-radius: 8px;
+        border: 2px solid var(--primary-color); margin-bottom: 1rem;
+    }
+
+    .section {
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+    }
+
+    h2 {
+        color: var(--primary-color);
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label {
+        display: block; color: var(--text-color); font-size: 0.95rem;
+        font-weight: 500; margin-bottom: 0.5rem;
+    }
+    .form-group input[type="date"] {
+        padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color);
+        background: var(--white); font-size: 0.95rem; cursor: pointer;
+    }
+
+    .form-row { display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
+
+    .load-btn {
+        padding: 0.75rem 1.5rem; background: var(--primary-color); border: 2px solid var(--border-color);
+        border-radius: 8px; color: var(--white); font-size: 0.95rem; font-weight: 500; cursor: pointer;
+        display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .load-btn:hover { background: var(--primary-hover); }
+
+    .table-header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;
+    }
+
+    .stat-badge {
+        padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600;
+        display: inline-flex; align-items: center; gap: 0.5rem; border: 2px solid;
+    }
+    .stat-badge.total { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
+    .stat-badge.present { background: #d1fae5; border-color: #10b981; color: #065f46; }
+    .stat-badge.absent { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+    .stat-badge.late { background: #ffedd5; border-color: #f97316; color: #c2410c; }
+
+    .table-container {
+        overflow-x: auto; border-radius: 8px; border: 2px solid var(--border-color);
+        margin-bottom: 1.5rem; background: var(--white);
+    }
+
+    .attendance-table { width: 100%; min-width: 700px; border-collapse: collapse; background: var(--white); }
+    .attendance-table th, .attendance-table td {
+        padding: 1rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem;
+    }
+    .attendance-table th {
+        background: linear-gradient(135deg, #f0f9f7 0%, #f8fcfb 100%);
+        color: var(--primary-color); font-weight: 600; border-bottom: 2px solid var(--primary-color);
+    }
+    .attendance-table tbody tr:nth-child(even) { background: #fafbfc; }
+    .attendance-table tbody tr:hover { background: #f0f9f4; }
+
+    .teacher-name-cell { font-weight: 500; color: #1e293b; }
+
+    .marked-by-tag {
+        font-size: 11px; margin-left: 6px; padding: 1px 6px; border-radius: 4px; font-weight: 600;
+    }
+    .marked-by-tag.self { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+    .marked-by-tag.admin { background: #ede9fe; color: #6d28d9; border: 1px solid #c4b5fd; }
+
+    .radio-att-group { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+    .radio-att-lbl {
+        display: inline-flex; align-items: center; gap: 4px; padding: 6px 14px; border-radius: 7px;
+        cursor: pointer; font-size: 0.82rem; font-weight: 600; transition: all 0.18s; opacity: 0.52;
+        border: 2px solid transparent; user-select: none; white-space: nowrap;
+    }
+    .radio-att-lbl input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0; }
+    .radio-att-lbl.selected, .radio-att-lbl:has(input:checked) {
+        opacity: 1; box-shadow: 0 2px 10px rgba(0,0,0,0.22); transform: scale(1.06);
+        font-weight: 700; border-color: rgba(255,255,255,0.5);
+    }
+    .radio-att-lbl:hover { opacity: 0.82; }
+    .present-lbl { background: #16a34a; color: #fff; }
+    .absent-lbl  { background: #dc2626; color: #fff; }
+    .late-lbl    { background: #f97316; color: #fff; }
+
+    .no-requests {
+        color: var(--primary-color); font-size: 0.9rem; margin-top: 0.5rem; text-align: center;
+        padding: 1.5rem; background: var(--light-bg); border-radius: 8px; border: 2px solid var(--border-color);
+    }
+
+    .action-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; justify-content: center; }
+
+    @media (max-width: 1024px) {
+        .sidebar { width: 250px; }
+        .page-wrapper { margin-left: 250px; }
+    }
+
+    @media (max-width: 768px) {
+        .menu-toggle { display: flex; }
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-overlay { display: block; }
+        .page-wrapper { margin-left: 0; }
+        .container { padding: 1.5rem 15px; }
+        .main-content { padding: 1.5rem; }
+        .form-row { flex-direction: column; align-items: stretch; }
+        .load-btn { width: 100%; }
+        .table-header { flex-direction: column; align-items: flex-start; }
+    }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'admin_dashboard' %}" style="text-decoration: none; color: inherit;">
+                <div class="logo-container">
+                    <img src="{% static 'users/images/adminlogo.jpg' %}" alt="School Logo">
+                </div>
+            </a>
+            <span>Manavargal SMS</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'admin_master' %}">
+                <img src="https://img.icons8.com/fluency/24/home.png" alt="Master Data">
+                <span>Master Data</span>
+            </a>
+            <a href="{% url 'admin_attendance_portal' %}">
+                <img src="https://img.icons8.com/color/48/todo-list.png" alt="Attendance">
+                <span>Students Attendance Reports</span>
+            </a>
+            <a href="{% url 'admin_teacher_attendance_portal' %}" class="active">
+                <img src="https://img.icons8.com/color/48/todo-list.png" alt="Teacher Attendance">
+                <span>Teacher Attendance</span>
+            </a>
+            <a href="{% url 'admin_circular_upload' %}">
+                <img src="https://img.icons8.com/color/24/000000/classroom.png" alt="Circulars">
+                <span>Circulars</span>
+            </a>
+            <a href="{% url 'manage_teachers' %}">
+                <img src="https://img.icons8.com/color/24/000000/family--v1.png" alt="Teachers">
+                <span>Teacher Management</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <header class="header">
+                <span class="header-text">Manavargal School Management System, Admin Dashboard v1.0 - Teacher Attendance Portal</span>
+            </header>
+
+            <main class="main-content">
+                {% if messages %}
+                    <div class="alert-message">
+                        {% for message in messages %}
+                            <div class="{{ message.tags }}">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <section class="section">
+                    <h2><i class="fas fa-calendar-alt" style="color: #6366f1; margin-right: 8px;"></i> Select Date</h2>
+                    <form id="dateSelectForm" method="GET" action="{% url 'admin_teacher_attendance_portal' %}">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="date">Date</label>
+                                <input type="date" id="date" name="date" value="{{ selected_date }}" required>
+                            </div>
+                            <button type="submit" class="load-btn"><i class="fas fa-search"></i> Load</button>
+                        </div>
+                    </form>
+
+                    {% if teachers %}
+                    <div class="table-header">
+                        <h2 style="margin:0;text-align:left;"><i class="fas fa-users" style="color: #8b5cf6; margin-right: 8px;"></i> Attendance for {{ selected_date }}</h2>
+                        <div>
+                            <span class="stat-badge total"><i class="fas fa-users"></i> Total: <span id="totalCount">{{ teachers|length }}</span></span>
+                            <span class="stat-badge present"><i class="fas fa-check"></i> Present: <span id="presentCount">0</span></span>
+                            <span class="stat-badge absent"><i class="fas fa-times"></i> Absent: <span id="absentCount">0</span></span>
+                            <span class="stat-badge late"><i class="fas fa-clock"></i> Late: <span id="lateCount">0</span></span>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="attendance-table">
+                            <thead>
+                                <tr>
+                                    <th>Teacher ID</th>
+                                    <th>Name</th>
+                                    <th>Subject</th>
+                                    <th style="text-align:center;">Mark Attendance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTableBody">
+                                {% for teacher in teachers %}
+                                <tr data-tid="{{ teacher.id }}" data-status="{{ teacher.status|default:'present' }}">
+                                    <td>{{ teacher.id }}</td>
+                                    <td class="teacher-name-cell">
+                                        {{ teacher.name }}
+                                        {% if teacher.marked_by == 'self' %}<span class="marked-by-tag self">Self-marked</span>{% elif teacher.marked_by == 'admin' %}<span class="marked-by-tag admin">Admin</span>{% endif %}
+                                    </td>
+                                    <td>{{ teacher.subject }}</td>
+                                    <td style="text-align:center;">
+                                        <div class="radio-att-group">
+                                            <label class="radio-att-lbl present-lbl {% if not teacher.status or teacher.status == 'present' %}selected{% endif %}">
+                                                <input type="radio" name="teacher_{{ teacher.id }}" value="present"
+                                                       {% if not teacher.status or teacher.status == 'present' %}checked{% endif %}
+                                                       onchange="setStatus('{{ teacher.id }}', 'present')">
+                                                <i class="fas fa-check-circle"></i> Present
+                                            </label>
+                                            <label class="radio-att-lbl absent-lbl {% if teacher.status == 'absent' %}selected{% endif %}">
+                                                <input type="radio" name="teacher_{{ teacher.id }}" value="absent"
+                                                       {% if teacher.status == 'absent' %}checked{% endif %}
+                                                       onchange="setStatus('{{ teacher.id }}', 'absent')">
+                                                <i class="fas fa-times-circle"></i> Absent
+                                            </label>
+                                            <label class="radio-att-lbl late-lbl {% if teacher.status == 'late' %}selected{% endif %}">
+                                                <input type="radio" name="teacher_{{ teacher.id }}" value="late"
+                                                       {% if teacher.status == 'late' %}checked{% endif %}
+                                                       onchange="setStatus('{{ teacher.id }}', 'late')">
+                                                <i class="fas fa-clock"></i> Late
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <form id="saveForm" method="POST" action="{% url 'admin_mark_teacher_attendance' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="date" value="{{ selected_date }}">
+                        <div id="hiddenInputs"></div>
+                        <div class="action-buttons">
+                            <button type="submit" class="load-btn" style="background:#00a676;">
+                                <i class="fas fa-save"></i> Save Attendance
+                            </button>
+                        </div>
+                    </form>
+                    {% else %}
+                        <p class="no-requests"><i class="fas fa-search" style="color: #94a3b8; margin-right: 8px;"></i> No teachers found.</p>
+                    {% endif %}
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+    let attState = {};
+
+    window.setStatus = function(tid, status) {
+        attState[tid] = status;
+        const row = document.querySelector(`tr[data-tid="${tid}"]`);
+        if (row) {
+            row.querySelectorAll('.radio-att-lbl').forEach(lbl => {
+                const inp = lbl.querySelector('input[type="radio"]');
+                lbl.classList.toggle('selected', inp && inp.value === status);
+            });
+            row.dataset.status = status;
+        }
+        updateStatistics();
+    };
+
+    function updateStatistics() {
+        const rows = document.querySelectorAll('#attendanceTableBody tr');
+        let present = 0, absent = 0, late = 0;
+        rows.forEach(row => {
+            const status = row.getAttribute('data-status');
+            if (status === 'present') present++;
+            else if (status === 'absent') absent++;
+            else if (status === 'late') late++;
+        });
+        const p = document.getElementById('presentCount');
+        const a = document.getElementById('absentCount');
+        const l = document.getElementById('lateCount');
+        if (p) p.textContent = present;
+        if (a) a.textContent = absent;
+        if (l) l.textContent = late;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('#attendanceTableBody tr').forEach(row => {
+            const tid = row.dataset.tid;
+            attState[tid] = row.dataset.status || 'present';
+        });
+        updateStatistics();
+
+        const saveForm = document.getElementById('saveForm');
+        if (saveForm) {
+            saveForm.addEventListener('submit', function() {
+                const container = document.getElementById('hiddenInputs');
+                container.innerHTML = '';
+                Object.keys(attState).forEach(tid => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = `teacher_${tid}`;
+                    input.value = attState[tid];
+                    container.appendChild(input);
+                });
+            });
+        }
+
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                sidebar.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+            });
+        }
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
+    });
+    </script>
+</body>
+</html>

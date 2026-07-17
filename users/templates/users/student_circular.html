@@ -366,7 +366,11 @@
                     <h3>{{ circular.title }}</h3>
                     <small>Posted on: {{ circular.date }}</small>
                     <small>Target: {{ circular.target }}</small>
+                    {% if circular.image_url %}
                     <img src="{{ circular.image_url }}" alt="Circular Image">
+                    {% else %}
+                    <p class="no-circulars" style="margin: 8px 0 0;">Text notice — no attachment.</p>
+                    {% endif %}
                 </div>
             {% empty %}
                 <p class="no-circulars">

@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manavargal School Management System - Parent Signup</title>
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="{% static 'users/manifest_parent.json' %}">
+    <meta name="theme-color" content="#00a651">
+    <link rel="apple-touch-icon" href="{% static 'users/images/icon-192.png' %}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600&family=Noto+Sans+Tamil&family=Raleway:wght@600&family=Anton&display=swap');
 
@@ -545,5 +551,6 @@
             }
         }
     </script>
+    <script src="{% static 'users/js/pwa-install.js' %}"></script>
 </body>
 </html>

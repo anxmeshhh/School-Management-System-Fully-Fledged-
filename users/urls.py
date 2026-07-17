@@ -142,7 +142,11 @@ urlpatterns = [
     path('admin/attendance-get-students/', views.attendance_get_students, name='attendance_get_students'),
     path('admin_mark_attendance/', views.admin_mark_attendance, name='admin_mark_attendance'),
     path('admin_generate_attendance_pdf/', views.admin_generate_attendance_pdf, name='admin_generate_attendance_pdf'),
-    
+    path('admin_teacher_attendance/', views.admin_teacher_attendance_portal, name='admin_teacher_attendance_portal'),
+    path('admin/mark-teacher-attendance/', views.admin_mark_teacher_attendance, name='admin_mark_teacher_attendance'),
+    path('teacher/mark-own-attendance/', views.teacher_mark_own_attendance, name='teacher_mark_own_attendance'),
+    path('teacher/get-own-attendance/', views.get_teacher_own_attendance, name='get_teacher_own_attendance'),
+
     # urls.py snippet for rendering admin_master.html (assuming app_name='admin')
     path('master-data/', views.admin_master, name='admin_master'),
     path('admin_timetable/', views.admin_timetable_view, name='admin_timetable'),
@@ -322,6 +326,7 @@ urlpatterns = [
     path('admin/save-attendance/', views.save_attendance_batch, name='admin_save_attendance_batch'),
     path('teacher/get-approved-leaves/', views.get_approved_leaves, name='get_approved_leaves'),
     path('admin/parent-registrations/', views.admin_parent_registrations, name='admin_parent_registrations'),
+    path('admin/parent-registration-status/', views.admin_parent_registration_status, name='admin_parent_registration_status'),
     path('admin/fill-guest-student/', views.admin_fill_guest_student, name='admin_fill_guest_student'),
     path('admin/bulk-credentials/', views.admin_bulk_credentials, name='admin_bulk_credentials'),
     path('admin/download-bulk-credentials-pdf/', views.download_bulk_credentials_pdf, name='download_bulk_credentials_pdf'),
