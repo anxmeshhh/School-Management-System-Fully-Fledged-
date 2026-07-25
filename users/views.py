@@ -7985,8 +7985,8 @@ def parent_login(request):
             messages.error(request, "Invalid Admission Number. Contact Administration.")
             return redirect('parent_login')
 
-        # Path 1: parent_signup accounts — student_page3.contact == parent's own contact,
-        # or either parent's registered mobile from student_page4 (father_contact / mother_contact)
+        # Path 1: parent_signup accounts — student_page4.mother_contact (main password),
+        # or father_contact / student_page3.contact
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT u.id, sp1.admission_number
@@ -7995,7 +7995,7 @@ def parent_login(request):
                 JOIN student_page3 sp3 ON u.id = sp3.user_id
                 LEFT JOIN student_page4 sp4 ON u.id = sp4.user_id
                 WHERE sp1.admission_number = %s
-                  AND (sp3.contact = %s OR sp4.father_contact = %s OR sp4.mother_contact = %s)
+                  AND (sp4.mother_contact = %s OR sp4.father_contact = %s OR sp3.contact = %s)
             """, (admission_number, contact, contact, contact))
             user = cursor.fetchone()
 
@@ -14538,11 +14538,11 @@ def download_bulk_credentials_pdf(request):
                     s1.section,
                     s1.admission_number,
                     s1.roll_number,
-                    COALESCE(s4.father_name, s4.mother_name, s4.guardian_name, '') AS parent_name,
-                    COALESCE(s4.father_contact, s4.mother_contact, s4.guardian_contact, s3.contact, '') AS primary_contact,
+                    COALESCE(s4.mother_name, s4.father_name, s4.guardian_name, '') AS parent_name,
+                    COALESCE(s4.mother_contact, s4.father_contact, s4.guardian_contact, s3.contact, '') AS primary_contact,
                     CASE
-                        WHEN s4.father_contact  IS NOT NULL AND s4.father_contact  != '' THEN 'Father'
                         WHEN s4.mother_contact  IS NOT NULL AND s4.mother_contact  != '' THEN 'Mother'
+                        WHEN s4.father_contact  IS NOT NULL AND s4.father_contact  != '' THEN 'Father'
                         WHEN s4.guardian_contact IS NOT NULL AND s4.guardian_contact != '' THEN 'Guardian'
                         WHEN s3.contact         IS NOT NULL AND s3.contact         != '' THEN 'Student'
                         ELSE ''

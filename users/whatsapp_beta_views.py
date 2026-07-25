@@ -125,11 +125,11 @@ def choose_recipient_phone(payload, student_context):
     candidates = [
         payload.get("mobile"),
         payload.get("phone"),
-        payload.get("father_contact"),
         payload.get("mother_contact"),
+        payload.get("father_contact"),
         payload.get("guardian_contact"),
-        student_context.get("father_contact"),
         student_context.get("mother_contact"),
+        student_context.get("father_contact"),
         student_context.get("guardian_contact"),
         student_context.get("student_contact"),
         student_context.get("alt_contact"),
@@ -573,8 +573,8 @@ def api_all_parent_contacts(request):
                     s1.admission_number,
                     s1.class,
                     s1.section,
-                    COALESCE(s4.father_name, s4.mother_name, s4.guardian_name, '') AS parent_name,
-                    COALESCE(s4.father_contact, s4.mother_contact, s4.guardian_contact, s3.contact, '') AS contact,
+                    COALESCE(s4.mother_name, s4.father_name, s4.guardian_name, '') AS parent_name,
+                    COALESCE(s4.mother_contact, s4.father_contact, s4.guardian_contact, s3.contact, '') AS contact,
                     s4.father_contact,
                     s4.mother_contact,
                     s4.guardian_contact
@@ -731,9 +731,9 @@ def api_whatsapp_students(request):
 
         students = []
         for r in rows:
-            # Pick best available contact number
-            contact = r[6] or r[9] or r[11] or r[13] or r[7] or ""
-            parent_name = r[8] or r[10] or r[12] or ""
+            # Pick best available contact number (Mother's contact first)
+            contact = r[11] or r[9] or r[13] or r[6] or r[7] or ""
+            parent_name = r[10] or r[8] or r[12] or ""
             students.append({
                 "id": r[0],
                 "user_id": r[1],

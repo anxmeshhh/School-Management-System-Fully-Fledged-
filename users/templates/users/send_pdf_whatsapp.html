@@ -389,8 +389,8 @@ function loadStudents() {
                 window.currentStudentsData = data.students; // Store globally to avoid JSON string escaping issues in HTML
                 
                 data.students.forEach((s, idx) => {
-                    const contactDisplay = s.contact || s.alt_contact || 'No number';
-                    const parentDisplay = s.parent_name || 'N/A';
+                    const contactDisplay = s.mother_contact || s.father_contact || s.contact || s.alt_contact || 'No number';
+                    const parentDisplay = s.mother_name || s.father_name || 'N/A';
                     const classSecDisplay = `${escapeHtml(s.class)} - ${escapeHtml(s.section)}`;
                     
                     tbody.innerHTML += `
@@ -534,7 +534,7 @@ function sendWhatsApp(btn, studentData, isBulk = false) {
     // Collect base student data
     let mobile = "";
     if (isBulk) {
-        mobile = studentData.contact || studentData.alt_contact || studentData.father_contact || studentData.mother_contact || "";
+        mobile = studentData.mother_contact || studentData.father_contact || studentData.contact || studentData.alt_contact || "";
         if (!mobile) {
             console.warn(`Skipping ${studentData.name} - No contact number available.`);
             // When skipping, we could auto-advance, but since the user clicks next, we just let them click next again.
